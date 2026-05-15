@@ -1345,15 +1345,11 @@ export function CreateContractPage({
           {/* Shared across all Background domains */}
           {/* =================================================================== */}
           <FormSection
-            title="1. Thông tin chung"
-            description="Thông tin hợp đồng, đối tác, địa điểm - chung cho tất cả lĩnh vực Background"
+            title="1. Định danh hợp đồng"
+            description="Số hợp đồng, ngày lập, năm và mã định danh"
           >
-            <div className="space-y-6">
-              {/* 1a. Định danh hợp đồng */}
+            <div>
               <div>
-                <h4 className="text-xs font-semibold uppercase tracking-[0.1em] text-zinc-500 mb-3">
-                  1a. Định danh hợp đồng
-                </h4>
                 <div className="space-y-4">
                   <ContractNumberPreview contractNo={contractNoPreview} />
                   {/* Availability check */}
@@ -1493,12 +1489,15 @@ export function CreateContractPage({
                   </FieldGrid>
                 </div>
               </div>
+            </div>
+          </FormSection>
 
-              {/* 1b. Thông tin đối tác */}
+          <FormSection
+            title="2. Đối tác & Địa chỉ"
+            description="Pháp nhân, người đại diện và địa chỉ pháp lý / sử dụng âm nhạc"
+          >
+            <div className="space-y-6">
               <div>
-                <h4 className="text-xs font-semibold uppercase tracking-[0.1em] text-zinc-500 mb-3">
-                  1b. Thông tin đối tác
-                </h4>
                 <div className="space-y-4">
                   <FieldGrid>
                     <Input
@@ -1830,11 +1829,17 @@ export function CreateContractPage({
                   />
                 </div>
               </div>
+            </div>
+          </FormSection>
 
-              {/* 1d. Thời hạn hợp đồng */}
+          <FormSection
+            title="3. Thời hạn & người thực hiện"
+            description="Hiệu lực hợp đồng và người chịu trách nhiệm"
+          >
+            <div className="space-y-6">
               <div>
                 <h4 className="text-xs font-semibold uppercase tracking-[0.1em] text-zinc-500 mb-3">
-                  1d. Thời hạn hợp đồng
+                  Thời hạn hợp đồng
                 </h4>
                 <div className="space-y-4">
                   <FieldGrid cols={2}>
@@ -1923,10 +1928,10 @@ export function CreateContractPage({
                 </div>
               </div>
 
-              {/* 1e. Người thực hiện */}
+              {/* Người thực hiện */}
               <div>
                 <h4 className="text-xs font-semibold uppercase tracking-[0.1em] text-zinc-500 mb-3">
-                  1e. Người thực hiện
+                  Người thực hiện
                 </h4>
                 <FieldGrid>
                   <Select
@@ -1958,40 +1963,39 @@ export function CreateContractPage({
                   />
                 </FieldGrid>
               </div>
+            </div>
+          </FormSection>
 
-              {/* 1f. Ghi chú */}
-              <div>
-                <h4 className="text-xs font-semibold uppercase tracking-[0.1em] text-zinc-500 mb-3">
-                  1f. Ghi chú
-                </h4>
-                <div className="space-y-4">
-                  <Textarea
-                    label="Ghi chú nội bộ"
-                    value={draft.notes.internal}
-                    onChange={(e) =>
-                      updateDraft((current) => ({
-                        ...current,
-                        notes: { ...current.notes, internal: e.target.value },
-                      }))
-                    }
-                    placeholder="Ghi chú cho nội bộ VCPMC..."
-                  />
-                  <Textarea
-                    label="Điều khoản / Ghi chú xuất hợp đồng"
-                    value={draft.notes.contractTerms}
-                    onChange={(e) =>
-                      updateDraft((current) => ({
-                        ...current,
-                        notes: {
-                          ...current.notes,
-                          contractTerms: e.target.value,
-                        },
-                      }))
-                    }
-                    placeholder="Điều khoản sẽ xuất hiện trên hợp đồng..."
-                  />
-                </div>
-              </div>
+          <FormSection
+            title="4. Ghi chú & điều khoản"
+            description="Ghi chú nội bộ và điều khoản xuất hợp đồng"
+          >
+            <div className="space-y-4">
+              <Textarea
+                label="Ghi chú nội bộ"
+                value={draft.notes.internal}
+                onChange={(e) =>
+                  updateDraft((current) => ({
+                    ...current,
+                    notes: { ...current.notes, internal: e.target.value },
+                  }))
+                }
+                placeholder="Ghi chú cho nội bộ VCPMC..."
+              />
+              <Textarea
+                label="Điều khoản / Ghi chú xuất hợp đồng"
+                value={draft.notes.contractTerms}
+                onChange={(e) =>
+                  updateDraft((current) => ({
+                    ...current,
+                    notes: {
+                      ...current.notes,
+                      contractTerms: e.target.value,
+                    },
+                  }))
+                }
+                placeholder="Điều khoản sẽ xuất hiện trên hợp đồng..."
+              />
             </div>
           </FormSection>
 
@@ -2000,7 +2004,7 @@ export function CreateContractPage({
           {/* Domain selector - all Background domains */}
           {/* =================================================================== */}
           <FormSection
-            title="2. Lĩnh vực"
+            title="5. Lĩnh vực"
             description="Chọn lĩnh vực kinh doanh Background"
           >
             <div className="space-y-4">
@@ -2031,7 +2035,7 @@ export function CreateContractPage({
           {/* Phase BACKGROUND-TEMPLATE-REFACTOR: Template selection */}
           {/* =================================================================== */}
           <FormSection
-            title="2b. Mẫu xuất hợp đồng"
+            title="6. Mẫu xuất hợp đồng"
             description="Chọn mẫu Word để xuất hợp đồng"
           >
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -2157,7 +2161,7 @@ export function CreateContractPage({
           {/* Domain-specific fields */}
           {/* =================================================================== */}
           <FormSection
-            title="3. Khu vực kinh doanh"
+            title="7. Khu vực kinh doanh & Tiền bản quyền"
             description="Thông tin tùy theo lĩnh vực đã chọn"
           >
             {isKaraokeDomain ? (
