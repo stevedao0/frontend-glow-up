@@ -13,8 +13,7 @@ import {
   SparklesIcon,
   ChevronDownIcon,
   LockIcon,
-  PrinterIcon,
-  Music2Icon } from
+  PrinterIcon } from
 'lucide-react';
 import { RouteKey } from '../../data/routes';
 import { useAuth } from '../../lib/auth';
