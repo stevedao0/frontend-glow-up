@@ -17,7 +17,7 @@ export function HeroPanel({
 
 }: {eyebrow?: string;title: React.ReactNode;description?: React.ReactNode;actions?: React.ReactNode;stats?: {label: string;value: string;}[];}) {
   return (
-    <div className="relative overflow-hidden rounded-2xl ring-1 ring-[#c9a84c]/20 shadow-xl shadow-emerald-950/40">
+    <div className="relative overflow-hidden rounded-2xl ring-1 ring-[#c89968]/20 shadow-xl shadow-emerald-950/40">
       {/* Base gradient — emerald prestige */}
       <div
         aria-hidden
@@ -110,7 +110,7 @@ export function HeroPanel({
       <div className="relative px-6 sm:px-8 py-7 sm:py-9 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
         <div className="max-w-2xl">
           {eyebrow &&
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold uppercase tracking-[0.1em] text-[#e8d28f] bg-[#c9a84c]/10 ring-1 ring-inset ring-[#c9a84c]/30 backdrop-blur-sm">
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold uppercase tracking-[0.1em] text-[#e8d28f] bg-[#c89968]/10 ring-1 ring-inset ring-[#c89968]/30 backdrop-blur-sm">
               <SparklesIcon className="h-3 w-3" />
               {eyebrow}
             </div>
@@ -128,9 +128,9 @@ export function HeroPanel({
               {stats.map((s) =>
             <div
               key={s.label}
-              className="flex flex-col border-l border-[#c9a84c]/30 pl-3">
+              className="flex flex-col border-l border-[#c89968]/30 pl-3">
               
-                  <span className="text-[10px] font-medium uppercase tracking-[0.12em] text-[#c9a84c]/85">
+                  <span className="text-[10px] font-medium uppercase tracking-[0.12em] text-[#c89968]/85">
                     {s.label}
                   </span>
                   <span className="text-lg font-semibold text-white tabular-nums">
