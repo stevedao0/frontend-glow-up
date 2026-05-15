@@ -71,57 +71,54 @@ export function LoginPage() {
 
       <div className="relative z-10 w-full max-w-md px-6">
         <div className="text-center mb-8">
-          <div className="relative inline-flex h-16 w-16 rounded-2xl bg-white items-center justify-center shadow-lg shadow-[#9c6d3e]/25 mb-5 ring-1 ring-inset ring-[#c89968]/50 overflow-hidden">
-            <img src={vcpmcLogo} alt="VCPMC" className="h-full w-full object-cover" />
-            <span className="absolute -bottom-0.5 -right-0.5 h-2 w-2 rounded-full bg-[#c89968] shadow-[0_0_8px_rgba(200,153,104,0.9)]" />
-          </div>
-
-          {/* Music motif — treble clef + notes on a staff */}
-          <div className="relative mx-auto h-16 w-full max-w-[260px] mb-3">
-            <svg viewBox="0 0 260 64" fill="none" className="w-full h-full" aria-hidden>
-              {/* Staff lines */}
-              <g stroke="#c89968" strokeOpacity="0.35" strokeWidth="0.6">
-                <line x1="0" y1="20" x2="260" y2="20" />
-                <line x1="0" y1="28" x2="260" y2="28" />
-                <line x1="0" y1="36" x2="260" y2="36" />
-                <line x1="0" y1="44" x2="260" y2="44" />
-                <line x1="0" y1="52" x2="260" y2="52" />
-              </g>
-
-              {/* Treble clef — properly proportioned */}
-              <g transform="translate(118, 2) scale(0.11)" fill="#9c6d3e">
-                <path d="M119.4 0c-2.3 0-4.6.8-6.5 2.4-15.7 13-25.2 32.7-25.2 52.5 0 11.6 3 23.1 7 34.1L65.5 130c-21.7 22.2-32.5 49.3-32.5 78 0 41.7 28 76.7 67.5 87.6 4.6 22.7 9.3 45.7 12.7 68.7 1.3 9-.4 18.3-7.6 24.5-9.6 8.3-25 9.6-34.5-.5-7-7.5-3.5-19.7 5.7-23.7 4.5-2 12.4-1.4 14.4 4.3 1.5 4.3-2.5 7.6-6 9.4-3 1.5-7 2-10 .2 1.8 8 12.5 13 21 11.7 14.3-2.2 19.4-19.5 14.6-31.7-5-12.5-19.6-19.4-32.5-19.5-19.4-.3-37.7 14.7-39 34.4-1.6 22.5 19 41 41.5 41.5 23 .5 44-15.5 49.6-37.5 4.7-18.5 1-37.5-2.5-55.7l-7.7-39c4.6.6 9.3 1 14 1 49.7 0 89.5-35.7 89.5-83.5 0-37.7-22.6-66.7-56.8-83.7l-7.7-39c-2.7-13.7-3.6-30.8 6.6-41.6 4.4-4.6 11.4-7 17-3.5 9.6 5.6 9.6 19.7 5.7 28.7-4.7 11-13.6 19.6-22.4 27.4l5.7 28c19-6.7 33-23 33-44C156.5 22 138.7 0 119.4 0zm9.4 196c.3 1.5 1.3 6.5 2.6 13.5 8.6 0 16-2.7 22.4-7.6 13.7-10.4 19.4-29 13.6-44.7-4.7-12.6-17-21.6-30.5-22.5l9 60.7c-7-1-13-5-15.5-12-3-9 4-17 12-15.4 13 2.6 21.6 16.7 18.6 29.6-3 13-15.6 21-28 19.5l-4.3-21z"/>
-              </g>
-
-              {/* Notes left of clef */}
-              <g fill="#c89968">
-                <ellipse cx="40" cy="40" rx="4" ry="3" transform="rotate(-20 40 40)" />
-                <rect x="43" y="22" width="1.1" height="18" />
-                <ellipse cx="68" cy="36" rx="4" ry="3" transform="rotate(-20 68 36)" />
-                <rect x="71" y="16" width="1.1" height="20" />
-                <path d="M44 22 Q 58 14, 72 16" stroke="#c89968" strokeWidth="1.4" fill="none" strokeLinecap="round" />
-              </g>
-
-              {/* Notes right of clef */}
-              <g fill="#c89968">
-                <ellipse cx="190" cy="40" rx="4" ry="3" transform="rotate(-20 190 40)" />
-                <rect x="193" y="22" width="1.1" height="18" />
-                <ellipse cx="218" cy="36" rx="4" ry="3" transform="rotate(-20 218 36)" />
-                <rect x="221" y="16" width="1.1" height="20" />
-                <path d="M194 22 Q 208 14, 222 16" stroke="#c89968" strokeWidth="1.4" fill="none" strokeLinecap="round" />
-              </g>
-
-              {/* Sparkles */}
-              <g fill="#e8c4a0">
-                <circle cx="14" cy="10" r="1" />
-                <circle cx="24" cy="58" r="0.8" />
-                <circle cx="92" cy="6" r="0.7" />
-                <circle cx="160" cy="58" r="0.9" />
-                <circle cx="240" cy="8" r="1" />
-                <circle cx="252" cy="46" r="0.7" />
-                <circle cx="6" cy="34" r="0.8" />
+          {/* Music motif — VCPMC logo as the treble clef on a 5-line staff */}
+          <div className="relative mx-auto h-24 w-full max-w-[320px] mb-5">
+            {/* Staff lines (full width, behind logo) */}
+            <svg viewBox="0 0 320 96" fill="none" className="absolute inset-0 w-full h-full" aria-hidden preserveAspectRatio="none">
+              <g stroke="#c89968" strokeOpacity="0.4" strokeWidth="0.6">
+                <line x1="0" y1="36" x2="320" y2="36" />
+                <line x1="0" y1="46" x2="320" y2="46" />
+                <line x1="0" y1="56" x2="320" y2="56" />
+                <line x1="0" y1="66" x2="320" y2="66" />
+                <line x1="0" y1="76" x2="320" y2="76" />
               </g>
             </svg>
+
+            {/* Notes & sparkles overlay */}
+            <svg viewBox="0 0 320 96" fill="none" className="absolute inset-0 w-full h-full" aria-hidden>
+              {/* Notes left */}
+              <g fill="#c89968">
+                <ellipse cx="40" cy="64" rx="5" ry="3.6" transform="rotate(-20 40 64)" />
+                <rect x="43.5" y="40" width="1.2" height="24" />
+                <ellipse cx="78" cy="58" rx="5" ry="3.6" transform="rotate(-20 78 58)" />
+                <rect x="81.5" y="32" width="1.2" height="26" />
+                <path d="M44.5 40 Q 63 30, 82.5 32" stroke="#c89968" strokeWidth="1.6" fill="none" strokeLinecap="round" />
+              </g>
+              {/* Notes right */}
+              <g fill="#c89968">
+                <ellipse cx="240" cy="64" rx="5" ry="3.6" transform="rotate(-20 240 64)" />
+                <rect x="243.5" y="40" width="1.2" height="24" />
+                <ellipse cx="278" cy="58" rx="5" ry="3.6" transform="rotate(-20 278 58)" />
+                <rect x="281.5" y="32" width="1.2" height="26" />
+                <path d="M244.5 40 Q 263 30, 282.5 32" stroke="#c89968" strokeWidth="1.6" fill="none" strokeLinecap="round" />
+              </g>
+              {/* Sparkles */}
+              <g fill="#e8c4a0">
+                <circle cx="14" cy="14" r="1.2" />
+                <circle cx="22" cy="86" r="0.9" />
+                <circle cx="110" cy="10" r="0.8" />
+                <circle cx="210" cy="86" r="1" />
+                <circle cx="300" cy="12" r="1.2" />
+                <circle cx="310" cy="68" r="0.8" />
+                <circle cx="6" cy="50" r="0.9" />
+              </g>
+            </svg>
+
+            {/* VCPMC logo centered as the clef */}
+            <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-24 w-24 rounded-2xl bg-white flex items-center justify-center shadow-xl shadow-[#9c6d3e]/30 ring-1 ring-inset ring-[#c89968]/60 overflow-hidden">
+              <img src={vcpmcLogo} alt="VCPMC" className="h-full w-full object-cover" />
+              <span className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-[#c89968] shadow-[0_0_10px_rgba(200,153,104,0.9)]" />
+            </div>
           </div>
 
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#c89968]/10 border border-[#c89968]/25">
