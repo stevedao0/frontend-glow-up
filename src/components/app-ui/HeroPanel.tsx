@@ -17,23 +17,23 @@ export function HeroPanel({
 
 }: {eyebrow?: string;title: React.ReactNode;description?: React.ReactNode;actions?: React.ReactNode;stats?: {label: string;value: string;}[];}) {
   return (
-    <div className="relative overflow-hidden rounded-2xl ring-1 ring-[#c89968]/20 shadow-xl shadow-emerald-950/40">
-      {/* Base gradient — emerald prestige */}
+    <div className="relative overflow-hidden rounded-2xl ring-1 ring-[#c89968]/30 shadow-xl shadow-[#9c6d3e]/20">
+      {/* Base gradient — ivory cream */}
       <div
         aria-hidden
         className="absolute inset-0"
         style={{
           background:
-          'linear-gradient(135deg, #04130d 0%, #062a1f 35%, #0a4a36 70%, #0d6e52 100%)'
+          'linear-gradient(135deg, #faf6ee 0%, #f3ebdb 40%, #ecdfc6 75%, #e3d2b3 100%)'
         }} />
       
-      {/* Radial glows — emerald + champagne gold */}
+      {/* Radial glows — warm cream + rose-gold */}
       <div
         aria-hidden
         className="absolute -top-24 -left-24 h-[420px] w-[420px] rounded-full"
         style={{
           background:
-          'radial-gradient(circle, rgba(16,185,129,0.40) 0%, rgba(16,185,129,0) 60%)',
+          'radial-gradient(circle, rgba(232,196,160,0.55) 0%, rgba(232,196,160,0) 60%)',
           filter: 'blur(20px)'
         }} />
       
@@ -42,7 +42,7 @@ export function HeroPanel({
         className="absolute -bottom-32 -right-20 h-[460px] w-[460px] rounded-full"
         style={{
           background:
-          'radial-gradient(circle, rgba(200,153,104,0.35) 0%, rgba(200,153,104,0) 60%)',
+          'radial-gradient(circle, rgba(200,153,104,0.45) 0%, rgba(200,153,104,0) 60%)',
           filter: 'blur(24px)'
         }} />
       
@@ -51,7 +51,7 @@ export function HeroPanel({
       <svg
         aria-hidden
         viewBox="0 0 800 360"
-        className="absolute inset-y-0 right-0 h-full w-auto opacity-[0.07] text-white pointer-events-none"
+        className="absolute inset-y-0 right-0 h-full w-auto opacity-[0.18] text-[#9c6d3e] pointer-events-none"
         preserveAspectRatio="xMaxYMid slice"
         fill="none">
         
@@ -104,22 +104,22 @@ export function HeroPanel({
       {/* Top highlight */}
       <div
         aria-hidden
-        className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent" />
+        className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/70 to-transparent" />
       
 
       <div className="relative px-6 sm:px-8 py-7 sm:py-9 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
         <div className="max-w-2xl">
           {eyebrow &&
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold uppercase tracking-[0.1em] text-[#e8c4a0] bg-[#c89968]/10 ring-1 ring-inset ring-[#c89968]/30 backdrop-blur-sm">
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold uppercase tracking-[0.1em] text-[#7a4a22] bg-white/50 ring-1 ring-inset ring-[#c89968]/40 backdrop-blur-sm">
               <SparklesIcon className="h-3 w-3" />
               {eyebrow}
             </div>
           }
-          <h2 className="mt-3 text-2xl sm:text-[28px] lg:text-3xl font-semibold text-white tracking-tight leading-[1.2]">
+          <h2 className="mt-3 text-2xl sm:text-[28px] lg:text-3xl font-semibold text-[#2d1f14] tracking-tight leading-[1.2]">
             {title}
           </h2>
           {description &&
-          <p className="mt-2.5 text-sm sm:text-[15px] text-emerald-50/75 leading-relaxed">
+          <p className="mt-2.5 text-sm sm:text-[15px] text-[#5a4533] leading-relaxed">
               {description}
             </p>
           }
@@ -128,12 +128,12 @@ export function HeroPanel({
               {stats.map((s) =>
             <div
               key={s.label}
-              className="flex flex-col border-l border-[#c89968]/30 pl-3">
+              className="flex flex-col border-l border-[#c89968]/50 pl-3">
               
-                  <span className="text-[10px] font-medium uppercase tracking-[0.12em] text-[#c89968]/85">
+                  <span className="text-[10px] font-medium uppercase tracking-[0.12em] text-[#9c6d3e]">
                     {s.label}
                   </span>
-                  <span className="text-lg font-semibold text-white tabular-nums">
+                  <span className="text-lg font-semibold text-[#2d1f14] tabular-nums">
                     {s.value}
                   </span>
                 </div>
