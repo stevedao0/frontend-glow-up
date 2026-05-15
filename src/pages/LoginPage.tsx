@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ShieldIcon, Loader2Icon, ArrowRightIcon, LockIcon, MusicIcon, Music2Icon, Music4Icon } from 'lucide-react';
+import { ShieldIcon, Loader2Icon, ArrowRightIcon, LockIcon, MusicIcon } from 'lucide-react';
 import vcpmcLogo from '../assets/vcpmc-logo-animated.webp';
 import { useAuth } from '../lib/auth';
 import { Modal } from '../components/app-ui/Modal';
