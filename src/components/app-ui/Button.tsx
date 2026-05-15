@@ -15,7 +15,7 @@ const variants: Record<Variant, string> = {
   glass:
     'bg-white/10 text-white ring-1 ring-inset ring-white/15 hover:bg-white/15 backdrop-blur-sm',
   glassPrimary:
-    'bg-[#c89968] text-emerald-950 hover:bg-[#d4b760] active:bg-[#b89638] shadow-lg shadow-amber-950/30 ring-1 ring-inset ring-amber-200/40 font-semibold',
+    'bg-gradient-to-b from-[#e8c4a0] via-[#c89968] to-[#9c6d3e] text-emerald-950 hover:from-[#f0d0b0] hover:via-[#d4a878] hover:to-[#a87a4a] active:from-[#c89968] active:to-[#8a5d33] shadow-lg shadow-amber-950/40 ring-1 ring-inset ring-[#f0d4a8]/60 font-semibold',
   danger:
     'bg-danger text-white hover:brightness-110 active:brightness-95 shadow-sm',
 };
