@@ -76,47 +76,50 @@ export function LoginPage() {
             <span className="absolute -bottom-0.5 -right-0.5 h-2 w-2 rounded-full bg-[#c89968] shadow-[0_0_8px_rgba(200,153,104,0.9)]" />
           </div>
 
-          {/* Music motif — treble clef + scattered notes & sparkles */}
-          <div className="relative mx-auto h-14 w-full max-w-[220px] mb-3">
-            <svg viewBox="0 0 220 56" fill="none" className="w-full h-full" aria-hidden>
+          {/* Music motif — treble clef + notes on a staff */}
+          <div className="relative mx-auto h-16 w-full max-w-[260px] mb-3">
+            <svg viewBox="0 0 260 64" fill="none" className="w-full h-full" aria-hidden>
               {/* Staff lines */}
               <g stroke="#c89968" strokeOpacity="0.35" strokeWidth="0.6">
-                <line x1="0" y1="18" x2="220" y2="18" />
-                <line x1="0" y1="26" x2="220" y2="26" />
-                <line x1="0" y1="34" x2="220" y2="34" />
-                <line x1="0" y1="42" x2="220" y2="42" />
+                <line x1="0" y1="20" x2="260" y2="20" />
+                <line x1="0" y1="28" x2="260" y2="28" />
+                <line x1="0" y1="36" x2="260" y2="36" />
+                <line x1="0" y1="44" x2="260" y2="44" />
+                <line x1="0" y1="52" x2="260" y2="52" />
               </g>
-              {/* Treble clef (centered) */}
-              <g transform="translate(102, 8)" stroke="#9c6d3e" strokeWidth="1.6" fill="none" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M8 0 C 14 6, 14 16, 8 22 C 2 28, 2 38, 8 42 C 14 44, 18 40, 16 34 C 14 28, 6 28, 6 36 C 6 42, 12 46, 16 44" />
-                <line x1="9" y1="2" x2="9" y2="46" />
-                <circle cx="9" cy="48" r="1.6" fill="#9c6d3e" />
+
+              {/* Treble clef — properly proportioned */}
+              <g transform="translate(118, 2) scale(0.11)" fill="#9c6d3e">
+                <path d="M119.4 0c-2.3 0-4.6.8-6.5 2.4-15.7 13-25.2 32.7-25.2 52.5 0 11.6 3 23.1 7 34.1L65.5 130c-21.7 22.2-32.5 49.3-32.5 78 0 41.7 28 76.7 67.5 87.6 4.6 22.7 9.3 45.7 12.7 68.7 1.3 9-.4 18.3-7.6 24.5-9.6 8.3-25 9.6-34.5-.5-7-7.5-3.5-19.7 5.7-23.7 4.5-2 12.4-1.4 14.4 4.3 1.5 4.3-2.5 7.6-6 9.4-3 1.5-7 2-10 .2 1.8 8 12.5 13 21 11.7 14.3-2.2 19.4-19.5 14.6-31.7-5-12.5-19.6-19.4-32.5-19.5-19.4-.3-37.7 14.7-39 34.4-1.6 22.5 19 41 41.5 41.5 23 .5 44-15.5 49.6-37.5 4.7-18.5 1-37.5-2.5-55.7l-7.7-39c4.6.6 9.3 1 14 1 49.7 0 89.5-35.7 89.5-83.5 0-37.7-22.6-66.7-56.8-83.7l-7.7-39c-2.7-13.7-3.6-30.8 6.6-41.6 4.4-4.6 11.4-7 17-3.5 9.6 5.6 9.6 19.7 5.7 28.7-4.7 11-13.6 19.6-22.4 27.4l5.7 28c19-6.7 33-23 33-44C156.5 22 138.7 0 119.4 0zm9.4 196c.3 1.5 1.3 6.5 2.6 13.5 8.6 0 16-2.7 22.4-7.6 13.7-10.4 19.4-29 13.6-44.7-4.7-12.6-17-21.6-30.5-22.5l9 60.7c-7-1-13-5-15.5-12-3-9 4-17 12-15.4 13 2.6 21.6 16.7 18.6 29.6-3 13-15.6 21-28 19.5l-4.3-21z"/>
               </g>
-              {/* Notes left */}
+
+              {/* Notes left of clef */}
               <g fill="#c89968">
-                <circle cx="40" cy="34" r="3.2" />
-                <rect x="42.6" y="20" width="0.9" height="14" />
-                <circle cx="64" cy="30" r="3.2" />
-                <rect x="66.6" y="14" width="0.9" height="16" />
+                <ellipse cx="40" cy="40" rx="4" ry="3" transform="rotate(-20 40 40)" />
+                <rect x="43" y="22" width="1.1" height="18" />
+                <ellipse cx="68" cy="36" rx="4" ry="3" transform="rotate(-20 68 36)" />
+                <rect x="71" y="16" width="1.1" height="20" />
+                <path d="M44 22 Q 58 14, 72 16" stroke="#c89968" strokeWidth="1.4" fill="none" strokeLinecap="round" />
               </g>
-              {/* Notes right */}
+
+              {/* Notes right of clef */}
               <g fill="#c89968">
-                <circle cx="160" cy="34" r="3.2" />
-                <rect x="162.6" y="20" width="0.9" height="14" />
-                <circle cx="184" cy="30" r="3.2" />
-                <rect x="186.6" y="14" width="0.9" height="16" />
-                <path d="M43.5 20 Q 56 14, 67.5 14" stroke="#c89968" strokeWidth="1" fill="none" />
-                <path d="M163.5 20 Q 176 14, 187.5 14" stroke="#c89968" strokeWidth="1" fill="none" />
+                <ellipse cx="190" cy="40" rx="4" ry="3" transform="rotate(-20 190 40)" />
+                <rect x="193" y="22" width="1.1" height="18" />
+                <ellipse cx="218" cy="36" rx="4" ry="3" transform="rotate(-20 218 36)" />
+                <rect x="221" y="16" width="1.1" height="20" />
+                <path d="M194 22 Q 208 14, 222 16" stroke="#c89968" strokeWidth="1.4" fill="none" strokeLinecap="round" />
               </g>
+
               {/* Sparkles */}
               <g fill="#e8c4a0">
-                <circle cx="20" cy="10" r="0.9" />
-                <circle cx="30" cy="48" r="0.7" />
-                <circle cx="80" cy="6" r="0.6" />
-                <circle cx="140" cy="50" r="0.8" />
-                <circle cx="200" cy="8" r="0.9" />
-                <circle cx="210" cy="40" r="0.6" />
-                <circle cx="6" cy="30" r="0.7" />
+                <circle cx="14" cy="10" r="1" />
+                <circle cx="24" cy="58" r="0.8" />
+                <circle cx="92" cy="6" r="0.7" />
+                <circle cx="160" cy="58" r="0.9" />
+                <circle cx="240" cy="8" r="1" />
+                <circle cx="252" cy="46" r="0.7" />
+                <circle cx="6" cy="34" r="0.8" />
               </g>
             </svg>
           </div>
