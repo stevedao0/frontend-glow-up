@@ -15,18 +15,18 @@ export function Input({
 }: InputProps) {
   return (
     <div className="flex flex-col gap-1">
-      {label &&
-      <label className="text-[11px] font-medium text-zinc-600">
+      {label && (
+        <label className="text-[11px] font-medium text-fg-secondary">
           {label}
-          {required && <span className="text-rose-500 ml-0.5">*</span>}
+          {required && <span className="text-danger ml-0.5">*</span>}
         </label>
-      }
+      )}
       <input
         {...rest}
-        className={`h-9 px-3 text-sm rounded-lg bg-white text-zinc-900 ring-1 ring-zinc-200 hover:ring-zinc-300 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 transition-shadow shadow-sm shadow-zinc-900/[0.03] placeholder:text-zinc-400 disabled:bg-zinc-50 disabled:text-zinc-500 disabled:cursor-not-allowed ${error ? 'ring-rose-300 focus:ring-rose-500/40' : ''} ${className}`} />
-      
-      {error && <span className="text-xs text-rose-600">{error}</span>}
-      {hint && !error && <span className="text-xs text-zinc-500">{hint}</span>}
-    </div>);
-
+        className={`h-9 px-3 text-sm rounded-lg bg-surface text-fg-primary ring-1 ring-zinc-200 hover:ring-zinc-300 focus:outline-none focus:ring-2 focus:ring-accent-primary/40 transition-shadow duration-fast shadow-xs placeholder:text-fg-subtle disabled:bg-surface-subtle disabled:text-fg-muted disabled:cursor-not-allowed ${error ? 'ring-rose-300 focus:ring-danger/40' : ''} ${className}`}
+      />
+      {error && <span className="text-xs text-danger">{error}</span>}
+      {hint && !error && <span className="text-xs text-fg-muted">{hint}</span>}
+    </div>
+  );
 }
