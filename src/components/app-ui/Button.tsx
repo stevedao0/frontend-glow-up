@@ -8,14 +8,14 @@ const sizes: Record<Size, string> = {
 };
 const variants: Record<Variant, string> = {
   primary:
-    'bg-fg-primary text-fg-inverse hover:bg-zinc-800 active:bg-zinc-950 shadow-sm',
+    'bg-gradient-to-b from-emerald-700 to-emerald-800 text-white hover:from-emerald-600 hover:to-emerald-700 active:from-emerald-800 active:to-emerald-900 ring-1 ring-inset ring-[#c9a84c]/40 shadow-md shadow-emerald-950/30',
   secondary:
     'bg-surface text-fg-secondary ring-1 ring-zinc-200 hover:bg-surface-subtle hover:ring-zinc-300 shadow-xs',
   ghost: 'text-fg-secondary hover:bg-surface-muted hover:text-fg-primary',
   glass:
     'bg-white/10 text-white ring-1 ring-inset ring-white/15 hover:bg-white/15 backdrop-blur-sm',
   glassPrimary:
-    'bg-white text-fg-primary hover:bg-surface-subtle shadow-lg shadow-indigo-950/30 ring-1 ring-white/40',
+    'bg-[#c9a84c] text-emerald-950 hover:bg-[#d4b760] active:bg-[#b89638] shadow-lg shadow-amber-950/30 ring-1 ring-inset ring-amber-200/40 font-semibold',
   danger:
     'bg-danger text-white hover:brightness-110 active:brightness-95 shadow-sm',
 };
