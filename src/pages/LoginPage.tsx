@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { ShieldIcon, Loader2Icon, ArrowRightIcon, LockIcon } from 'lucide-react';
+import { ShieldIcon, Loader2Icon, ArrowRightIcon, LockIcon, SparklesIcon } from 'lucide-react';
+import vcpmcLogo from '../assets/vcpmc-logo-animated.webp';
 import { useAuth } from '../lib/auth';
 import { Modal } from '../components/app-ui/Modal';
 import { Button } from '../components/app-ui/Button';
@@ -37,41 +38,59 @@ export function LoginPage() {
     }
   };
   return (
-    <div className="min-h-screen w-full flex items-center justify-center relative overflow-hidden bg-surface-app">
-      {/* Subtle ambient gradients */}
+    <div className="min-h-screen w-full flex items-center justify-center relative overflow-hidden bg-gradient-to-br from-[#faf6ee] via-[#fcfaf5] to-[#f2ecd9]">
+      {/* Soft rose-gold ambient glows */}
       <div
         aria-hidden
-        className="absolute inset-0 z-0"
-        style={{
-          backgroundImage: `radial-gradient(circle at 50% 0%, rgba(99,102,241,0.07) 0%, transparent 55%), radial-gradient(circle at 100% 100%, rgba(139,92,246,0.05) 0%, transparent 50%)`
-        }} />
+        className="absolute -top-40 -left-40 h-[480px] w-[480px] rounded-full bg-[#e8c4a0]/40"
+        style={{ filter: 'blur(80px)' }}
+      />
+      <div
+        aria-hidden
+        className="absolute -bottom-40 -right-40 h-[520px] w-[520px] rounded-full bg-[#c89968]/25"
+        style={{ filter: 'blur(90px)' }}
+      />
 
-      {/* Grid pattern */}
+      {/* Decorative flowing gold lines */}
+      <div aria-hidden className="absolute inset-0 opacity-[0.08] pointer-events-none">
+        <svg className="w-full h-full" viewBox="0 0 1200 800" fill="none" preserveAspectRatio="xMidYMid slice">
+          <path d="M0 200C300 100 600 300 1200 200M0 400C300 300 600 500 1200 400M0 600C300 500 900 700 1200 600" stroke="#c89968" strokeWidth="1" />
+        </svg>
+      </div>
+
+      {/* Subtle staff lines (music) */}
       <div
         aria-hidden
-        className="absolute inset-0 z-0 opacity-[0.4]"
+        className="absolute inset-x-0 top-0 h-40 opacity-[0.10] pointer-events-none"
         style={{
-          backgroundImage: `linear-gradient(rgba(24,24,27,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(24,24,27,0.04) 1px, transparent 1px)`,
-          backgroundSize: '32px 32px',
-          maskImage: 'radial-gradient(ellipse at center, black 30%, transparent 80%)'
-        }} />
+          backgroundImage: 'repeating-linear-gradient(to bottom, transparent 0, transparent 6px, #c89968 6px, #c89968 7px)',
+          maskImage: 'linear-gradient(to bottom, black, transparent)',
+          WebkitMaskImage: 'linear-gradient(to bottom, black, transparent)',
+        }}
+      />
 
       <div className="relative z-10 w-full max-w-md px-6">
         <div className="text-center mb-8">
-          <div className="inline-flex h-14 w-14 rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-600 items-center justify-center shadow-lg shadow-indigo-500/25 mb-6 ring-1 ring-white/20">
-            <span className="text-white text-2xl font-bold tracking-tight">
-              V
+          <div className="relative inline-flex h-16 w-16 rounded-2xl bg-white items-center justify-center shadow-lg shadow-[#9c6d3e]/25 mb-6 ring-1 ring-inset ring-[#c89968]/50 overflow-hidden">
+            <img src={vcpmcLogo} alt="VCPMC" className="h-full w-full object-cover" />
+            <span className="absolute -bottom-0.5 -right-0.5 h-2 w-2 rounded-full bg-[#c89968] shadow-[0_0_8px_rgba(200,153,104,0.9)]" />
+          </div>
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#c89968]/10 border border-[#c89968]/25 mb-4">
+            <SparklesIcon className="h-3 w-3 text-[#9c6d3e]" />
+            <span className="text-[10px] font-bold tracking-[0.2em] text-[#9c6d3e] uppercase">
+              VCPMC · Internal
             </span>
           </div>
-          <h1 className="text-[22px] font-semibold text-fg-primary tracking-tight mb-1.5">
+          <h1 className="text-[24px] font-bold text-[#2d2926] tracking-tight mb-1.5">
             VCPMC Contract Suite
           </h1>
-          <p className="text-fg-muted text-sm">
+          <p className="text-[#6b6661] text-sm">
             Hệ thống quản lý hợp đồng và giấy chứng nhận
           </p>
         </div>
 
-        <div className="bg-surface rounded-2xl ring-1 ring-zinc-200/80 shadow-lg p-7">
+        <div className="relative bg-white/60 backdrop-blur-xl rounded-2xl ring-1 ring-[#e3d2b3] shadow-[0_20px_50px_-20px_rgba(200,153,104,0.25)] p-7 overflow-hidden">
+          <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#c89968]/60 to-transparent" />
           <form onSubmit={handleSubmit} className="space-y-5">
             {error &&
             <div className="p-3 rounded-lg bg-rose-50 ring-1 ring-rose-200/70 text-rose-700 text-sm flex items-start gap-2">
@@ -81,7 +100,7 @@ export function LoginPage() {
             }
 
             <div>
-              <label className="block text-[12px] font-medium text-fg-secondary mb-1.5">
+              <label className="block text-[12px] font-semibold text-[#5a5450] mb-1.5 tracking-wide">
                 Tài khoản
               </label>
               <input
@@ -89,19 +108,19 @@ export function LoginPage() {
                 required
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                className="w-full h-10 px-3 rounded-lg bg-surface text-fg-primary ring-1 ring-zinc-200 hover:ring-zinc-300 focus:outline-none focus:ring-2 focus:ring-accent-primary/40 transition-shadow shadow-xs placeholder:text-fg-subtle text-sm"
+                className="w-full h-10 px-3 rounded-lg bg-white text-[#2d2926] ring-1 ring-[#e3d2b3] hover:ring-[#c89968]/60 focus:outline-none focus:ring-2 focus:ring-[#c89968]/50 transition-shadow placeholder:text-[#a89888] text-sm"
                 placeholder="admin@vcpmc.org" />
             </div>
 
             <div>
               <div className="flex items-center justify-between mb-1.5">
-                <label className="block text-[12px] font-medium text-fg-secondary">
+                <label className="block text-[12px] font-semibold text-[#5a5450] tracking-wide">
                   Mật khẩu
                 </label>
                 <button
                   type="button"
                   onClick={() => setShowForgot(true)}
-                  className="text-xs text-accent-primary hover:underline transition-colors">
+                  className="text-xs text-[#9c6d3e] hover:text-[#7a4a22] hover:underline transition-colors font-medium">
                   Quên mật khẩu?
                 </button>
               </div>
@@ -110,7 +129,7 @@ export function LoginPage() {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full h-10 px-3 rounded-lg bg-surface text-fg-primary ring-1 ring-zinc-200 hover:ring-zinc-300 focus:outline-none focus:ring-2 focus:ring-accent-primary/40 transition-shadow shadow-xs placeholder:text-fg-subtle text-sm"
+                className="w-full h-10 px-3 rounded-lg bg-white text-[#2d2926] ring-1 ring-[#e3d2b3] hover:ring-[#c89968]/60 focus:outline-none focus:ring-2 focus:ring-[#c89968]/50 transition-shadow placeholder:text-[#a89888] text-sm"
                 placeholder="••••••••" />
             </div>
 
@@ -119,7 +138,7 @@ export function LoginPage() {
                 checked={remember}
                 onChange={setRemember}
                 label={
-                <span className="text-fg-secondary text-sm">
+                <span className="text-[#5a5450] text-sm">
                     Ghi nhớ đăng nhập
                   </span>
                 } />
@@ -128,11 +147,11 @@ export function LoginPage() {
             <button
               type="submit"
               disabled={loading || devLoading}
-              className="w-full h-10 rounded-lg bg-accent-primary hover:brightness-110 active:brightness-95 text-white font-medium text-sm transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm shadow-indigo-500/25">
+              className="group w-full h-11 rounded-xl bg-gradient-to-r from-[#c89968] to-[#9c6d3e] hover:from-[#d4a878] hover:to-[#a87a4a] active:from-[#b88858] active:to-[#8a5d33] text-white font-semibold text-sm transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_10px_25px_-5px_rgba(200,153,104,0.5)] ring-1 ring-inset ring-[#f0d4a8]/50">
               {loading ?
               <Loader2Icon className="h-4 w-4 animate-spin" /> :
               <>
-                  Đăng nhập <ArrowRightIcon className="h-4 w-4" />
+                  Đăng nhập <ArrowRightIcon className="h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
                 </>
               }
             </button>
@@ -141,7 +160,7 @@ export function LoginPage() {
               type="button"
               disabled={loading || devLoading}
               onClick={handleDevLogin}
-              className="w-full h-10 rounded-lg bg-surface-subtle hover:bg-surface-muted text-fg-secondary font-medium text-sm transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed ring-1 ring-zinc-200">
+              className="w-full h-10 rounded-lg bg-white hover:bg-[#fcfaf5] text-[#9c6d3e] font-medium text-sm transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed ring-1 ring-[#e3d2b3] hover:ring-[#c89968]/60">
               {devLoading ?
               <Loader2Icon className="h-4 w-4 animate-spin" /> :
               <>
@@ -153,7 +172,7 @@ export function LoginPage() {
           </form>
         </div>
 
-        <div className="mt-8 text-center text-xs text-fg-muted">
+        <div className="mt-8 text-center text-xs text-[#9c8569]">
           <p>Đăng nhập bằng tài khoản hiện có trong hệ thống.</p>
         </div>
       </div>
