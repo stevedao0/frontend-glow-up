@@ -974,7 +974,7 @@ function ProfileModal({ user, onClose }: { user: UserListItem; onClose: () => vo
         : { bg: "bg-[#5a4533]", soft: "bg-[#f1ede4]", text: "text-[#3d3025]", ring: "ring-[#d8cfc0]/60" };
 
   return (
-    <Modal open={true} onClose={onClose} title="Hồ sơ người dùng" maxWidth="lg">
+    <Modal open={true} onClose={onClose} title="Hồ sơ người dùng" maxWidth="lg" bleed>
       <div className="relative">
         {/* Hero cover */}
         <div className="relative h-32 overflow-hidden rounded-t-2xl">
