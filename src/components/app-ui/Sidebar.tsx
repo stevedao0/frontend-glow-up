@@ -143,7 +143,7 @@ export function Sidebar({
           onClick={() => onNavigate(it.key)}
           className={`group relative w-full flex items-center gap-3 pl-7 pr-3 py-1.5 text-[13px] transition-colors -ml-px border-l ${
             active
-              ? 'text-white border-indigo-500 font-medium'
+              ? 'text-white border-emerald-500 font-medium'
               : 'text-zinc-500 hover:text-zinc-200 border-zinc-800'
           }`}>
           <span className="flex-1 text-left truncate">{it.label}</span>
@@ -156,15 +156,15 @@ export function Sidebar({
         onClick={() => onNavigate(it.key)}
         className={`group relative w-full flex items-center gap-3 px-3 py-2 rounded-md text-[13px] font-medium transition-all duration-fast ease-out ${
           active
-            ? 'text-indigo-300 bg-indigo-600/10 ring-1 ring-inset ring-indigo-500/25'
+            ? 'text-emerald-200 bg-emerald-600/10 ring-1 ring-inset ring-emerald-500/25'
             : 'text-zinc-400 hover:text-white hover:bg-white/[0.04]'
         }`}>
-        <span className={`shrink-0 ${active ? 'text-indigo-400' : 'text-zinc-500 group-hover:text-zinc-300'}`}>
+        <span className={`shrink-0 ${active ? 'text-emerald-300' : 'text-zinc-500 group-hover:text-zinc-300'}`}>
           {it.icon}
         </span>
         <span className="flex-1 text-left truncate">{it.label}</span>
         {it.badge &&
-        <span className="text-[9px] font-bold uppercase tracking-[0.1em] px-1.5 py-0.5 rounded bg-indigo-500/15 text-indigo-300 ring-1 ring-inset ring-indigo-400/20">
+        <span className="text-[9px] font-bold uppercase tracking-[0.1em] px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-200 ring-1 ring-inset ring-emerald-300/20">
             {it.badge}
           </span>
         }
@@ -177,10 +177,10 @@ export function Sidebar({
 
   const contractsActive = CONTRACT_KEYS.includes(current);
   return (
-    <aside className="hidden md:flex w-64 shrink-0 flex-col h-screen sticky top-0 z-30 bg-[#0A0A0A] border-r border-zinc-800/80 text-zinc-200">
+    <aside className="hidden md:flex w-64 shrink-0 flex-col h-screen sticky top-0 z-30 bg-[#0a1410] border-r border-zinc-800/80 text-zinc-200">
       {/* Brand */}
       <div className="px-5 py-4 border-b border-zinc-800/60 flex items-center gap-3">
-        <div className="relative h-8 w-8 rounded-md bg-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-600/30">
+        <div className="relative h-8 w-8 rounded-md bg-emerald-600 flex items-center justify-center shadow-lg shadow-emerald-600/30">
           <span className="text-white text-xs font-bold tracking-tight">VC</span>
         </div>
         <div className="flex flex-col leading-tight min-w-0">
@@ -208,10 +208,10 @@ export function Sidebar({
               onClick={() => setContractsOpen((o) => !o)}
               className={`group w-full flex items-center gap-3 px-3 py-2 rounded-md text-[13px] font-medium transition-colors ${
                 contractsActive
-                  ? 'text-indigo-300 bg-indigo-600/10 ring-1 ring-inset ring-indigo-500/25'
+                  ? 'text-emerald-200 bg-emerald-600/10 ring-1 ring-inset ring-emerald-500/25'
                   : 'text-zinc-400 hover:text-white hover:bg-white/[0.04]'
               }`}>
-                <span className={`shrink-0 ${contractsActive ? 'text-indigo-400' : 'text-zinc-500 group-hover:text-zinc-300'}`}>
+                <span className={`shrink-0 ${contractsActive ? 'text-emerald-300' : 'text-zinc-500 group-hover:text-zinc-300'}`}>
                   <FileTextIcon className="h-[15px] w-[15px]" />
                 </span>
                 <span className="flex-1 text-left">Hợp đồng</span>
