@@ -1829,11 +1829,17 @@ export function CreateContractPage({
                   />
                 </div>
               </div>
+            </div>
+          </FormSection>
 
-              {/* 1d. Thời hạn hợp đồng */}
+          <FormSection
+            title="3. Thời hạn & người thực hiện"
+            description="Hiệu lực hợp đồng và người chịu trách nhiệm"
+          >
+            <div className="space-y-6">
               <div>
                 <h4 className="text-xs font-semibold uppercase tracking-[0.1em] text-zinc-500 mb-3">
-                  1d. Thời hạn hợp đồng
+                  Thời hạn hợp đồng
                 </h4>
                 <div className="space-y-4">
                   <FieldGrid cols={2}>
