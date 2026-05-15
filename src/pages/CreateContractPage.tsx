@@ -1489,12 +1489,15 @@ export function CreateContractPage({
                   </FieldGrid>
                 </div>
               </div>
+            </div>
+          </FormSection>
 
-              {/* 1b. Thông tin đối tác */}
+          <FormSection
+            title="2. Đối tác & Địa chỉ"
+            description="Pháp nhân, người đại diện và địa chỉ pháp lý / sử dụng âm nhạc"
+          >
+            <div className="space-y-6">
               <div>
-                <h4 className="text-xs font-semibold uppercase tracking-[0.1em] text-zinc-500 mb-3">
-                  1b. Thông tin đối tác
-                </h4>
                 <div className="space-y-4">
                   <FieldGrid>
                     <Input
