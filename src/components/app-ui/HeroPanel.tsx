@@ -17,23 +17,23 @@ export function HeroPanel({
 
 }: {eyebrow?: string;title: React.ReactNode;description?: React.ReactNode;actions?: React.ReactNode;stats?: {label: string;value: string;}[];}) {
   return (
-    <div className="relative overflow-hidden rounded-2xl ring-1 ring-white/10 shadow-xl shadow-indigo-950/25">
-      {/* Base gradient */}
+    <div className="relative overflow-hidden rounded-2xl ring-1 ring-[#c9a84c]/20 shadow-xl shadow-emerald-950/40">
+      {/* Base gradient — emerald prestige */}
       <div
         aria-hidden
         className="absolute inset-0"
         style={{
           background:
-          'linear-gradient(135deg, #0a0a1a 0%, #15113a 35%, #2a1a6e 70%, #4c1d95 100%)'
+          'linear-gradient(135deg, #04130d 0%, #062a1f 35%, #0a4a36 70%, #0d6e52 100%)'
         }} />
       
-      {/* Radial glows */}
+      {/* Radial glows — emerald + champagne gold */}
       <div
         aria-hidden
         className="absolute -top-24 -left-24 h-[420px] w-[420px] rounded-full"
         style={{
           background:
-          'radial-gradient(circle, rgba(99,102,241,0.45) 0%, rgba(99,102,241,0) 60%)',
+          'radial-gradient(circle, rgba(16,185,129,0.40) 0%, rgba(16,185,129,0) 60%)',
           filter: 'blur(20px)'
         }} />
       
@@ -42,7 +42,7 @@ export function HeroPanel({
         className="absolute -bottom-32 -right-20 h-[460px] w-[460px] rounded-full"
         style={{
           background:
-          'radial-gradient(circle, rgba(168,85,247,0.4) 0%, rgba(168,85,247,0) 60%)',
+          'radial-gradient(circle, rgba(201,168,76,0.35) 0%, rgba(201,168,76,0) 60%)',
           filter: 'blur(24px)'
         }} />
       
@@ -110,7 +110,7 @@ export function HeroPanel({
       <div className="relative px-6 sm:px-8 py-7 sm:py-9 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
         <div className="max-w-2xl">
           {eyebrow &&
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold uppercase tracking-[0.1em] text-indigo-200 bg-white/[0.06] ring-1 ring-inset ring-white/10 backdrop-blur-sm">
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold uppercase tracking-[0.1em] text-[#e8d28f] bg-[#c9a84c]/10 ring-1 ring-inset ring-[#c9a84c]/30 backdrop-blur-sm">
               <SparklesIcon className="h-3 w-3" />
               {eyebrow}
             </div>
@@ -119,7 +119,7 @@ export function HeroPanel({
             {title}
           </h2>
           {description &&
-          <p className="mt-2.5 text-sm sm:text-[15px] text-indigo-100/75 leading-relaxed">
+          <p className="mt-2.5 text-sm sm:text-[15px] text-emerald-50/75 leading-relaxed">
               {description}
             </p>
           }
@@ -128,9 +128,9 @@ export function HeroPanel({
               {stats.map((s) =>
             <div
               key={s.label}
-              className="flex flex-col border-l border-white/15 pl-3">
+              className="flex flex-col border-l border-[#c9a84c]/30 pl-3">
               
-                  <span className="text-[10px] font-medium uppercase tracking-[0.12em] text-indigo-200/70">
+                  <span className="text-[10px] font-medium uppercase tracking-[0.12em] text-[#c9a84c]/85">
                     {s.label}
                   </span>
                   <span className="text-lg font-semibold text-white tabular-nums">

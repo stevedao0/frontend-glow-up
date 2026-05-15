@@ -17,7 +17,7 @@ import {
 'lucide-react';
 import { RouteKey } from '../../data/routes';
 import { useAuth } from '../../lib/auth';
-import vcpmcLogo from '../../assets/vcpmc-logo.svg';
+import vcpmcLogo from '../../assets/vcpmc-logo-animated.webp';
 type Item = {
   key: RouteKey;
   label: string;
@@ -193,8 +193,8 @@ export function Sidebar({
 
       {/* Brand — official VCPMC logo on emerald tile + champagne gold ring */}
       <div className="relative px-5 py-4 border-b border-zinc-800/60 flex items-center gap-3">
-        <div className="relative h-10 w-10 rounded-md bg-gradient-to-br from-emerald-600 to-emerald-800 flex items-center justify-center shadow-lg shadow-emerald-950/40 ring-1 ring-inset ring-[#c9a84c]/40">
-          <img src={vcpmcLogo} alt="VCPMC" className="h-6 w-auto" />
+        <div className="relative h-10 w-10 rounded-md bg-white flex items-center justify-center shadow-lg shadow-emerald-950/40 ring-1 ring-inset ring-[#c9a84c]/50 overflow-hidden">
+          <img src={vcpmcLogo} alt="VCPMC" className="h-full w-full object-cover" />
           <span className="absolute -bottom-0.5 -right-0.5 h-1.5 w-1.5 rounded-full bg-[#c9a84c] shadow-[0_0_6px_rgba(201,168,76,0.8)]" />
         </div>
         <div className="flex flex-col leading-tight min-w-0">
