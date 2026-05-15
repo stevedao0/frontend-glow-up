@@ -60,8 +60,7 @@ import {
   type DeleteContractCloneOnlyResult,
 } from '../lib/contractsClient';
 import { useAuth } from '../lib/auth';
-
-const TOKEN_KEY = 'vcpmc_new_app_access_token';
+import { TOKEN_KEY } from '../lib/authClient';
 
 function toContractRecord(item: ApiContractItem): ContractRecord {
   const contractYearFromNo = (() => {

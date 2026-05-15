@@ -27,8 +27,9 @@ export function AppShell({
           onWorkspaceChange={onWorkspaceChange}
           userEmail={userEmail} />
         {showDevBadge ? (
-          <div className="px-6 py-2 text-[12px] font-medium text-amber-900 bg-amber-100 border-y border-amber-200">
-            NEW APP DEV -- F:\APPs -- port 5199
+          <div className="px-6 py-1.5 text-[11px] font-medium text-amber-900 bg-amber-50 border-b border-amber-200/70 flex items-center gap-2">
+            <span className="h-1.5 w-1.5 rounded-full bg-amber-500 animate-pulse" />
+            Development build
           </div>
         ) : null}
         
