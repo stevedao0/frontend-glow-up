@@ -2035,7 +2035,7 @@ export function CreateContractPage({
           {/* Phase BACKGROUND-TEMPLATE-REFACTOR: Template selection */}
           {/* =================================================================== */}
           <FormSection
-            title="2b. Mẫu xuất hợp đồng"
+            title="6. Mẫu xuất hợp đồng"
             description="Chọn mẫu Word để xuất hợp đồng"
           >
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
