@@ -32,13 +32,13 @@
   --border-default: rgba(15, 26, 22, 0.10);
   --border-strong: rgba(15, 26, 22, 0.18);
 
-  /* Brand accents — Emerald Prestige + Champagne Gold */
-  --accent-primary: #0d6e52;          /* deep emerald - nghiệp vụ */
-  --accent-primary-soft: #e6f0ec;
-  --accent-secondary: #b8923a;        /* champagne gold - khách hàng */
+  /* Brand accents — Everose Rose-Gold + Ivory Cream */
+  --accent-primary: #9c6d3e;          /* deep rose-gold - nghiệp vụ */
+  --accent-primary-soft: #fcf2e3;
+  --accent-secondary: #c89968;        /* mid rose-gold - khách hàng */
   --accent-secondary-soft: #faf3e2;
-  --accent-neutral: #3d4a44;          /* forest slate - admin */
-  --accent-neutral-soft: #ecefed;
+  --accent-neutral: #5a4533;          /* warm walnut - admin */
+  --accent-neutral-soft: #f1ede4;
 
   /* Semantic — refined, not neon */
   --success: #0d8a5f;
@@ -86,7 +86,7 @@ body {
 }
 /* Subtle dot grid for hero overlay */
 .dot-grid {
-  background-image: radial-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1px);
+  background-image: radial-gradient(rgba(156, 109, 62, 0.10) 1px, transparent 1px);
   background-size: 22px 22px;
 }
 /* Premium thin scrollbar in sidebar */
@@ -94,11 +94,11 @@ body {
   width: 6px;
 }
 .scrollbar-thin::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(156, 109, 62, 0.18);
   border-radius: 4px;
 }
 .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.14);
+  background: rgba(156, 109, 62, 0.32);
 }
 /* Reusable */
 @keyframes shimmer {
