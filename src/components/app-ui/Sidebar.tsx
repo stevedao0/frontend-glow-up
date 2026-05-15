@@ -17,7 +17,7 @@ import {
 'lucide-react';
 import { RouteKey } from '../../data/routes';
 import { useAuth } from '../../lib/auth';
-import vcpmcLogo from '../../assets/vcpmc-logo.svg';
+import vcpmcLogo from '../../assets/vcpmc-logo-animated.webp';
 type Item = {
   key: RouteKey;
   label: string;
