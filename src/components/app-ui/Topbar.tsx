@@ -45,7 +45,7 @@ export function Topbar({
   allowedDomains[0] ??
   DOMAINS[0];
   const isAmber = activeWs.accent === 'amber';
-  const wsDot = isAmber ? 'bg-amber-400' : 'bg-indigo-400';
+  const wsDot = isAmber ? 'bg-amber-400' : 'bg-[#c89968]';
   const wsGlow = isAmber ?
   'shadow-[0_0_8px_rgba(251,191,36,0.55)]' :
   'shadow-[0_0_8px_rgba(129,140,248,0.6)]';
@@ -88,7 +88,7 @@ export function Topbar({
               </p>
               {allowedDomains.map((w) => {
               const dot =
-              w.accent === 'amber' ? 'bg-amber-400' : 'bg-indigo-400';
+              w.accent === 'amber' ? 'bg-amber-400' : 'bg-[#c89968]';
               const isActive = w.id === workspace;
               return (
                 <button

@@ -8,14 +8,14 @@ const sizes: Record<Size, string> = {
 };
 const variants: Record<Variant, string> = {
   primary:
-    'bg-gradient-to-b from-emerald-700 to-emerald-800 text-white hover:from-emerald-600 hover:to-emerald-700 active:from-emerald-800 active:to-emerald-900 ring-1 ring-inset ring-[#c89968]/40 shadow-md shadow-emerald-950/30',
+    'bg-gradient-to-b from-[#c89968] to-[#9c6d3e] text-white hover:from-[#d4a878] hover:to-[#a87a4a] active:from-[#b88858] active:to-[#8a5d33] ring-1 ring-inset ring-[#f0d4a8]/50 shadow-md shadow-[#9c6d3e]/30',
   secondary:
-    'bg-surface text-fg-secondary ring-1 ring-zinc-200 hover:bg-surface-subtle hover:ring-zinc-300 shadow-xs',
-  ghost: 'text-fg-secondary hover:bg-surface-muted hover:text-fg-primary',
+    'bg-white text-[#5a4533] ring-1 ring-[#e3d2b3] hover:bg-[#fcfaf5] hover:ring-[#c89968]/60 shadow-xs',
+  ghost: 'text-[#5a4533] hover:bg-[#c89968]/10 hover:text-[#2d1f14]',
   glass:
-    'bg-white/10 text-white ring-1 ring-inset ring-white/15 hover:bg-white/15 backdrop-blur-sm',
+    'bg-white/40 text-[#2d1f14] ring-1 ring-inset ring-[#c89968]/30 hover:bg-white/60 backdrop-blur-sm',
   glassPrimary:
-    'bg-gradient-to-b from-[#e8c4a0] via-[#c89968] to-[#9c6d3e] text-emerald-950 hover:from-[#f0d0b0] hover:via-[#d4a878] hover:to-[#a87a4a] active:from-[#c89968] active:to-[#8a5d33] shadow-lg shadow-amber-950/40 ring-1 ring-inset ring-[#f0d4a8]/60 font-semibold',
+    'bg-gradient-to-b from-[#e8c4a0] via-[#c89968] to-[#9c6d3e] text-white hover:from-[#f0d0b0] hover:via-[#d4a878] hover:to-[#a87a4a] active:from-[#c89968] active:to-[#8a5d33] shadow-lg shadow-[#9c6d3e]/40 ring-1 ring-inset ring-[#f0d4a8]/60 font-semibold',
   danger:
     'bg-danger text-white hover:brightness-110 active:brightness-95 shadow-sm',
 };
