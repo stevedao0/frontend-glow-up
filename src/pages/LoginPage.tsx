@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ShieldIcon, Loader2Icon, ArrowRightIcon, LockIcon, SparklesIcon } from 'lucide-react';
+import { ShieldIcon, Loader2Icon, ArrowRightIcon, LockIcon, MusicIcon, Music2Icon, Music4Icon } from 'lucide-react';
 import vcpmcLogo from '../assets/vcpmc-logo-animated.webp';
 import { useAuth } from '../lib/auth';
 import { Modal } from '../components/app-ui/Modal';
@@ -71,20 +71,63 @@ export function LoginPage() {
 
       <div className="relative z-10 w-full max-w-md px-6">
         <div className="text-center mb-8">
-          <div className="relative inline-flex h-16 w-16 rounded-2xl bg-white items-center justify-center shadow-lg shadow-[#9c6d3e]/25 mb-6 ring-1 ring-inset ring-[#c89968]/50 overflow-hidden">
+          <div className="relative inline-flex h-16 w-16 rounded-2xl bg-white items-center justify-center shadow-lg shadow-[#9c6d3e]/25 mb-5 ring-1 ring-inset ring-[#c89968]/50 overflow-hidden">
             <img src={vcpmcLogo} alt="VCPMC" className="h-full w-full object-cover" />
             <span className="absolute -bottom-0.5 -right-0.5 h-2 w-2 rounded-full bg-[#c89968] shadow-[0_0_8px_rgba(200,153,104,0.9)]" />
           </div>
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#c89968]/10 border border-[#c89968]/25 mb-4">
-            <SparklesIcon className="h-3 w-3 text-[#9c6d3e]" />
+
+          {/* Music motif — treble clef + scattered notes & sparkles */}
+          <div className="relative mx-auto h-14 w-full max-w-[220px] mb-3">
+            <svg viewBox="0 0 220 56" fill="none" className="w-full h-full" aria-hidden>
+              {/* Staff lines */}
+              <g stroke="#c89968" strokeOpacity="0.35" strokeWidth="0.6">
+                <line x1="0" y1="18" x2="220" y2="18" />
+                <line x1="0" y1="26" x2="220" y2="26" />
+                <line x1="0" y1="34" x2="220" y2="34" />
+                <line x1="0" y1="42" x2="220" y2="42" />
+              </g>
+              {/* Treble clef (centered) */}
+              <g transform="translate(102, 8)" stroke="#9c6d3e" strokeWidth="1.6" fill="none" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M8 0 C 14 6, 14 16, 8 22 C 2 28, 2 38, 8 42 C 14 44, 18 40, 16 34 C 14 28, 6 28, 6 36 C 6 42, 12 46, 16 44" />
+                <line x1="9" y1="2" x2="9" y2="46" />
+                <circle cx="9" cy="48" r="1.6" fill="#9c6d3e" />
+              </g>
+              {/* Notes left */}
+              <g fill="#c89968">
+                <circle cx="40" cy="34" r="3.2" />
+                <rect x="42.6" y="20" width="0.9" height="14" />
+                <circle cx="64" cy="30" r="3.2" />
+                <rect x="66.6" y="14" width="0.9" height="16" />
+              </g>
+              {/* Notes right */}
+              <g fill="#c89968">
+                <circle cx="160" cy="34" r="3.2" />
+                <rect x="162.6" y="20" width="0.9" height="14" />
+                <circle cx="184" cy="30" r="3.2" />
+                <rect x="186.6" y="14" width="0.9" height="16" />
+                <path d="M43.5 20 Q 56 14, 67.5 14" stroke="#c89968" strokeWidth="1" fill="none" />
+                <path d="M163.5 20 Q 176 14, 187.5 14" stroke="#c89968" strokeWidth="1" fill="none" />
+              </g>
+              {/* Sparkles */}
+              <g fill="#e8c4a0">
+                <circle cx="20" cy="10" r="0.9" />
+                <circle cx="30" cy="48" r="0.7" />
+                <circle cx="80" cy="6" r="0.6" />
+                <circle cx="140" cy="50" r="0.8" />
+                <circle cx="200" cy="8" r="0.9" />
+                <circle cx="210" cy="40" r="0.6" />
+                <circle cx="6" cy="30" r="0.7" />
+              </g>
+            </svg>
+          </div>
+
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#c89968]/10 border border-[#c89968]/25">
+            <MusicIcon className="h-3 w-3 text-[#9c6d3e]" />
             <span className="text-[10px] font-bold tracking-[0.2em] text-[#9c6d3e] uppercase">
-              VCPMC · Internal
+              Quyền tác giả Âm nhạc Việt Nam
             </span>
           </div>
-          <h1 className="text-[24px] font-bold text-[#2d2926] tracking-tight mb-1.5">
-            VCPMC Contract Suite
-          </h1>
-          <p className="text-[#6b6661] text-sm">
+          <p className="mt-3 text-[#6b6661] text-sm">
             Hệ thống quản lý hợp đồng và giấy chứng nhận
           </p>
         </div>
