@@ -1928,10 +1928,10 @@ export function CreateContractPage({
                 </div>
               </div>
 
-              {/* 1e. Người thực hiện */}
+              {/* Người thực hiện */}
               <div>
                 <h4 className="text-xs font-semibold uppercase tracking-[0.1em] text-zinc-500 mb-3">
-                  1e. Người thực hiện
+                  Người thực hiện
                 </h4>
                 <FieldGrid>
                   <Select
