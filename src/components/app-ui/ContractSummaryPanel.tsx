@@ -49,7 +49,7 @@ export function ContractSummaryPanel({
           aria-hidden
           className="pointer-events-none absolute inset-0 bg-gradient-to-b from-white via-white to-zinc-50/40" />
         
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-transparent via-violet-500/50 to-transparent" />
+        <div className="pointer-events-none absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-transparent via-amber-600/50 to-transparent" />
 
         <div className="relative">
           <header className="px-4 py-3 border-b border-zinc-100/80">

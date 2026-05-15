@@ -161,7 +161,7 @@ export function ExportReportDialog({
               <DownloadIcon className="h-4 w-4" />
             </span>
             <div className="min-w-0 flex-1">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-violet-200/90">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-amber-200/90">
                 Xuất báo cáo
               </p>
               <h2 className="text-base font-semibold tracking-tight">
@@ -194,10 +194,10 @@ export function ExportReportDialog({
                   key={opt.value}
                   type="button"
                   onClick={() => setReportType(opt.value)}
-                  className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-left transition-all ${reportType === opt.value ? 'bg-indigo-50 text-indigo-900 ring-1 ring-inset ring-indigo-600/20' : 'text-zinc-700 hover:bg-zinc-50'}`}>
+                  className={`w-full flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-left transition-all ${reportType === opt.value ? 'bg-amber-50 text-amber-950 ring-1 ring-inset ring-amber-700/20' : 'text-zinc-700 hover:bg-zinc-50'}`}>
                   
                     <span
-                    className={`h-3.5 w-3.5 rounded-full inline-flex items-center justify-center shrink-0 ${reportType === opt.value ? 'bg-indigo-600 text-white' : 'ring-1 ring-zinc-300'}`}>
+                    className={`h-3.5 w-3.5 rounded-full inline-flex items-center justify-center shrink-0 ${reportType === opt.value ? 'bg-amber-700 text-white' : 'ring-1 ring-zinc-300'}`}>
                     
                       {reportType === opt.value &&
                     <CheckIcon className="h-2.5 w-2.5" strokeWidth={3} />
@@ -220,10 +220,10 @@ export function ExportReportDialog({
                   key={f.value}
                   type="button"
                   onClick={() => setFormat(f.value)}
-                  className={`flex items-start gap-3 px-3 py-2.5 rounded-lg text-left transition-all ring-1 ${format === f.value ? 'bg-indigo-50/60 ring-indigo-600/20' : 'bg-white ring-zinc-200 hover:ring-zinc-300'}`}>
+                  className={`flex items-start gap-3 px-3 py-2.5 rounded-lg text-left transition-all ring-1 ${format === f.value ? 'bg-amber-50/60 ring-amber-700/20' : 'bg-white ring-zinc-200 hover:ring-zinc-300'}`}>
                   
                     <span
-                    className={`h-9 w-9 rounded-lg inline-flex items-center justify-center shrink-0 ${format === f.value ? 'bg-indigo-600 text-white' : 'bg-zinc-100 text-zinc-600'}`}>
+                    className={`h-9 w-9 rounded-lg inline-flex items-center justify-center shrink-0 ${format === f.value ? 'bg-amber-700 text-white' : 'bg-zinc-100 text-zinc-600'}`}>
                     
                       {f.icon}
                     </span>
@@ -363,10 +363,10 @@ export function ExportReportDialog({
                     <h5 className="text-[11px] font-bold uppercase tracking-[0.1em] text-zinc-700 mb-2">
                       II. Biểu đồ doanh thu
                     </h5>
-                    <div className="h-20 rounded-md bg-gradient-to-r from-zinc-50 via-indigo-50/40 to-violet-50/30 ring-1 ring-zinc-100 flex items-end gap-2 p-2">
+                    <div className="h-20 rounded-md bg-gradient-to-r from-zinc-50 via-amber-50/40 to-amber-50/30 ring-1 ring-zinc-100 flex items-end gap-2 p-2">
                       <span className="flex-1 bg-zinc-300 rounded-sm h-[20%]" />
                       <span className="flex-1 bg-zinc-400 rounded-sm h-[80%]" />
-                      <span className="flex-1 bg-gradient-to-t from-indigo-500 to-violet-500 rounded-sm h-[40%]" />
+                      <span className="flex-1 bg-gradient-to-t from-amber-600 to-amber-600 rounded-sm h-[40%]" />
                     </div>
                     <div className="flex justify-between text-[10px] text-zinc-500 mt-1 px-1">
                       <span>2024</span>

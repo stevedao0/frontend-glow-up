@@ -635,7 +635,7 @@ export function ReportsPage({
           <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="bg-gradient-to-b from-indigo-50/30 via-zinc-50 to-zinc-50/30 border-b border-zinc-200">
+                <tr className="bg-gradient-to-b from-amber-50/30 via-zinc-50 to-zinc-50/30 border-b border-zinc-200">
                   <Th>Số hợp đồng</Th>
                   <Th>Ngày ký</Th>
                   <Th>Đơn vị / Bảng hiệu</Th>
@@ -649,10 +649,10 @@ export function ReportsPage({
                 {signedRows.map((r) => (
                   <tr
                     key={r.id}
-                    className="border-b border-zinc-100 last:border-0 hover:bg-indigo-50/30 transition-colors cursor-pointer"
+                    className="border-b border-zinc-100 last:border-0 hover:bg-amber-50/30 transition-colors cursor-pointer"
                     onClick={() => onNavigate('contracts.list')}>
                     <td className="px-4 py-3.5 align-top whitespace-nowrap">
-                      <span className="font-mono text-[13px] font-semibold text-indigo-700">
+                      <span className="font-mono text-[13px] font-semibold text-amber-800">
                         {r.contract_no}
                       </span>
                     </td>
@@ -740,12 +740,12 @@ export function ReportsPage({
                 key={k}
                 className={`inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-[11px] font-medium ring-1 ring-inset ${
                   count > 0
-                    ? 'bg-indigo-50 text-indigo-700 ring-indigo-600/15'
+                    ? 'bg-amber-50 text-amber-800 ring-amber-700/15'
                     : 'bg-zinc-100 text-zinc-500 ring-zinc-900/5'
                 }`}>
                 <span
                   className={`h-1.5 w-1.5 rounded-full ${
-                    count > 0 ? 'bg-indigo-500' : 'bg-zinc-300'
+                    count > 0 ? 'bg-amber-600' : 'bg-zinc-300'
                   }`}
                 />
                 {PENDING_CATEGORY_LABEL[k]}
@@ -798,7 +798,7 @@ export function ReportsPage({
                       </td>
                       <td className="px-4 py-3.5 align-top text-[13px]">
                         <span className="inline-flex items-center gap-1.5">
-                          <span className="h-5 w-5 rounded-full bg-gradient-to-br from-indigo-500 to-violet-500 text-white text-[10px] font-bold inline-flex items-center justify-center shrink-0">
+                          <span className="h-5 w-5 rounded-full bg-gradient-to-br from-amber-600 to-amber-600 text-white text-[10px] font-bold inline-flex items-center justify-center shrink-0">
                             {p.assignee && p.assignee !== '—' ? p.assignee.slice(0, 1).toUpperCase() : '?'}
                           </span>
                           <span className="text-zinc-700">{p.assignee}</span>
@@ -910,7 +910,7 @@ export function ReportsPage({
                       key={r.id}
                       className="border-b border-zinc-100 last:border-0 hover:bg-rose-50/20 transition-colors">
                       <td className="px-4 py-3.5 align-top whitespace-nowrap">
-                        <span className="font-mono text-[13px] font-semibold text-indigo-700">
+                        <span className="font-mono text-[13px] font-semibold text-amber-800">
                           {r.contract_no}
                         </span>
                       </td>
@@ -1178,7 +1178,7 @@ export function ReportsPage({
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="bg-gradient-to-b from-violet-50/30 via-zinc-50 to-zinc-50/30 border-b border-zinc-200">
+              <tr className="bg-gradient-to-b from-amber-50/30 via-zinc-50 to-zinc-50/30 border-b border-zinc-200">
                 <Th>Số GCN</Th>
                 <Th>Số hợp đồng</Th>
                 <Th>Đơn vị</Th>
@@ -1191,11 +1191,11 @@ export function ReportsPage({
               {certRows.map((c) => (
                 <tr
                   key={c.id}
-                  className="border-b border-zinc-100 last:border-0 hover:bg-violet-50/20 transition-colors cursor-pointer"
+                  className="border-b border-zinc-100 last:border-0 hover:bg-amber-50/20 transition-colors cursor-pointer"
                   onClick={() => onNavigate('contracts.gcn')}>
                   <td className="px-4 py-3.5 align-top whitespace-nowrap">
                     {c.certificate_no ? (
-                      <span className="font-mono text-[13px] font-semibold text-violet-700">
+                      <span className="font-mono text-[13px] font-semibold text-amber-800">
                         {c.certificate_no}
                       </span>
                     ) : (
@@ -1205,7 +1205,7 @@ export function ReportsPage({
                     )}
                   </td>
                   <td className="px-4 py-3.5 align-top whitespace-nowrap">
-                    <span className="font-mono text-[13px] font-medium text-indigo-700">
+                    <span className="font-mono text-[13px] font-medium text-amber-800">
                       {c.contract_no || '—'}
                     </span>
                   </td>
@@ -1305,12 +1305,12 @@ function SummaryStat({
     tone === 'amber'
       ? 'bg-amber-500'
       : tone === 'cyan'
-        ? 'bg-cyan-500'
+        ? 'bg-amber-600'
         : tone === 'emerald'
           ? 'bg-emerald-500'
           : tone === 'rose'
             ? 'bg-rose-500'
-            : 'bg-indigo-500';
+            : 'bg-amber-600';
   return (
     <div>
       <span className="inline-flex items-center gap-1.5 text-[10px] font-medium uppercase tracking-[0.1em] text-zinc-500">
@@ -1345,7 +1345,7 @@ function YearStat({
 }) {
   const dotColor =
     tone === 'indigo'
-      ? 'bg-indigo-500'
+      ? 'bg-amber-600'
       : tone === 'emerald'
         ? 'bg-emerald-500'
         : 'bg-zinc-400';

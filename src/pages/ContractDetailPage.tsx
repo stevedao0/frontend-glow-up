@@ -452,14 +452,14 @@ export function ContractDetailPage({
             <ContentCard>
               <div className="flex items-center justify-between gap-2 mb-3">
                 <h3 className="text-sm font-semibold text-zinc-900 flex items-center gap-2">
-                  <AwardIcon className="h-4 w-4 text-indigo-600" />
+                  <AwardIcon className="h-4 w-4 text-amber-700" />
                   In Giấy Chứng Nhận
                 </h3>
                 <button
                   type="button"
                   onClick={() => loadGcnContext(detail.id)}
                   disabled={gcnLoading}
-                  className="text-xs text-indigo-600 hover:text-indigo-800 disabled:opacity-40 flex items-center gap-1 transition-colors">
+                  className="text-xs text-amber-700 hover:text-amber-900 disabled:opacity-40 flex items-center gap-1 transition-colors">
                   {gcnLoading ? (
                     <LoaderIcon className="h-3 w-3 animate-spin" />
                   ) : (
@@ -608,7 +608,7 @@ export function ContractDetailPage({
 
             {deleteModal.loading && (
               <div className="flex items-center gap-3 py-8 justify-center">
-                <LoaderIcon className="h-5 w-5 animate-spin text-indigo-600" />
+                <LoaderIcon className="h-5 w-5 animate-spin text-amber-700" />
                 <span className="text-sm text-zinc-600">Đang xử lý...</span>
               </div>
             )}

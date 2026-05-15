@@ -101,13 +101,13 @@ export function QuickViewPanel({
 
           <div className="relative px-5 py-5 flex items-start gap-3">
             <div className="min-w-0 flex-1">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-indigo-200/90">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-amber-200/90">
                 Hợp đồng
               </p>
               <h2 className="mt-1.5 font-mono text-lg sm:text-xl font-semibold text-white tracking-tight break-all leading-tight">
                 {record.contract_no}
               </h2>
-              <p className="mt-1.5 text-[13px] text-indigo-100/85 line-clamp-1">
+              <p className="mt-1.5 text-[13px] text-amber-100/85 line-clamp-1">
                 {record.don_vi_ten}
               </p>
               <div className="mt-3 flex flex-wrap items-center gap-1.5">
@@ -130,7 +130,7 @@ export function QuickViewPanel({
                   </span>
                 }
                 <span
-                  className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-medium ring-1 ring-inset ${renewalKey === 'NEW' ? 'bg-violet-400/15 text-violet-200 ring-violet-400/30' : renewalKey === 'PENDING_RENEWAL' ? 'bg-orange-400/15 text-orange-200 ring-orange-400/30' : renewalKey === 'RENEWED' ? 'bg-emerald-400/15 text-emerald-200 ring-emerald-400/30' : 'bg-white/10 text-zinc-300 ring-white/15'}`}>
+                  className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-medium ring-1 ring-inset ${renewalKey === 'NEW' ? 'bg-amber-500/15 text-amber-200 ring-amber-500/30' : renewalKey === 'PENDING_RENEWAL' ? 'bg-orange-400/15 text-orange-200 ring-orange-400/30' : renewalKey === 'RENEWED' ? 'bg-emerald-400/15 text-emerald-200 ring-emerald-400/30' : 'bg-white/10 text-zinc-300 ring-white/15'}`}>
                   
                   {RENEWAL_LABEL[renewalKey]}
                 </span>
@@ -317,7 +317,7 @@ function Chip({
 }: {children: React.ReactNode;primary?: boolean;}) {
   return (
     <span
-      className={`inline-flex items-center px-2 py-1 rounded-md text-[11px] font-medium ring-1 ring-inset ${primary ? 'bg-indigo-50 text-indigo-700 ring-indigo-600/15' : 'bg-zinc-100 text-zinc-700 ring-zinc-900/5'}`}>
+      className={`inline-flex items-center px-2 py-1 rounded-md text-[11px] font-medium ring-1 ring-inset ${primary ? 'bg-amber-50 text-amber-800 ring-amber-700/15' : 'bg-zinc-100 text-zinc-700 ring-zinc-900/5'}`}>
       
       {children}
     </span>);
@@ -390,8 +390,8 @@ function Timeline({
 
 }: {items: {label: string;date: string;tone: 'indigo' | 'violet' | 'emerald' | 'amber' | 'rose';icon: React.ReactNode;}[];}) {
   const dotColors: Record<string, string> = {
-    indigo: 'bg-indigo-500 ring-indigo-200',
-    violet: 'bg-violet-500 ring-violet-200',
+    indigo: 'bg-amber-600 ring-amber-200',
+    violet: 'bg-amber-600 ring-amber-200',
     emerald: 'bg-emerald-500 ring-emerald-200',
     amber: 'bg-amber-500 ring-amber-200',
     rose: 'bg-rose-500 ring-rose-200'
@@ -400,7 +400,7 @@ function Timeline({
     <div className="relative">
       <div
         aria-hidden
-        className="absolute left-2 right-2 top-3 h-0.5 bg-gradient-to-r from-indigo-200 via-violet-200 to-emerald-200 rounded-full" />
+        className="absolute left-2 right-2 top-3 h-0.5 bg-gradient-to-r from-amber-200 via-amber-200 to-emerald-200 rounded-full" />
       
       <ol className="relative grid grid-cols-3 gap-2">
         {items.map((it) =>

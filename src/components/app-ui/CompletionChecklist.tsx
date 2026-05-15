@@ -14,13 +14,13 @@ export function CompletionChecklist({ items }: {items: CheckItem[];}) {
         <span className="text-[11px] font-semibold uppercase tracking-[0.12em] text-zinc-500">
           Hoàn thành
         </span>
-        <span className="text-xs font-semibold text-indigo-700 tabular-nums">
+        <span className="text-xs font-semibold text-amber-800 tabular-nums">
           {completedCount}/{totalCount}
         </span>
       </div>
       <div className="h-1.5 bg-zinc-100 rounded-full overflow-hidden">
         <div
-          className="h-full bg-gradient-to-r from-indigo-500 to-violet-500 transition-all duration-300"
+          className="h-full bg-gradient-to-r from-amber-600 to-amber-600 transition-all duration-300"
           style={{
             width: `${progress}%`
           }} />

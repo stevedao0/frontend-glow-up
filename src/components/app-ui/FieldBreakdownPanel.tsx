@@ -36,7 +36,7 @@ export function FieldBreakdownPanel({
               <div className="flex items-center justify-between gap-2 text-sm mb-1">
                 <span className="inline-flex items-center gap-2 min-w-0">
                   <span
-                    className={`h-1.5 w-1.5 rounded-full shrink-0 ${it.hasSample ? 'bg-indigo-500' : 'bg-zinc-300'}`} />
+                    className={`h-1.5 w-1.5 rounded-full shrink-0 ${it.hasSample ? 'bg-amber-600' : 'bg-zinc-300'}`} />
                   
                   <span
                     className={`truncate ${it.hasSample ? 'text-zinc-800 font-medium' : 'text-zinc-500'}`}
@@ -59,7 +59,7 @@ export function FieldBreakdownPanel({
               </div>
               <div className="h-1.5 rounded-full bg-zinc-100 overflow-hidden">
                 <div
-                  className={`h-full transition-all duration-500 ${it.hasSample ? 'bg-gradient-to-r from-indigo-400 to-violet-500' : 'bg-zinc-200'}`}
+                  className={`h-full transition-all duration-500 ${it.hasSample ? 'bg-gradient-to-r from-amber-500 to-amber-600' : 'bg-zinc-200'}`}
                   style={{
                     width: `${it.hasSample ? Math.max(pct, 4) : 0}%`
                   }} />

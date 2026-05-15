@@ -32,18 +32,18 @@ const toneClass: Record<
     text: 'text-amber-900'
   },
   indigo: {
-    bg: 'bg-gradient-to-br from-indigo-50/70 via-white to-indigo-50/30',
-    ring: 'ring-indigo-600/10',
-    iconBg: 'bg-indigo-100',
-    iconText: 'text-indigo-700',
-    text: 'text-indigo-900'
+    bg: 'bg-gradient-to-br from-amber-50/70 via-white to-amber-50/30',
+    ring: 'ring-amber-700/10',
+    iconBg: 'bg-amber-100',
+    iconText: 'text-amber-800',
+    text: 'text-amber-950'
   },
   violet: {
-    bg: 'bg-gradient-to-br from-violet-50/70 via-white to-violet-50/30',
-    ring: 'ring-violet-600/10',
-    iconBg: 'bg-violet-100',
-    iconText: 'text-violet-700',
-    text: 'text-violet-900'
+    bg: 'bg-gradient-to-br from-amber-50/70 via-white to-amber-50/30',
+    ring: 'ring-amber-700/10',
+    iconBg: 'bg-amber-100',
+    iconText: 'text-amber-800',
+    text: 'text-amber-950'
   },
   emerald: {
     bg: 'bg-gradient-to-br from-emerald-50/70 via-white to-emerald-50/30',

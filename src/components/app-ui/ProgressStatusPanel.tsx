@@ -11,8 +11,8 @@ const fillMap: Record<Tone, string> = {
   success: 'bg-gradient-to-r from-emerald-400 to-emerald-500',
   warning: 'bg-gradient-to-r from-amber-400 to-amber-500',
   danger: 'bg-gradient-to-r from-rose-400 to-rose-500',
-  info: 'bg-gradient-to-r from-sky-400 to-sky-500',
-  violet: 'bg-gradient-to-r from-violet-400 to-violet-500',
+  info: 'bg-gradient-to-r from-amber-500 to-amber-600',
+  violet: 'bg-gradient-to-r from-amber-500 to-amber-600',
   orange: 'bg-gradient-to-r from-orange-400 to-orange-500',
   neutral: 'bg-gradient-to-r from-zinc-400 to-zinc-500'
 };
@@ -20,8 +20,8 @@ const dotMap: Record<Tone, string> = {
   success: 'bg-emerald-500',
   warning: 'bg-amber-500',
   danger: 'bg-rose-500',
-  info: 'bg-sky-500',
-  violet: 'bg-violet-500',
+  info: 'bg-amber-600',
+  violet: 'bg-amber-600',
   orange: 'bg-orange-500',
   neutral: 'bg-zinc-400'
 };

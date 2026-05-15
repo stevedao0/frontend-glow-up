@@ -3,12 +3,12 @@ import { FileTextIcon } from 'lucide-react';
 import { formatNumber } from '../../lib/format';
 type StatTone = 'indigo' | 'emerald' | 'amber' | 'rose' | 'cyan' | 'violet';
 const dotMap: Record<StatTone, string> = {
-  indigo: 'bg-indigo-500',
+  indigo: 'bg-amber-600',
   emerald: 'bg-emerald-500',
   amber: 'bg-amber-500',
   rose: 'bg-rose-500',
-  cyan: 'bg-cyan-500',
-  violet: 'bg-violet-500'
+  cyan: 'bg-amber-600',
+  violet: 'bg-amber-600'
 };
 export function SummaryHero({
   label,
@@ -30,7 +30,7 @@ export function SummaryHero({
       {/* Light premium gradient base */}
       <div
         aria-hidden
-        className="absolute inset-0 bg-gradient-to-br from-white via-indigo-50/30 to-violet-50/40" />
+        className="absolute inset-0 bg-gradient-to-br from-white via-amber-50/30 to-amber-50/40" />
       
       {/* Soft radial glow */}
       <div
@@ -64,13 +64,13 @@ export function SummaryHero({
       {/* Top accent line */}
       <div
         aria-hidden
-        className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-transparent via-indigo-500/40 to-transparent" />
+        className="absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-transparent via-amber-600/40 to-transparent" />
       
 
       <div className="relative px-5 sm:px-6 py-5 flex flex-col lg:flex-row lg:items-center gap-5 lg:gap-8">
         {/* Title block */}
         <div className="flex items-start gap-3 lg:max-w-xs shrink-0">
-          <div className="relative h-10 w-10 rounded-xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center shadow-lg shadow-indigo-500/25">
+          <div className="relative h-10 w-10 rounded-xl bg-gradient-to-br from-amber-600 to-amber-700 flex items-center justify-center shadow-lg shadow-amber-600/25">
             <FileTextIcon className="h-5 w-5 text-white" />
             <span
               aria-hidden
@@ -78,7 +78,7 @@ export function SummaryHero({
             
           </div>
           <div className="min-w-0">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-indigo-700">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-amber-800">
               {label}
             </p>
             <h2 className="mt-0.5 text-[15px] font-semibold text-zinc-900 tracking-tight leading-snug">

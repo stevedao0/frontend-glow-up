@@ -490,7 +490,7 @@ export function CertificatePrintPage({
             onClick={() => setMode('contract')}
             className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${
               mode === 'contract'
-                ? 'border-indigo-600 text-indigo-600'
+                ? 'border-amber-700 text-amber-700'
                 : 'border-transparent text-zinc-500 hover:text-zinc-800'
             }`}>
             <span className="flex items-center gap-2">
@@ -503,7 +503,7 @@ export function CertificatePrintPage({
             onClick={() => setMode('free')}
             className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${
               mode === 'free'
-                ? 'border-indigo-600 text-indigo-600'
+                ? 'border-amber-700 text-amber-700'
                 : 'border-transparent text-zinc-500 hover:text-zinc-800'
             }`}>
             <span className="flex items-center gap-2">
@@ -609,7 +609,7 @@ function NumberStepper({
       <button
         type="button"
         onClick={() => onChange(value - 1)}
-        className="flex h-6 w-5 items-center justify-center rounded bg-zinc-100 text-xs font-bold text-zinc-500 hover:bg-indigo-100 hover:text-indigo-600 transition-colors"
+        className="flex h-6 w-5 items-center justify-center rounded bg-zinc-100 text-xs font-bold text-zinc-500 hover:bg-amber-100 hover:text-amber-700 transition-colors"
       >
         −
       </button>
@@ -617,12 +617,12 @@ function NumberStepper({
         type="number"
         value={value}
         onChange={(e) => onChange(Number(e.target.value) || 0)}
-        className="w-10 rounded border border-zinc-200 bg-white text-center text-xs text-zinc-700 focus:border-indigo-400 focus:outline-none"
+        className="w-10 rounded border border-zinc-200 bg-white text-center text-xs text-zinc-700 focus:border-amber-500 focus:outline-none"
       />
       <button
         type="button"
         onClick={() => onChange(value + 1)}
-        className="flex h-6 w-5 items-center justify-center rounded bg-zinc-100 text-xs font-bold text-zinc-500 hover:bg-indigo-100 hover:text-indigo-600 transition-colors"
+        className="flex h-6 w-5 items-center justify-center rounded bg-zinc-100 text-xs font-bold text-zinc-500 hover:bg-amber-100 hover:text-amber-700 transition-colors"
       >
         +
       </button>
@@ -797,7 +797,7 @@ function ContractPrintPanel({
                   key={c.id}
                   type="button"
                   onClick={() => onSelect(c)}
-                  className="w-full text-left px-3 py-2.5 hover:bg-indigo-50 transition-colors">
+                  className="w-full text-left px-3 py-2.5 hover:bg-amber-50 transition-colors">
                   <p className="text-sm font-medium text-zinc-900">{c.contract_no || '(Không số)'}</p>
                   <p className="text-xs text-zinc-500">{c.organization_name} {c.business_sign_name ? `— ${c.business_sign_name}` : ''}</p>
                 </button>
@@ -956,8 +956,8 @@ function ContractPrintPanel({
                           }}
                           className={`rounded py-1 text-xs font-medium transition-colors ${
                             editable.scopeColAlign[col] === al
-                              ? 'bg-indigo-600 text-white'
-                              : 'bg-zinc-100 text-zinc-600 hover:bg-indigo-50'
+                              ? 'bg-amber-700 text-white'
+                              : 'bg-zinc-100 text-zinc-600 hover:bg-amber-50'
                           }`}
                         >
                           {al === 'left' ? '⬅' : al === 'center' ? '⬜' : '➡'}
@@ -1170,8 +1170,8 @@ function FreePrintPanel({
                         }}
                         className={`rounded py-1 text-xs font-medium transition-colors ${
                           freeForm.scopeColAlign[col] === al
-                            ? 'bg-indigo-600 text-white'
-                            : 'bg-zinc-100 text-zinc-600 hover:bg-indigo-50'
+                            ? 'bg-amber-700 text-white'
+                            : 'bg-zinc-100 text-zinc-600 hover:bg-amber-50'
                         }`}
                       >
                         {al === 'left' ? '⬅' : al === 'center' ? '⬜' : '➡'}
@@ -1277,10 +1277,10 @@ function QrUploadZone({
       <div
         className={`relative rounded-lg border-2 border-dashed p-6 text-center transition-colors ${
           dragging
-            ? 'border-indigo-400 bg-indigo-50'
+            ? 'border-amber-500 bg-amber-50'
             : preview
             ? 'border-emerald-300 bg-emerald-50/50'
-            : 'border-zinc-300 bg-zinc-50 hover:border-indigo-300 hover:bg-indigo-50/30'
+            : 'border-zinc-300 bg-zinc-50 hover:border-amber-300 hover:bg-amber-50/30'
         }`}
         onDragOver={(e) => { e.preventDefault(); setDragging(true); }}
         onDragLeave={() => setDragging(false)}
@@ -1305,7 +1305,7 @@ function QrUploadZone({
             </div>
             <p className="font-medium text-zinc-700">Kéo & thả ảnh QR vào đây</p>
             <p>hoặc</p>
-            <label className="cursor-pointer rounded-lg bg-indigo-600 px-4 py-1.5 text-sm font-medium text-white hover:bg-indigo-700">
+            <label className="cursor-pointer rounded-lg bg-amber-700 px-4 py-1.5 text-sm font-medium text-white hover:bg-amber-800">
               Chọn file
               <input type="file" accept="image/*" className="sr-only" onChange={handleFileInput} />
             </label>

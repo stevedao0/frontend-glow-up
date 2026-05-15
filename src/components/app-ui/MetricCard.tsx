@@ -13,13 +13,13 @@ export type MetricCardProps = {
   tone?: Tone;
 };
 const toneIconBg: Record<Tone, string> = {
-  indigo: 'bg-indigo-50 text-indigo-600 ring-indigo-100',
-  violet: 'bg-violet-50 text-violet-600 ring-violet-100',
+  indigo: 'bg-amber-50 text-amber-700 ring-amber-100',
+  violet: 'bg-amber-50 text-amber-700 ring-amber-100',
   emerald: 'bg-emerald-50 text-emerald-600 ring-emerald-100',
   amber: 'bg-amber-50 text-amber-600 ring-amber-100',
-  sky: 'bg-sky-50 text-sky-600 ring-sky-100',
+  sky: 'bg-amber-50 text-amber-700 ring-amber-100',
   rose: 'bg-rose-50 text-rose-600 ring-rose-100',
-  cyan: 'bg-cyan-50 text-cyan-600 ring-cyan-100'
+  cyan: 'bg-amber-50 text-amber-700 ring-amber-100'
 };
 const toneIconGlow: Record<Tone, string> = {
   indigo: 'group-hover:shadow-[0_0_18px_rgba(99,102,241,0.35)]',
@@ -31,13 +31,13 @@ const toneIconGlow: Record<Tone, string> = {
   cyan: 'group-hover:shadow-[0_0_18px_rgba(6,182,212,0.32)]'
 };
 const toneAccentFrom: Record<Tone, string> = {
-  indigo: 'from-indigo-400/0 via-indigo-500/60 to-indigo-400/0',
-  violet: 'from-violet-400/0 via-violet-500/60 to-violet-400/0',
+  indigo: 'from-amber-500/0 via-amber-600/60 to-amber-500/0',
+  violet: 'from-amber-500/0 via-amber-600/60 to-amber-500/0',
   emerald: 'from-emerald-400/0 via-emerald-500/60 to-emerald-400/0',
   amber: 'from-amber-400/0 via-amber-500/60 to-amber-400/0',
-  sky: 'from-sky-400/0 via-sky-500/60 to-sky-400/0',
+  sky: 'from-amber-500/0 via-amber-600/60 to-amber-500/0',
   rose: 'from-rose-400/0 via-rose-500/60 to-rose-400/0',
-  cyan: 'from-cyan-400/0 via-cyan-500/60 to-cyan-400/0'
+  cyan: 'from-amber-500/0 via-amber-600/60 to-amber-500/0'
 };
 export function MetricCard({
   label,

@@ -361,7 +361,7 @@ export function PermissionsPage() {
                 placeholder="Tìm người dùng..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full h-9 pl-9 pr-3 text-sm rounded-lg border border-zinc-200 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
+                className="w-full h-9 pl-9 pr-3 text-sm rounded-lg border border-zinc-200 bg-white focus:outline-none focus:ring-2 focus:ring-amber-600/20 focus:border-amber-600 transition-all"
               />
             </div>
             <div className="bg-white rounded-xl border border-zinc-200 overflow-hidden divide-y divide-zinc-100">
@@ -376,21 +376,21 @@ export function PermissionsPage() {
                       onClick={() => selectUser(u, users, matrix ?? undefined)}
                       className={`w-full text-left p-3 transition-all flex items-center gap-3 hover:bg-zinc-50 ${
                         isSelected
-                          ? "bg-indigo-50 border-l-2 border-indigo-500"
+                          ? "bg-amber-50 border-l-2 border-amber-600"
                           : "border-l-2 border-transparent"
                       }`}
                     >
                       <div
                         className={`h-8 w-8 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${
                           isSelected
-                            ? "bg-indigo-200 text-indigo-700"
+                            ? "bg-amber-200 text-amber-800"
                             : "bg-zinc-100 text-zinc-600"
                         }`}
                       >
                         {(u.display_name || u.username).charAt(0).toUpperCase()}
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className={`text-sm font-medium truncate ${isSelected ? "text-indigo-900" : "text-zinc-900"}`}>
+                        <p className={`text-sm font-medium truncate ${isSelected ? "text-amber-950" : "text-zinc-900"}`}>
                           {u.display_name || u.username}
                         </p>
                         <p className="text-xs text-zinc-500 truncate">{ROLE_LABELS[u.role] || u.role}</p>
@@ -424,7 +424,7 @@ export function PermissionsPage() {
                 {/* User Summary */}
                 <ContentCard padded accent>
                   <div className="flex items-center gap-4">
-                    <div className="h-12 w-12 rounded-full bg-indigo-100 text-indigo-700 text-xl font-bold flex items-center justify-center">
+                    <div className="h-12 w-12 rounded-full bg-amber-100 text-amber-800 text-xl font-bold flex items-center justify-center">
                       {(selectedUser.display_name || selectedUser.username).charAt(0).toUpperCase()}
                     </div>
                     <div className="flex-1">
@@ -453,7 +453,7 @@ export function PermissionsPage() {
                         onClick={() => handleRoleChange(r)}
                         className={`px-4 py-2.5 rounded-xl border text-sm font-medium transition-all ${
                           localRole === r
-                            ? "bg-indigo-600 text-white border-indigo-600 shadow-sm"
+                            ? "bg-amber-700 text-white border-amber-700 shadow-sm"
                             : "bg-white text-zinc-700 border-zinc-200 hover:border-zinc-300 hover:bg-zinc-50"
                         }`}
                       >
@@ -477,7 +477,7 @@ export function PermissionsPage() {
                             key={d.id}
                             className={`flex items-center gap-2.5 p-3 rounded-lg border cursor-pointer transition-all ${
                               checked
-                                ? "bg-indigo-50 border-indigo-200"
+                                ? "bg-amber-50 border-amber-200"
                                 : "bg-white border-zinc-200 hover:border-zinc-300"
                             }`}
                           >
@@ -529,7 +529,7 @@ export function PermissionsPage() {
                                   });
                                 }
                               }}
-                              className="text-xs font-medium text-indigo-600 hover:text-indigo-700"
+                              className="text-xs font-medium text-amber-700 hover:text-amber-800"
                             >
                               {allChecked ? "Bỏ chọn tất cả" : "Chọn tất cả"}
                             </button>

@@ -39,7 +39,7 @@ export function FilterBar({
         <div className="px-4 sm:px-5 py-2.5 border-t border-zinc-100/80 bg-zinc-50/40 flex items-center justify-between gap-3">
           <div className="text-xs text-zinc-600 flex items-center gap-2">
             {hasActive &&
-              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[10px] font-semibold uppercase tracking-wider bg-indigo-50 text-indigo-700 ring-1 ring-inset ring-indigo-600/15">
+              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[10px] font-semibold uppercase tracking-wider bg-amber-50 text-amber-800 ring-1 ring-inset ring-amber-700/15">
                 <FilterIcon className="h-2.5 w-2.5" />
                 Đang lọc
               </span>

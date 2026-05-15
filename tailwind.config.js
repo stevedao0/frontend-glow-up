@@ -61,6 +61,25 @@ export default {
         sans: ['var(--font-sans)'],
         mono: ['var(--font-mono)'],
       },
+      keyframes: {
+        'fade-in': {
+          '0%': { opacity: '0', transform: 'translateY(6px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+        'scale-in': {
+          '0%': { opacity: '0', transform: 'scale(0.96)' },
+          '100%': { opacity: '1', transform: 'scale(1)' },
+        },
+        'shimmer': {
+          '0%': { transform: 'translateX(-100%)' },
+          '100%': { transform: 'translateX(100%)' },
+        },
+      },
+      animation: {
+        'fade-in': 'fade-in 0.35s var(--ease-out) both',
+        'scale-in': 'scale-in 0.25s var(--ease-out) both',
+        'shimmer': 'shimmer 2.4s linear infinite',
+      },
     },
   },
 };

@@ -655,7 +655,7 @@ export function ContractsListPage({
         <div className="overflow-x-auto">
             <table className="w-full text-sm">
               <thead>
-                <tr className="bg-gradient-to-b from-indigo-50/40 via-zinc-50 to-zinc-50/30 border-b border-zinc-200">
+                <tr className="bg-gradient-to-b from-amber-50/40 via-zinc-50 to-zinc-50/30 border-b border-zinc-200">
                   <th className="w-10 pl-5 pr-2 py-3.5">
                     <Checkbox
                     checked={allSelected}
@@ -692,13 +692,13 @@ export function ContractsListPage({
                   <tr
                     key={r.id}
                     onClick={() => onOpenDetail(r.id)}
-                    className={`group/row relative border-b border-zinc-100 last:border-0 transition-all cursor-pointer ${isSelected ? 'bg-indigo-50/60 hover:bg-indigo-50/80' : 'hover:bg-indigo-50/40 hover:shadow-[inset_0_1px_0_rgba(99,102,241,0.06),inset_0_-1px_0_rgba(99,102,241,0.06)]'}`}>
+                    className={`group/row relative border-b border-zinc-100 last:border-0 transition-all cursor-pointer ${isSelected ? 'bg-amber-50/60 hover:bg-amber-50/80' : 'hover:bg-amber-50/40 hover:shadow-[inset_0_1px_0_rgba(99,102,241,0.06),inset_0_-1px_0_rgba(99,102,241,0.06)]'}`}>
                     
                       {/* Selection cell + left bar */}
                       <td className="relative pl-5 pr-2 py-3.5 align-top">
                         <span
                         aria-hidden
-                        className={`absolute left-0 top-0 bottom-0 w-[3px] bg-gradient-to-b from-indigo-400 to-violet-400 transition-opacity ${isSelected ? 'opacity-100 shadow-[0_0_8px_rgba(129,140,248,0.5)]' : 'opacity-0 group-hover/row:opacity-90'}`} />
+                        className={`absolute left-0 top-0 bottom-0 w-[3px] bg-gradient-to-b from-amber-500 to-amber-500 transition-opacity ${isSelected ? 'opacity-100 shadow-[0_0_8px_rgba(129,140,248,0.5)]' : 'opacity-0 group-hover/row:opacity-90'}`} />
                       
                         <Checkbox
                         checked={isSelected}
@@ -715,7 +715,7 @@ export function ContractsListPage({
                           e.stopPropagation();
                           onOpenDetail(r.id);
                         }}
-                        className="font-mono text-[13px] font-semibold text-indigo-700 hover:text-indigo-900 group-hover/row:underline underline-offset-[3px] decoration-indigo-300/70 decoration-1 transition-colors tracking-tight">
+                        className="font-mono text-[13px] font-semibold text-amber-800 hover:text-amber-950 group-hover/row:underline underline-offset-[3px] decoration-amber-300/70 decoration-1 transition-colors tracking-tight">
                         
                           {r.contract_no}
                         </button>
@@ -938,7 +938,7 @@ export function ContractsListPage({
             {/* Loading */}
             {actionModal.loading && (
               <div className="flex items-center gap-3 py-8 justify-center">
-                <LoaderIcon className="h-5 w-5 animate-spin text-indigo-600" />
+                <LoaderIcon className="h-5 w-5 animate-spin text-amber-700" />
                 <span className="text-sm text-zinc-600">Đang xử lý...</span>
               </div>
             )}
@@ -1228,7 +1228,7 @@ export function ContractsListPage({
                       </div>
                       <div>
                         <span className="text-zinc-500">admin_delete_any:</span>{' '}
-                        <span className={actionModal.deleteResult.admin_delete_any_enabled ? 'text-violet-600 font-semibold' : 'text-zinc-500'}>
+                        <span className={actionModal.deleteResult.admin_delete_any_enabled ? 'text-amber-700 font-semibold' : 'text-zinc-500'}>
                           {actionModal.deleteResult.admin_delete_any_enabled ? 'TRUE' : 'FALSE'}
                         </span>
                       </div>

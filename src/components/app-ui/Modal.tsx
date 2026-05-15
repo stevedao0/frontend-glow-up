@@ -57,7 +57,7 @@ export function Modal({
         
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-transparent via-indigo-500/50 to-transparent" />
+          className="pointer-events-none absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-transparent via-amber-600/50 to-transparent" />
         
         <header className="px-5 py-4 border-b border-zinc-100/80 flex items-start gap-3">
           <div className="min-w-0 flex-1">
