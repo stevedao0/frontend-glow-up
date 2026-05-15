@@ -110,7 +110,7 @@ export function HeroPanel({
       <div className="relative px-6 sm:px-8 py-7 sm:py-9 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
         <div className="max-w-2xl">
           {eyebrow &&
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold uppercase tracking-[0.1em] text-[#e8d28f] bg-[#c89968]/10 ring-1 ring-inset ring-[#c89968]/30 backdrop-blur-sm">
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold uppercase tracking-[0.1em] text-[#e8c4a0] bg-[#c89968]/10 ring-1 ring-inset ring-[#c89968]/30 backdrop-blur-sm">
               <SparklesIcon className="h-3 w-3" />
               {eyebrow}
             </div>
