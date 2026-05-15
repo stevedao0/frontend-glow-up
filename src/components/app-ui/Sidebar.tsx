@@ -178,16 +178,17 @@ export function Sidebar({
   const contractsActive = CONTRACT_KEYS.includes(current);
   return (
     <aside className="hidden md:flex w-64 shrink-0 flex-col h-screen sticky top-0 z-30 bg-[#0a1410] border-r border-zinc-800/80 text-zinc-200">
-      {/* Brand */}
+      {/* Brand — emerald tile + champagne gold hairline ring */}
       <div className="px-5 py-4 border-b border-zinc-800/60 flex items-center gap-3">
-        <div className="relative h-8 w-8 rounded-md bg-emerald-600 flex items-center justify-center shadow-lg shadow-emerald-600/30">
-          <span className="text-white text-xs font-bold tracking-tight">VC</span>
+        <div className="relative h-9 w-9 rounded-md bg-gradient-to-br from-emerald-600 to-emerald-800 flex items-center justify-center shadow-lg shadow-emerald-950/40 ring-1 ring-inset ring-[#c9a84c]/40">
+          <span className="text-white text-[11px] font-bold tracking-tight">VC</span>
+          <span className="absolute -bottom-0.5 -right-0.5 h-1.5 w-1.5 rounded-full bg-[#c9a84c] shadow-[0_0_6px_rgba(201,168,76,0.8)]" />
         </div>
         <div className="flex flex-col leading-tight min-w-0">
           <span className="text-[12px] font-bold text-white tracking-tight uppercase">
             VCPMC
           </span>
-          <span className="text-[10px] text-zinc-500 uppercase tracking-[0.16em] font-medium">
+          <span className="text-[9.5px] text-[#c9a84c]/80 uppercase tracking-[0.22em] font-semibold">
             Contract Suite
           </span>
         </div>

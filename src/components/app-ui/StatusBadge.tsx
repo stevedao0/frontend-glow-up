@@ -7,23 +7,25 @@ type Tone =
 'neutral' |
 'violet' |
 'orange';
+// Solid: dùng cho status chính (1 cái / dòng)
 const toneMap: Record<Tone, string> = {
-  success: 'bg-emerald-600 text-white shadow-sm shadow-emerald-600/20',
-  warning: 'bg-amber-500 text-white shadow-sm shadow-amber-500/25',
-  danger: 'bg-rose-600 text-white shadow-sm shadow-rose-600/20',
-  info: 'bg-sky-600 text-white shadow-sm shadow-sky-600/20',
-  violet: 'bg-violet-600 text-white shadow-sm shadow-violet-600/20',
-  orange: 'bg-orange-500 text-white shadow-sm shadow-orange-500/25',
-  neutral: 'bg-zinc-700 text-white shadow-sm shadow-zinc-700/20',
+  success: 'bg-emerald-700 text-white shadow-sm shadow-emerald-900/20',
+  warning: 'bg-amber-500 text-white shadow-sm shadow-amber-600/20',
+  danger: 'bg-rose-700 text-white shadow-sm shadow-rose-900/20',
+  info: 'bg-teal-700 text-white shadow-sm shadow-teal-900/20',
+  // "Hợp đồng mới" — champagne gold thay cho violet để hợp tone emerald prestige
+  violet: 'bg-[#b8923a] text-white shadow-sm shadow-amber-900/20',
+  orange: 'bg-orange-600 text-white shadow-sm shadow-orange-900/20',
+  neutral: 'bg-stone-800 text-stone-100 shadow-sm shadow-stone-900/20',
 };
 const dotMap: Record<Tone, string> = {
   success: 'bg-emerald-200',
   warning: 'bg-amber-100',
   danger: 'bg-rose-200',
-  info: 'bg-sky-200',
-  violet: 'bg-violet-200',
-  orange: 'bg-orange-100',
-  neutral: 'bg-zinc-300',
+  info: 'bg-teal-200',
+  violet: 'bg-amber-100',
+  orange: 'bg-orange-200',
+  neutral: 'bg-stone-300',
 };
 export function StatusBadge({
   tone = 'neutral',
