@@ -6,147 +6,73 @@ export function HeroPanel({
   description,
   actions,
   stats
-
-
-
-
-
-
-
-
-
 }: {eyebrow?: string;title: React.ReactNode;description?: React.ReactNode;actions?: React.ReactNode;stats?: {label: string;value: string;}[];}) {
   return (
-    <div className="relative overflow-hidden rounded-2xl ring-1 ring-[#c89968]/30 shadow-xl shadow-[#9c6d3e]/20">
-      {/* Base gradient — ivory cream */}
-      <div
-        aria-hidden
-        className="absolute inset-0"
-        style={{
-          background:
-          'linear-gradient(135deg, #faf6ee 0%, #f3ebdb 40%, #ecdfc6 75%, #e3d2b3 100%)'
-        }} />
-      
-      {/* Radial glows — warm cream + rose-gold */}
-      <div
-        aria-hidden
-        className="absolute -top-24 -left-24 h-[420px] w-[420px] rounded-full"
-        style={{
-          background:
-          'radial-gradient(circle, rgba(232,196,160,0.55) 0%, rgba(232,196,160,0) 60%)',
-          filter: 'blur(20px)'
-        }} />
-      
-      <div
-        aria-hidden
-        className="absolute -bottom-32 -right-20 h-[460px] w-[460px] rounded-full"
-        style={{
-          background:
-          'radial-gradient(circle, rgba(200,153,104,0.45) 0%, rgba(200,153,104,0) 60%)',
-          filter: 'blur(24px)'
-        }} />
-      
-
-      {/* Signature pattern: contract document lines + seal + wave (music rights) */}
-      <svg
-        aria-hidden
-        viewBox="0 0 800 360"
-        className="absolute inset-y-0 right-0 h-full w-auto opacity-[0.18] text-[#9c6d3e] pointer-events-none"
-        preserveAspectRatio="xMaxYMid slice"
-        fill="none">
-        
-        {/* Document lines (right block, like contract text) */}
-        <g stroke="currentColor" strokeWidth="1.2" strokeLinecap="round">
-          <line x1="500" y1="60" x2="760" y2="60" />
-          <line x1="500" y1="80" x2="720" y2="80" />
-          <line x1="500" y1="100" x2="745" y2="100" />
-          <line x1="500" y1="120" x2="700" y2="120" />
-          <line x1="500" y1="140" x2="755" y2="140" />
-          <line x1="500" y1="160" x2="690" y2="160" />
-          <line x1="500" y1="180" x2="730" y2="180" />
-          <line x1="500" y1="200" x2="710" y2="200" />
-          <line x1="500" y1="220" x2="755" y2="220" />
-          <line x1="500" y1="240" x2="680" y2="240" />
-          <line x1="500" y1="260" x2="740" y2="260" />
-          <line x1="500" y1="280" x2="700" y2="280" />
-        </g>
-        {/* Music wave (subtle, music-rights nod) */}
-        <path
-          d="M 0 300 Q 60 270 120 300 T 240 300 T 360 300 T 480 300"
-          stroke="currentColor"
-          strokeWidth="1.5"
-          strokeLinecap="round" />
-        
-        <path
-          d="M 0 320 Q 60 305 120 320 T 240 320 T 360 320 T 480 320"
-          stroke="currentColor"
-          strokeWidth="1"
-          strokeLinecap="round"
-          opacity="0.6" />
-        
-        {/* Seal stamp (circle with concentric ring) */}
-        <g transform="translate(640, 110)" stroke="currentColor" fill="none">
-          <circle r="56" strokeWidth="1.2" />
-          <circle r="46" strokeWidth="0.8" strokeDasharray="2 4" />
-          <circle r="28" strokeWidth="1" />
+    <div className="relative overflow-hidden rounded-[28px] border border-[#e3d2b3] bg-gradient-to-br from-[#faf6ee] via-[#fcfaf5] to-[#f2ecd9] shadow-[0_20px_50px_-20px_rgba(200,153,104,0.18)]">
+      {/* Decorative flowing lines — top right */}
+      <div aria-hidden className="absolute top-0 right-0 w-1/2 h-full opacity-[0.10] pointer-events-none">
+        <svg className="w-full h-full" viewBox="0 0 400 400" fill="none" preserveAspectRatio="xMidYMid slice">
           <path
-            d="M -14 0 L -4 10 L 14 -10"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round" />
-          
-        </g>
-      </svg>
-
-      {/* Dot grid overlay */}
-      <div aria-hidden className="absolute inset-0 dot-grid opacity-50" />
-
-      {/* Top highlight */}
+            d="M0 100C150 50 250 150 400 100M0 200C150 150 250 250 400 200M0 300C150 250 350 350 400 300"
+            stroke="#c89968"
+            strokeWidth="1"
+          />
+        </svg>
+      </div>
+      {/* Soft gold glow — bottom left */}
       <div
         aria-hidden
-        className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/70 to-transparent" />
-      
+        className="absolute -bottom-24 -left-24 w-72 h-72 rounded-full bg-[#c89968]/10"
+        style={{ filter: 'blur(48px)' }}
+      />
 
-      <div className="relative px-6 sm:px-8 py-7 sm:py-9 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-        <div className="max-w-2xl">
-          {eyebrow &&
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold uppercase tracking-[0.1em] text-[#7a4a22] bg-white/50 ring-1 ring-inset ring-[#c89968]/40 backdrop-blur-sm">
-              <SparklesIcon className="h-3 w-3" />
-              {eyebrow}
+      <div className="relative px-6 sm:px-10 py-8 sm:py-10 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-10">
+        <div className="flex-1 min-w-0">
+          {eyebrow && (
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#c89968]/10 border border-[#c89968]/25">
+              <SparklesIcon className="h-3 w-3 text-[#9c6d3e]" />
+              <span className="text-[10px] font-bold tracking-[0.2em] text-[#9c6d3e] uppercase">
+                {eyebrow}
+              </span>
             </div>
-          }
-          <h2 className="mt-3 text-2xl sm:text-[28px] lg:text-3xl font-semibold text-[#2d1f14] tracking-tight leading-[1.2]">
+          )}
+
+          <h2 className="mt-4 text-2xl sm:text-3xl lg:text-[34px] font-bold text-[#2d2926] tracking-tight leading-[1.15]">
             {title}
           </h2>
-          {description &&
-          <p className="mt-2.5 text-sm sm:text-[15px] text-[#5a4533] leading-relaxed">
+
+          {description && (
+            <p className="mt-3 max-w-2xl text-sm sm:text-[15px] text-[#6b6661] leading-relaxed">
               {description}
             </p>
-          }
-          {stats && stats.length > 0 &&
-          <div className="mt-5 flex flex-wrap gap-x-6 gap-y-3">
-              {stats.map((s) =>
-            <div
-              key={s.label}
-              className="flex flex-col border-l border-[#c89968]/50 pl-3">
-              
-                  <span className="text-[10px] font-medium uppercase tracking-[0.12em] text-[#9c6d3e]">
+          )}
+
+          {stats && stats.length > 0 && (
+            <div className="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-3 max-w-2xl">
+              {stats.map((s) => (
+                <div
+                  key={s.label}
+                  className="group relative p-4 rounded-2xl bg-white/45 border border-white/70 backdrop-blur-md shadow-[0_4px_12px_-4px_rgba(200,153,104,0.12)] hover:border-[#c89968]/35 hover:bg-white/65 transition-all duration-300 overflow-hidden"
+                >
+                  <div className="text-[10px] font-bold tracking-[0.15em] text-[#9c6d3e]/70 uppercase mb-1.5">
                     {s.label}
-                  </span>
-                  <span className="text-lg font-semibold text-[#2d1f14] tabular-nums">
+                  </div>
+                  <div className="text-2xl font-semibold text-[#2d2926] tabular-nums">
                     {s.value}
-                  </span>
+                  </div>
+                  <div className="absolute bottom-0 left-0 w-0 h-[2px] bg-gradient-to-r from-[#c89968] to-[#9c6d3e] group-hover:w-full transition-all duration-500" />
                 </div>
-            )}
+              ))}
             </div>
-          }
+          )}
         </div>
-        {actions &&
-        <div className="flex flex-wrap items-center gap-2 shrink-0">
+
+        {actions && (
+          <div className="flex flex-wrap items-center gap-2 shrink-0">
             {actions}
           </div>
-        }
+        )}
       </div>
-    </div>);
-
+    </div>
+  );
 }
