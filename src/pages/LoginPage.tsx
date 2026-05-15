@@ -37,49 +37,51 @@ export function LoginPage() {
     }
   };
   return (
-    <div className="min-h-screen w-full flex items-center justify-center relative overflow-hidden bg-[#0a0a14]">
-      {/* Background patterns */}
+    <div className="min-h-screen w-full flex items-center justify-center relative overflow-hidden bg-surface-app">
+      {/* Subtle ambient gradients */}
       <div
         aria-hidden
         className="absolute inset-0 z-0"
         style={{
-          backgroundImage: `radial-gradient(circle at 50% 0%, rgba(99,102,241,0.15) 0%, transparent 50%), radial-gradient(circle at 100% 100%, rgba(139,92,246,0.1) 0%, transparent 50%)`
+          backgroundImage: `radial-gradient(circle at 50% 0%, rgba(99,102,241,0.07) 0%, transparent 55%), radial-gradient(circle at 100% 100%, rgba(139,92,246,0.05) 0%, transparent 50%)`
         }} />
-      
+
+      {/* Grid pattern */}
       <div
         aria-hidden
-        className="absolute inset-0 z-0 opacity-[0.03]"
+        className="absolute inset-0 z-0 opacity-[0.4]"
         style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`
+          backgroundImage: `linear-gradient(rgba(24,24,27,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(24,24,27,0.04) 1px, transparent 1px)`,
+          backgroundSize: '32px 32px',
+          maskImage: 'radial-gradient(ellipse at center, black 30%, transparent 80%)'
         }} />
-      
 
       <div className="relative z-10 w-full max-w-md px-6">
         <div className="text-center mb-8">
-          <div className="inline-flex h-14 w-14 rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-600 items-center justify-center shadow-xl shadow-indigo-500/20 mb-6 ring-1 ring-white/10">
+          <div className="inline-flex h-14 w-14 rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-600 items-center justify-center shadow-lg shadow-indigo-500/25 mb-6 ring-1 ring-white/20">
             <span className="text-white text-2xl font-bold tracking-tight">
               V
             </span>
           </div>
-          <h1 className="text-2xl font-semibold text-white tracking-tight mb-2">
+          <h1 className="text-[22px] font-semibold text-fg-primary tracking-tight mb-1.5">
             VCPMC Contract Suite
           </h1>
-          <p className="text-zinc-400 text-sm">
+          <p className="text-fg-muted text-sm">
             Hệ thống quản lý hợp đồng và giấy chứng nhận
           </p>
         </div>
 
-        <div className="bg-white/5 backdrop-blur-xl backdrop-saturate-150 rounded-2xl ring-1 ring-white/10 p-8 shadow-2xl">
+        <div className="bg-surface rounded-2xl ring-1 ring-zinc-200/80 shadow-lg p-7">
           <form onSubmit={handleSubmit} className="space-y-5">
             {error &&
-            <div className="p-3 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-400 text-sm flex items-start gap-2">
+            <div className="p-3 rounded-lg bg-rose-50 ring-1 ring-rose-200/70 text-rose-700 text-sm flex items-start gap-2">
                 <ShieldIcon className="h-4 w-4 mt-0.5 shrink-0" />
                 <span>{error}</span>
               </div>
             }
 
             <div>
-              <label className="block text-sm font-medium text-zinc-300 mb-1.5">
+              <label className="block text-[12px] font-medium text-fg-secondary mb-1.5">
                 Tài khoản
               </label>
               <input
@@ -87,21 +89,19 @@ export function LoginPage() {
                 required
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                className="w-full h-10 px-3 rounded-lg bg-black/20 border border-white/10 text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all sm:text-sm"
+                className="w-full h-10 px-3 rounded-lg bg-surface text-fg-primary ring-1 ring-zinc-200 hover:ring-zinc-300 focus:outline-none focus:ring-2 focus:ring-accent-primary/40 transition-shadow shadow-xs placeholder:text-fg-subtle text-sm"
                 placeholder="admin@vcpmc.org" />
-              
             </div>
 
             <div>
               <div className="flex items-center justify-between mb-1.5">
-                <label className="block text-sm font-medium text-zinc-300">
+                <label className="block text-[12px] font-medium text-fg-secondary">
                   Mật khẩu
                 </label>
                 <button
                   type="button"
                   onClick={() => setShowForgot(true)}
-                  className="text-xs text-indigo-400 hover:text-indigo-300 transition-colors">
-                  
+                  className="text-xs text-accent-primary hover:underline transition-colors">
                   Quên mật khẩu?
                 </button>
               </div>
@@ -110,9 +110,8 @@ export function LoginPage() {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full h-10 px-3 rounded-lg bg-black/20 border border-white/10 text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/50 focus:border-indigo-500/50 transition-all sm:text-sm"
+                className="w-full h-10 px-3 rounded-lg bg-surface text-fg-primary ring-1 ring-zinc-200 hover:ring-zinc-300 focus:outline-none focus:ring-2 focus:ring-accent-primary/40 transition-shadow shadow-xs placeholder:text-fg-subtle text-sm"
                 placeholder="••••••••" />
-              
             </div>
 
             <div className="flex items-center">
@@ -120,21 +119,18 @@ export function LoginPage() {
                 checked={remember}
                 onChange={setRemember}
                 label={
-                <span className="text-zinc-400 text-sm">
+                <span className="text-fg-secondary text-sm">
                     Ghi nhớ đăng nhập
                   </span>
                 } />
-              
             </div>
 
             <button
               type="submit"
               disabled={loading || devLoading}
-              className="w-full h-10 rounded-lg bg-indigo-500 hover:bg-indigo-400 text-white font-medium text-sm transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-indigo-500/25">
-              
+              className="w-full h-10 rounded-lg bg-accent-primary hover:brightness-110 active:brightness-95 text-white font-medium text-sm transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm shadow-indigo-500/25">
               {loading ?
               <Loader2Icon className="h-4 w-4 animate-spin" /> :
-
               <>
                   Đăng nhập <ArrowRightIcon className="h-4 w-4" />
                 </>
@@ -145,8 +141,7 @@ export function LoginPage() {
               type="button"
               disabled={loading || devLoading}
               onClick={handleDevLogin}
-              className="w-full h-10 rounded-lg bg-white/10 hover:bg-white/15 text-zinc-100 font-medium text-sm transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed ring-1 ring-white/10">
-              
+              className="w-full h-10 rounded-lg bg-surface-subtle hover:bg-surface-muted text-fg-secondary font-medium text-sm transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed ring-1 ring-zinc-200">
               {devLoading ?
               <Loader2Icon className="h-4 w-4 animate-spin" /> :
               <>
@@ -158,7 +153,7 @@ export function LoginPage() {
           </form>
         </div>
 
-        <div className="mt-8 text-center text-xs text-zinc-500">
+        <div className="mt-8 text-center text-xs text-fg-muted">
           <p>Đăng nhập bằng tài khoản hiện có trong hệ thống.</p>
         </div>
       </div>
@@ -166,7 +161,6 @@ export function LoginPage() {
       <ForgotPasswordModal
         open={showForgot}
         onClose={() => setShowForgot(false)} />
-      
     </div>);
 
 }
