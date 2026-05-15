@@ -2161,7 +2161,7 @@ export function CreateContractPage({
           {/* Domain-specific fields */}
           {/* =================================================================== */}
           <FormSection
-            title="3. Khu vực kinh doanh"
+            title="7. Khu vực kinh doanh & Tiền bản quyền"
             description="Thông tin tùy theo lĩnh vực đã chọn"
           >
             {isKaraokeDomain ? (
