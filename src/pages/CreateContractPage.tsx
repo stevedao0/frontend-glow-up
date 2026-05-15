@@ -2004,7 +2004,7 @@ export function CreateContractPage({
           {/* Domain selector - all Background domains */}
           {/* =================================================================== */}
           <FormSection
-            title="2. Lĩnh vực"
+            title="5. Lĩnh vực"
             description="Chọn lĩnh vực kinh doanh Background"
           >
             <div className="space-y-4">
