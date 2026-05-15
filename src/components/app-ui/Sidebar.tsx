@@ -13,7 +13,8 @@ import {
   SparklesIcon,
   ChevronDownIcon,
   LockIcon,
-  PrinterIcon } from
+  PrinterIcon,
+  Music2Icon } from
 'lucide-react';
 import { RouteKey } from '../../data/routes';
 import { useAuth } from '../../lib/auth';
@@ -177,11 +178,23 @@ export function Sidebar({
 
   const contractsActive = CONTRACT_KEYS.includes(current);
   return (
-    <aside className="hidden md:flex w-64 shrink-0 flex-col h-screen sticky top-0 z-30 bg-[#0a1410] border-r border-zinc-800/80 text-zinc-200">
-      {/* Brand — emerald tile + champagne gold hairline ring */}
-      <div className="px-5 py-4 border-b border-zinc-800/60 flex items-center gap-3">
+    <aside className="hidden md:flex w-64 shrink-0 flex-col h-screen sticky top-0 z-30 bg-[#0a1410] border-r border-zinc-800/80 text-zinc-200 relative overflow-hidden">
+      {/* Subtle staff lines decoration — top of sidebar */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-0 h-32 opacity-[0.07]"
+        style={{
+          backgroundImage:
+            'repeating-linear-gradient(to bottom, transparent 0, transparent 5px, #c9a84c 5px, #c9a84c 6px)',
+          maskImage: 'linear-gradient(to bottom, black, transparent)',
+          WebkitMaskImage: 'linear-gradient(to bottom, black, transparent)',
+        }}
+      />
+
+      {/* Brand — emerald tile with music note + champagne gold ring */}
+      <div className="relative px-5 py-4 border-b border-zinc-800/60 flex items-center gap-3">
         <div className="relative h-9 w-9 rounded-md bg-gradient-to-br from-emerald-600 to-emerald-800 flex items-center justify-center shadow-lg shadow-emerald-950/40 ring-1 ring-inset ring-[#c9a84c]/40">
-          <span className="text-white text-[11px] font-bold tracking-tight">VC</span>
+          <Music2Icon className="h-4 w-4 text-white" strokeWidth={2.5} />
           <span className="absolute -bottom-0.5 -right-0.5 h-1.5 w-1.5 rounded-full bg-[#c9a84c] shadow-[0_0_6px_rgba(201,168,76,0.8)]" />
         </div>
         <div className="flex flex-col leading-tight min-w-0">
@@ -189,7 +202,7 @@ export function Sidebar({
             VCPMC
           </span>
           <span className="text-[9.5px] text-[#c9a84c]/80 uppercase tracking-[0.22em] font-semibold">
-            Contract Suite
+            Music Rights · Contracts
           </span>
         </div>
       </div>
