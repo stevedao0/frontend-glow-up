@@ -110,7 +110,7 @@ export function HeroPanel({
       <div className="relative px-6 sm:px-8 py-7 sm:py-9 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
         <div className="max-w-2xl">
           {eyebrow &&
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold uppercase tracking-[0.1em] text-indigo-200 bg-white/[0.06] ring-1 ring-inset ring-white/10 backdrop-blur-sm">
+          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-semibold uppercase tracking-[0.1em] text-[#e8d28f] bg-[#c9a84c]/10 ring-1 ring-inset ring-[#c9a84c]/30 backdrop-blur-sm">
               <SparklesIcon className="h-3 w-3" />
               {eyebrow}
             </div>
@@ -119,7 +119,7 @@ export function HeroPanel({
             {title}
           </h2>
           {description &&
-          <p className="mt-2.5 text-sm sm:text-[15px] text-indigo-100/75 leading-relaxed">
+          <p className="mt-2.5 text-sm sm:text-[15px] text-emerald-50/75 leading-relaxed">
               {description}
             </p>
           }
@@ -128,9 +128,9 @@ export function HeroPanel({
               {stats.map((s) =>
             <div
               key={s.label}
-              className="flex flex-col border-l border-white/15 pl-3">
+              className="flex flex-col border-l border-[#c9a84c]/30 pl-3">
               
-                  <span className="text-[10px] font-medium uppercase tracking-[0.12em] text-indigo-200/70">
+                  <span className="text-[10px] font-medium uppercase tracking-[0.12em] text-[#c9a84c]/85">
                     {s.label}
                   </span>
                   <span className="text-lg font-semibold text-white tabular-nums">
