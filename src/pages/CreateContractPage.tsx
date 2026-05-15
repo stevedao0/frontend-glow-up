@@ -1963,40 +1963,39 @@ export function CreateContractPage({
                   />
                 </FieldGrid>
               </div>
+            </div>
+          </FormSection>
 
-              {/* 1f. Ghi chú */}
-              <div>
-                <h4 className="text-xs font-semibold uppercase tracking-[0.1em] text-zinc-500 mb-3">
-                  1f. Ghi chú
-                </h4>
-                <div className="space-y-4">
-                  <Textarea
-                    label="Ghi chú nội bộ"
-                    value={draft.notes.internal}
-                    onChange={(e) =>
-                      updateDraft((current) => ({
-                        ...current,
-                        notes: { ...current.notes, internal: e.target.value },
-                      }))
-                    }
-                    placeholder="Ghi chú cho nội bộ VCPMC..."
-                  />
-                  <Textarea
-                    label="Điều khoản / Ghi chú xuất hợp đồng"
-                    value={draft.notes.contractTerms}
-                    onChange={(e) =>
-                      updateDraft((current) => ({
-                        ...current,
-                        notes: {
-                          ...current.notes,
-                          contractTerms: e.target.value,
-                        },
-                      }))
-                    }
-                    placeholder="Điều khoản sẽ xuất hiện trên hợp đồng..."
-                  />
-                </div>
-              </div>
+          <FormSection
+            title="4. Ghi chú & điều khoản"
+            description="Ghi chú nội bộ và điều khoản xuất hợp đồng"
+          >
+            <div className="space-y-4">
+              <Textarea
+                label="Ghi chú nội bộ"
+                value={draft.notes.internal}
+                onChange={(e) =>
+                  updateDraft((current) => ({
+                    ...current,
+                    notes: { ...current.notes, internal: e.target.value },
+                  }))
+                }
+                placeholder="Ghi chú cho nội bộ VCPMC..."
+              />
+              <Textarea
+                label="Điều khoản / Ghi chú xuất hợp đồng"
+                value={draft.notes.contractTerms}
+                onChange={(e) =>
+                  updateDraft((current) => ({
+                    ...current,
+                    notes: {
+                      ...current.notes,
+                      contractTerms: e.target.value,
+                    },
+                  }))
+                }
+                placeholder="Điều khoản sẽ xuất hiện trên hợp đồng..."
+              />
             </div>
           </FormSection>
 
