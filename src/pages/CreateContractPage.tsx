@@ -1345,15 +1345,11 @@ export function CreateContractPage({
           {/* Shared across all Background domains */}
           {/* =================================================================== */}
           <FormSection
-            title="1. Thông tin chung"
-            description="Thông tin hợp đồng, đối tác, địa điểm - chung cho tất cả lĩnh vực Background"
+            title="1. Định danh hợp đồng"
+            description="Số hợp đồng, ngày lập, năm và mã định danh"
           >
-            <div className="space-y-6">
-              {/* 1a. Định danh hợp đồng */}
+            <div>
               <div>
-                <h4 className="text-xs font-semibold uppercase tracking-[0.1em] text-zinc-500 mb-3">
-                  1a. Định danh hợp đồng
-                </h4>
                 <div className="space-y-4">
                   <ContractNumberPreview contractNo={contractNoPreview} />
                   {/* Availability check */}
