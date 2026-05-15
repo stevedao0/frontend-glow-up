@@ -157,10 +157,13 @@ export function Sidebar({
         onClick={() => onNavigate(it.key)}
         className={`group relative w-full flex items-center gap-3 px-3 py-2 rounded-md text-[13px] font-medium transition-all duration-fast ease-out ${
           active
-            ? 'text-emerald-200 bg-emerald-600/10 ring-1 ring-inset ring-emerald-500/25'
+            ? 'text-white bg-gradient-to-r from-emerald-600/25 via-emerald-600/10 to-transparent ring-1 ring-inset ring-emerald-500/30'
             : 'text-zinc-400 hover:text-white hover:bg-white/[0.04]'
         }`}>
-        <span className={`shrink-0 ${active ? 'text-emerald-300' : 'text-zinc-500 group-hover:text-zinc-300'}`}>
+        {active && (
+          <span className="absolute left-0 top-1.5 bottom-1.5 w-[2px] rounded-r bg-[#c9a84c] shadow-[0_0_8px_rgba(201,168,76,0.6)]" />
+        )}
+        <span className={`shrink-0 ${active ? 'text-[#c9a84c]' : 'text-zinc-500 group-hover:text-zinc-300'}`}>
           {it.icon}
         </span>
         <span className="flex-1 text-left truncate">{it.label}</span>
