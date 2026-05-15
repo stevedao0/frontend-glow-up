@@ -19,7 +19,7 @@ export function AppShell({
 }: {current: RouteKey;onNavigate: (k: RouteKey) => void;workspace: string;onWorkspaceChange: (id: string) => void;userEmail: string;children: React.ReactNode;}) {
   const showDevBadge = import.meta.env.DEV;
   return (
-    <div className="min-h-screen w-full flex bg-[#fafafa]">
+    <div className="min-h-screen w-full flex bg-surface-app">
       <Sidebar current={current} onNavigate={onNavigate} />
       <div className="flex-1 min-w-0 flex flex-col">
         <Topbar
@@ -39,8 +39,8 @@ export function AppShell({
           
           {children}
         </main>
-        <footer className="px-6 py-3 text-[11px] text-zinc-500 border-t border-zinc-200 bg-white/60 backdrop-blur">
-          Â© 2026 VCPMC Â· Internal use only Â· Build prototype
+        <footer className="px-6 py-3 text-[11px] text-fg-muted border-t border-zinc-200/70 bg-surface/60 backdrop-blur">
+          © 2026 VCPMC · Internal use only · Build prototype
         </footer>
       </div>
       <style>{`
