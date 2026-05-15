@@ -42,7 +42,7 @@ export function HeroPanel({
         className="absolute -bottom-32 -right-20 h-[460px] w-[460px] rounded-full"
         style={{
           background:
-          'radial-gradient(circle, rgba(201,168,76,0.35) 0%, rgba(201,168,76,0) 60%)',
+          'radial-gradient(circle, rgba(200,153,104,0.35) 0%, rgba(200,153,104,0) 60%)',
           filter: 'blur(24px)'
         }} />
       

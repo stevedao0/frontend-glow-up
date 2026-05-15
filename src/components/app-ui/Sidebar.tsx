@@ -161,7 +161,7 @@ export function Sidebar({
             : 'text-zinc-400 hover:text-white hover:bg-white/[0.04]'
         }`}>
         {active && (
-          <span className="absolute left-0 top-1.5 bottom-1.5 w-[2px] rounded-r bg-[#c89968] shadow-[0_0_8px_rgba(201,168,76,0.6)]" />
+          <span className="absolute left-0 top-1.5 bottom-1.5 w-[2px] rounded-r bg-[#c89968] shadow-[0_0_8px_rgba(200,153,104,0.6)]" />
         )}
         <span className={`shrink-0 ${active ? 'text-[#c89968]' : 'text-zinc-500 group-hover:text-zinc-300'}`}>
           {it.icon}
@@ -198,7 +198,7 @@ export function Sidebar({
       <div className="relative px-5 py-4 border-b border-zinc-800/60 flex items-center gap-3">
         <div className="relative h-10 w-10 rounded-md bg-white flex items-center justify-center shadow-lg shadow-emerald-950/40 ring-1 ring-inset ring-[#c89968]/50 overflow-hidden">
           <img src={vcpmcLogo} alt="VCPMC" className="h-full w-full object-cover" />
-          <span className="absolute -bottom-0.5 -right-0.5 h-1.5 w-1.5 rounded-full bg-[#c89968] shadow-[0_0_6px_rgba(201,168,76,0.8)]" />
+          <span className="absolute -bottom-0.5 -right-0.5 h-1.5 w-1.5 rounded-full bg-[#c89968] shadow-[0_0_6px_rgba(200,153,104,0.8)]" />
         </div>
         <div className="flex flex-col leading-tight min-w-0">
           <span className="text-[12px] font-bold text-white tracking-tight uppercase">
