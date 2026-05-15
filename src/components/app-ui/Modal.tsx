@@ -1,5 +1,7 @@
 import React, { useEffect } from 'react';
 import { XIcon } from 'lucide-react';
+type ModalSize = 'sm' | 'md' | 'lg' | 'xl' | '2xl';
+
 export function Modal({
   open,
   onClose,
@@ -7,16 +9,22 @@ export function Modal({
   description,
   children,
   footer,
-  size = 'md'
-
-
-
-
-
-
-
-
-}: {open: boolean;onClose: () => void;title: string;description?: string;children: React.ReactNode;footer?: React.ReactNode;size?: 'sm' | 'md' | 'lg';}) {
+  size = 'md',
+  maxWidth,
+  bleed = false,
+}: {
+  open: boolean;
+  onClose: () => void;
+  title: string;
+  description?: string;
+  children: React.ReactNode;
+  footer?: React.ReactNode;
+  size?: ModalSize;
+  /** Backwards-compat alias for `size`. */
+  maxWidth?: ModalSize;
+  /** When true, children render edge-to-edge (no padding). Useful for hero covers. */
+  bleed?: boolean;
+}) {
   useEffect(() => {
     if (!open) return;
     const prev = document.body.style.overflow;
@@ -31,55 +39,56 @@ export function Modal({
     };
   }, [open, onClose]);
   if (!open) return null;
+  const eff = maxWidth ?? size;
   const widthClass =
-  size === 'sm' ? 'max-w-sm' : size === 'lg' ? 'max-w-2xl' : 'max-w-md';
+    eff === 'sm' ? 'max-w-sm'
+      : eff === 'lg' ? 'max-w-2xl'
+      : eff === 'xl' ? 'max-w-3xl'
+      : eff === '2xl' ? 'max-w-4xl'
+      : 'max-w-md';
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       <div
         className="absolute inset-0 bg-zinc-950/40 backdrop-blur-[2px]"
-        style={{
-          animation: 'fadeIn 180ms ease-out'
-        }}
+        style={{ animation: 'fadeIn 180ms ease-out' }}
         onClick={onClose} />
-      
+
       <div
         role="dialog"
         aria-modal="true"
         aria-label={title}
-        className={`relative w-full ${widthClass} bg-white rounded-2xl ring-1 ring-zinc-900/[0.06] shadow-2xl shadow-zinc-950/20 overflow-hidden`}
-        style={{
-          animation: 'modalIn 220ms cubic-bezier(0.32,0.72,0,1)'
-        }}>
-        
+        className={`relative w-full ${widthClass} max-h-[92vh] overflow-y-auto bg-white rounded-2xl ring-1 ring-[#e3d2b3]/50 shadow-[0_24px_60px_-12px_rgba(15,15,25,0.28),0_0_0_1px_rgba(200,153,104,0.15)] overflow-hidden`}
+        style={{ animation: 'modalIn 220ms cubic-bezier(0.32,0.72,0,1)' }}>
+
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/90 to-transparent" />
-        
+          className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/90 to-transparent z-20" />
+
         <div
           aria-hidden
-          className="pointer-events-none absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-transparent via-amber-600/50 to-transparent" />
-        
-        <header className="px-5 py-4 border-b border-zinc-100/80 flex items-start gap-3">
+          className="pointer-events-none absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-transparent via-[#c89968]/70 to-transparent z-20" />
+
+        <header className="relative z-10 px-5 py-4 border-b border-[#e3d2b3]/40 flex items-start gap-3 bg-white/80 backdrop-blur-sm">
           <div className="min-w-0 flex-1">
-            <h2 className="text-sm font-semibold text-zinc-900 tracking-tight">
+            <h2 className="text-sm font-semibold text-[#2d2419] tracking-tight">
               {title}
             </h2>
             {description &&
-            <p className="text-xs text-zinc-500 mt-0.5">{description}</p>
+            <p className="text-xs text-[#6b756f] mt-0.5">{description}</p>
             }
           </div>
           <button
             type="button"
             onClick={onClose}
             aria-label="Đóng"
-            className="h-8 w-8 inline-flex items-center justify-center rounded-lg text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 transition-colors">
-            
+            className="h-8 w-8 inline-flex items-center justify-center rounded-lg text-[#6b756f] hover:bg-[#fcf2e3] hover:text-[#5a4533] transition-colors">
+
             <XIcon className="h-4 w-4" />
           </button>
         </header>
-        <div className="px-5 py-4">{children}</div>
+        <div className={bleed ? '' : 'px-5 py-4'}>{children}</div>
         {footer &&
-        <footer className="px-5 py-3 border-t border-zinc-100/80 bg-zinc-50/40 flex items-center justify-end gap-2">
+        <footer className="px-5 py-3 border-t border-[#e3d2b3]/40 bg-[#faf8f3]/60 flex items-center justify-end gap-2">
             {footer}
           </footer>
         }
