@@ -191,18 +191,18 @@ export function Sidebar({
         }}
       />
 
-      {/* Brand — emerald tile with music note + champagne gold ring */}
+      {/* Brand — official VCPMC logo on emerald tile + champagne gold ring */}
       <div className="relative px-5 py-4 border-b border-zinc-800/60 flex items-center gap-3">
-        <div className="relative h-9 w-9 rounded-md bg-gradient-to-br from-emerald-600 to-emerald-800 flex items-center justify-center shadow-lg shadow-emerald-950/40 ring-1 ring-inset ring-[#c9a84c]/40">
-          <Music2Icon className="h-4 w-4 text-white" strokeWidth={2.5} />
+        <div className="relative h-10 w-10 rounded-md bg-gradient-to-br from-emerald-600 to-emerald-800 flex items-center justify-center shadow-lg shadow-emerald-950/40 ring-1 ring-inset ring-[#c9a84c]/40">
+          <img src={vcpmcLogo} alt="VCPMC" className="h-6 w-auto" />
           <span className="absolute -bottom-0.5 -right-0.5 h-1.5 w-1.5 rounded-full bg-[#c9a84c] shadow-[0_0_6px_rgba(201,168,76,0.8)]" />
         </div>
         <div className="flex flex-col leading-tight min-w-0">
           <span className="text-[12px] font-bold text-white tracking-tight uppercase">
             VCPMC
           </span>
-          <span className="text-[9.5px] text-[#c9a84c]/80 uppercase tracking-[0.22em] font-semibold">
-            Music Rights · Contracts
+          <span className="text-[9px] text-[#c9a84c]/85 uppercase tracking-[0.18em] font-semibold leading-tight">
+            Quyền tác giả Âm nhạc · Hợp đồng
           </span>
         </div>
       </div>
