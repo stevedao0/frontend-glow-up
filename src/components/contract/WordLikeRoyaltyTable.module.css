@@ -1,0 +1,237 @@
+/* WordLikeRoyaltyTable.module.css
+ * Print-ready Word/Excel-like royalty table for contracts
+ * Following DESIGN_WORD_LIKE_ROYALTY_TABLE.md specifications
+ */
+
+/* Wrapper */
+.wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+/* Main table - Word/Excel print style */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  font-family: "Times New Roman", Times, serif;
+  font-size: 14px;
+  line-height: 1.25;
+  color: #000;
+  background: #fff;
+}
+
+/* Column widths - approximate proportions */
+.colQuantity {
+  width: 14%;
+}
+
+.colPricing {
+  width: 62%;
+}
+
+.colAmount {
+  width: 24%;
+}
+
+/* Header cells */
+.th {
+  border: 1px solid #000;
+  padding: 4px 6px;
+  vertical-align: middle;
+  text-align: center;
+  font-weight: 700;
+  background: #d9d9d9;
+  white-space: nowrap;
+}
+
+.thSub {
+  font-weight: 400;
+  font-style: italic;
+  font-size: 12px;
+}
+
+/* Body cells */
+.td {
+  border: 1px solid #000;
+  padding: 4px 6px;
+  vertical-align: middle;
+}
+
+/* Quantity column */
+.tdQuantity {
+  text-align: center;
+  vertical-align: middle;
+}
+
+/* Pricing column */
+.tdPricing {
+  text-align: left;
+}
+
+/* Amount column */
+.tdAmount {
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* Alignment utilities */
+.center {
+  text-align: center;
+}
+
+.right {
+  text-align: right;
+}
+
+.left {
+  text-align: left;
+}
+
+.bold {
+  font-weight: 700;
+}
+
+.italic {
+  font-style: italic;
+}
+
+/* Money/amount - right aligned, no wrap */
+.money {
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* Red text (for support percentage) */
+.red {
+  color: #ff0000;
+}
+
+/* Detail row styling */
+.detailRow {
+  /* Inherits default td styling */
+}
+
+/* Fee line inside cell - grid layout */
+.feeLine {
+  display: grid;
+  grid-template-columns: 130px 1fr 24px 110px;
+  column-gap: 8px;
+  align-items: center;
+}
+
+.feeLabel {
+  text-align: left;
+  font-weight: 500;
+}
+
+.feeBase {
+  text-align: left;
+  white-space: nowrap;
+}
+
+.feeTimes {
+  text-align: center;
+  color: #666;
+}
+
+.feeRate {
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* Formula row - italic, centered */
+.formulaRow {
+  border: 1px solid #000;
+  padding: 4px 6px;
+  font-style: italic;
+  text-align: center;
+}
+
+/* Support row */
+.supportRow {
+  text-align: right;
+  font-style: italic;
+}
+
+/* Subtotal row */
+.subtotalRow {
+  text-align: right;
+  font-weight: 500;
+}
+
+/* GTGT row */
+.gtgtRow {
+  text-align: right;
+}
+
+/* Total row */
+.totalRow {
+  text-align: right;
+  font-weight: 700;
+}
+
+/* Grand total - bold, slightly larger */
+.grandTotal {
+  font-weight: 700;
+}
+
+/* Amount in words row - italic, centered, full width */
+.wordsRow {
+  border: 1px solid #000;
+  padding: 4px 6px;
+  font-style: italic;
+  text-align: center;
+}
+
+/* Legal note row - italic, smaller, centered */
+.legalNoteRow {
+  border: 1px solid #000;
+  padding: 3px 6px;
+  font-style: italic;
+  font-size: 13px;
+  text-align: center;
+}
+
+/* Placeholder state */
+.placeholder {
+  width: 100%;
+  padding: 24px;
+  background: #fafafa;
+  border: 1px dashed #ccc;
+  border-radius: 4px;
+  text-align: center;
+}
+
+.placeholderText {
+  color: #666;
+  font-style: italic;
+}
+
+/* Print styles */
+@media print {
+  .table {
+    font-size: 12.5px;
+  }
+
+  .th,
+  .td {
+    border: 1px solid #000;
+    padding: 3px 5px;
+  }
+
+  .table,
+  .wrapper,
+  .table tr,
+  .table td,
+  .table th {
+    break-inside: avoid;
+    page-break-inside: avoid;
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+
+  .placeholder {
+    display: none;
+  }
+}
