@@ -255,7 +255,7 @@ export function UsersPage() {
           <div
             key={t.id}
             className={`px-4 py-3 rounded-xl shadow-xl flex items-center gap-3 text-sm font-medium animate-[fadein_0.2s_ease-out] text-white min-w-[280px] ${
-              t.type === "success" ? "bg-emerald-600" : t.type === "error" ? "bg-rose-600" : "bg-indigo-600"
+              t.type === "success" ? "bg-emerald-600" : t.type === "error" ? "bg-rose-600" : "bg-amber-700"
             }`}
           >
             {t.type === "success" && <CheckCircleIcon className="h-5 w-5 shrink-0" />}
@@ -312,7 +312,7 @@ export function UsersPage() {
               placeholder="Tìm tên, email, username..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full h-9 pl-9 pr-3 text-sm rounded-lg border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all"
+              className="w-full h-9 pl-9 pr-3 text-sm rounded-lg border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-amber-600/20 focus:border-amber-600 transition-all"
             />
           </div>
           <div className="w-40">
@@ -396,7 +396,7 @@ export function UsersPage() {
                     >
                       <td className="px-4 py-3 align-top">
                         <div className="flex items-center gap-3">
-                          <div className="h-8 w-8 rounded-full bg-gradient-to-br from-indigo-100 to-violet-100 text-indigo-700 font-semibold flex items-center justify-center shrink-0">
+                          <div className="h-8 w-8 rounded-full bg-gradient-to-br from-amber-100 to-amber-100 text-amber-800 font-semibold flex items-center justify-center shrink-0">
                             {(u.display_name || u.username).charAt(0).toUpperCase()}
                           </div>
                           <div>
@@ -413,7 +413,7 @@ export function UsersPage() {
                       </td>
                       <td className="px-4 py-3 align-top max-w-[200px]">
                         {u.domains.includes("__all__") || u.domains.length === 0 ? (
-                          <span className="text-xs font-medium text-indigo-600 bg-indigo-50 px-1.5 py-0.5 rounded">
+                          <span className="text-xs font-medium text-amber-700 bg-amber-50 px-1.5 py-0.5 rounded">
                             Tất cả
                           </span>
                         ) : (
@@ -521,7 +521,7 @@ export function UsersPage() {
                           ? "bg-amber-100 text-amber-600"
                           : log.type === "login"
                             ? "bg-emerald-100 text-emerald-600"
-                            : "bg-indigo-100 text-indigo-600"
+                            : "bg-amber-100 text-amber-700"
                     }`}
                   >
                     {log.type === "security" ? (
@@ -967,7 +967,7 @@ function ProfileModal({ user, onClose }: { user: UserListItem; onClose: () => vo
     <Modal open={true} onClose={onClose} title="Hồ sơ người dùng" maxWidth="md">
       <div className="p-6">
         <div className="flex items-center gap-4 mb-6 pb-6 border-b border-zinc-100">
-          <div className="h-16 w-16 rounded-full bg-gradient-to-br from-indigo-100 to-violet-100 text-indigo-700 text-2xl font-bold flex items-center justify-center">
+          <div className="h-16 w-16 rounded-full bg-gradient-to-br from-amber-100 to-amber-100 text-amber-800 text-2xl font-bold flex items-center justify-center">
             {(user.display_name || user.username).charAt(0).toUpperCase()}
           </div>
           <div>
@@ -1023,7 +1023,7 @@ function ProfileModal({ user, onClose }: { user: UserListItem; onClose: () => vo
             {user.domains.length === 0 ? (
               <span className="text-sm text-zinc-500">Không có domain</span>
             ) : user.domains.includes("__all__") ? (
-              <span className="text-xs font-medium text-indigo-600 bg-indigo-50 px-2 py-1 rounded">
+              <span className="text-xs font-medium text-amber-700 bg-amber-50 px-2 py-1 rounded">
                 Tất cả domain
               </span>
             ) : (

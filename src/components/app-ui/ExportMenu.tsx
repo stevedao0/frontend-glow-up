@@ -58,7 +58,7 @@ export function ExportMenu({
           }}
           className="w-full flex items-start gap-3 px-3 py-2.5 text-left hover:bg-zinc-50 transition-colors">
           
-              <span className="mt-0.5 h-7 w-7 rounded-lg bg-indigo-50 text-indigo-600 ring-1 ring-indigo-100 inline-flex items-center justify-center shrink-0">
+              <span className="mt-0.5 h-7 w-7 rounded-lg bg-amber-50 text-amber-700 ring-1 ring-amber-100 inline-flex items-center justify-center shrink-0">
                 {it.icon ?? <FileSpreadsheetIcon className="h-3.5 w-3.5" />}
               </span>
               <span className="min-w-0 flex-1">

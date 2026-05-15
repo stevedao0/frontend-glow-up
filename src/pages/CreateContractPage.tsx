@@ -2019,8 +2019,8 @@ export function CreateContractPage({
               />
 
               {/* Domain description */}
-              <div className="p-3 rounded-lg bg-indigo-50/50 ring-1 ring-indigo-600/10">
-                <p className="text-xs text-indigo-700">
+              <div className="p-3 rounded-lg bg-amber-50/50 ring-1 ring-amber-700/10">
+                <p className="text-xs text-amber-800">
                   <span className="font-semibold">
                     {draft.domain.domainDisplayName}
                   </span>
@@ -2049,7 +2049,7 @@ export function CreateContractPage({
                 className={`
                   relative p-4 rounded-xl border-2 text-left transition-all
                   ${draft.contractTemplateCode === 'TEMPLATE_1'
-                    ? 'border-violet-600 bg-violet-50 shadow-sm'
+                    ? 'border-amber-700 bg-amber-50 shadow-sm'
                     : 'border-zinc-200 bg-white hover:border-zinc-300 hover:bg-zinc-50'
                   }
                 `}
@@ -2058,7 +2058,7 @@ export function CreateContractPage({
                   <div className={`
                     flex-shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center
                     ${draft.contractTemplateCode === 'TEMPLATE_1'
-                      ? 'border-violet-600 bg-violet-600'
+                      ? 'border-amber-700 bg-amber-700'
                       : 'border-zinc-300'
                     }
                   `}>
@@ -2071,14 +2071,14 @@ export function CreateContractPage({
                   <div className="flex-1 min-w-0">
                     <p className={`font-semibold ${
                       draft.contractTemplateCode === 'TEMPLATE_1'
-                        ? 'text-violet-900'
+                        ? 'text-amber-950'
                         : 'text-zinc-900'
                     }`}>
                       Mẫu 1
                     </p>
                     <p className={`text-xs mt-0.5 ${
                       draft.contractTemplateCode === 'TEMPLATE_1'
-                        ? 'text-violet-700'
+                        ? 'text-amber-800'
                         : 'text-zinc-500'
                     }`}>
                       export_template_contract_1.docx
@@ -2087,7 +2087,7 @@ export function CreateContractPage({
                 </div>
                 {draft.contractTemplateCode === 'TEMPLATE_1' && (
                   <div className="absolute top-2 right-2">
-                    <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-violet-600 text-white">
+                    <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-amber-700 text-white">
                       Đang chọn
                     </span>
                   </div>
@@ -2104,7 +2104,7 @@ export function CreateContractPage({
                 className={`
                   relative p-4 rounded-xl border-2 text-left transition-all
                   ${draft.contractTemplateCode === 'TEMPLATE_2'
-                    ? 'border-violet-600 bg-violet-50 shadow-sm'
+                    ? 'border-amber-700 bg-amber-50 shadow-sm'
                     : 'border-zinc-200 bg-white hover:border-zinc-300 hover:bg-zinc-50'
                   }
                 `}
@@ -2113,7 +2113,7 @@ export function CreateContractPage({
                   <div className={`
                     flex-shrink-0 w-5 h-5 rounded-full border-2 flex items-center justify-center
                     ${draft.contractTemplateCode === 'TEMPLATE_2'
-                      ? 'border-violet-600 bg-violet-600'
+                      ? 'border-amber-700 bg-amber-700'
                       : 'border-zinc-300'
                     }
                   `}>
@@ -2126,14 +2126,14 @@ export function CreateContractPage({
                   <div className="flex-1 min-w-0">
                     <p className={`font-semibold ${
                       draft.contractTemplateCode === 'TEMPLATE_2'
-                        ? 'text-violet-900'
+                        ? 'text-amber-950'
                         : 'text-zinc-900'
                     }`}>
                       Mẫu 2
                     </p>
                     <p className={`text-xs mt-0.5 ${
                       draft.contractTemplateCode === 'TEMPLATE_2'
-                        ? 'text-violet-700'
+                        ? 'text-amber-800'
                         : 'text-zinc-500'
                     }`}>
                       export_template_contract_2.docx
@@ -2142,7 +2142,7 @@ export function CreateContractPage({
                 </div>
                 {draft.contractTemplateCode === 'TEMPLATE_2' && (
                   <div className="absolute top-2 right-2">
-                    <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-violet-600 text-white">
+                    <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-medium bg-amber-700 text-white">
                       Đang chọn
                     </span>
                   </div>
@@ -2367,7 +2367,7 @@ export function CreateContractPage({
                 {/* Phase BACKGROUND-TEMPLATE-REFACTOR: Show selected export template */}
                 <div className="flex justify-between">
                   <span className="text-zinc-600">Mẫu xuất</span>
-                  <span className="font-medium text-violet-700">
+                  <span className="font-medium text-amber-800">
                     {draft.contractTemplateCode === 'TEMPLATE_2' ? 'Mẫu 2' : 'Mẫu 1'}
                   </span>
                 </div>
@@ -2458,7 +2458,7 @@ export function CreateContractPage({
             </div>
 
             {/* Info note */}
-            <div className="rounded-lg bg-sky-50 p-3 text-xs text-sky-800 ring-1 ring-sky-600/15">
+            <div className="rounded-lg bg-amber-50 p-3 text-xs text-amber-900 ring-1 ring-amber-700/15">
               <p className="font-semibold">Lưu ý:</p>
               <ul className="mt-1 space-y-1">
                 <li>• Số HĐ là USER INPUT</li>

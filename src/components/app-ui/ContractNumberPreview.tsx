@@ -8,7 +8,7 @@ export function ContractNumberPreview({ contractNo }: {contractNo: string;}) {
     setTimeout(() => setCopied(false), 2000);
   };
   return (
-    <div className="relative overflow-hidden rounded-xl ring-1 ring-indigo-600/10 bg-gradient-to-br from-indigo-50/70 via-white to-indigo-50/40 p-4 shadow-[0_1px_2px_rgba(99,102,241,0.05)]">
+    <div className="relative overflow-hidden rounded-xl ring-1 ring-amber-700/10 bg-gradient-to-br from-amber-50/70 via-white to-amber-50/40 p-4 shadow-[0_1px_2px_rgba(99,102,241,0.05)]">
       <div
         aria-hidden
         className="pointer-events-none absolute -bottom-12 -right-12 h-40 w-40 rounded-full"
@@ -20,10 +20,10 @@ export function ContractNumberPreview({ contractNo }: {contractNo: string;}) {
       
       <div className="relative">
         <div className="flex items-center gap-1.5 mb-2">
-          <span className="h-7 w-7 rounded-lg bg-indigo-100 text-indigo-700 ring-1 ring-indigo-600/15 inline-flex items-center justify-center">
+          <span className="h-7 w-7 rounded-lg bg-amber-100 text-amber-800 ring-1 ring-amber-700/15 inline-flex items-center justify-center">
             <FileTextIcon className="h-3.5 w-3.5" />
           </span>
-          <span className="text-[10px] font-semibold uppercase tracking-[0.12em] text-indigo-800">
+          <span className="text-[10px] font-semibold uppercase tracking-[0.12em] text-amber-900">
             Số hợp đồng
           </span>
         </div>
@@ -34,7 +34,7 @@ export function ContractNumberPreview({ contractNo }: {contractNo: string;}) {
           <button
             type="button"
             onClick={handleCopy}
-            className="h-8 w-8 rounded-lg bg-white ring-1 ring-indigo-600/10 hover:ring-indigo-600/20 hover:bg-indigo-50/50 transition-all inline-flex items-center justify-center text-indigo-700 shrink-0"
+            className="h-8 w-8 rounded-lg bg-white ring-1 ring-amber-700/10 hover:ring-amber-700/20 hover:bg-amber-50/50 transition-all inline-flex items-center justify-center text-amber-800 shrink-0"
             aria-label="Copy số hợp đồng">
             
             {copied ?
@@ -44,7 +44,7 @@ export function ContractNumberPreview({ contractNo }: {contractNo: string;}) {
             }
           </button>
         </div>
-        <p className="mt-2 text-xs text-indigo-700/70 leading-relaxed">
+        <p className="mt-2 text-xs text-amber-800/70 leading-relaxed">
           Số hợp đồng được ghép tự động từ số, năm, mã vùng, khu vực và mã
           quyền.
         </p>

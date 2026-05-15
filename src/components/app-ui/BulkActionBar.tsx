@@ -39,14 +39,14 @@ export function BulkActionBar({
       
       <div
         aria-hidden
-        className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-indigo-400/70 to-transparent" />
+        className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-amber-500/70 to-transparent" />
       
 
       <div className="relative flex items-center gap-2 mr-2">
         <span className="h-7 w-7 rounded-lg bg-white/10 ring-1 ring-inset ring-white/20 backdrop-blur-sm flex items-center justify-center">
-          <CheckSquareIcon className="h-3.5 w-3.5 text-indigo-200" />
+          <CheckSquareIcon className="h-3.5 w-3.5 text-amber-200" />
         </span>
-        <span className="inline-flex items-center justify-center h-6 min-w-7 px-1.5 rounded-md bg-indigo-500/25 ring-1 ring-inset ring-indigo-400/30 text-[11px] font-bold text-white tabular-nums">
+        <span className="inline-flex items-center justify-center h-6 min-w-7 px-1.5 rounded-md bg-amber-600/25 ring-1 ring-inset ring-amber-500/30 text-[11px] font-bold text-white tabular-nums">
           {count}
         </span>
         <span className="text-sm font-medium text-zinc-100">

@@ -338,7 +338,7 @@ export function CertificatesPage({
             <div className="overflow-x-auto">
               <table className="w-full text-sm">
                 <thead>
-                  <tr className="bg-gradient-to-b from-violet-50/40 via-zinc-50 to-zinc-50/30 border-b border-zinc-200">
+                  <tr className="bg-gradient-to-b from-amber-50/40 via-zinc-50 to-zinc-50/30 border-b border-zinc-200">
                     <th className="w-10 pl-5 pr-2 py-3.5">
                       <Checkbox checked={allSelected} indeterminate={someSelected} onChange={toggleAll} ariaLabel="Chọn tất cả" />
                     </th>
@@ -361,9 +361,9 @@ export function CertificatesPage({
                       <tr
                         key={record.id}
                         onClick={() => openQuickView(record)}
-                        className={`group/row relative border-b border-zinc-100 last:border-0 transition-all cursor-pointer ${isSelected ? 'bg-violet-50/60 hover:bg-violet-50/80' : 'hover:bg-violet-50/30 hover:shadow-[inset_0_1px_0_rgba(139,92,246,0.06),inset_0_-1px_0_rgba(139,92,246,0.06)]'}`}>
+                        className={`group/row relative border-b border-zinc-100 last:border-0 transition-all cursor-pointer ${isSelected ? 'bg-amber-50/60 hover:bg-amber-50/80' : 'hover:bg-amber-50/30 hover:shadow-[inset_0_1px_0_rgba(139,92,246,0.06),inset_0_-1px_0_rgba(139,92,246,0.06)]'}`}>
                         <td className="relative pl-5 pr-2 py-3.5 align-top">
-                          <span aria-hidden className={`absolute left-0 top-0 bottom-0 w-[3px] bg-gradient-to-b from-violet-400 to-indigo-400 transition-opacity ${isSelected ? 'opacity-100 shadow-[0_0_8px_rgba(139,92,246,0.5)]' : 'opacity-0 group-hover/row:opacity-90'}`} />
+                          <span aria-hidden className={`absolute left-0 top-0 bottom-0 w-[3px] bg-gradient-to-b from-amber-500 to-amber-500 transition-opacity ${isSelected ? 'opacity-100 shadow-[0_0_8px_rgba(139,92,246,0.5)]' : 'opacity-0 group-hover/row:opacity-90'}`} />
                           <Checkbox checked={isSelected} onChange={() => toggleOne(record.id)} ariaLabel={`Chọn ${record.certificate_no ?? record.contract_no}`} />
                         </td>
                         <td className="px-4 py-3.5 align-top whitespace-nowrap">
@@ -374,7 +374,7 @@ export function CertificatesPage({
                                 event.stopPropagation();
                                 openQuickView(record);
                               }}
-                              className="font-mono text-[13px] font-semibold text-violet-700 hover:text-violet-900 group-hover/row:underline underline-offset-[3px] decoration-violet-300/70 decoration-1 transition-colors tracking-tight">
+                              className="font-mono text-[13px] font-semibold text-amber-800 hover:text-amber-950 group-hover/row:underline underline-offset-[3px] decoration-amber-300/70 decoration-1 transition-colors tracking-tight">
                               {record.certificate_no}
                             </button> :
                             <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-medium bg-rose-50 text-rose-700 ring-1 ring-inset ring-rose-600/15">
@@ -384,7 +384,7 @@ export function CertificatesPage({
                           }
                         </td>
                         <td className="px-4 py-3.5 align-top whitespace-nowrap">
-                          <span className="font-mono text-[13px] font-medium text-indigo-700 group-hover/row:text-indigo-900 transition-colors">
+                          <span className="font-mono text-[13px] font-medium text-amber-800 group-hover/row:text-amber-950 transition-colors">
                             {record.contract_no || '—'}
                           </span>
                         </td>

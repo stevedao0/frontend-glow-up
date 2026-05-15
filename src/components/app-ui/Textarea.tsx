@@ -23,7 +23,7 @@ export function Textarea({
       }
       <textarea
         {...rest}
-        className={`min-h-[80px] px-3 py-2 text-sm rounded-lg bg-white text-zinc-900 ring-1 ring-zinc-200 hover:ring-zinc-300 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 transition-shadow shadow-sm shadow-zinc-900/[0.03] placeholder:text-zinc-400 resize-y disabled:bg-zinc-50 disabled:text-zinc-500 disabled:cursor-not-allowed ${error ? 'ring-rose-300 focus:ring-rose-500/40' : ''} ${className}`} />
+        className={`min-h-[80px] px-3 py-2 text-sm rounded-lg bg-white text-zinc-900 ring-1 ring-zinc-200 hover:ring-zinc-300 focus:outline-none focus:ring-2 focus:ring-amber-600/40 transition-shadow shadow-sm shadow-zinc-900/[0.03] placeholder:text-zinc-400 resize-y disabled:bg-zinc-50 disabled:text-zinc-500 disabled:cursor-not-allowed ${error ? 'ring-rose-300 focus:ring-rose-500/40' : ''} ${className}`} />
       
       {error && <span className="text-xs text-rose-600">{error}</span>}
       {hint && !error && <span className="text-xs text-zinc-500">{hint}</span>}

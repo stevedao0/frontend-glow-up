@@ -16,11 +16,11 @@ const iconMap: Record<
 {
   create: {
     icon: <FilePlusIcon className="h-3.5 w-3.5" />,
-    bg: 'bg-indigo-50 text-indigo-600 ring-indigo-100'
+    bg: 'bg-amber-50 text-amber-700 ring-amber-100'
   },
   print: {
     icon: <PrinterIcon className="h-3.5 w-3.5" />,
-    bg: 'bg-violet-50 text-violet-600 ring-violet-100'
+    bg: 'bg-amber-50 text-amber-700 ring-amber-100'
   },
   update: {
     icon: <PencilIcon className="h-3.5 w-3.5" />,
@@ -28,7 +28,7 @@ const iconMap: Record<
   },
   dispatch: {
     icon: <MailIcon className="h-3.5 w-3.5" />,
-    bg: 'bg-sky-50 text-sky-600 ring-sky-100'
+    bg: 'bg-amber-50 text-amber-700 ring-amber-100'
   },
   approve: {
     icon: <CheckCircle2Icon className="h-3.5 w-3.5" />,
@@ -69,7 +69,7 @@ export function ActivityList({
               <p className="text-sm text-zinc-700 leading-snug">
                 <span className="font-semibold text-zinc-900">{it.actor}</span>{' '}
                 {it.action}{' '}
-                <span className="font-mono text-[12px] text-indigo-600 font-medium">
+                <span className="font-mono text-[12px] text-amber-700 font-medium">
                   {it.target}
                 </span>
               </p>

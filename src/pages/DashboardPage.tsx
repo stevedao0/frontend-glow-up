@@ -72,7 +72,7 @@ export function DashboardPage({
       <PageHeader
         title={
         <>
-            Xin chào, <span className="text-indigo-600">{userEmail}</span>
+            Xin chào, <span className="text-amber-700">{userEmail}</span>
           </>
         }
         description="Tổng quan vận hành hôm nay."
@@ -95,7 +95,7 @@ export function DashboardPage({
               {formatNumber(VCPMC_STATS.totalBackground)}
             </span>{' '}
             hợp đồng đang quản lý
-            <span className="text-indigo-300"> · </span>
+            <span className="text-amber-300"> · </span>
             <span className="tabular-nums">27</span> hành động cần xử lý
           </>
         }
@@ -195,7 +195,7 @@ export function DashboardPage({
                 2025
               </div>
               <div className="inline-flex items-center gap-1.5 text-zinc-500">
-                <span className="h-2 w-2 rounded-full bg-gradient-to-br from-indigo-500 to-violet-500" />
+                <span className="h-2 w-2 rounded-full bg-gradient-to-br from-amber-600 to-amber-600" />
                 2026
               </div>
             </div>
@@ -366,7 +366,7 @@ export function DashboardPage({
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
-              <tr className="bg-gradient-to-b from-indigo-50/30 via-zinc-50 to-zinc-50/40 border-b border-zinc-200">
+              <tr className="bg-gradient-to-b from-amber-50/30 via-zinc-50 to-zinc-50/40 border-b border-zinc-200">
                 <th className="px-5 py-3 text-[11px] font-semibold uppercase tracking-[0.08em] text-zinc-600 text-left">
                   Số hợp đồng
                 </th>
@@ -392,14 +392,14 @@ export function DashboardPage({
               {RECENT_CONTRACTS.map((c) =>
               <tr
                 key={c.id}
-                className="group/row relative border-b border-zinc-100/70 last:border-0 hover:bg-indigo-50/40 transition-colors cursor-pointer">
+                className="group/row relative border-b border-zinc-100/70 last:border-0 hover:bg-amber-50/40 transition-colors cursor-pointer">
                 
                   <td className="relative px-5 py-3.5 align-top">
                     <span
                     aria-hidden
-                    className="absolute left-0 top-0 bottom-0 w-0.5 bg-gradient-to-b from-indigo-400 to-violet-400 opacity-0 group-hover/row:opacity-100 transition-opacity" />
+                    className="absolute left-0 top-0 bottom-0 w-0.5 bg-gradient-to-b from-amber-500 to-amber-500 opacity-0 group-hover/row:opacity-100 transition-opacity" />
                   
-                    <span className="font-mono text-[13px] font-semibold text-indigo-700 group-hover/row:text-indigo-900 group-hover/row:underline underline-offset-2 decoration-indigo-300/60 transition-colors">
+                    <span className="font-mono text-[13px] font-semibold text-amber-800 group-hover/row:text-amber-950 group-hover/row:underline underline-offset-2 decoration-amber-300/60 transition-colors">
                       {c.contractNo}
                     </span>
                   </td>
@@ -460,7 +460,7 @@ export function DashboardPage({
                   }
                   </td>
                   <td className="pr-4 pl-1 text-right">
-                    <ChevronRightIcon className="h-4 w-4 text-zinc-300 opacity-0 group-hover/row:opacity-100 group-hover/row:text-indigo-500 group-hover/row:translate-x-0.5 transition-all" />
+                    <ChevronRightIcon className="h-4 w-4 text-zinc-300 opacity-0 group-hover/row:opacity-100 group-hover/row:text-amber-600 group-hover/row:translate-x-0.5 transition-all" />
                   </td>
                 </tr>
               )}

@@ -31,7 +31,7 @@ export function Checkbox({
       
       <span
         aria-hidden
-        className={`relative h-4 w-4 rounded-[5px] flex items-center justify-center transition-all duration-150 ring-1 ring-inset ${isOn ? 'bg-indigo-600 ring-indigo-600 shadow-[0_0_0_3px_rgba(99,102,241,0.12)]' : 'bg-white ring-zinc-300 group-hover:ring-zinc-400'} peer-focus-visible:ring-2 peer-focus-visible:ring-indigo-500/40 peer-focus-visible:ring-offset-2`}>
+        className={`relative h-4 w-4 rounded-[5px] flex items-center justify-center transition-all duration-150 ring-1 ring-inset ${isOn ? 'bg-amber-700 ring-amber-700 shadow-[0_0_0_3px_rgba(99,102,241,0.12)]' : 'bg-white ring-zinc-300 group-hover:ring-zinc-400'} peer-focus-visible:ring-2 peer-focus-visible:ring-amber-600/40 peer-focus-visible:ring-offset-2`}>
         
         {indeterminate ?
         <MinusIcon className="h-3 w-3 text-white" strokeWidth={3.5} /> :

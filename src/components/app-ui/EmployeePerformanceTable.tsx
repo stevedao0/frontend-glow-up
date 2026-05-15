@@ -46,7 +46,7 @@ export function EmployeePerformanceTable({
     <div className="overflow-x-auto">
       <table className="w-full text-sm">
         <thead>
-          <tr className="bg-gradient-to-b from-indigo-50/30 via-zinc-50 to-zinc-50/30 border-b border-zinc-200">
+          <tr className="bg-gradient-to-b from-amber-50/30 via-zinc-50 to-zinc-50/30 border-b border-zinc-200">
             <Th>Nhân viên</Th>
             <Th align="right">Tuần này</Th>
             <Th align="right">Tháng này</Th>
@@ -66,11 +66,11 @@ export function EmployeePerformanceTable({
             return (
               <tr
                 key={p.key}
-                className="border-b border-zinc-100 last:border-0 hover:bg-indigo-50/30 transition-colors">
+                className="border-b border-zinc-100 last:border-0 hover:bg-amber-50/30 transition-colors">
                 
                 <td className="px-4 py-3.5 align-top">
                   <div className="flex items-center gap-3">
-                    <span className="h-9 w-9 rounded-full bg-gradient-to-br from-indigo-500 to-violet-500 text-white text-xs font-bold inline-flex items-center justify-center shadow-sm shadow-indigo-500/20 shrink-0">
+                    <span className="h-9 w-9 rounded-full bg-gradient-to-br from-amber-600 to-amber-600 text-white text-xs font-bold inline-flex items-center justify-center shadow-sm shadow-amber-600/20 shrink-0">
                       {p.name.slice(0, 1).toUpperCase()}
                     </span>
                     <div className="min-w-0">

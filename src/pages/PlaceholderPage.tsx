@@ -41,7 +41,7 @@ export function PlaceholderPage({
           }} />
         
         <div className="relative px-6 py-20 flex flex-col items-center text-center">
-          <div className="relative h-14 w-14 rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-600 flex items-center justify-center shadow-lg shadow-indigo-500/25 mb-5">
+          <div className="relative h-14 w-14 rounded-2xl bg-gradient-to-br from-amber-600 to-amber-700 flex items-center justify-center shadow-lg shadow-amber-600/25 mb-5">
             <ConstructionIcon className="h-6 w-6 text-white" />
             <span
               aria-hidden

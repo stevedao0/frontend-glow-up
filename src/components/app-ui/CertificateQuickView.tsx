@@ -131,7 +131,7 @@ export function CertificateQuickView({
 
           <div className="relative px-5 py-5 flex items-start gap-3">
             <div className="min-w-0 flex-1">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-violet-200/90">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-amber-200/90">
                 Giấy chứng nhận
               </p>
               {hasNumber ?
@@ -144,7 +144,7 @@ export function CertificateQuickView({
                   Chưa cấp số GCN
                 </h2>
               }
-              <p className="mt-1.5 text-[13px] text-violet-100/85 line-clamp-1">
+              <p className="mt-1.5 text-[13px] text-amber-100/85 line-clamp-1">
                 {record.organization_name}
               </p>
               <div className="mt-3 flex flex-wrap items-center gap-1.5">
@@ -157,7 +157,7 @@ export function CertificateQuickView({
                   {statusLabel}
                 </span>
                 {record.print_count > 0 &&
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-white/10 text-violet-100 ring-1 ring-inset ring-white/15">
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-medium bg-white/10 text-amber-100 ring-1 ring-inset ring-white/15">
                     <PrinterIcon className="h-3 w-3" />
                     Đã in {record.print_count} lần
                   </span>
@@ -178,7 +178,7 @@ export function CertificateQuickView({
         {/* Body */}
         <div className="flex-1 overflow-y-auto p-4 sm:p-5 flex flex-col gap-3">
           {/* Mini certificate preview */}
-          <div className="relative overflow-hidden rounded-xl ring-1 ring-violet-600/10 bg-gradient-to-br from-violet-50/70 via-white to-indigo-50/40 p-4">
+          <div className="relative overflow-hidden rounded-xl ring-1 ring-amber-700/10 bg-gradient-to-br from-amber-50/70 via-white to-amber-50/40 p-4">
             <div
               aria-hidden
               className="absolute -top-6 -right-6 h-24 w-24 rounded-full"
@@ -189,11 +189,11 @@ export function CertificateQuickView({
               }} />
             
             <div className="relative flex items-center gap-3">
-              <span className="h-9 w-9 rounded-lg bg-violet-100 text-violet-700 ring-1 ring-violet-600/15 inline-flex items-center justify-center">
+              <span className="h-9 w-9 rounded-lg bg-amber-100 text-amber-800 ring-1 ring-amber-700/15 inline-flex items-center justify-center">
                 <AwardIcon className="h-4 w-4" />
               </span>
               <div className="min-w-0">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-violet-800">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.12em] text-amber-900">
                   Số GCN
                 </p>
                 <p
@@ -414,7 +414,7 @@ function Field({
     <div className="flex flex-col gap-0.5 min-w-0">
       <span className="text-[11px] font-medium text-zinc-500">{label}</span>
       <span
-        className={`text-sm font-medium break-words leading-snug ${mono ? 'font-mono tabular-nums' : ''} ${muted ? 'text-zinc-400 italic' : accent ? 'text-indigo-700' : 'text-zinc-900'}`}>
+        className={`text-sm font-medium break-words leading-snug ${mono ? 'font-mono tabular-nums' : ''} ${muted ? 'text-zinc-400 italic' : accent ? 'text-amber-800' : 'text-zinc-900'}`}>
         
         {value}
       </span>

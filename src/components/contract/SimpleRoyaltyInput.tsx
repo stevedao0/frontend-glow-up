@@ -211,15 +211,15 @@ export function SimpleRoyaltyInput({
       </div>
 
       {/* Total Amount */}
-      <div className="rounded-lg bg-indigo-50 p-4 border border-indigo-200">
+      <div className="rounded-lg bg-amber-50 p-4 border border-amber-200">
         <div className="text-center">
-          <p className="text-xs text-indigo-600 uppercase tracking-wide mb-1">
+          <p className="text-xs text-amber-700 uppercase tracking-wide mb-1">
             Tổng tiền thanh toán
           </p>
-          <p className="text-2xl font-bold text-indigo-900 font-mono">
+          <p className="text-2xl font-bold text-amber-950 font-mono">
             {formatVnd(totalAmount)} đ
           </p>
-          <p className="text-sm text-indigo-700 mt-2 italic">
+          <p className="text-sm text-amber-800 mt-2 italic">
             (Bằng chữ: {amountInWords} đồng)
           </p>
         </div>

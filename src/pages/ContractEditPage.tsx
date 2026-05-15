@@ -592,7 +592,7 @@ export function ContractEditPage({
                     <p className="font-semibold text-zinc-700 mb-1">Cap nhat thanh cong cac truong:</p>
                     <div className="flex flex-wrap gap-1">
                       {saveResult.updated_fields.map((f) => (
-                        <span key={f} className="inline-flex items-center rounded bg-indigo-100 px-1.5 py-0.5 text-[11px] font-medium text-indigo-700">
+                        <span key={f} className="inline-flex items-center rounded bg-amber-100 px-1.5 py-0.5 text-[11px] font-medium text-amber-800">
                           {f}
                         </span>
                       ))}

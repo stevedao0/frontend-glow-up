@@ -32,7 +32,7 @@ export function Tabs({
             {t.label}
             {t.count != null &&
             <span
-              className={`inline-flex items-center justify-center min-w-4 h-4 px-1 rounded-full text-[10px] font-bold tabular-nums ${active ? 'bg-indigo-100 text-indigo-700' : 'bg-zinc-200/70 text-zinc-600'}`}>
+              className={`inline-flex items-center justify-center min-w-4 h-4 px-1 rounded-full text-[10px] font-bold tabular-nums ${active ? 'bg-amber-100 text-amber-800' : 'bg-zinc-200/70 text-zinc-600'}`}>
               
                 {t.count}
               </span>
