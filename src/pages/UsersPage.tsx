@@ -963,83 +963,136 @@ function DeleteConfirmModal({
 // ─── Profile View Modal ───────────────────────────────────────────────────────
 
 function ProfileModal({ user, onClose }: { user: UserListItem; onClose: () => void }) {
+  const initial = (user.display_name || user.username).charAt(0).toUpperCase();
+  const roleLabel = mapRoleLabel(user.role);
+  const roleKey = mapRoleKey(user.role);
+  const roleTone =
+    roleKey === "super_admin"
+      ? { bg: "bg-[#9c6d3e]", soft: "bg-[#fcf2e3]", text: "text-[#5a4533]", ring: "ring-[#c89968]/40" }
+      : roleKey === "manager"
+        ? { bg: "bg-[#c89968]", soft: "bg-[#faf3e2]", text: "text-[#7a5a36]", ring: "ring-[#e3d2b3]/60" }
+        : { bg: "bg-[#5a4533]", soft: "bg-[#f1ede4]", text: "text-[#3d3025]", ring: "ring-[#d8cfc0]/60" };
+
   return (
-    <Modal open={true} onClose={onClose} title="Hồ sơ người dùng" maxWidth="md">
-      <div className="p-6">
-        <div className="flex items-center gap-4 mb-6 pb-6 border-b border-zinc-100">
-          <div className="h-16 w-16 rounded-full bg-gradient-to-br from-amber-100 to-amber-100 text-amber-800 text-2xl font-bold flex items-center justify-center">
-            {(user.display_name || user.username).charAt(0).toUpperCase()}
-          </div>
-          <div>
-            <h3 className="text-lg font-bold text-zinc-900">{user.display_name || user.username}</h3>
-            <p className="text-sm text-zinc-500">{user.email || user.username}</p>
-            <StatusBadge tone={user.is_active ? "success" : "danger"} dot className="mt-1">
-              {user.is_active ? "Hoạt động" : "Tạm khóa"}
-            </StatusBadge>
-          </div>
+    <Modal open={true} onClose={onClose} title="Hồ sơ người dùng" maxWidth="lg">
+      <div className="relative">
+        {/* Hero cover */}
+        <div className="relative h-32 overflow-hidden rounded-t-2xl">
+          <div className="absolute inset-0 bg-gradient-to-br from-[#fcf2e3] via-[#f0d4a8] to-[#e8c4a0]" />
+          <div className="absolute inset-0 dot-grid opacity-60" />
+          <div className="absolute inset-x-0 bottom-0 h-px bg-gradient-to-r from-transparent via-[#9c6d3e]/40 to-transparent" />
+          <div className="absolute -top-8 -right-8 h-32 w-32 rounded-full bg-white/40 blur-2xl" />
         </div>
 
-        <div className="grid grid-cols-2 gap-6">
-          <div className="space-y-4">
-            <div>
-              <label className="text-xs font-medium text-zinc-400 uppercase tracking-wider">
-                Username
-              </label>
-              <p className="text-sm font-medium text-zinc-900 mt-1">{user.username}</p>
+        <div className="px-6 pb-6 -mt-12">
+          {/* Avatar + identity */}
+          <div className="flex items-end gap-4">
+            <div className="relative">
+              <div className={`h-24 w-24 rounded-2xl ${roleTone.bg} text-white text-3xl font-bold flex items-center justify-center ring-4 ring-white shadow-[0_8px_24px_-8px_rgba(156,109,62,0.45)]`}>
+                {initial}
+              </div>
+              <span
+                className={`absolute -bottom-1 -right-1 h-5 w-5 rounded-full ring-2 ring-white ${
+                  user.is_active ? "bg-emerald-500" : "bg-rose-500"
+                }`}
+                aria-label={user.is_active ? "Đang hoạt động" : "Tạm khóa"}
+              />
             </div>
-            <div>
-              <label className="text-xs font-medium text-zinc-400 uppercase tracking-wider">
-                Role
-              </label>
-              <p className="text-sm font-medium text-zinc-900 mt-1 flex items-center gap-1.5">
-                <ShieldIcon className="h-4 w-4 text-zinc-400" />
-                {mapRoleLabel(user.role)}
-              </p>
-            </div>
-          </div>
-          <div className="space-y-4">
-            <div>
-              <label className="text-xs font-medium text-zinc-400 uppercase tracking-wider">
-                ID tài khoản
-              </label>
-              <p className="text-sm font-medium text-zinc-900 mt-1 font-mono">#{user.id}</p>
-            </div>
-            <div>
-              <label className="text-xs font-medium text-zinc-400 uppercase tracking-wider">
-                Đăng nhập cuối
-              </label>
-              <p className="text-sm font-medium text-zinc-900 mt-1 tabular-nums">
-                {formatDate(user.last_seen_at)}
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div className="mt-6 pt-6 border-t border-zinc-100">
-          <label className="text-xs font-medium text-zinc-400 uppercase tracking-wider">
-            Phạm vi domains
-          </label>
-          <div className="mt-2 flex flex-wrap gap-2">
-            {user.domains.length === 0 ? (
-              <span className="text-sm text-zinc-500">Không có domain</span>
-            ) : user.domains.includes("__all__") ? (
-              <span className="text-xs font-medium text-amber-700 bg-amber-50 px-2 py-1 rounded">
-                Tất cả domain
-              </span>
-            ) : (
-              user.domains.map((d) => (
-                <span
-                  key={d}
-                  className="text-xs font-medium text-zinc-600 bg-zinc-100 px-2 py-1 rounded"
-                >
-                  {d}
+            <div className="flex-1 pb-1 min-w-0">
+              <h3 className="text-xl font-bold text-[#2d2419] truncate">
+                {user.display_name || user.username}
+              </h3>
+              <p className="text-sm text-[#6b756f] truncate">{user.email || `${user.username}@vcpmc.org`}</p>
+              <div className="mt-2 flex items-center gap-2 flex-wrap">
+                <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold ${roleTone.soft} ${roleTone.text} ring-1 ${roleTone.ring}`}>
+                  <ShieldIcon className="h-3.5 w-3.5" />
+                  {roleLabel}
                 </span>
-              ))
-            )}
+                <StatusBadge tone={user.is_active ? "success" : "danger"} dot>
+                  {user.is_active ? "Hoạt động" : "Tạm khóa"}
+                </StatusBadge>
+              </div>
+            </div>
+          </div>
+
+          {/* Stats strip */}
+          <div className="mt-6 grid grid-cols-3 gap-3">
+            {[
+              { label: "ID tài khoản", value: `#${user.id}`, mono: true },
+              { label: "Đăng nhập cuối", value: formatDate(user.last_seen_at), mono: false },
+              { label: "Số domains", value: user.domains.includes("__all__") ? "Toàn bộ" : `${user.domains.length}`, mono: false },
+            ].map((s, i) => (
+              <div
+                key={i}
+                className="group relative rounded-xl bg-white ring-1 ring-[#e3d2b3]/50 p-3 transition-all duration-300 hover:ring-[#c89968]/60 hover:shadow-[0_0_0_3px_rgba(200,153,104,0.08),0_6px_18px_-6px_rgba(156,109,62,0.18)]"
+              >
+                <p className="text-[10px] font-semibold uppercase tracking-[0.1em] text-[#9aa39d]">
+                  {s.label}
+                </p>
+                <p className={`mt-1 text-sm font-semibold text-[#2d2419] ${s.mono ? "font-mono" : ""}`}>
+                  {s.value}
+                </p>
+              </div>
+            ))}
+          </div>
+
+          {/* Detail sections */}
+          <div className="mt-6 grid grid-cols-2 gap-4">
+            <div className="rounded-xl bg-[#faf8f3] ring-1 ring-[#e3d2b3]/40 p-4">
+              <h4 className="text-xs font-semibold uppercase tracking-[0.1em] text-[#9c6d3e] mb-3 flex items-center gap-1.5">
+                <KeyIcon className="h-3.5 w-3.5" />
+                Tài khoản
+              </h4>
+              <dl className="space-y-2.5 text-sm">
+                <div className="flex justify-between gap-3">
+                  <dt className="text-[#6b756f]">Username</dt>
+                  <dd className="font-mono text-[#2d2419]">{user.username}</dd>
+                </div>
+                <div className="flex justify-between gap-3">
+                  <dt className="text-[#6b756f]">Vai trò</dt>
+                  <dd className="font-medium text-[#2d2419]">{roleLabel}</dd>
+                </div>
+                <div className="flex justify-between gap-3">
+                  <dt className="text-[#6b756f]">Trạng thái</dt>
+                  <dd className={`font-medium ${user.is_active ? "text-emerald-700" : "text-rose-700"}`}>
+                    {user.is_active ? "Hoạt động" : "Tạm khóa"}
+                  </dd>
+                </div>
+              </dl>
+            </div>
+
+            <div className="rounded-xl bg-[#faf8f3] ring-1 ring-[#e3d2b3]/40 p-4">
+              <h4 className="text-xs font-semibold uppercase tracking-[0.1em] text-[#9c6d3e] mb-3 flex items-center gap-1.5">
+                <ShieldIcon className="h-3.5 w-3.5" />
+                Phạm vi nghiệp vụ
+              </h4>
+              <div className="flex flex-wrap gap-1.5">
+                {user.domains.length === 0 ? (
+                  <span className="text-sm text-[#9aa39d] italic">Không có domain</span>
+                ) : user.domains.includes("__all__") ? (
+                  <span className="inline-flex items-center gap-1 text-xs font-semibold text-[#5a4533] bg-gradient-to-r from-[#fcf2e3] to-[#f0d4a8] px-2.5 py-1 rounded-full ring-1 ring-[#c89968]/40">
+                    <ShieldIcon className="h-3 w-3" />
+                    Tất cả domain
+                  </span>
+                ) : (
+                  user.domains.map((d) => {
+                    const def = DOMAINS.find((x) => x.id === d);
+                    return (
+                      <span
+                        key={d}
+                        className="text-xs font-medium text-[#3d3025] bg-white px-2 py-1 rounded-md ring-1 ring-[#e3d2b3]/60"
+                      >
+                        {def?.label || d}
+                      </span>
+                    );
+                  })
+                )}
+              </div>
+            </div>
           </div>
         </div>
 
-        <div className="mt-6 flex justify-end">
+        <div className="px-6 py-4 border-t border-[#e3d2b3]/40 bg-[#faf8f3]/50 flex justify-end gap-2 rounded-b-2xl">
           <Button variant="ghost" onClick={onClose}>
             Đóng
           </Button>
