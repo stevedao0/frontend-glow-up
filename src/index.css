@@ -182,3 +182,35 @@ body {
   background-image: radial-gradient(rgba(156,109,62,0.14) 1px, transparent 1px);
   background-size: 14px 14px;
 }
+
+/* =========================================
+   Presentation Mode — fullscreen trình bày
+   Toggle bằng document.documentElement.classList
+   ========================================= */
+.presentation-mode aside,
+.presentation-mode header,
+.presentation-mode footer {
+  display: none !important;
+}
+.presentation-mode .filter-bar-root,
+.presentation-mode [data-hide-on-present="true"] {
+  display: none !important;
+}
+.presentation-mode main {
+  padding: 2.5rem 3rem !important;
+  background: linear-gradient(180deg, #fbf6ed 0%, #ffffff 100%);
+  min-height: 100vh;
+}
+.presentation-mode .nums,
+.presentation-mode [class*="text-[28px]"] {
+  font-size: 36px !important;
+}
+.presentation-mode h1, .presentation-mode h2 {
+  letter-spacing: -0.02em;
+}
+.presentation-mode .recharts-wrapper {
+  font-size: 14px;
+}
+.presentation-mode {
+  cursor: default;
+}
