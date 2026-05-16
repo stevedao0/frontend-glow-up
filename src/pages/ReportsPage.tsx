@@ -996,8 +996,23 @@ export function ReportsPage({
         </div>
       )}
 
+      {/* === TRUNG TÂM DỮ LIỆU — 1 panel, 5 view chuyển bằng tab === */}
+      <DataExplorerTabs
+        value={dataTab}
+        onChange={setDataTab}
+        counts={{
+          performance: employeeStats?.employees.length ?? 0,
+          signed: signedSummary.count,
+          pending: filteredPending.length,
+          expiring: filteredExpiring.length,
+          gcn: certRows.length,
+        }}
+        visible={sectionVis}
+      />
+
       {/* Section 2 — Hiệu suất nhân viên */}
-      {sectionVis.performance && employeeStats && employeeStats.employees.length > 0 && (
+      {sectionVis.performance && dataTab === 'performance' && employeeStats && employeeStats.employees.length > 0 && (
+        <div key="tab-performance" className="tab-swap">
         <ContentCard
           title="Hiệu suất xử lý theo nhân viên"
           description="Theo dõi tải công việc và tỷ lệ hoàn thành. Dữ liệu từ hợp đồng đã ký."
