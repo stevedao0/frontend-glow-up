@@ -1452,6 +1452,7 @@ export function ReportsPage({
           </div>
         )}
       </ContentCard>
+      </div>
       )}
 
       {/* Section 6 — Doanh thu */}
