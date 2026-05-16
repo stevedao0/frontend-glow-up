@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   RefreshCwIcon,
   DownloadIcon,
@@ -16,6 +16,9 @@ import {
   PrinterIcon,
   Music2Icon,
   AlertCircleIcon,
+  GitCompareIcon,
+  MoonIcon,
+  DropletsIcon,
 } from 'lucide-react';
 import {
   BarChart,
