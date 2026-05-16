@@ -13,6 +13,7 @@ export function Select({
   label,
   size = 'md',
   className = '',
+  disabled = false,
 }: {
   value: string;
   onChange: (v: string) => void;
@@ -21,6 +22,7 @@ export function Select({
   label?: string;
   size?: 'sm' | 'md';
   className?: string;
+  disabled?: boolean;
 }) {
   const h = size === 'sm' ? 'h-8' : 'h-9';
   return (
@@ -32,7 +34,8 @@ export function Select({
         <select
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className={`appearance-none w-full ${h} pl-3 pr-8 text-sm rounded-lg bg-surface text-fg-primary ring-1 ring-zinc-200 hover:ring-zinc-300 focus:outline-none focus:ring-2 focus:ring-accent-primary/40 transition-shadow duration-fast shadow-xs`}
+          disabled={disabled}
+          className={`appearance-none w-full ${h} pl-3 pr-8 text-sm rounded-lg bg-surface text-fg-primary ring-1 ring-zinc-200 hover:ring-zinc-300 focus:outline-none focus:ring-2 focus:ring-accent-primary/40 transition-shadow duration-fast shadow-xs ${disabled ? 'opacity-60 cursor-not-allowed bg-zinc-50' : ''}`}
         >
           {placeholder && <option value="">{placeholder}</option>}
           {options.map((o) => (

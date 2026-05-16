@@ -19,6 +19,9 @@ import {
   GitCompareIcon,
   MoonIcon,
   DropletsIcon,
+  UserCircle2Icon,
+  TrophyIcon,
+  LockIcon,
 } from 'lucide-react';
 import {
   BarChart,
@@ -141,11 +144,17 @@ const GCN_STATUS_LABEL: Record<string, string> = {
 
 export function ReportsPage({
   onNavigate,
+  personalMode = false,
 }: {
   onNavigate: (k: RouteKey) => void;
+  personalMode?: boolean;
 }) {
-  const { hasPermission } = useAuth();
+  const { hasPermission, currentUser } = useAuth();
   const canExport = hasPermission('reports.export');
+  const isAdmin = currentUser?.role === 'super_admin';
+  const isManager = currentUser?.role === 'manager';
+  const canPickAnyEmployee = isAdmin || isManager;
+  const scopeLocked = personalMode || (!canPickAnyEmployee);
 
   // --- Data state ---
   const [summary, setSummary] = useState<ReportsSummary | null>(null);
@@ -156,7 +165,7 @@ export function ReportsPage({
   // --- Filter state ---
   const [reportType, setReportType] = useState('overview');
   const [time, setTime] = useState('year');
-  const [employee, setEmployee] = useState('');
+  const [employee, setEmployee] = useState(scopeLocked ? currentUser?.name ?? '' : '');
   const [field, setField] = useState('');
   const [status, setStatus] = useState('');
   const [exportOpen, setExportOpen] = useState(false);
@@ -456,8 +465,37 @@ export function ReportsPage({
 
   // Build employee options dynamically from real data
   const dynamicEmployeeOptions = useMemo(() => {
-    return [{ value: '', label: 'Tất cả' }];
-  }, []);
+    const opts = (employeeStats?.employees ?? []).map((e) => ({
+      value: e.name,
+      label: e.name,
+    }));
+    return [{ value: '', label: 'Tất cả' }, ...opts];
+  }, [employeeStats]);
+
+  // Khi scope bị khóa (staff hoặc personalMode), ép employee = currentUser
+  useEffect(() => {
+    if (scopeLocked && currentUser?.name && employee !== currentUser.name) {
+      setEmployee(currentUser.name);
+    }
+  }, [scopeLocked, currentUser, employee]);
+
+  // Người nhân viên đang được scope (có thể là chính user hoặc người admin chọn)
+  const scopedEmployee = useMemo(() => {
+    if (!employee) return null;
+    return (employeeStats?.employees ?? []).find((e) => e.name === employee) ?? null;
+  }, [employee, employeeStats]);
+
+  // Ranking: thứ hạng của scopedEmployee theo doanh thu trong toàn đội
+  const ranking = useMemo(() => {
+    if (!scopedEmployee || !employeeStats) return null;
+    const sorted = [...employeeStats.employees].sort(
+      (a, b) => b.total_value - a.total_value
+    );
+    const rank = sorted.findIndex((e) => e.name === scopedEmployee.name) + 1;
+    const total = sorted.length;
+    const topRevenue = sorted[0]?.total_value ?? 0;
+    return { rank, total, topRevenue };
+  }, [scopedEmployee, employeeStats]);
 
   const handleRefresh = () => {
     fetchData();
@@ -614,9 +652,15 @@ export function ReportsPage({
   return (
     <Page>
       <PageHeader
-        breadcrumb="/bg/reports"
-        title="Báo cáo"
-        description="Theo dõi hợp đồng, hiệu suất xử lý theo nhân viên, doanh thu, GCN và danh sách cần tái ký."
+        breadcrumb={personalMode ? '/bg/reports/me' : '/bg/reports'}
+        title={personalMode ? 'Báo cáo của tôi' : 'Báo cáo'}
+        description={
+          personalMode
+            ? `Bảng tổng hợp hiệu suất cá nhân của ${currentUser?.name ?? 'bạn'} — KPI, xếp hạng, hợp đồng phụ trách.`
+            : scopeLocked
+            ? `Bạn chỉ xem dữ liệu của ${currentUser?.name ?? 'mình'}. Liên hệ quản lý để mở rộng quyền.`
+            : 'Theo dõi hợp đồng, hiệu suất xử lý theo nhân viên, doanh thu, GCN và danh sách cần tái ký.'
+        }
         actions={
           <>
             <Button
@@ -732,12 +776,13 @@ export function ReportsPage({
         <FilterField label="Thời gian" width="w-36">
           <Select value={time} onChange={setTime} options={TIME_OPTIONS} />
         </FilterField>
-        <FilterField label="Nhân viên" width="w-40">
+        <FilterField label="Nhân viên" width="w-44">
           <Select
             value={employee}
             onChange={setEmployee}
             options={dynamicEmployeeOptions}
             placeholder="Tất cả"
+            disabled={scopeLocked}
           />
         </FilterField>
         <FilterField label="Lĩnh vực" width="w-44">
@@ -763,8 +808,137 @@ export function ReportsPage({
         </FilterField>
       </FilterBar>
 
-      {/* Section 1 — KPI tổng quan */}
-      {stats && (
+      {/* Scope Banner — hiển thị phạm vi đang xem */}
+      {(scopedEmployee || scopeLocked) && (
+        <div className={`flex items-center justify-between gap-3 px-4 py-3 rounded-lg border ${
+          personalMode
+            ? 'bg-gradient-to-r from-amber-50 via-amber-50/60 to-transparent border-amber-200/70'
+            : 'bg-zinc-50 border-zinc-200'
+        }`}>
+          <div className="flex items-center gap-3">
+            <span className={`h-9 w-9 rounded-full inline-flex items-center justify-center text-white text-sm font-bold shadow ${
+              personalMode ? 'bg-gradient-to-br from-amber-500 to-amber-700' : 'bg-zinc-600'
+            }`}>
+              {(scopedEmployee?.name ?? currentUser?.name ?? '?').slice(0, 1).toUpperCase()}
+            </span>
+            <div>
+              <p className="text-[13px] font-semibold text-zinc-900 flex items-center gap-2">
+                Phạm vi: {scopedEmployee?.name ?? currentUser?.name ?? '—'}
+                {scopeLocked && (
+                  <span className="inline-flex items-center gap-1 text-[10px] font-medium px-1.5 py-0.5 rounded bg-zinc-200/70 text-zinc-600">
+                    <LockIcon className="h-3 w-3" /> Khóa bởi quyền
+                  </span>
+                )}
+                {ranking && (
+                  <span className="inline-flex items-center gap-1 text-[10px] font-medium px-1.5 py-0.5 rounded bg-amber-100 text-amber-800">
+                    <TrophyIcon className="h-3 w-3" /> #{ranking.rank}/{ranking.total} doanh thu
+                  </span>
+                )}
+              </p>
+              <p className="text-[11.5px] text-zinc-500 mt-0.5">
+                {scopedEmployee
+                  ? `${scopedEmployee.signed_this_year} HĐ năm nay · ${formatCurrency(scopedEmployee.total_value)} · ${scopedEmployee.pending_count} chờ xử lý`
+                  : 'Chưa có thống kê cho nhân viên này.'}
+              </p>
+            </div>
+          </div>
+          {!scopeLocked && employee && (
+            <Button variant="secondary" size="sm" onClick={() => setEmployee('')}>
+              Xem toàn bộ
+            </Button>
+          )}
+          {!personalMode && !employee && canPickAnyEmployee && (
+            <Button
+              variant="secondary"
+              size="sm"
+              leftIcon={<UserCircle2Icon className="h-4 w-4" />}
+              onClick={() => onNavigate('reports.me')}>
+              Báo cáo của tôi
+            </Button>
+          )}
+        </div>
+      )}
+      {!scopedEmployee && !scopeLocked && (
+        <div className="flex items-center justify-end">
+          <Button
+            variant="secondary"
+            size="sm"
+            leftIcon={<UserCircle2Icon className="h-4 w-4" />}
+            onClick={() => onNavigate('reports.me')}>
+            Báo cáo của tôi
+          </Button>
+        </div>
+      )}
+
+      {/* Personal KPI strip — chỉ khi đã có scopedEmployee */}
+      {scopedEmployee && (
+        <>
+          <div className="flex items-center gap-2 text-[12px] uppercase tracking-[0.14em] font-bold text-amber-800">
+            <UserCircle2Icon className="h-4 w-4" />
+            KPI cá nhân — {scopedEmployee.name}
+          </div>
+          <MetricStrip
+            items={[
+              {
+                label: 'HĐ ký năm nay',
+                value: formatNumber(scopedEmployee.signed_this_year),
+                tone: 'indigo',
+                icon: <FileTextIcon className="h-4 w-4" />,
+                hint: `Tuần này: ${scopedEmployee.signed_this_week} · Tháng: ${scopedEmployee.signed_this_month}`,
+              },
+              {
+                label: 'Doanh thu cá nhân',
+                value: scopedEmployee.total_value > 0
+                  ? `${(scopedEmployee.total_value / 1_000_000_000).toFixed(2)} tỷ`
+                  : '—',
+                tone: 'cyan',
+                icon: <WalletIcon className="h-4 w-4" />,
+                hint: scopedEmployee.avg_value > 0
+                  ? `TB/HĐ: ${formatCurrency(Math.round(scopedEmployee.avg_value))}`
+                  : 'Chưa có giá trị',
+              },
+              {
+                label: 'Đang chờ xử lý',
+                value: formatNumber(scopedEmployee.pending_count),
+                tone: scopedEmployee.pending_count >= 6 ? 'rose' : 'amber',
+                icon: <AlertCircleIcon className="h-4 w-4" />,
+                hint: scopedEmployee.pending_count >= 6 ? 'Quá tải — cần san tải' : 'Trong giới hạn',
+              },
+              {
+                label: 'Sắp hết hạn (phụ trách)',
+                value: formatNumber(scopedEmployee.expiring_soon),
+                tone: 'amber',
+                icon: <AlertTriangleIcon className="h-4 w-4" />,
+                hint: 'HĐ NV này phụ trách',
+              },
+              ranking
+                ? {
+                    label: 'Xếp hạng đội',
+                    value: `#${ranking.rank}/${ranking.total}`,
+                    tone: ranking.rank === 1 ? 'emerald' : ranking.rank <= 3 ? 'violet' : 'amber',
+                    icon: <TrophyIcon className="h-4 w-4" />,
+                    hint: ranking.topRevenue > 0
+                      ? `Top 1: ${(ranking.topRevenue / 1_000_000_000).toFixed(2)} tỷ`
+                      : 'Theo doanh thu',
+                  }
+                : {
+                    label: 'Xếp hạng đội',
+                    value: '—',
+                    tone: 'amber',
+                    icon: <TrophyIcon className="h-4 w-4" />,
+                  },
+            ]}
+          />
+          {!personalMode && (
+            <div className="-mt-2 mb-2 text-[11px] text-zinc-500 italic">
+              KPI tổng hệ thống bên dưới — không bị ảnh hưởng bởi filter nhân viên.
+            </div>
+          )}
+        </>
+      )}
+
+      {/* Section 1 — KPI tổng quan (ẩn trong personalMode để gọn) */}
+      {stats && !personalMode && (
         <>
           <MetricStrip
             items={[

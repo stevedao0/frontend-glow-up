@@ -8,6 +8,7 @@ import {
   PaperclipIcon,
   MailIcon,
   BarChart3Icon,
+  UserCircle2Icon,
   SearchIcon,
   ShieldIcon,
   SparklesIcon,
@@ -76,6 +77,12 @@ const BUSINESS_REST: Item[] = [
   key: 'reports',
   label: 'Báo cáo',
   icon: <BarChart3Icon className="h-[15px] w-[15px]" />,
+  requiredPerm: 'reports.view'
+},
+{
+  key: 'reports.me',
+  label: 'Báo cáo của tôi',
+  icon: <UserCircle2Icon className="h-[15px] w-[15px]" />,
   requiredPerm: 'reports.view'
 },
 {

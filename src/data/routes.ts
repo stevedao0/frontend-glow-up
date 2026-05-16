@@ -9,6 +9,7 @@ export type RouteKey =
 'annexes' |
 'dispatch' |
 'reports' |
+'reports.me' |
 'search' |
 'admin.users' |
 'admin.permissions' |
@@ -25,6 +26,7 @@ export const ROUTE_PATHS: Record<RouteKey, string> = {
   annexes: '/bg/annexes',
   dispatch: '/bg/dispatches',
   reports: '/bg/reports',
+  'reports.me': '/bg/reports/me',
   search: '/bg/search',
   'admin.users': '/admin/users',
   'admin.permissions': '/admin/permissions',
