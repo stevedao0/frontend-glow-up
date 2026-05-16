@@ -978,7 +978,7 @@ export function ReportsPage({
       {/* Insight Panel + Goal — phân tích tự động & mục tiêu */}
       {/* Insight Panel + Goal */}
       {sectionVis.insights && summary && (insights.length > 0 || stats) && (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 stagger">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 stagger">
           {stats && (
             <GoalProgressCard
               current={stats.revenue2026}
