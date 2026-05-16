@@ -270,15 +270,42 @@ export function ReportsPage({
     return summary.certificate_recent ?? [];
   }, [summary]);
 
-  // Revenue chart data
+  // Revenue chart data + forecast (dự báo cuối năm dựa trên lũy kế hiện tại)
+  const dayOfYearProgress = useMemo(() => {
+    const now = new Date();
+    const start = new Date(now.getFullYear(), 0, 0);
+    const diff = now.getTime() - start.getTime();
+    const day = Math.floor(diff / (1000 * 60 * 60 * 24));
+    return Math.max(1, day) / 365;
+  }, []);
+
   const revenueByYear = useMemo(() => {
     if (!summary) return [];
-    return (summary.revenue_by_year ?? []).map((y) => ({
-      ...y,
-      revenueBn: y.total_revenue == null ? 0 : y.total_revenue / 1_000_000_000,
-      isNull: y.total_revenue == null,
-    }));
-  }, [summary]);
+    const currentYear = new Date().getFullYear();
+    return (summary.revenue_by_year ?? []).map((y) => {
+      const revenueBn = y.total_revenue == null ? 0 : y.total_revenue / 1_000_000_000;
+      const isCurrent = y.year === currentYear && y.cumulative && !y.isNull;
+      const forecastBn = isCurrent ? revenueBn / dayOfYearProgress : 0;
+      return {
+        ...y,
+        revenueBn,
+        forecastBn,
+        isNull: y.total_revenue == null,
+        isCurrent,
+      };
+    });
+  }, [summary, dayOfYearProgress]);
+
+  // Forecast cho năm hiện tại — phục vụ insight/badge
+  const yearForecast = useMemo(() => {
+    const cur = revenueByYear.find((y) => y.isCurrent);
+    if (!cur || cur.revenueBn === 0) return null;
+    return {
+      projectedBn: cur.forecastBn,
+      currentBn: cur.revenueBn,
+      progress: dayOfYearProgress,
+    };
+  }, [revenueByYear, dayOfYearProgress]);
 
   // Stats
   const stats = summary
