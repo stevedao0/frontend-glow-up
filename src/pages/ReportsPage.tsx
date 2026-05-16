@@ -1414,11 +1414,22 @@ export function ReportsPage({
                     ];
                   }}
                 />
+                {comparePrev && (
+                  <Bar
+                    dataKey="prevRevenueBn"
+                    radius={[6, 6, 0, 0]}
+                    fill="#d4c4a8"
+                    fillOpacity={0.55}
+                    minPointSize={2}
+                    name="Năm liền trước"
+                  />
+                )}
                 <Bar
                   dataKey="revenueBn"
                   radius={[6, 6, 0, 0]}
                   onMouseEnter={(_: unknown, idx: number) => setHoverIdx(idx)}
-                  minPointSize={4}>
+                  minPointSize={4}
+                  name="Năm hiện tại">
                   {revenueByYear.map((y, i) => {
                     if (y.isNull)
                       return <Cell key={i} fill="url(#rep2NullPattern)" />;
