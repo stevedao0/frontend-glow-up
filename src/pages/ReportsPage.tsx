@@ -329,7 +329,7 @@ export function ReportsPage({
   const revenueByYear = useMemo(() => {
     if (!summary) return [];
     const currentYear = new Date().getFullYear();
-    return (summary.revenue_by_year ?? []).map((y) => {
+    const list = (summary.revenue_by_year ?? []).map((y) => {
       const revenueBn = y.total_revenue == null ? 0 : y.total_revenue / 1_000_000_000;
       const isCurrent = y.year === currentYear && y.cumulative && !y.isNull;
       const forecastBn = isCurrent ? revenueBn / dayOfYearProgress : 0;
@@ -341,6 +341,11 @@ export function ReportsPage({
         isCurrent,
       };
     });
+    // Thêm prevRevenueBn = năm liền trước trong cùng dataset
+    return list.map((y, i) => ({
+      ...y,
+      prevRevenueBn: i > 0 ? list[i - 1].revenueBn : 0,
+    }));
   }, [summary, dayOfYearProgress]);
 
   // Forecast cho năm hiện tại — phục vụ insight/badge
