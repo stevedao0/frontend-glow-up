@@ -776,12 +776,13 @@ export function ReportsPage({
         <FilterField label="Thời gian" width="w-36">
           <Select value={time} onChange={setTime} options={TIME_OPTIONS} />
         </FilterField>
-        <FilterField label="Nhân viên" width="w-40">
+        <FilterField label="Nhân viên" width="w-44">
           <Select
             value={employee}
             onChange={setEmployee}
             options={dynamicEmployeeOptions}
             placeholder="Tất cả"
+            disabled={scopeLocked}
           />
         </FilterField>
         <FilterField label="Lĩnh vực" width="w-44">
