@@ -439,23 +439,23 @@ body {
 .theme-dark-gold .hover\:bg-neutral-50:hover,
 .theme-dark-gold .hover\:bg-stone-50:hover,
 .theme-dark-gold .hover\:bg-gray-50:hover {
-  background-color: rgba(201,162,76,0.08) !important;
+  background-color: rgba(255,255,255,0.04) !important;
 }
 
-/* Sidebar specifically – give it a deeper bronze tone */
+/* Sidebar — pure obsidian with hairline divider */
 .theme-dark-gold aside {
-  background: linear-gradient(180deg, #1a140c 0%, #14100a 100%) !important;
+  background: #0a0a0a !important;
   border-right: 1px solid var(--border-default);
 }
 
-/* Topbar with subtle gold shimmer line */
+/* Topbar — frosted obsidian glass */
 .theme-dark-gold header {
-  background: rgba(28,22,16,0.85) !important;
-  backdrop-filter: blur(12px);
+  background: rgba(10,10,10,0.75) !important;
+  backdrop-filter: blur(16px) saturate(140%);
   border-bottom: 1px solid var(--border-default);
 }
 
-/* Inputs, selects, textareas */
+/* Inputs */
 .theme-dark-gold input,
 .theme-dark-gold select,
 .theme-dark-gold textarea {
@@ -468,7 +468,7 @@ body {
   color: var(--fg-subtle) !important;
 }
 
-/* KPI numbers + accent text get gold gradient */
+/* KPI numbers — brushed platinum gradient */
 .theme-dark-gold .nums,
 .theme-dark-gold [class*="text-[28px]"],
 .theme-dark-gold [class*="text-3xl"],
@@ -480,38 +480,37 @@ body {
   color: transparent;
 }
 
-/* Marble texture for hero panels only */
+/* Hero panel — obsidian with subtle blue glow */
 .theme-dark-gold .marble-hero {
   background:
-    linear-gradient(135deg, rgba(201,162,76,0.08), transparent 60%),
-    radial-gradient(ellipse at 30% 20%, rgba(232,200,120,0.06), transparent 50%),
-    radial-gradient(ellipse at 80% 80%, rgba(140,111,71,0.10), transparent 50%),
-    #1c1610 !important;
+    radial-gradient(ellipse at 30% 20%, rgba(74,144,226,0.06), transparent 50%),
+    radial-gradient(ellipse at 80% 80%, rgba(255,255,255,0.03), transparent 50%),
+    #141414 !important;
   border: 1px solid var(--border-default) !important;
   box-shadow: var(--shadow-gold);
 }
 
-/* Gold border accent */
+/* Hover frame — cool platinum ring */
 .theme-dark-gold .gold-frame:hover {
   box-shadow:
-    0 0 0 1px rgba(201,162,76,0.45),
-    0 0 0 4px rgba(201,162,76,0.08),
-    0 12px 28px -10px rgba(201,162,76,0.30) !important;
+    0 0 0 1px rgba(255,255,255,0.18),
+    0 0 0 4px rgba(74,144,226,0.06),
+    0 12px 28px -10px rgba(0,0,0,0.6) !important;
 }
 
 /* Scrollbar */
 .theme-dark-gold .scrollbar-thin::-webkit-scrollbar-thumb {
-  background: rgba(201,162,76,0.25);
+  background: rgba(255,255,255,0.15);
 }
 .theme-dark-gold .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-  background: rgba(201,162,76,0.45);
+  background: rgba(255,255,255,0.30);
 }
 
-/* Tab underline -> pure gold */
+/* Tab underline — electric steel blue */
 .theme-dark-gold .tab-underline,
 .theme-dark-gold [class*="bg-gradient-to-r"][class*="from-amber"],
 .theme-dark-gold [class*="bg-gradient-to-r"][class*="from-yellow"] {
-  background: var(--gradient-gold) !important;
+  background: linear-gradient(90deg, #4a90e2, #ffffff, #4a90e2) !important;
 }
 
 /* Catch arbitrary cream/ivory backgrounds used in HeroPanel etc. */
@@ -537,8 +536,8 @@ body {
 .theme-dark-gold [class*="from-[#f2"],
 .theme-dark-gold [class*="from-[#f5"],
 .theme-dark-gold [class*="from-[#f7"] {
-  --tw-gradient-from: #1c1610 var(--tw-gradient-from-position) !important;
-  --tw-gradient-to: rgba(28,22,16,0) var(--tw-gradient-to-position) !important;
+  --tw-gradient-from: #141414 var(--tw-gradient-from-position) !important;
+  --tw-gradient-to: rgba(20,20,20,0) var(--tw-gradient-to-position) !important;
   --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important;
 }
 .theme-dark-gold [class*="via-[#fa"],
@@ -547,7 +546,7 @@ body {
 .theme-dark-gold [class*="via-[#ff"],
 .theme-dark-gold [class*="via-[#f2"],
 .theme-dark-gold [class*="via-[#f5"] {
-  --tw-gradient-via: #221a12 !important;
+  --tw-gradient-via: #1a1a1a !important;
   --tw-gradient-via-position: 50% !important;
   --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-via) var(--tw-gradient-via-position), var(--tw-gradient-to) !important;
 }
@@ -558,7 +557,7 @@ body {
 .theme-dark-gold [class*="to-[#f2"],
 .theme-dark-gold [class*="to-[#ef"],
 .theme-dark-gold [class*="to-[#e9"] {
-  --tw-gradient-to: #2a2014 var(--tw-gradient-to-position) !important;
+  --tw-gradient-to: #222222 var(--tw-gradient-to-position) !important;
 }
 .theme-dark-gold [class*="border-[#e3"],
 .theme-dark-gold [class*="border-[#ef"],
