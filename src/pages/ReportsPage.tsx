@@ -1274,7 +1274,7 @@ export function ReportsPage({
                 </tr>
               </thead>
               <tbody>
-                {signedRows.map((r) => (
+                {signedPagedRows.map((r) => (
                   <tr
                     key={r.id}
                     className="border-b border-zinc-100 last:border-0 hover:bg-amber-50/30 transition-colors cursor-pointer"
