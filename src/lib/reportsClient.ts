@@ -112,6 +112,79 @@ export type EmployeeStatsResponse = {
 };
 
 // =============================================================================
+// NEW: Employee options for filter/select
+// =============================================================================
+
+export type EmployeeOption = {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  contract_count: number;
+};
+
+export type EmployeeOptionsResponse = {
+  items: EmployeeOption[];
+};
+
+// =============================================================================
+// NEW: Employee performance statistics
+// =============================================================================
+
+export type EmployeePerformanceItem = {
+  employee_id: string;
+  employee_name: string;
+  employee_email: string;
+  total_contracts: number;
+  signed_contracts: number;
+  pending_contracts: number;
+  expiring_contracts: number;
+  expired_contracts: number;
+  total_revenue: number;
+  avg_revenue_per_contract: number;
+  last_contract_date: string | null;
+};
+
+export type EmployeePerformanceSummary = {
+  total_employees: number;
+  total_contracts: number;
+  signed_contracts: number;
+  pending_contracts: number;
+  expiring_contracts: number;
+  expired_contracts: number;
+  total_revenue: number;
+};
+
+export type EmployeePerformanceResponse = {
+  summary: EmployeePerformanceSummary;
+  items: EmployeePerformanceItem[];
+};
+
+// =============================================================================
+// NEW: Employee contracts detail
+// =============================================================================
+
+export type EmployeeContractItem = {
+  contract_id: number;
+  contract_no: string;
+  legal_name: string | null;
+  brand_name: string | null;
+  domain: string | null;
+  status: string;
+  effective_date: string | null;
+  expiry_date: string | null;
+  total_amount: number | null;
+  created_at: string | null;
+};
+
+export type EmployeeContractsResponse = {
+  items: EmployeeContractItem[];
+  total: number;
+  page: number;
+  page_size: number;
+};
+
+// =============================================================================
 // API calls
 // =============================================================================
 
@@ -176,6 +249,107 @@ export function listExpiringContracts(
  */
 export function getEmployeeStats(token: string): Promise<EmployeeStatsResponse> {
   return apiRequest<EmployeeStatsResponse>("/reports/employees", { token });
+}
+
+// =============================================================================
+// NEW: Employee options for filter/select
+// =============================================================================
+
+/**
+ * Get list of employees for filter/select.
+ * GET /api/reports/employees/options
+ *
+ * Returns all employees from users table and contract assignees.
+ */
+export function getEmployeeOptions(
+  token: string,
+  params: { with_contracts_only?: boolean } = {}
+): Promise<EmployeeOptionsResponse> {
+  const qs = new URLSearchParams();
+  if (params.with_contracts_only) qs.set("with_contracts_only", "true");
+  const suffix = qs.toString();
+  return apiRequest<EmployeeOptionsResponse>(
+    `/reports/employees/options${suffix ? `?${suffix}` : ""}`,
+    { token }
+  );
+}
+
+// =============================================================================
+// NEW: Employee performance statistics
+// =============================================================================
+
+export type EmployeePerformanceParams = {
+  employee_id?: string;
+  employee_email?: string;
+  year?: number;
+  date_from?: string;
+  date_to?: string;
+  domain?: string;
+  status?: string;
+};
+
+/**
+ * Get employee performance statistics.
+ * GET /api/reports/employees/performance
+ *
+ * If no employee_id: returns summary for all employees.
+ * If employee_id: returns detail for that employee.
+ */
+export function getEmployeePerformance(
+  token: string,
+  params: EmployeePerformanceParams = {}
+): Promise<EmployeePerformanceResponse> {
+  const qs = new URLSearchParams();
+  if (params.employee_id) qs.set("employee_id", params.employee_id);
+  if (params.employee_email) qs.set("employee_email", params.employee_email);
+  if (params.year) qs.set("year", String(params.year));
+  if (params.date_from) qs.set("date_from", params.date_from);
+  if (params.date_to) qs.set("date_to", params.date_to);
+  if (params.domain) qs.set("domain", params.domain);
+  if (params.status) qs.set("status", params.status);
+  const suffix = qs.toString();
+  return apiRequest<EmployeePerformanceResponse>(
+    `/reports/employees/performance${suffix ? `?${suffix}` : ""}`,
+    { token }
+  );
+}
+
+// =============================================================================
+// NEW: Employee contracts detail
+// =============================================================================
+
+export type EmployeeContractsParams = {
+  year?: number;
+  date_from?: string;
+  date_to?: string;
+  domain?: string;
+  status?: string;
+  page?: number;
+  page_size?: number;
+};
+
+/**
+ * Get contracts for a specific employee with pagination.
+ * GET /api/reports/employees/{employee_id}/contracts
+ */
+export function getEmployeeContracts(
+  token: string,
+  employeeId: string,
+  params: EmployeeContractsParams = {}
+): Promise<EmployeeContractsResponse> {
+  const qs = new URLSearchParams();
+  if (params.year) qs.set("year", String(params.year));
+  if (params.date_from) qs.set("date_from", params.date_from);
+  if (params.date_to) qs.set("date_to", params.date_to);
+  if (params.domain) qs.set("domain", params.domain);
+  if (params.status) qs.set("status", params.status);
+  if (params.page) qs.set("page", String(params.page));
+  if (params.page_size) qs.set("page_size", String(params.page_size));
+  const suffix = qs.toString();
+  return apiRequest<EmployeeContractsResponse>(
+    `/reports/employees/${encodeURIComponent(employeeId)}/contracts${suffix ? `?${suffix}` : ""}`,
+    { token }
+  );
 }
 
 // =============================================================================

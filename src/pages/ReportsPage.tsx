@@ -68,6 +68,9 @@ import {
 import {
   getReportsSummary,
   getEmployeeStats,
+  getEmployeeOptions,
+  getEmployeePerformance,
+  getEmployeeContracts,
   listExpiringContracts,
   listReportsCertificates,
   type ReportsSummary,
@@ -75,6 +78,9 @@ import {
   type CertificateListItem,
   type SignedContractItem,
   type EmployeeStatsResponse,
+  type EmployeeOptionsResponse,
+  type EmployeePerformanceResponse,
+  type EmployeeContractsResponse,
 } from '../lib/reportsClient';
 import { TOKEN_KEY } from '../lib/authClient';
 import { formatCurrency, formatDate, formatNumber } from '../lib/format';
@@ -152,6 +158,9 @@ export function ReportsPage({
   // --- Data state ---
   const [summary, setSummary] = useState<ReportsSummary | null>(null);
   const [employeeStats, setEmployeeStats] = useState<EmployeeStatsResponse | null>(null);
+  const [employeeOptions, setEmployeeOptions] = useState<EmployeeOptionsResponse | null>(null);
+  const [employeePerformance, setEmployeePerformance] = useState<EmployeePerformanceResponse | null>(null);
+  const [employeeContracts, setEmployeeContracts] = useState<EmployeeContractsResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState<string | null>(null);
 
@@ -221,12 +230,14 @@ export function ReportsPage({
     setLoading(true);
     setFetchError(null);
     try {
-      const [data, empStats] = await Promise.all([
+      const [data, empStats, empOptions] = await Promise.all([
         getReportsSummary(token),
         getEmployeeStats(token),
+        getEmployeeOptions(token, { with_contracts_only: false }),
       ]);
       setSummary(data);
       setEmployeeStats(empStats);
+      setEmployeeOptions(empOptions);
     } catch (err: any) {
       setFetchError(err?.message || 'Không thể tải dữ liệu báo cáo.');
     } finally {
@@ -237,6 +248,39 @@ export function ReportsPage({
   useEffect(() => {
     fetchData();
   }, [fetchData]);
+
+  // --- Fetch employee performance when employee filter changes ---
+  const fetchEmployeePerformance = React.useCallback(async () => {
+    const token = localStorage.getItem(TOKEN_KEY);
+    if (!token) return;
+
+    try {
+      const perf = await getEmployeePerformance(token, {
+        employee_id: employee || undefined,
+        domain: field || undefined,
+        status: status || undefined,
+      });
+      setEmployeePerformance(perf);
+
+      // If specific employee selected, fetch their contracts
+      if (employee) {
+        const contracts = await getEmployeeContracts(token, employee, {
+          domain: field || undefined,
+          status: status || undefined,
+          page_size: 50,
+        });
+        setEmployeeContracts(contracts);
+      } else {
+        setEmployeeContracts(null);
+      }
+    } catch (err: any) {
+      console.error('Failed to fetch employee performance:', err);
+    }
+  }, [employee, field, status]);
+
+  useEffect(() => {
+    fetchEmployeePerformance();
+  }, [fetchEmployeePerformance]);
 
   // --- Derived data ---
   const insights = useMemo<ReportInsight[]>(() => {
@@ -459,34 +503,35 @@ export function ReportsPage({
     (s.field ?? '') === field &&
     (s.status ?? '') === status;
 
-  // Build employee options dynamically from real data
+  // Build employee options dynamically from real data (from employees/options API)
   const dynamicEmployeeOptions = useMemo(() => {
-    const opts = (employeeStats?.employees ?? []).map((e) => ({
-      value: e.name,
+    const opts = (employeeOptions?.items ?? []).map((e) => ({
+      value: e.id,
       label: e.name,
     }));
     return [{ value: '', label: 'Tất cả' }, ...opts];
-  }, [employeeStats]);
+  }, [employeeOptions]);
 
   // (Đã bỏ scopeLock — tất cả thành viên team xem chung)
 
   // Người nhân viên đang được scope (có thể là chính user hoặc người admin chọn)
+  // Sử dụng data từ employeePerformance API mới
   const scopedEmployee = useMemo(() => {
-    if (!employee) return null;
-    return (employeeStats?.employees ?? []).find((e) => e.name === employee) ?? null;
-  }, [employee, employeeStats]);
+    if (!employee || !employeePerformance) return null;
+    return employeePerformance.items.find((e) => e.employee_id === employee) ?? null;
+  }, [employee, employeePerformance]);
 
   // Ranking: thứ hạng của scopedEmployee theo doanh thu trong toàn đội
   const ranking = useMemo(() => {
-    if (!scopedEmployee || !employeeStats) return null;
-    const sorted = [...employeeStats.employees].sort(
-      (a, b) => b.total_value - a.total_value
+    if (!scopedEmployee || !employeePerformance) return null;
+    const sorted = [...employeePerformance.items].sort(
+      (a, b) => b.total_revenue - a.total_revenue
     );
-    const rank = sorted.findIndex((e) => e.name === scopedEmployee.name) + 1;
+    const rank = sorted.findIndex((e) => e.employee_id === scopedEmployee.employee_id) + 1;
     const total = sorted.length;
-    const topRevenue = sorted[0]?.total_value ?? 0;
+    const topRevenue = sorted[0]?.total_revenue ?? 0;
     return { rank, total, topRevenue };
-  }, [scopedEmployee, employeeStats]);
+  }, [scopedEmployee, employeePerformance]);
 
   const handleRefresh = () => {
     fetchData();
@@ -809,7 +854,7 @@ export function ReportsPage({
                 )}
               </p>
               <p className="text-[11.5px] text-zinc-500 mt-0.5">
-                {`${scopedEmployee.signed_this_year} HĐ năm nay · ${formatCurrency(scopedEmployee.total_value)} · ${scopedEmployee.pending_count} chờ xử lý`}
+                {`${scopedEmployee.signed_contracts} HĐ đã ký · ${formatCurrency(scopedEmployee.total_revenue)} · ${scopedEmployee.pending_contracts} chờ xử lý`}
               </p>
             </div>
           </div>
@@ -824,41 +869,41 @@ export function ReportsPage({
         <>
           <div className="flex items-center gap-2 text-[12px] uppercase tracking-[0.14em] font-bold text-amber-800">
             <UserCircle2Icon className="h-4 w-4" />
-            KPI của {scopedEmployee.name}
+            KPI của {scopedEmployee.employee_name}
           </div>
           <MetricStrip
             items={[
               {
-                label: 'HĐ ký năm nay',
-                value: formatNumber(scopedEmployee.signed_this_year),
+                label: 'Tổng HĐ',
+                value: formatNumber(scopedEmployee.total_contracts),
                 tone: 'indigo',
                 icon: <FileTextIcon className="h-4 w-4" />,
-                hint: `Tuần này: ${scopedEmployee.signed_this_week} · Tháng: ${scopedEmployee.signed_this_month}`,
+                hint: `Đã ký: ${scopedEmployee.signed_contracts} · Chờ: ${scopedEmployee.pending_contracts}`,
               },
               {
                 label: 'Doanh thu',
-                value: scopedEmployee.total_value > 0
-                  ? `${(scopedEmployee.total_value / 1_000_000_000).toFixed(2)} tỷ`
+                value: scopedEmployee.total_revenue > 0
+                  ? `${(scopedEmployee.total_revenue / 1_000_000_000).toFixed(2)} tỷ`
                   : '—',
                 tone: 'cyan',
                 icon: <WalletIcon className="h-4 w-4" />,
-                hint: scopedEmployee.avg_value > 0
-                  ? `TB/HĐ: ${formatCurrency(Math.round(scopedEmployee.avg_value))}`
+                hint: scopedEmployee.avg_revenue_per_contract > 0
+                  ? `TB/HĐ: ${formatCurrency(scopedEmployee.avg_revenue_per_contract)}`
                   : 'Chưa có giá trị',
               },
               {
-                label: 'Đang chờ xử lý',
-                value: formatNumber(scopedEmployee.pending_count),
-                tone: scopedEmployee.pending_count >= 6 ? 'rose' : 'amber',
-                icon: <AlertCircleIcon className="h-4 w-4" />,
-                hint: scopedEmployee.pending_count >= 6 ? 'Quá tải — cần san tải' : 'Trong giới hạn',
-              },
-              {
                 label: 'Sắp hết hạn',
-                value: formatNumber(scopedEmployee.expiring_soon),
-                tone: 'amber',
+                value: formatNumber(scopedEmployee.expiring_contracts),
+                tone: scopedEmployee.expiring_contracts >= 6 ? 'rose' : 'amber',
                 icon: <AlertTriangleIcon className="h-4 w-4" />,
                 hint: 'HĐ NV này phụ trách',
+              },
+              {
+                label: 'Đã hết hạn',
+                value: formatNumber(scopedEmployee.expired_contracts),
+                tone: 'rose',
+                icon: <XCircleIcon className="h-4 w-4" />,
+                hint: 'Cần rà soát tái ký',
               },
             ]}
           />
@@ -1001,7 +1046,7 @@ export function ReportsPage({
         value={dataTab}
         onChange={setDataTab}
         counts={{
-          performance: employeeStats?.employees.length ?? 0,
+          performance: employeePerformance?.summary.total_employees ?? 0,
           signed: signedSummary.count,
           pending: filteredPending.length,
           expiring: filteredExpiring.length,
@@ -1011,20 +1056,20 @@ export function ReportsPage({
       />
 
       {/* Section 2 — Hiệu suất nhân viên */}
-      {sectionVis.performance && dataTab === 'performance' && employeeStats && employeeStats.employees.length > 0 && (
+      {sectionVis.performance && dataTab === 'performance' && employeePerformance && employeePerformance.items.length > 0 && (
         <div key="tab-performance" className="tab-swap">
         <ContentCard
           title="Hiệu suất xử lý theo nhân viên"
-          description="Theo dõi tải công việc và tỷ lệ hoàn thành. Dữ liệu từ hợp đồng đã ký."
+          description="Theo dõi tải công việc và tỷ lệ hoàn thành. Dữ liệu từ hợp đồng thực tế."
           padded={false}
           accent
           actions={
             <Tabs
               tabs={[
                 { value: '', label: 'Tất cả' },
-                ...employeeStats.employees.map((e) => ({
-                  value: e.name,
-                  label: e.name,
+                ...employeePerformance.items.map((e) => ({
+                  value: e.employee_id,
+                  label: e.employee_name,
                 })),
               ]}
               value={employee}
@@ -1034,10 +1079,94 @@ export function ReportsPage({
           <EmployeePerformanceTable
             items={
               employee
-                ? employeeStats.employees.filter((e) => e.name === employee)
-                : employeeStats.employees
+                ? employeePerformance.items.filter((e) => e.employee_id === employee)
+                : employeePerformance.items
             }
           />
+        </ContentCard>
+        </div>
+      )}
+
+      {/* Section 2b — Chi tiết hợp đồng của nhân viên được chọn */}
+      {sectionVis.performance && dataTab === 'performance' && employee && employeeContracts && employeeContracts.items.length > 0 && (
+        <div key="tab-employee-contracts" className="tab-swap">
+        <ContentCard
+          title={`Hợp đồng của nhân viên`}
+          description={`Danh sách hợp đồng của nhân viên được chọn.`}
+          padded={false}
+          accent>
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="bg-gradient-to-b from-amber-50/30 via-zinc-50 to-zinc-50/30 border-b border-zinc-200">
+                  <Th>Số HĐ</Th>
+                  <Th>Đơn vị / Bảng hiệu</Th>
+                  <Th>Lĩnh vực</Th>
+                  <Th>Trạng thái</Th>
+                  <Th>Ngày ký</Th>
+                  <Th>Ngày hết hạn</Th>
+                  <Th align="right">Giá trị</Th>
+                </tr>
+              </thead>
+              <tbody>
+                {employeeContracts.items.map((c) => (
+                  <tr
+                    key={c.contract_id}
+                    className="border-b border-zinc-100 last:border-0 hover:bg-amber-50/30 transition-colors cursor-pointer"
+                    onClick={() => onNavigate('contracts.list')}>
+                    <td className="px-4 py-3.5 align-top whitespace-nowrap">
+                      <span className="font-mono text-[13px] font-semibold text-amber-800">
+                        {c.contract_no}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3.5 align-top max-w-[260px]">
+                      <p className="text-[14px] font-semibold text-zinc-900 leading-snug line-clamp-2">
+                        {c.legal_name || '—'}
+                      </p>
+                      {c.brand_name && (
+                        <p className="mt-0.5 text-[12px] text-zinc-500 truncate">
+                          {c.brand_name}
+                        </p>
+                      )}
+                    </td>
+                    <td className="px-4 py-3.5 align-top text-[13px] text-zinc-700">
+                      {c.domain || '—'}
+                    </td>
+                    <td className="px-4 py-3.5 align-top">
+                      <StatusBadge
+                        tone={
+                          c.status === 'Hoạt động'
+                            ? 'success'
+                            : c.status === 'Sắp hết hạn'
+                              ? 'warning'
+                              : c.status === 'Hết hạn'
+                                ? 'danger'
+                                : 'neutral'
+                        }
+                        dot>
+                        {c.status}
+                      </StatusBadge>
+                    </td>
+                    <td className="px-4 py-3.5 align-top tabular-nums text-[13px] whitespace-nowrap text-zinc-700">
+                      {c.effective_date ? formatDate(c.effective_date) : '—'}
+                    </td>
+                    <td className="px-4 py-3.5 align-top tabular-nums text-[13px] whitespace-nowrap text-zinc-700">
+                      {c.expiry_date ? formatDate(c.expiry_date) : '—'}
+                    </td>
+                    <td className="px-4 py-3.5 align-top text-right tabular-nums whitespace-nowrap">
+                      {c.total_amount != null ? (
+                        <span className="font-semibold text-zinc-900 text-[13px]">
+                          {formatCurrency(c.total_amount)}
+                        </span>
+                      ) : (
+                        <span className="text-zinc-400 italic text-xs">Chưa có</span>
+                      )}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </ContentCard>
         </div>
       )}

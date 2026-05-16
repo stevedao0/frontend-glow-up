@@ -1,26 +1,25 @@
 import React from 'react';
-import { EmployeeStatsItem } from '../../lib/reportsClient';
-import { formatShortVND, formatNumber } from '../../lib/format';
+import { EmployeePerformanceItem } from '../../lib/reportsClient';
+import { formatShortVND, formatNumber, formatCurrency } from '../../lib/format';
 
 type TableItem = {
   key: string;
   name: string;
   email: string;
-  signedThisWeek: number;
-  signedThisMonth: number;
-  signedThisYear: number;
   totalContracts: number;
-  pending: number;
-  expiringAssigned: number;
+  signedContracts: number;
+  pendingContracts: number;
+  expiringContracts: number;
+  expiredContracts: number;
   revenue: number;
   avgRevenue: number;
-  gcnHandled: number;
+  lastContractDate: string | null;
   completionRate: number;
 };
 
 function getPerformanceTone(p: TableItem): 'good' | 'watch' | 'overload' {
-  if (p.completionRate >= 80 && p.pending <= 4) return 'good';
-  if (p.completionRate < 70 || p.pending >= 6) return 'overload';
+  if (p.completionRate >= 80 && p.pendingContracts <= 4) return 'good';
+  if (p.completionRate < 70 || p.pendingContracts >= 6) return 'overload';
   return 'watch';
 }
 
@@ -52,29 +51,28 @@ const toneBadge: Record<
 };
 
 interface EmployeePerformanceTableProps {
-  items: EmployeeStatsItem[];
+  items: EmployeePerformanceItem[];
 }
 
 export function EmployeePerformanceTable({ items }: EmployeePerformanceTableProps) {
   const tableItems: TableItem[] = items.map((emp) => {
-    const totalContracts = emp.signed_this_year + emp.pending_count;
+    const totalContracts = emp.total_contracts;
     const completionRate = totalContracts > 0
-      ? Math.round((emp.signed_this_year / totalContracts) * 100)
+      ? Math.round((emp.signed_contracts / totalContracts) * 100)
       : 0;
 
     return {
-      key: emp.name.toLowerCase().replace(/\s+/g, '-'),
-      name: emp.name,
-      email: '',
-      signedThisWeek: emp.signed_this_week,
-      signedThisMonth: emp.signed_this_month,
-      signedThisYear: emp.signed_this_year,
-      totalContracts,
-      pending: emp.pending_count,
-      expiringAssigned: emp.expiring_soon,
-      revenue: emp.total_value,
-      avgRevenue: emp.avg_value,
-      gcnHandled: 0,
+      key: emp.employee_id.toLowerCase().replace(/\s+/g, '-'),
+      name: emp.employee_name,
+      email: emp.employee_email,
+      totalContracts: emp.total_contracts,
+      signedContracts: emp.signed_contracts,
+      pendingContracts: emp.pending_contracts,
+      expiringContracts: emp.expiring_contracts,
+      expiredContracts: emp.expired_contracts,
+      revenue: emp.total_revenue,
+      avgRevenue: emp.avg_revenue_per_contract,
+      lastContractDate: emp.last_contract_date,
       completionRate,
     };
   });
@@ -85,15 +83,14 @@ export function EmployeePerformanceTable({ items }: EmployeePerformanceTableProp
         <thead>
           <tr className="bg-gradient-to-b from-amber-50/30 via-zinc-50 to-zinc-50/30 border-b border-zinc-200">
             <Th>Nhân viên</Th>
-            <Th align="right">Tuần này</Th>
-            <Th align="right">Tháng này</Th>
-            <Th align="right">Năm nay</Th>
+            <Th align="right">Tổng HĐ</Th>
+            <Th align="right">Đã ký</Th>
             <Th align="right">Chờ xử lý</Th>
             <Th align="right">Sắp hết hạn</Th>
+            <Th align="right">Hết hạn</Th>
             <Th align="right">Doanh thu</Th>
             <Th align="right">TB/HĐ</Th>
-            <Th>Hoàn thành</Th>
-            <Th>Đánh giá</Th>
+            <Th>HĐ gần nhất</Th>
           </tr>
         </thead>
         <tbody>
@@ -121,33 +118,33 @@ export function EmployeePerformanceTable({ items }: EmployeePerformanceTableProp
                 </td>
                 <Td align="right">
                   <span className="font-semibold text-zinc-900 tabular-nums">
-                    {p.signedThisWeek}
+                    {p.totalContracts}
                   </span>
                 </Td>
                 <Td align="right">
                   <span className="font-semibold text-zinc-900 tabular-nums">
-                    {p.signedThisMonth}
-                  </span>
-                </Td>
-                <Td align="right">
-                  <span className="font-semibold text-zinc-900 tabular-nums">
-                    {p.signedThisYear}
+                    {p.signedContracts}
                   </span>
                 </Td>
                 <Td align="right">
                   <span
                     className={`tabular-nums font-medium ${
-                      p.pending >= 6 ? 'text-rose-700' : 'text-zinc-700'
+                      p.pendingContracts >= 6 ? 'text-rose-700' : 'text-zinc-700'
                     }`}>
-                    {p.pending}
+                    {p.pendingContracts}
                   </span>
                 </Td>
                 <Td align="right">
                   <span
                     className={`tabular-nums font-medium ${
-                      p.expiringAssigned >= 7 ? 'text-amber-700' : 'text-zinc-700'
+                      p.expiringContracts >= 7 ? 'text-amber-700' : 'text-zinc-700'
                     }`}>
-                    {p.expiringAssigned}
+                    {p.expiringContracts}
+                  </span>
+                </Td>
+                <Td align="right">
+                  <span className="text-zinc-600 tabular-nums">
+                    {p.expiredContracts}
                   </span>
                 </Td>
                 <Td align="right">
@@ -160,31 +157,8 @@ export function EmployeePerformanceTable({ items }: EmployeePerformanceTableProp
                     {p.avgRevenue > 0 ? formatShortVND(p.avgRevenue) : '—'}
                   </span>
                 </Td>
-                <td className="px-4 py-3.5 align-top w-44">
-                  <div className="flex items-center gap-2">
-                    <div className="flex-1 h-1.5 rounded-full bg-zinc-100 overflow-hidden">
-                      <div
-                        className={`h-full transition-all duration-500 ${
-                          p.completionRate >= 80
-                            ? 'bg-gradient-to-r from-emerald-400 to-emerald-500'
-                            : p.completionRate >= 70
-                              ? 'bg-gradient-to-r from-amber-400 to-amber-500'
-                              : 'bg-gradient-to-r from-rose-400 to-rose-500'
-                        }`}
-                        style={{ width: `${p.completionRate}%` }}
-                      />
-                    </div>
-                    <span className="text-xs font-semibold text-zinc-700 tabular-nums shrink-0">
-                      {p.completionRate}%
-                    </span>
-                  </div>
-                </td>
-                <td className="px-4 py-3.5 align-top">
-                  <span
-                    className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-medium ring-1 ring-inset ${badge.bg} ${badge.text} ${badge.ring}`}>
-                    <span className={`h-1.5 w-1.5 rounded-full ${badge.dot}`} />
-                    {badge.label}
-                  </span>
+                <td className="px-4 py-3.5 align-top text-[12px] text-zinc-500 whitespace-nowrap">
+                  {p.lastContractDate ? new Date(p.lastContractDate).toLocaleDateString('vi-VN') : '—'}
                 </td>
               </tr>
             );
