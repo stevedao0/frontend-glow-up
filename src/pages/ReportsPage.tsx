@@ -865,7 +865,8 @@ export function ReportsPage({
       )}
 
       {/* Insight Panel + Goal — phân tích tự động & mục tiêu */}
-      {summary && (insights.length > 0 || stats) && (
+      {/* Insight Panel + Goal */}
+      {sectionVis.insights && summary && (insights.length > 0 || stats) && (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 stagger">
           {stats && (
             <GoalProgressCard
@@ -885,6 +886,7 @@ export function ReportsPage({
       )}
 
       {/* Section 2 — Hiệu suất nhân viên */}
+      {sectionVis.performance && (
       <ContentCard
         title="Hiệu suất xử lý theo nhân viên"
         description="Theo dõi tải công việc và tỷ lệ hoàn thành. Dữ liệu nhân viên sẽ được cập nhật khi backend hỗ trợ thống kê theo người dùng."
