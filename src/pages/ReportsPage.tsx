@@ -1798,6 +1798,77 @@ export function ReportsPage({
   );
 }
 
+/** Premium segmented tab strip — gold underline, smooth indicator, count badges */
+type DataTabKey = 'performance' | 'signed' | 'pending' | 'expiring' | 'gcn';
+function DataExplorerTabs({
+  value,
+  onChange,
+  counts,
+  visible,
+}: {
+  value: DataTabKey;
+  onChange: (v: DataTabKey) => void;
+  counts: Record<DataTabKey, number>;
+  visible: { performance: boolean; signed: boolean; pending: boolean; expiring: boolean; gcn: boolean };
+}) {
+  const tabs: { key: DataTabKey; label: string; sub: string }[] = [
+    { key: 'signed', label: 'Đã ký', sub: 'Hợp đồng đã ký' },
+    { key: 'pending', label: 'Chờ xử lý', sub: 'Hợp đồng chưa ký' },
+    { key: 'expiring', label: 'Sắp hết hạn', sub: 'Cần tái ký' },
+    { key: 'performance', label: 'Nhân viên', sub: 'Hiệu suất xử lý' },
+    { key: 'gcn', label: 'GCN', sub: 'Giấy chứng nhận' },
+  ].filter((t) => visible[t.key]);
+  const active = tabs.find((t) => t.key === value);
+  return (
+    <div className="relative rounded-2xl bg-gradient-to-br from-white via-white to-amber-50/30 ring-1 ring-zinc-900/[0.06] shadow-[0_1px_2px_rgba(15,15,25,0.04),0_8px_24px_-12px_rgba(156,109,62,0.15)] overflow-hidden">
+      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-amber-500/40 to-transparent" />
+      <div className="flex items-stretch gap-1 p-2 overflow-x-auto scrollbar-thin">
+        {tabs.map((t) => {
+          const isActive = t.key === value;
+          const count = counts[t.key];
+          return (
+            <button
+              key={t.key}
+              type="button"
+              onClick={() => onChange(t.key)}
+              className={`group relative flex-1 min-w-[140px] px-4 py-3 rounded-xl text-left transition-all duration-200 ease-out ${
+                isActive
+                  ? 'bg-white shadow-[0_2px_8px_rgba(156,109,62,0.18),0_0_0_1px_rgba(200,153,104,0.35)] -translate-y-px'
+                  : 'hover:bg-white/60 hover:shadow-sm'
+              }`}>
+              <div className="flex items-center justify-between gap-2">
+                <span className={`text-[13px] font-semibold tracking-tight ${isActive ? 'text-amber-900' : 'text-zinc-700 group-hover:text-zinc-900'}`}>
+                  {t.label}
+                </span>
+                {count > 0 && (
+                  <span className={`inline-flex items-center justify-center min-w-5 h-5 px-1.5 rounded-full text-[10px] font-bold tabular-nums transition-colors ${
+                    isActive
+                      ? 'bg-gradient-to-br from-amber-500 to-amber-700 text-white shadow-[0_0_10px_rgba(200,153,104,0.45)]'
+                      : 'bg-zinc-100 text-zinc-600 group-hover:bg-amber-100 group-hover:text-amber-800'
+                  }`}>
+                    {count}
+                  </span>
+                )}
+              </div>
+              <p className={`mt-0.5 text-[10.5px] font-medium uppercase tracking-[0.1em] ${isActive ? 'text-amber-700/80' : 'text-zinc-400'}`}>
+                {t.sub}
+              </p>
+              {isActive && (
+                <span className="tab-underline absolute bottom-1 left-3 right-3 h-[2px] rounded-full bg-gradient-to-r from-amber-400 via-amber-600 to-amber-400 shadow-[0_0_8px_rgba(200,153,104,0.6)]" />
+              )}
+            </button>
+          );
+        })}
+      </div>
+      {active && (
+        <p className="px-5 pb-3 -mt-1 text-[11px] text-zinc-500">
+          Đang xem: <span className="font-semibold text-amber-800">{active.label}</span> — {active.sub.toLowerCase()}.
+        </p>
+      )}
+    </div>
+  );
+}
+
 function Th({
   children,
   align = 'left',
