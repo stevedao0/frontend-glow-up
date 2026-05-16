@@ -46,6 +46,7 @@ export function AppShell({
           © 2026 VCPMC · Internal use only · Build prototype
         </footer>
       </div>
+      <ThemeToggle />
       <style>{`
         @keyframes fadein {
           from { opacity: 0; transform: translateY(4px); }
