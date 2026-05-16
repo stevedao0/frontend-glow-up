@@ -1,7 +1,7 @@
 ﻿import React from 'react';
 import { Sidebar } from './Sidebar';
 import { Topbar } from './Topbar';
-import { ThemeToggle } from './ThemeToggle';
+
 import { RouteKey } from '../../data/routes';
 export function AppShell({
   current,
