@@ -40,6 +40,9 @@ import { ExportReportDialog } from '../components/app-ui/ExportReportDialog';
 import { RowActionsMenu } from '../components/app-ui/RowActionsMenu';
 import { EmptyState } from '../components/app-ui/EmptyState';
 import { TableSkeleton } from '../components/app-ui/TableSkeleton';
+import { InsightCard } from '../components/app-ui/InsightCard';
+import { SavedViews, type ViewState } from '../components/app-ui/SavedViews';
+import { GoalProgressCard } from '../components/app-ui/GoalProgressCard';
 import {
   FIELD_CATEGORIES,
   buildReportInsights,
