@@ -298,6 +298,40 @@ export function ReportsPage({
       }
     : null;
 
+  // Sparkline series từ revenue_by_year (dùng cho KPI cards)
+  const contractSpark = useMemo(
+    () => (summary?.revenue_by_year ?? []).map((y) => y.contract_count || 0),
+    [summary]
+  );
+  const revenueSpark = useMemo(
+    () =>
+      (summary?.revenue_by_year ?? []).map((y) =>
+        y.total_revenue == null ? 0 : y.total_revenue / 1_000_000_000
+      ),
+    [summary]
+  );
+
+  // YoY delta cho doanh thu năm nay
+  const revenueDelta = useMemo(() => {
+    if (!stats || !stats.revenue2025) return undefined;
+    const diff = ((stats.revenue2026 - stats.revenue2025) / stats.revenue2025) * 100;
+    if (!isFinite(diff)) return undefined;
+    return {
+      value: `${diff >= 0 ? '+' : ''}${diff.toFixed(1)}%`,
+      tone: diff > 0.5 ? ('up' as const) : diff < -0.5 ? ('down' as const) : ('flat' as const),
+    };
+  }, [stats]);
+
+  const contractsDelta = useMemo(() => {
+    if (!stats || !stats.contracts2025) return undefined;
+    const diff = ((stats.contracts2026 - stats.contracts2025) / stats.contracts2025) * 100;
+    if (!isFinite(diff)) return undefined;
+    return {
+      value: `${diff >= 0 ? '+' : ''}${diff.toFixed(1)}%`,
+      tone: diff > 0.5 ? ('up' as const) : diff < -0.5 ? ('down' as const) : ('flat' as const),
+    };
+  }, [stats]);
+
   const hasActiveFilter =
     reportType !== 'overview' ||
     time !== 'year' ||
