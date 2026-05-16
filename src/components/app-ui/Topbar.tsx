@@ -6,13 +6,34 @@ import {
   LogOutIcon,
   UserIcon,
   SettingsIcon,
-  KeyIcon } from
+  KeyIcon,
+  ChevronRightIcon } from
 'lucide-react';
 import { useAuth } from '../../lib/auth';
 import { DOMAINS, ROLE_DEFS } from '../../data/authData';
 import { Modal } from './Modal';
 import { Button } from './Button';
 import { Input } from './Input';
+import { CommandPalette } from './CommandPalette';
+import { NotificationsDropdown } from './NotificationsDropdown';
+import { RouteKey } from '../../data/routes';
+
+const ROUTE_LABELS: Partial<Record<RouteKey, { label: string; group?: string }>> = {
+  dashboard: { label: 'Dashboard', group: 'Tổng quan' },
+  'contracts.list': { label: 'Danh sách hợp đồng', group: 'Hợp đồng' },
+  'contracts.detail': { label: 'Chi tiết hợp đồng', group: 'Hợp đồng' },
+  'contracts.edit': { label: 'Chỉnh sửa hợp đồng', group: 'Hợp đồng' },
+  'contracts.create': { label: 'Tạo hợp đồng', group: 'Hợp đồng' },
+  'contracts.gcn': { label: 'Giấy chứng nhận', group: 'Hợp đồng' },
+  'contracts.print': { label: 'In GCN', group: 'Hợp đồng' },
+  annexes: { label: 'Phụ lục', group: 'Nghiệp vụ' },
+  dispatch: { label: 'Công văn', group: 'Nghiệp vụ' },
+  reports: { label: 'Báo cáo', group: 'Nghiệp vụ' },
+  search: { label: 'Tìm kiếm', group: 'Nghiệp vụ' },
+  'admin.users': { label: 'Người dùng', group: 'Hệ thống' },
+  'admin.permissions': { label: 'Phân quyền', group: 'Hệ thống' },
+  assistant: { label: 'AI Assistant', group: 'Hệ thống' },
+};
 export function Topbar({
   workspace,
   onWorkspaceChange,
