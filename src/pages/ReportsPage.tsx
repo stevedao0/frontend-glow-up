@@ -165,7 +165,7 @@ export function ReportsPage({
   // --- Filter state ---
   const [reportType, setReportType] = useState('overview');
   const [time, setTime] = useState('year');
-  const [employee, setEmployee] = useState('');
+  const [employee, setEmployee] = useState(scopeLocked ? currentUser?.name ?? '' : '');
   const [field, setField] = useState('');
   const [status, setStatus] = useState('');
   const [exportOpen, setExportOpen] = useState(false);
@@ -465,8 +465,37 @@ export function ReportsPage({
 
   // Build employee options dynamically from real data
   const dynamicEmployeeOptions = useMemo(() => {
-    return [{ value: '', label: 'Tất cả' }];
-  }, []);
+    const opts = (employeeStats?.employees ?? []).map((e) => ({
+      value: e.name,
+      label: e.name,
+    }));
+    return [{ value: '', label: 'Tất cả' }, ...opts];
+  }, [employeeStats]);
+
+  // Khi scope bị khóa (staff hoặc personalMode), ép employee = currentUser
+  useEffect(() => {
+    if (scopeLocked && currentUser?.name && employee !== currentUser.name) {
+      setEmployee(currentUser.name);
+    }
+  }, [scopeLocked, currentUser, employee]);
+
+  // Người nhân viên đang được scope (có thể là chính user hoặc người admin chọn)
+  const scopedEmployee = useMemo(() => {
+    if (!employee) return null;
+    return (employeeStats?.employees ?? []).find((e) => e.name === employee) ?? null;
+  }, [employee, employeeStats]);
+
+  // Ranking: thứ hạng của scopedEmployee theo doanh thu trong toàn đội
+  const ranking = useMemo(() => {
+    if (!scopedEmployee || !employeeStats) return null;
+    const sorted = [...employeeStats.employees].sort(
+      (a, b) => b.total_value - a.total_value
+    );
+    const rank = sorted.findIndex((e) => e.name === scopedEmployee.name) + 1;
+    const total = sorted.length;
+    const topRevenue = sorted[0]?.total_value ?? 0;
+    return { rank, total, topRevenue };
+  }, [scopedEmployee, employeeStats]);
 
   const handleRefresh = () => {
     fetchData();
