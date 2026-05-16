@@ -319,6 +319,14 @@ export function ReportsPage({
     return { count, totalValue, avg };
   }, [signedRows]);
 
+  const signedTotalPages = Math.max(1, Math.ceil(signedRows.length / SIGNED_PAGE_SIZE));
+  const signedCurrentPage = Math.min(signedPage, signedTotalPages);
+  const signedPagedRows = useMemo(
+    () => signedRows.slice((signedCurrentPage - 1) * SIGNED_PAGE_SIZE, signedCurrentPage * SIGNED_PAGE_SIZE),
+    [signedRows, signedCurrentPage]
+  );
+  useEffect(() => { setSignedPage(1); }, [signedScope]);
+
   // Pending contracts: derive from contracts with missing data
   const pendingRows = useMemo<ResolvedPendingRow[]>(() => {
     if (!summary) return [];
