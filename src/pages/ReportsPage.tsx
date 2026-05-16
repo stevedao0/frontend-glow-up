@@ -350,6 +350,25 @@ export function ReportsPage({
     setStatus('');
   };
 
+  // ---- Saved Views support ----
+  const currentView: ViewState = useMemo(
+    () => ({ reportType, time, employee, field, status }),
+    [reportType, time, employee, field, status]
+  );
+  const applyView = (s: ViewState) => {
+    setReportType(s.reportType ?? 'overview');
+    setTime(s.time ?? 'year');
+    setEmployee(s.employee ?? '');
+    setField(s.field ?? '');
+    setStatus(s.status ?? '');
+  };
+  const isViewActive = (s: ViewState) =>
+    (s.reportType ?? 'overview') === reportType &&
+    (s.time ?? 'year') === time &&
+    (s.employee ?? '') === employee &&
+    (s.field ?? '') === field &&
+    (s.status ?? '') === status;
+
   // Build employee options dynamically from real data
   const dynamicEmployeeOptions = useMemo(() => {
     return [{ value: '', label: 'Tất cả' }];
