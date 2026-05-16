@@ -620,12 +620,50 @@ export function ReportsPage({
               Làm mới
             </Button>
             <Button
+              variant={comparePrev ? 'primary' : 'secondary'}
+              leftIcon={<GitCompareIcon className="h-4 w-4" />}
+              onClick={() => setComparePrev((v) => !v)}
+              title="So sánh kỳ trước (overlay bar năm liền trước)">
+              {comparePrev ? 'Đang so sánh' : 'So sánh kỳ'}
+            </Button>
+            <WidgetVisibilityMenu
+              vis={sectionVis}
+              onToggle={toggleSection}
+              onReset={resetSections}
+            />
+            <ExportSnapshotMenu targetRef={snapshotRef} filename="bao-cao" />
+            <Button
               variant="secondary"
               leftIcon={<PresentationIcon className="h-4 w-4" />}
               onClick={() => setPresenting((v) => !v)}
               title="Chế độ trình bày (ESC để thoát)">
               {presenting ? 'Thoát trình bày' : 'Trình bày'}
             </Button>
+            {presenting && (
+              <>
+                <Button
+                  variant={darkPreset ? 'primary' : 'secondary'}
+                  leftIcon={<MoonIcon className="h-4 w-4" />}
+                  onClick={() => setDarkPreset((v) => !v)}
+                  title="Theme tối khi trình bày">
+                  Dark
+                </Button>
+                <Button
+                  variant={watermark ? 'primary' : 'secondary'}
+                  leftIcon={<DropletsIcon className="h-4 w-4" />}
+                  onClick={() => {
+                    if (watermark) {
+                      setWatermark('');
+                    } else {
+                      const v = window.prompt('Watermark (vd: DRAFT, CONFIDENTIAL):', 'CONFIDENTIAL');
+                      if (v) setWatermark(v.trim().toUpperCase());
+                    }
+                  }}
+                  title="Watermark trên nền">
+                  {watermark || 'Watermark'}
+                </Button>
+              </>
+            )}
             <Button
               variant="primary"
               leftIcon={<DownloadIcon className="h-4 w-4" />}
@@ -637,6 +675,8 @@ export function ReportsPage({
           </>
         }
       />
+
+      <div ref={snapshotRef}>
 
       {/* Saved Views — góc nhìn lưu nhanh */}
       <SavedViews
