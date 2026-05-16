@@ -312,3 +312,197 @@ body {
   background: white !important;
 }
 
+
+/* =========================================
+   LUXURY DARK GOLD THEME (toggle on <html>)
+   Class: .theme-dark-gold
+   ========================================= */
+.theme-dark-gold {
+  --font-serif: 'Cormorant Garamond', 'Playfair Display', Georgia, serif;
+  --bg-app: #14100a;
+  --bg-surface: #1c1610;
+  --bg-subtle: #221a12;
+  --bg-muted: #2a2014;
+  --bg-inverse: #f5ead2;
+  --fg-primary: #f0e4c8;
+  --fg-secondary: #c9b48a;
+  --fg-muted: #8c7a5a;
+  --fg-subtle: #6b5d44;
+  --fg-inverse: #14100a;
+  --border-subtle: rgba(201,162,76,0.10);
+  --border-default: rgba(201,162,76,0.18);
+  --border-strong: rgba(201,162,76,0.32);
+  --accent-primary: #c9a24c;
+  --accent-primary-soft: rgba(201,162,76,0.12);
+  --accent-secondary: #e8c878;
+  --accent-secondary-soft: rgba(232,200,120,0.10);
+  --accent-neutral: #8c6f47;
+  --accent-neutral-soft: rgba(140,111,71,0.14);
+  --success: #5fb88a;
+  --warning: #e8c878;
+  --danger: #d97766;
+  --info: #6ba8c8;
+  --gradient-gold: linear-gradient(135deg, #c9a24c 0%, #e8c878 50%, #c9a24c 100%);
+  --shadow-gold: 0 8px 32px -8px rgba(201,162,76,0.35);
+}
+.theme-dark-gold body {
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(201,162,76,0.08), transparent 60%),
+    radial-gradient(ellipse 60% 40% at 100% 100%, rgba(140,111,71,0.06), transparent 60%),
+    #14100a;
+  color: var(--fg-primary);
+}
+.theme-dark-gold h1,
+.theme-dark-gold h2,
+.theme-dark-gold h3 {
+  font-family: var(--font-serif);
+  letter-spacing: -0.01em;
+  color: #f5ead2;
+}
+
+/* === Global override map for hardcoded Tailwind colors === */
+.theme-dark-gold .bg-white,
+.theme-dark-gold [class*="bg-white"] {
+  background-color: var(--bg-surface) !important;
+}
+.theme-dark-gold .bg-zinc-50,
+.theme-dark-gold .bg-zinc-100,
+.theme-dark-gold .bg-neutral-50,
+.theme-dark-gold .bg-neutral-100,
+.theme-dark-gold .bg-stone-50,
+.theme-dark-gold .bg-stone-100,
+.theme-dark-gold .bg-gray-50,
+.theme-dark-gold .bg-gray-100 {
+  background-color: var(--bg-subtle) !important;
+}
+.theme-dark-gold .bg-zinc-900,
+.theme-dark-gold .bg-neutral-900,
+.theme-dark-gold .bg-stone-900 {
+  background-color: var(--bg-inverse) !important;
+  color: var(--fg-inverse) !important;
+}
+.theme-dark-gold .text-zinc-900,
+.theme-dark-gold .text-neutral-900,
+.theme-dark-gold .text-stone-900,
+.theme-dark-gold .text-black {
+  color: var(--fg-primary) !important;
+}
+.theme-dark-gold .text-zinc-700,
+.theme-dark-gold .text-zinc-800,
+.theme-dark-gold .text-neutral-700,
+.theme-dark-gold .text-neutral-800,
+.theme-dark-gold .text-stone-700,
+.theme-dark-gold .text-stone-800 {
+  color: var(--fg-secondary) !important;
+}
+.theme-dark-gold .text-zinc-500,
+.theme-dark-gold .text-zinc-600,
+.theme-dark-gold .text-neutral-500,
+.theme-dark-gold .text-neutral-600,
+.theme-dark-gold .text-stone-500,
+.theme-dark-gold .text-stone-600,
+.theme-dark-gold .text-gray-500,
+.theme-dark-gold .text-gray-600 {
+  color: var(--fg-muted) !important;
+}
+.theme-dark-gold .text-zinc-400,
+.theme-dark-gold .text-neutral-400,
+.theme-dark-gold .text-gray-400 {
+  color: var(--fg-subtle) !important;
+}
+.theme-dark-gold .border,
+.theme-dark-gold [class*="border-zinc-"],
+.theme-dark-gold [class*="border-neutral-"],
+.theme-dark-gold [class*="border-stone-"],
+.theme-dark-gold [class*="border-gray-"] {
+  border-color: var(--border-default) !important;
+}
+.theme-dark-gold [class*="divide-zinc-"] > * + *,
+.theme-dark-gold [class*="divide-neutral-"] > * + *,
+.theme-dark-gold [class*="divide-stone-"] > * + * {
+  border-color: var(--border-subtle) !important;
+}
+.theme-dark-gold [class*="ring-zinc-"],
+.theme-dark-gold [class*="ring-neutral-"],
+.theme-dark-gold [class*="ring-stone-"] {
+  --tw-ring-color: var(--border-default) !important;
+}
+.theme-dark-gold .hover\:bg-zinc-50:hover,
+.theme-dark-gold .hover\:bg-zinc-100:hover,
+.theme-dark-gold .hover\:bg-neutral-50:hover,
+.theme-dark-gold .hover\:bg-stone-50:hover,
+.theme-dark-gold .hover\:bg-gray-50:hover {
+  background-color: rgba(201,162,76,0.08) !important;
+}
+
+/* Sidebar specifically – give it a deeper bronze tone */
+.theme-dark-gold aside {
+  background: linear-gradient(180deg, #1a140c 0%, #14100a 100%) !important;
+  border-right: 1px solid var(--border-default);
+}
+
+/* Topbar with subtle gold shimmer line */
+.theme-dark-gold header {
+  background: rgba(28,22,16,0.85) !important;
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border-default);
+}
+
+/* Inputs, selects, textareas */
+.theme-dark-gold input,
+.theme-dark-gold select,
+.theme-dark-gold textarea {
+  background-color: var(--bg-subtle) !important;
+  color: var(--fg-primary) !important;
+  border-color: var(--border-default) !important;
+}
+.theme-dark-gold input::placeholder,
+.theme-dark-gold textarea::placeholder {
+  color: var(--fg-subtle) !important;
+}
+
+/* KPI numbers + accent text get gold gradient */
+.theme-dark-gold .nums,
+.theme-dark-gold [class*="text-[28px]"],
+.theme-dark-gold [class*="text-3xl"],
+.theme-dark-gold [class*="text-4xl"] {
+  background: var(--gradient-gold);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+/* Marble texture for hero panels only */
+.theme-dark-gold .marble-hero {
+  background:
+    linear-gradient(135deg, rgba(201,162,76,0.08), transparent 60%),
+    radial-gradient(ellipse at 30% 20%, rgba(232,200,120,0.06), transparent 50%),
+    radial-gradient(ellipse at 80% 80%, rgba(140,111,71,0.10), transparent 50%),
+    #1c1610 !important;
+  border: 1px solid var(--border-default) !important;
+  box-shadow: var(--shadow-gold);
+}
+
+/* Gold border accent */
+.theme-dark-gold .gold-frame:hover {
+  box-shadow:
+    0 0 0 1px rgba(201,162,76,0.45),
+    0 0 0 4px rgba(201,162,76,0.08),
+    0 12px 28px -10px rgba(201,162,76,0.30) !important;
+}
+
+/* Scrollbar */
+.theme-dark-gold .scrollbar-thin::-webkit-scrollbar-thumb {
+  background: rgba(201,162,76,0.25);
+}
+.theme-dark-gold .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: rgba(201,162,76,0.45);
+}
+
+/* Tab underline -> pure gold */
+.theme-dark-gold .tab-underline,
+.theme-dark-gold [class*="bg-gradient-to-r"][class*="from-amber"],
+.theme-dark-gold [class*="bg-gradient-to-r"][class*="from-yellow"] {
+  background: var(--gradient-gold) !important;
+}
