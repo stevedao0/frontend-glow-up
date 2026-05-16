@@ -192,60 +192,101 @@ export type ReportInsight = {
  */
 export function buildReportInsights(data: ReportsSummary): ReportInsight[] {
   const insights: ReportInsight[] = [];
+  const currentYear = new Date().getFullYear();
 
-  if (data.expired_count > 0) {
-    insights.push({
-      id: 'i1',
-      tone: 'rose',
-      title: `${data.expired_count.toLocaleString('vi-VN')} hợp đồng đã hết hạn`,
-      description:
-        'Cần ưu tiên rà soát và đưa vào quy trình tái ký để khôi phục doanh thu.',
-    });
+  // --- 1. YoY revenue anomaly ---
+  const cur = data.revenue_by_year.find((y) => y.year === currentYear);
+  const prev = data.revenue_by_year.find((y) => y.year === currentYear - 1);
+  if (cur?.total_revenue != null && prev?.total_revenue != null && prev.total_revenue > 0) {
+    const diff = ((cur.total_revenue - prev.total_revenue) / prev.total_revenue) * 100;
+    if (Math.abs(diff) >= 20) {
+      insights.push({
+        id: 'yoy',
+        tone: diff > 0 ? 'emerald' : 'rose',
+        title:
+          diff > 0
+            ? `Doanh thu ${currentYear} tăng vọt ${diff.toFixed(1)}% so với năm trước`
+            : `Doanh thu ${currentYear} giảm ${Math.abs(diff).toFixed(1)}% so với năm trước`,
+        description:
+          diff > 0
+            ? 'Xu hướng tích cực. Cần phân tích lĩnh vực đóng góp chính để nhân rộng.'
+            : 'Cảnh báo bất thường — kiểm tra ngay nhóm hợp đồng/khu vực có sụt giảm.',
+      });
+    }
   }
 
-  if (data.expiring_60d_count > 0) {
+  // --- 2. Expiring urgency ---
+  if (data.expiring_30d_count >= 5) {
     insights.push({
-      id: 'i2',
+      id: 'exp30',
+      tone: 'rose',
+      title: `Khẩn cấp: ${data.expiring_30d_count} hợp đồng hết hạn trong 30 ngày`,
+      description: 'Mở tab "Hợp đồng sắp hết hạn" → ưu tiên gửi nhắc tái ký cho nhóm khẩn cấp.',
+    });
+  } else if (data.expiring_60d_count > 0) {
+    insights.push({
+      id: 'exp60',
       tone: 'amber',
       title: `${data.expiring_60d_count} hợp đồng sẽ hết hạn trong 60 ngày`,
       description:
         data.expiring_30d_count > 0
-          ? `Trong đó ${data.expiring_30d_count} hợp đồng sẽ hết hạn trong 30 ngày — cần xử lý sớm.`
-          : 'Cần theo dõi và chuẩn bị tái ký.',
+          ? `Trong đó ${data.expiring_30d_count} hết trong 30 ngày — cần xử lý sớm.`
+          : 'Cần lên kế hoạch theo dõi và chuẩn bị tái ký.',
     });
   }
 
-  const currentYear = new Date().getFullYear();
-  const currentYearRevenue = data.revenue_by_year.find(
-    (y) => y.year === currentYear && y.total_revenue != null
-  );
-  if (currentYearRevenue && currentYearRevenue.total_revenue != null) {
-    const revenueBn = (currentYearRevenue.total_revenue / 1_000_000_000).toFixed(2);
+  // --- 3. Top field by share ---
+  if (data.field_breakdown?.length && data.total_contracts > 0) {
+    const top = [...data.field_breakdown].sort((a, b) => b.count - a.count)[0];
+    const share = ((top.count / data.total_contracts) * 100).toFixed(1);
+    if (Number(share) >= 30) {
+      insights.push({
+        id: 'topfield',
+        tone: 'violet',
+        title: `Lĩnh vực "${top.label}" chiếm ${share}% tổng hợp đồng`,
+        description: 'Tập trung mạnh — cân nhắc mở rộng nhóm lĩnh vực khác để giảm phụ thuộc.',
+      });
+    }
+  }
+
+  // --- 4. GCN backlog ---
+  if (data.gcn_draft >= 10) {
     insights.push({
-      id: 'i3',
-      tone: 'emerald',
-      title: `Doanh thu ${currentYear} đạt ${revenueBn} tỷ`,
-      description: `Từ ${currentYearRevenue.contract_count} hợp đồng — dữ liệu lũy kế tính đến hôm nay.`,
+      id: 'gcn',
+      tone: 'amber',
+      title: `${data.gcn_draft.toLocaleString('vi-VN')} GCN còn ở trạng thái bản nháp`,
+      description: 'Đẩy nhanh quy trình cấp số & in để tránh tồn đọng cuối kỳ.',
     });
   }
 
-  if (data.gcn_draft > 0) {
+  // --- 5. Pending renewal ---
+  if (data.pending_renewal_count >= 3) {
     insights.push({
-      id: 'i4',
-      tone: 'violet',
-      title: `${data.gcn_draft.toLocaleString('vi-VN')} GCN ở trạng thái bản nháp`,
-      description:
-        'Phần lớn GCN chưa được cấp số. Cần đẩy nhanh quy trình cấp số & in.',
+      id: 'pend',
+      tone: 'indigo',
+      title: `${data.pending_renewal_count} hợp đồng đang chờ tái ký`,
+      description: 'Liên hệ đối tác sớm để chốt phương án trước khi hết hạn.',
     });
   }
 
+  // --- 6. Data quality ---
   if (data.unknown_status_count > 0) {
     insights.push({
-      id: 'i5',
+      id: 'unk',
       tone: 'indigo',
       title: `${data.unknown_status_count} hợp đồng chưa xác định trạng thái`,
-      description:
-        'Các hợp đồng này không có renewal_status và ngày kết thúc. Cần rà soát dữ liệu.',
+      description: 'Thiếu renewal_status hoặc end_date — cần rà soát & bổ sung dữ liệu.',
+    });
+  }
+
+  // --- 7. Positive baseline ---
+  if (insights.length === 0 && cur?.total_revenue != null) {
+    const revenueBn = (cur.total_revenue / 1_000_000_000).toFixed(2);
+    insights.push({
+      id: 'ok',
+      tone: 'emerald',
+      title: `Doanh thu ${currentYear} đạt ${revenueBn} tỷ — không có cảnh báo bất thường`,
+      description: `Từ ${cur.contract_count} hợp đồng. Workspace đang ở trạng thái khỏe mạnh.`,
     });
   }
 
