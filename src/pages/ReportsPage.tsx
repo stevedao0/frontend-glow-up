@@ -40,6 +40,9 @@ import { ExportReportDialog } from '../components/app-ui/ExportReportDialog';
 import { RowActionsMenu } from '../components/app-ui/RowActionsMenu';
 import { EmptyState } from '../components/app-ui/EmptyState';
 import { TableSkeleton } from '../components/app-ui/TableSkeleton';
+import { InsightCard } from '../components/app-ui/InsightCard';
+import { SavedViews, type ViewState } from '../components/app-ui/SavedViews';
+import { GoalProgressCard } from '../components/app-ui/GoalProgressCard';
 import {
   FIELD_CATEGORIES,
   buildReportInsights,
@@ -347,6 +350,25 @@ export function ReportsPage({
     setStatus('');
   };
 
+  // ---- Saved Views support ----
+  const currentView: ViewState = useMemo(
+    () => ({ reportType, time, employee, field, status }),
+    [reportType, time, employee, field, status]
+  );
+  const applyView = (s: ViewState) => {
+    setReportType(s.reportType ?? 'overview');
+    setTime(s.time ?? 'year');
+    setEmployee(s.employee ?? '');
+    setField(s.field ?? '');
+    setStatus(s.status ?? '');
+  };
+  const isViewActive = (s: ViewState) =>
+    (s.reportType ?? 'overview') === reportType &&
+    (s.time ?? 'year') === time &&
+    (s.employee ?? '') === employee &&
+    (s.field ?? '') === field &&
+    (s.status ?? '') === status;
+
   // Build employee options dynamically from real data
   const dynamicEmployeeOptions = useMemo(() => {
     return [{ value: '', label: 'Tất cả' }];
@@ -432,6 +454,14 @@ export function ReportsPage({
             </Button>
           </>
         }
+      />
+
+      {/* Saved Views — góc nhìn lưu nhanh */}
+      <SavedViews
+        scope="reports"
+        current={currentView}
+        onApply={applyView}
+        isActive={isViewActive}
       />
 
       {/* Filter Bar */}
@@ -593,6 +623,26 @@ export function ReportsPage({
             ]}
           />
         </>
+      )}
+
+      {/* Insight Panel + Goal — phân tích tự động & mục tiêu */}
+      {summary && (insights.length > 0 || stats) && (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 stagger">
+          {stats && (
+            <GoalProgressCard
+              current={stats.revenue2026}
+              year={new Date().getFullYear()}
+            />
+          )}
+          {insights.slice(0, 4).map((ins) => (
+            <InsightCard
+              key={ins.id}
+              tone={ins.tone}
+              title={ins.title}
+              description={ins.description}
+            />
+          ))}
+        </div>
       )}
 
       {/* Section 2 — Hiệu suất nhân viên */}
