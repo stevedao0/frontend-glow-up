@@ -920,8 +920,10 @@ export function ReportsPage({
           />
         )}
       </ContentCard>
+      )}
 
       {/* Section 3 — Hợp đồng đã ký */}
+      {sectionVis.signed && (
       <ContentCard
         title="Hợp đồng đã ký"
         description="Danh sách hợp đồng đã ký với giá trị. Dữ liệu từ database thực."
