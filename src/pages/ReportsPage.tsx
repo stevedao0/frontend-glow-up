@@ -643,15 +643,9 @@ export function ReportsPage({
   return (
     <Page>
       <PageHeader
-        breadcrumb={personalMode ? '/bg/reports/me' : '/bg/reports'}
-        title={personalMode ? 'Báo cáo của tôi' : 'Báo cáo'}
-        description={
-          personalMode
-            ? `Bảng tổng hợp hiệu suất cá nhân của ${currentUser?.name ?? 'bạn'} — KPI, xếp hạng, hợp đồng phụ trách.`
-            : scopeLocked
-            ? `Bạn chỉ xem dữ liệu của ${currentUser?.name ?? 'mình'}. Liên hệ quản lý để mở rộng quyền.`
-            : 'Theo dõi hợp đồng, hiệu suất xử lý theo nhân viên, doanh thu, GCN và danh sách cần tái ký.'
-        }
+        breadcrumb="/bg/reports"
+        title="Báo cáo"
+        description="Theo dõi hợp đồng, hiệu suất xử lý theo nhân viên, doanh thu, GCN và danh sách cần tái ký."
         actions={
           <>
             <Button
