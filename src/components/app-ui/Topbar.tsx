@@ -171,14 +171,22 @@ export function Topbar({
           }
         </div>
 
-        <button
-          type="button"
-          aria-label="Thông báo"
-          className="relative h-9 w-9 inline-flex items-center justify-center rounded-lg text-fg-secondary hover:bg-surface-subtle hover:text-fg-primary transition-colors">
-          
-          <BellIcon className="h-[17px] w-[17px]" />
-          <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-danger ring-2 ring-surface" />
-        </button>
+        <div ref={notifRef} className="relative">
+          <button
+            type="button"
+            aria-label="Thông báo"
+            onClick={() => setNotifOpen((o) => !o)}
+            className={`relative h-9 w-9 inline-flex items-center justify-center rounded-lg transition-colors ${
+              notifOpen
+                ? 'bg-[#fcf2e3] text-[#9c6d3e] ring-1 ring-[#c89968]/40'
+                : 'text-fg-secondary hover:bg-surface-subtle hover:text-fg-primary'
+            }`}>
+            <BellIcon className="h-[17px] w-[17px]" />
+            <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-danger ring-2 ring-surface" />
+            <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-danger animate-ping opacity-60" />
+          </button>
+          {notifOpen && <NotificationsDropdown onClose={() => setNotifOpen(false)} />}
+        </div>
 
         <div ref={userRef} className="relative">
           <button
