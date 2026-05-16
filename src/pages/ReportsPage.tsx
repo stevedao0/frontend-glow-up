@@ -468,12 +468,7 @@ export function ReportsPage({
     return [{ value: '', label: 'Tất cả' }, ...opts];
   }, [employeeStats]);
 
-  // Khi scope bị khóa (staff hoặc personalMode), ép employee = currentUser
-  useEffect(() => {
-    if (scopeLocked && currentUser?.name && employee !== currentUser.name) {
-      setEmployee(currentUser.name);
-    }
-  }, [scopeLocked, currentUser, employee]);
+  // (Đã bỏ scopeLock — tất cả thành viên team xem chung)
 
   // Người nhân viên đang được scope (có thể là chính user hoặc người admin chọn)
   const scopedEmployee = useMemo(() => {
