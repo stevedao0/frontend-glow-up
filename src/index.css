@@ -319,45 +319,52 @@ body {
    ========================================= */
 .theme-dark-gold {
   --font-serif: 'Cormorant Garamond', 'Playfair Display', Georgia, serif;
-  --bg-app: #14100a;
-  --bg-surface: #1c1610;
-  --bg-subtle: #221a12;
-  --bg-muted: #2a2014;
-  --bg-inverse: #f5ead2;
-  --fg-primary: #f0e4c8;
-  --fg-secondary: #c9b48a;
-  --fg-muted: #8c7a5a;
-  --fg-subtle: #6b5d44;
-  --fg-inverse: #14100a;
-  --border-subtle: rgba(201,162,76,0.10);
-  --border-default: rgba(201,162,76,0.18);
-  --border-strong: rgba(201,162,76,0.32);
-  --accent-primary: #c9a24c;
-  --accent-primary-soft: rgba(201,162,76,0.12);
-  --accent-secondary: #e8c878;
-  --accent-secondary-soft: rgba(232,200,120,0.10);
-  --accent-neutral: #8c6f47;
-  --accent-neutral-soft: rgba(140,111,71,0.14);
-  --success: #5fb88a;
-  --warning: #e8c878;
-  --danger: #d97766;
-  --info: #6ba8c8;
-  --gradient-gold: linear-gradient(135deg, #c9a24c 0%, #e8c878 50%, #c9a24c 100%);
-  --shadow-gold: 0 8px 32px -8px rgba(201,162,76,0.35);
+  /* Obsidian surfaces — true black with subtle warm undertone */
+  --bg-app: #0a0a0a;
+  --bg-surface: #141414;
+  --bg-subtle: #1a1a1a;
+  --bg-muted: #222222;
+  --bg-inverse: #f5f5f5;
+  /* Platinum text — warm silver, not cold gray */
+  --fg-primary: #f0f0f0;
+  --fg-secondary: #c0c0c0;
+  --fg-muted: #888888;
+  --fg-subtle: #5a5a5a;
+  --fg-inverse: #0a0a0a;
+  /* Hairline borders — barely-there platinum */
+  --border-subtle: rgba(255,255,255,0.06);
+  --border-default: rgba(255,255,255,0.12);
+  --border-strong: rgba(255,255,255,0.22);
+  /* Accents — platinum + cool steel blue */
+  --accent-primary: #e5e5e5;          /* platinum */
+  --accent-primary-soft: rgba(229,229,229,0.08);
+  --accent-secondary: #4a90e2;        /* electric steel blue */
+  --accent-secondary-soft: rgba(74,144,226,0.10);
+  --accent-neutral: #888888;
+  --accent-neutral-soft: rgba(255,255,255,0.06);
+  /* Semantic */
+  --success: #4ade80;
+  --warning: #fbbf24;
+  --danger: #f87171;
+  --info: #60a5fa;
+  /* Platinum gradient — brushed metal feel */
+  --gradient-gold: linear-gradient(135deg, #ffffff 0%, #c0c0c0 50%, #888888 100%);
+  --shadow-gold: 0 8px 32px -8px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.04);
 }
 .theme-dark-gold body {
   background:
-    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(201,162,76,0.08), transparent 60%),
-    radial-gradient(ellipse 60% 40% at 100% 100%, rgba(140,111,71,0.06), transparent 60%),
-    #14100a;
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(74,144,226,0.05), transparent 60%),
+    radial-gradient(ellipse 60% 40% at 100% 100%, rgba(255,255,255,0.02), transparent 60%),
+    #0a0a0a;
   color: var(--fg-primary);
 }
 .theme-dark-gold h1,
 .theme-dark-gold h2,
 .theme-dark-gold h3 {
-  font-family: var(--font-serif);
-  letter-spacing: -0.01em;
-  color: #f5ead2;
+  font-family: var(--font-sans);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: #ffffff;
 }
 
 /* === Global override map for hardcoded Tailwind colors === */
@@ -432,23 +439,23 @@ body {
 .theme-dark-gold .hover\:bg-neutral-50:hover,
 .theme-dark-gold .hover\:bg-stone-50:hover,
 .theme-dark-gold .hover\:bg-gray-50:hover {
-  background-color: rgba(201,162,76,0.08) !important;
+  background-color: rgba(255,255,255,0.04) !important;
 }
 
-/* Sidebar specifically – give it a deeper bronze tone */
+/* Sidebar — pure obsidian with hairline divider */
 .theme-dark-gold aside {
-  background: linear-gradient(180deg, #1a140c 0%, #14100a 100%) !important;
+  background: #0a0a0a !important;
   border-right: 1px solid var(--border-default);
 }
 
-/* Topbar with subtle gold shimmer line */
+/* Topbar — frosted obsidian glass */
 .theme-dark-gold header {
-  background: rgba(28,22,16,0.85) !important;
-  backdrop-filter: blur(12px);
+  background: rgba(10,10,10,0.75) !important;
+  backdrop-filter: blur(16px) saturate(140%);
   border-bottom: 1px solid var(--border-default);
 }
 
-/* Inputs, selects, textareas */
+/* Inputs */
 .theme-dark-gold input,
 .theme-dark-gold select,
 .theme-dark-gold textarea {
@@ -461,7 +468,7 @@ body {
   color: var(--fg-subtle) !important;
 }
 
-/* KPI numbers + accent text get gold gradient */
+/* KPI numbers — brushed platinum gradient */
 .theme-dark-gold .nums,
 .theme-dark-gold [class*="text-[28px]"],
 .theme-dark-gold [class*="text-3xl"],
@@ -473,38 +480,37 @@ body {
   color: transparent;
 }
 
-/* Marble texture for hero panels only */
+/* Hero panel — obsidian with subtle blue glow */
 .theme-dark-gold .marble-hero {
   background:
-    linear-gradient(135deg, rgba(201,162,76,0.08), transparent 60%),
-    radial-gradient(ellipse at 30% 20%, rgba(232,200,120,0.06), transparent 50%),
-    radial-gradient(ellipse at 80% 80%, rgba(140,111,71,0.10), transparent 50%),
-    #1c1610 !important;
+    radial-gradient(ellipse at 30% 20%, rgba(74,144,226,0.06), transparent 50%),
+    radial-gradient(ellipse at 80% 80%, rgba(255,255,255,0.03), transparent 50%),
+    #141414 !important;
   border: 1px solid var(--border-default) !important;
   box-shadow: var(--shadow-gold);
 }
 
-/* Gold border accent */
+/* Hover frame — cool platinum ring */
 .theme-dark-gold .gold-frame:hover {
   box-shadow:
-    0 0 0 1px rgba(201,162,76,0.45),
-    0 0 0 4px rgba(201,162,76,0.08),
-    0 12px 28px -10px rgba(201,162,76,0.30) !important;
+    0 0 0 1px rgba(255,255,255,0.18),
+    0 0 0 4px rgba(74,144,226,0.06),
+    0 12px 28px -10px rgba(0,0,0,0.6) !important;
 }
 
 /* Scrollbar */
 .theme-dark-gold .scrollbar-thin::-webkit-scrollbar-thumb {
-  background: rgba(201,162,76,0.25);
+  background: rgba(255,255,255,0.15);
 }
 .theme-dark-gold .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-  background: rgba(201,162,76,0.45);
+  background: rgba(255,255,255,0.30);
 }
 
-/* Tab underline -> pure gold */
+/* Tab underline — electric steel blue */
 .theme-dark-gold .tab-underline,
 .theme-dark-gold [class*="bg-gradient-to-r"][class*="from-amber"],
 .theme-dark-gold [class*="bg-gradient-to-r"][class*="from-yellow"] {
-  background: var(--gradient-gold) !important;
+  background: linear-gradient(90deg, #4a90e2, #ffffff, #4a90e2) !important;
 }
 
 /* Catch arbitrary cream/ivory backgrounds used in HeroPanel etc. */
@@ -530,8 +536,8 @@ body {
 .theme-dark-gold [class*="from-[#f2"],
 .theme-dark-gold [class*="from-[#f5"],
 .theme-dark-gold [class*="from-[#f7"] {
-  --tw-gradient-from: #1c1610 var(--tw-gradient-from-position) !important;
-  --tw-gradient-to: rgba(28,22,16,0) var(--tw-gradient-to-position) !important;
+  --tw-gradient-from: #141414 var(--tw-gradient-from-position) !important;
+  --tw-gradient-to: rgba(20,20,20,0) var(--tw-gradient-to-position) !important;
   --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important;
 }
 .theme-dark-gold [class*="via-[#fa"],
@@ -540,7 +546,7 @@ body {
 .theme-dark-gold [class*="via-[#ff"],
 .theme-dark-gold [class*="via-[#f2"],
 .theme-dark-gold [class*="via-[#f5"] {
-  --tw-gradient-via: #221a12 !important;
+  --tw-gradient-via: #1a1a1a !important;
   --tw-gradient-via-position: 50% !important;
   --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-via) var(--tw-gradient-via-position), var(--tw-gradient-to) !important;
 }
@@ -551,7 +557,7 @@ body {
 .theme-dark-gold [class*="to-[#f2"],
 .theme-dark-gold [class*="to-[#ef"],
 .theme-dark-gold [class*="to-[#e9"] {
-  --tw-gradient-to: #2a2014 var(--tw-gradient-to-position) !important;
+  --tw-gradient-to: #222222 var(--tw-gradient-to-position) !important;
 }
 .theme-dark-gold [class*="border-[#e3"],
 .theme-dark-gold [class*="border-[#ef"],
@@ -560,9 +566,9 @@ body {
   border-color: var(--border-default) !important;
 }
 
-/* Recharts SVG dark background — kill white grid + tooltip */
+/* Recharts SVG dark — kill white grid + tooltip */
 .theme-dark-gold .recharts-cartesian-grid line {
-  stroke: rgba(201,162,76,0.08) !important;
+  stroke: rgba(255,255,255,0.06) !important;
 }
 .theme-dark-gold .recharts-text {
   fill: var(--fg-muted) !important;
@@ -573,5 +579,5 @@ body {
   color: var(--fg-primary) !important;
 }
 
-/* Headings inside hero shouldn't be gold-gradient if they're long — only KPI numbers */
-.theme-dark-gold h1 { -webkit-text-fill-color: initial !important; color: #f5ead2 !important; background: none !important; }
+/* H1 stays solid white, not gradient */
+.theme-dark-gold h1 { -webkit-text-fill-color: initial !important; color: #ffffff !important; background: none !important; }
