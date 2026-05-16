@@ -48,6 +48,9 @@ import { TableSkeleton } from '../components/app-ui/TableSkeleton';
 import { InsightCard } from '../components/app-ui/InsightCard';
 import { SavedViews, type ViewState } from '../components/app-ui/SavedViews';
 import { GoalProgressCard } from '../components/app-ui/GoalProgressCard';
+import { DrilldownDrawer, type DrilldownItem } from '../components/app-ui/DrilldownDrawer';
+import { ExportSnapshotMenu } from '../components/app-ui/ExportSnapshotMenu';
+import { WidgetVisibilityMenu, useWidgetVisibility } from '../components/app-ui/WidgetVisibilityMenu';
 import {
   FIELD_CATEGORIES,
   buildReportInsights,
