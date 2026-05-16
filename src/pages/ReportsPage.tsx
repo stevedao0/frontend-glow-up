@@ -457,6 +457,102 @@ export function ReportsPage({
     fetchData();
   };
 
+  // ---- Drilldown handlers ----
+  const openRevenueDrilldown = () => {
+    if (!summary) return;
+    const items: DrilldownItem[] = (summary.revenue_by_year ?? []).map((y) => {
+      const v = y.total_revenue ?? 0;
+      const max = Math.max(
+        ...(summary.revenue_by_year ?? []).map((r) => r.total_revenue ?? 0),
+        1,
+      );
+      return {
+        label: `Năm ${y.year}${y.cumulative ? ' (lũy kế)' : ''}`,
+        value: v > 0 ? `${(v / 1_000_000_000).toFixed(2)} tỷ` : '—',
+        hint: `${y.contract_count} hợp đồng`,
+        bar: (v / max) * 100,
+        tone: y.year === new Date().getFullYear() ? 'positive' : 'default',
+      };
+    });
+    setDrilldown({
+      title: 'Phân tích doanh thu',
+      subtitle: 'Bóc tách doanh thu theo từng năm',
+      primary: stats
+        ? {
+            label: `Doanh thu ${new Date().getFullYear()}`,
+            value:
+              stats.revenue2026 > 0
+                ? `${(stats.revenue2026 / 1_000_000_000).toFixed(2)} tỷ VND`
+                : 'Chưa có',
+            hint: yearForecast
+              ? `Dự báo cuối năm: ${yearForecast.projectedBn.toFixed(2)} tỷ`
+              : undefined,
+          }
+        : undefined,
+      items,
+    });
+  };
+
+  const openContractsDrilldown = () => {
+    if (!summary || !stats) return;
+    const items: DrilldownItem[] = [
+      { label: 'Còn hiệu lực', value: formatNumber(stats.active), tone: 'positive', bar: (stats.active / Math.max(1, stats.totalContracts)) * 100 },
+      { label: 'Sắp hết 30 ngày', value: formatNumber(stats.expiringIn30Days), tone: 'warn', bar: (stats.expiringIn30Days / Math.max(1, stats.totalContracts)) * 100 },
+      { label: 'Sắp hết 60 ngày', value: formatNumber(stats.expiringIn60Days), tone: 'warn', bar: (stats.expiringIn60Days / Math.max(1, stats.totalContracts)) * 100 },
+      { label: 'Đã hết hạn', value: formatNumber(stats.expired), tone: 'negative', bar: (stats.expired / Math.max(1, stats.totalContracts)) * 100 },
+      { label: 'Chờ tái ký', value: formatNumber(stats.pendingRenewal), tone: 'warn', bar: (stats.pendingRenewal / Math.max(1, stats.totalContracts)) * 100 },
+    ];
+    setDrilldown({
+      title: 'Phân tích hợp đồng',
+      subtitle: 'Tỷ trọng theo trạng thái',
+      primary: {
+        label: 'Tổng hợp đồng',
+        value: formatNumber(stats.totalContracts),
+        hint: contractsDelta ? `${contractsDelta.value} so với năm trước` : undefined,
+      },
+      items,
+    });
+  };
+
+  const openExpiringDrilldown = () => {
+    if (!summary || !stats) return;
+    const items: DrilldownItem[] = [
+      { label: '≤ 7 ngày', value: formatNumber((summary.expiring_contracts ?? []).filter((r) => r.days_left <= 7).length), tone: 'negative' },
+      { label: '8 - 30 ngày', value: formatNumber((summary.expiring_contracts ?? []).filter((r) => r.days_left > 7 && r.days_left <= 30).length), tone: 'warn' },
+      { label: '31 - 60 ngày', value: formatNumber((summary.expiring_contracts ?? []).filter((r) => r.days_left > 30 && r.days_left <= 60).length), tone: 'warn' },
+      { label: '61 - 90 ngày', value: formatNumber((summary.expiring_contracts ?? []).filter((r) => r.days_left > 60 && r.days_left <= 90).length), tone: 'default' },
+    ];
+    setDrilldown({
+      title: 'Hợp đồng sắp hết hạn',
+      subtitle: 'Theo mức độ khẩn cấp',
+      primary: {
+        label: 'Sắp hết 60 ngày',
+        value: formatNumber(stats.expiringIn60Days),
+        hint: `Trong đó ${stats.expiringIn30Days} hợp đồng còn ≤ 30 ngày`,
+      },
+      items,
+    });
+  };
+
+  const openGcnDrilldown = () => {
+    if (!stats || !summary) return;
+    const total = stats.gcnDraft + stats.gcnTestPrinted + stats.gcnFinalPrinted;
+    const items: DrilldownItem[] = [
+      { label: 'Bản nháp', value: formatNumber(stats.gcnDraft), tone: 'warn', bar: (stats.gcnDraft / Math.max(1, total)) * 100 },
+      { label: 'In thử', value: formatNumber(stats.gcnTestPrinted), tone: 'default', bar: (stats.gcnTestPrinted / Math.max(1, total)) * 100 },
+      { label: 'In chính thức', value: formatNumber(stats.gcnFinalPrinted), tone: 'positive', bar: (stats.gcnFinalPrinted / Math.max(1, total)) * 100 },
+    ];
+    setDrilldown({
+      title: 'Phân tích GCN',
+      subtitle: 'Trạng thái cấp số & in',
+      primary: {
+        label: 'Tổng GCN',
+        value: formatNumber(summary.certificate_total ?? total),
+      },
+      items,
+    });
+  };
+
   // ---- Loading / Error states ----
   if (loading) {
     return (
