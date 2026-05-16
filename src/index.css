@@ -566,9 +566,9 @@ body {
   border-color: var(--border-default) !important;
 }
 
-/* Recharts SVG dark background — kill white grid + tooltip */
+/* Recharts SVG dark — kill white grid + tooltip */
 .theme-dark-gold .recharts-cartesian-grid line {
-  stroke: rgba(201,162,76,0.08) !important;
+  stroke: rgba(255,255,255,0.06) !important;
 }
 .theme-dark-gold .recharts-text {
   fill: var(--fg-muted) !important;
@@ -579,5 +579,5 @@ body {
   color: var(--fg-primary) !important;
 }
 
-/* Headings inside hero shouldn't be gold-gradient if they're long — only KPI numbers */
-.theme-dark-gold h1 { -webkit-text-fill-color: initial !important; color: #f5ead2 !important; background: none !important; }
+/* H1 stays solid white, not gradient */
+.theme-dark-gold h1 { -webkit-text-fill-color: initial !important; color: #ffffff !important; background: none !important; }
