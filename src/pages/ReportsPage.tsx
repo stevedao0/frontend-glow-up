@@ -179,6 +179,8 @@ export function ReportsPage({
 
   // --- Section-local tab states ---
   const [signedScope, setSignedScope] = useState<SignedScope>('month');
+  const [signedPage, setSignedPage] = useState(1);
+  const SIGNED_PAGE_SIZE = 20;
   const [expiringScope, setExpiringScope] = useState('30d');
   const [hoverIdx, setHoverIdx] = useState<number | null>(null);
   const [presenting, setPresenting] = useState(false);
