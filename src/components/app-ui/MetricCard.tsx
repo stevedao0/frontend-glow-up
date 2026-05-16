@@ -129,9 +129,16 @@ export function MetricCard({
             <Sparkline data={sparkline} tone={delta?.tone || 'flat'} />
           )}
         </div>
+        {compare && (
+          <div className="mt-2 flex items-center gap-1.5 text-[11px] text-zinc-500">
+            <span className="inline-block h-1.5 w-3 rounded-sm bg-zinc-300" />
+            <span className="font-medium">{compare.label ?? 'Kỳ trước'}:</span>
+            <span className="tabular-nums text-zinc-700">{compare.value}</span>
+          </div>
+        )}
         {hint && <p className="text-xs text-zinc-500 mt-2">{hint}</p>}
       </div>
-    </div>);
+    </Tag>);
 
 }
 export function MetricStrip({ items }: {items: MetricCardProps[];}) {
