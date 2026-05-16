@@ -1039,10 +1039,12 @@ export function ReportsPage({
             }
           />
         </ContentCard>
+        </div>
       )}
 
       {/* Section 3 — Hợp đồng đã ký */}
-      {sectionVis.signed && (
+      {sectionVis.signed && dataTab === 'signed' && (
+      <div key="tab-signed" className="tab-swap">
       <ContentCard
         title="Hợp đồng đã ký"
         description="Danh sách hợp đồng đã ký với giá trị. Dữ liệu từ database thực."
