@@ -34,6 +34,8 @@ import {
   ReferenceLine,
 } from 'recharts';
 import { PresentationIcon } from 'lucide-react';
+import { ChevronDownIcon, ChevronUpIcon } from 'lucide-react';
+import { ActionOverflowMenu } from '../components/app-ui/ActionOverflowMenu';
 import { Page, PageHeader } from '../components/app-ui/Page';
 import { ContentCard } from '../components/app-ui/ContentCard';
 import { MetricStrip } from '../components/app-ui/MetricCard';
@@ -183,6 +185,7 @@ export function ReportsPage({
   const [darkPreset, setDarkPreset] = useState(false);
   const [watermark, setWatermark] = useState('');
   const [comparePrev, setComparePrev] = useState(false);
+  const [insightsExpanded, setInsightsExpanded] = useState(false);
   const [drilldown, setDrilldown] = useState<null | {
     title: string;
     subtitle?: string;
@@ -700,51 +703,6 @@ export function ReportsPage({
               Làm mới
             </Button>
             <Button
-              variant={comparePrev ? 'primary' : 'secondary'}
-              leftIcon={<GitCompareIcon className="h-4 w-4" />}
-              onClick={() => setComparePrev((v) => !v)}
-              title="So sánh kỳ trước (overlay bar năm liền trước)">
-              {comparePrev ? 'Đang so sánh' : 'So sánh kỳ'}
-            </Button>
-            <WidgetVisibilityMenu
-              vis={sectionVis}
-              onToggle={toggleSection}
-              onReset={resetSections}
-            />
-            <ExportSnapshotMenu targetRef={snapshotRef} filename="bao-cao" />
-            <Button
-              variant="secondary"
-              leftIcon={<PresentationIcon className="h-4 w-4" />}
-              onClick={() => setPresenting((v) => !v)}
-              title="Chế độ trình bày (ESC để thoát)">
-              {presenting ? 'Thoát trình bày' : 'Trình bày'}
-            </Button>
-            {presenting && (
-              <>
-                <Button
-                  variant={darkPreset ? 'primary' : 'secondary'}
-                  leftIcon={<MoonIcon className="h-4 w-4" />}
-                  onClick={() => setDarkPreset((v) => !v)}
-                  title="Theme tối khi trình bày">
-                  Dark
-                </Button>
-                <Button
-                  variant={watermark ? 'primary' : 'secondary'}
-                  leftIcon={<DropletsIcon className="h-4 w-4" />}
-                  onClick={() => {
-                    if (watermark) {
-                      setWatermark('');
-                    } else {
-                      const v = window.prompt('Watermark (vd: DRAFT, CONFIDENTIAL):', 'CONFIDENTIAL');
-                      if (v) setWatermark(v.trim().toUpperCase());
-                    }
-                  }}
-                  title="Watermark trên nền">
-                  {watermark || 'Watermark'}
-                </Button>
-              </>
-            )}
-            <Button
               variant="primary"
               leftIcon={<DownloadIcon className="h-4 w-4" />}
               onClick={() => setExportOpen(true)}
@@ -752,6 +710,53 @@ export function ReportsPage({
               title={!canExport ? 'Không có quyền xuất báo cáo' : undefined}>
               Xuất báo cáo
             </Button>
+            <ActionOverflowMenu
+              actions={[
+                {
+                  label: comparePrev ? 'Tắt so sánh kỳ' : 'So sánh kỳ trước',
+                  description: 'Overlay bar năm liền trước lên biểu đồ',
+                  icon: <GitCompareIcon className="h-4 w-4" />,
+                  active: comparePrev,
+                  onClick: () => setComparePrev((v) => !v),
+                },
+                {
+                  label: presenting ? 'Thoát chế độ trình bày' : 'Chế độ trình bày',
+                  description: 'Ẩn chrome, full-screen (ESC để thoát)',
+                  icon: <PresentationIcon className="h-4 w-4" />,
+                  active: presenting,
+                  onClick: () => setPresenting((v) => !v),
+                },
+                ...(presenting
+                  ? [
+                      {
+                        label: darkPreset ? 'Tắt theme tối' : 'Theme tối khi trình bày',
+                        icon: <MoonIcon className="h-4 w-4" />,
+                        active: darkPreset,
+                        onClick: () => setDarkPreset((v) => !v),
+                      },
+                      {
+                        label: watermark ? `Xóa watermark (${watermark})` : 'Thêm watermark',
+                        icon: <DropletsIcon className="h-4 w-4" />,
+                        active: !!watermark,
+                        onClick: () => {
+                          if (watermark) {
+                            setWatermark('');
+                          } else {
+                            const v = window.prompt('Watermark (vd: DRAFT, CONFIDENTIAL):', 'CONFIDENTIAL');
+                            if (v) setWatermark(v.trim().toUpperCase());
+                          }
+                        },
+                      },
+                    ]
+                  : []),
+              ]}
+            />
+            <WidgetVisibilityMenu
+              vis={sectionVis}
+              onToggle={toggleSection}
+              onReset={resetSections}
+            />
+            <ExportSnapshotMenu targetRef={snapshotRef} filename="bao-cao" />
           </>
         }
       />
@@ -1022,24 +1027,54 @@ export function ReportsPage({
 
       {/* Insight Panel + Goal — phân tích tự động & mục tiêu */}
       {/* Insight Panel + Goal */}
-      {sectionVis.insights && summary && (insights.length > 0 || stats) && (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 stagger">
-          {stats && (
-            <GoalProgressCard
-              current={stats.revenue2026}
-              year={new Date().getFullYear()}
-            />
-          )}
-          {insights.slice(0, 4).map((ins) => (
-            <InsightCard
-              key={ins.id}
-              tone={ins.tone}
-              title={ins.title}
-              description={ins.description}
-            />
-          ))}
-        </div>
-      )}
+      {sectionVis.insights && summary && (insights.length > 0 || stats) && (() => {
+        // Ưu tiên hiển thị: rose (Khẩn cấp) luôn ở đầu, không thu gọn
+        const sorted = [...insights].sort((a, b) => {
+          const w = (t: string) => (t === 'rose' ? 0 : t === 'amber' ? 1 : 2);
+          return w(a.tone) - w(b.tone);
+        });
+        const critical = sorted.filter((i) => i.tone === 'rose');
+        const others = sorted.filter((i) => i.tone !== 'rose');
+        // Goal chiếm 1 ô + critical luôn hiện + 2 ô khác (vừa lưới 3 cột)
+        const visibleOthers = insightsExpanded ? others : others.slice(0, Math.max(0, 2 - critical.length));
+        const hiddenCount = others.length - visibleOthers.length;
+        return (
+          <>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 stagger">
+              {stats && (
+                <GoalProgressCard
+                  current={stats.revenue2026}
+                  year={new Date().getFullYear()}
+                />
+              )}
+              {critical.map((ins) => (
+                <InsightCard key={ins.id} tone={ins.tone} title={ins.title} description={ins.description} />
+              ))}
+              {visibleOthers.map((ins) => (
+                <InsightCard key={ins.id} tone={ins.tone} title={ins.title} description={ins.description} />
+              ))}
+            </div>
+            {hiddenCount > 0 && (
+              <button
+                type="button"
+                onClick={() => setInsightsExpanded(true)}
+                className="mt-2 inline-flex items-center gap-1.5 text-[12px] font-medium text-amber-800 hover:text-amber-900 transition-colors">
+                <ChevronDownIcon className="h-3.5 w-3.5" />
+                Xem thêm {hiddenCount} gợi ý
+              </button>
+            )}
+            {insightsExpanded && others.length > 2 - critical.length && (
+              <button
+                type="button"
+                onClick={() => setInsightsExpanded(false)}
+                className="mt-2 inline-flex items-center gap-1.5 text-[12px] font-medium text-zinc-500 hover:text-zinc-700 transition-colors">
+                <ChevronUpIcon className="h-3.5 w-3.5" />
+                Thu gọn
+              </button>
+            )}
+          </>
+        );
+      })()}
 
       {/* === TRUNG TÂM DỮ LIỆU — 1 panel, 5 view chuyển bằng tab === */}
       <DataExplorerTabs

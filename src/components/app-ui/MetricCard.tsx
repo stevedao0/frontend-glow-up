@@ -109,10 +109,16 @@ export function MetricCard({
         <div className="flex items-end justify-between gap-3 flex-wrap">
           <div className="flex items-baseline gap-2 flex-wrap min-w-0">
             <span
-              className="text-[28px] leading-none font-semibold text-zinc-900 tracking-tight nums"
-              style={{ animation: 'countUp 420ms var(--ease-out) both' }}>
+              className={`text-[28px] leading-none font-semibold tracking-tight nums ${value === '—' ? 'text-zinc-400' : 'text-zinc-900'}`}
+              style={{ animation: 'countUp 420ms var(--ease-out) both' }}
+              title={value === '—' ? 'Chưa có dữ liệu kỳ này' : undefined}>
               {value}
             </span>
+            {value === '—' && (
+              <span className="text-[10.5px] font-medium uppercase tracking-wider text-zinc-400 italic">
+                Chưa có dữ liệu
+              </span>
+            )}
             {delta &&
             <span
               className={`inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[11px] font-bold tracking-tight ring-1 ring-inset ${delta.tone === 'up' ? 'bg-emerald-50 text-emerald-700 ring-emerald-600/20' : delta.tone === 'down' ? 'bg-rose-50 text-rose-700 ring-rose-600/20' : 'bg-zinc-100 text-zinc-600 ring-zinc-500/15'}`}>
@@ -125,7 +131,7 @@ export function MetricCard({
               </span>
             }
           </div>
-          {sparkline && (
+          {sparkline && value !== '—' && (
             <Sparkline data={sparkline} tone={delta?.tone || 'flat'} />
           )}
         </div>
