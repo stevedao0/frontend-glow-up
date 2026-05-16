@@ -1336,6 +1336,34 @@ export function ReportsPage({
                 ))}
               </tbody>
             </table>
+            {signedRows.length > SIGNED_PAGE_SIZE && (
+              <div className="flex items-center justify-between px-5 py-3 border-t border-zinc-100 bg-zinc-50/40 text-[12px]">
+                <span className="text-zinc-600 tabular-nums">
+                  Hiển thị <span className="font-semibold text-zinc-900">{(signedCurrentPage - 1) * SIGNED_PAGE_SIZE + 1}</span>
+                  –<span className="font-semibold text-zinc-900">{Math.min(signedCurrentPage * SIGNED_PAGE_SIZE, signedRows.length)}</span>
+                  {' '}/ <span className="font-semibold text-zinc-900">{signedRows.length}</span> hợp đồng
+                </span>
+                <div className="flex items-center gap-1">
+                  <button
+                    type="button"
+                    onClick={() => setSignedPage((p) => Math.max(1, p - 1))}
+                    disabled={signedCurrentPage <= 1}
+                    className="px-2.5 py-1 rounded-md ring-1 ring-zinc-900/10 bg-white text-zinc-700 hover:bg-amber-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
+                    ← Trước
+                  </button>
+                  <span className="px-2 text-zinc-600 tabular-nums">
+                    Trang <span className="font-semibold text-zinc-900">{signedCurrentPage}</span> / {signedTotalPages}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setSignedPage((p) => Math.min(signedTotalPages, p + 1))}
+                    disabled={signedCurrentPage >= signedTotalPages}
+                    className="px-2.5 py-1 rounded-md ring-1 ring-zinc-900/10 bg-white text-zinc-700 hover:bg-amber-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
+                    Sau →
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </ContentCard>
