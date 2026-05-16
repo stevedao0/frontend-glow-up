@@ -18,10 +18,10 @@ const toneClass: Record<
   }> =
 {
   rose: {
-    bg: 'bg-gradient-to-br from-rose-50/70 via-white to-rose-50/30',
-    ring: 'ring-rose-600/10',
-    iconBg: 'bg-rose-100',
-    iconText: 'text-rose-700',
+    bg: 'bg-gradient-to-br from-rose-100/90 via-rose-50/60 to-white',
+    ring: 'ring-2 ring-rose-600/40',
+    iconBg: 'bg-rose-600',
+    iconText: 'text-white',
     text: 'text-rose-900'
   },
   amber: {
