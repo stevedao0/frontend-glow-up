@@ -88,7 +88,7 @@ export function Modal({
         </header>
         <div className={bleed ? '' : 'px-5 py-4'}>{children}</div>
         {footer &&
-        <footer className="px-5 py-3 border-t border-[#e3d2b3]/40 bg-[#faf8f3]/60 flex items-center justify-end gap-2">
+        <footer className="sticky bottom-0 px-5 py-3 border-t border-[#e3d2b3]/40 bg-white/95 backdrop-blur-sm flex items-center justify-end gap-2 z-10">
             {footer}
           </footer>
         }
