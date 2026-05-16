@@ -25,7 +25,9 @@ export function AppShell({
         <Topbar
           workspace={workspace}
           onWorkspaceChange={onWorkspaceChange}
-          userEmail={userEmail} />
+          userEmail={userEmail}
+          current={current}
+          onNavigate={onNavigate} />
         {showDevBadge ? (
           <div className="px-6 py-1.5 text-[11px] font-medium text-amber-900 bg-amber-50 border-b border-amber-200/70 flex items-center gap-2">
             <span className="h-1.5 w-1.5 rounded-full bg-amber-500 animate-pulse" />
@@ -35,7 +37,7 @@ export function AppShell({
         
         <main
           key={current}
-          className="flex-1 min-w-0 animate-[fadein_220ms_ease-out]">
+          className="flex-1 min-w-0 page-enter">
           
           {children}
         </main>

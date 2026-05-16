@@ -6,38 +6,78 @@ import {
   LogOutIcon,
   UserIcon,
   SettingsIcon,
-  KeyIcon } from
+  KeyIcon,
+  ChevronRightIcon } from
 'lucide-react';
 import { useAuth } from '../../lib/auth';
 import { DOMAINS, ROLE_DEFS } from '../../data/authData';
 import { Modal } from './Modal';
 import { Button } from './Button';
 import { Input } from './Input';
+import { CommandPalette } from './CommandPalette';
+import { NotificationsDropdown } from './NotificationsDropdown';
+import { RouteKey } from '../../data/routes';
+
+const ROUTE_LABELS: Partial<Record<RouteKey, { label: string; group?: string }>> = {
+  dashboard: { label: 'Dashboard', group: 'Tổng quan' },
+  'contracts.list': { label: 'Danh sách hợp đồng', group: 'Hợp đồng' },
+  'contracts.detail': { label: 'Chi tiết hợp đồng', group: 'Hợp đồng' },
+  'contracts.edit': { label: 'Chỉnh sửa hợp đồng', group: 'Hợp đồng' },
+  'contracts.create': { label: 'Tạo hợp đồng', group: 'Hợp đồng' },
+  'contracts.gcn': { label: 'Giấy chứng nhận', group: 'Hợp đồng' },
+  'contracts.print': { label: 'In GCN', group: 'Hợp đồng' },
+  annexes: { label: 'Phụ lục', group: 'Nghiệp vụ' },
+  dispatch: { label: 'Công văn', group: 'Nghiệp vụ' },
+  reports: { label: 'Báo cáo', group: 'Nghiệp vụ' },
+  search: { label: 'Tìm kiếm', group: 'Nghiệp vụ' },
+  'admin.users': { label: 'Người dùng', group: 'Hệ thống' },
+  'admin.permissions': { label: 'Phân quyền', group: 'Hệ thống' },
+  assistant: { label: 'AI Assistant', group: 'Hệ thống' },
+};
 export function Topbar({
   workspace,
   onWorkspaceChange,
-  userEmail
-
-
-
-
-}: {workspace: string;onWorkspaceChange: (id: string) => void;userEmail: string;}) {
-  const { currentUser, logout, hasDomain } = useAuth();
+  userEmail,
+  current,
+  onNavigate,
+}: {
+  workspace: string;
+  onWorkspaceChange: (id: string) => void;
+  userEmail: string;
+  current?: RouteKey;
+  onNavigate?: (k: RouteKey) => void;
+}) {
+  const { currentUser, logout, hasDomain, hasPermission } = useAuth();
   const [wsOpen, setWsOpen] = useState(false);
   const [userOpen, setUserOpen] = useState(false);
+  const [notifOpen, setNotifOpen] = useState(false);
+  const [paletteOpen, setPaletteOpen] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const wsRef = useRef<HTMLDivElement>(null);
   const userRef = useRef<HTMLDivElement>(null);
+  const notifRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (wsRef.current && !wsRef.current.contains(e.target as Node))
       setWsOpen(false);
       if (userRef.current && !userRef.current.contains(e.target as Node))
       setUserOpen(false);
+      if (notifRef.current && !notifRef.current.contains(e.target as Node))
+      setNotifOpen(false);
     };
     document.addEventListener('mousedown', handler);
     return () => document.removeEventListener('mousedown', handler);
+  }, []);
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        setPaletteOpen(true);
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
   }, []);
   const allowedDomains = DOMAINS.filter((d) => !d.adminOnly && hasDomain(d.id));
   const activeWs =
@@ -48,23 +88,40 @@ export function Topbar({
   const wsDot = isAmber ? 'bg-amber-400' : 'bg-[#c89968]';
   const wsGlow = isAmber ?
   'shadow-[0_0_8px_rgba(251,191,36,0.55)]' :
-  'shadow-[0_0_8px_rgba(129,140,248,0.6)]';
+  'shadow-[0_0_8px_rgba(200,153,104,0.6)]';
   const roleName = currentUser ?
   ROLE_DEFS[currentUser.role as keyof typeof ROLE_DEFS]?.name :
   '';
+
+  const currentMeta = current ? ROUTE_LABELS[current] : undefined;
+
   return (
     <>
       <header className="sticky top-0 z-20 h-16 px-4 sm:px-6 flex items-center gap-2 sm:gap-3 bg-surface/85 backdrop-blur-2xl backdrop-saturate-150 border-b border-zinc-200/70 shadow-xs">
+        {/* Breadcrumb */}
+        {currentMeta && (
+          <nav className="hidden lg:flex items-center gap-1.5 text-[12.5px] mr-2 shrink-0">
+            {currentMeta.group && (
+              <>
+                <span className="text-fg-muted font-medium">{currentMeta.group}</span>
+                <ChevronRightIcon className="h-3 w-3 text-fg-subtle" />
+              </>
+            )}
+            <span className="text-fg-primary font-semibold tracking-tight">{currentMeta.label}</span>
+          </nav>
+        )}
+
         <div className="relative flex-1 max-w-md group">
-          <SearchIcon className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-fg-subtle group-focus-within:text-accent-primary transition-colors" />
-          <input
-            type="text"
-            placeholder="Tìm hợp đồng, GCN, đối tác..."
-            className="w-full h-9 pl-9 pr-14 text-sm rounded-lg bg-surface-subtle ring-1 ring-zinc-200/80 hover:ring-zinc-300 focus:bg-surface focus:outline-none focus:ring-2 focus:ring-accent-primary/40 transition-all placeholder:text-fg-subtle text-fg-primary" />
-          
-          <kbd className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 px-1.5 h-5 inline-flex items-center text-[10px] font-semibold text-fg-muted bg-surface border border-zinc-200/80 rounded shadow-xs">
-            ⌘K
-          </kbd>
+          <button
+            type="button"
+            onClick={() => setPaletteOpen(true)}
+            className="w-full h-9 pl-9 pr-14 text-sm rounded-lg bg-surface-subtle ring-1 ring-zinc-200/80 hover:ring-[#c89968]/45 hover:bg-white focus:outline-none focus:ring-2 focus:ring-[#c89968]/40 transition-all text-left text-fg-muted">
+            <SearchIcon className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-fg-subtle group-hover:text-[#9c6d3e] transition-colors" />
+            <span className="truncate">Tìm hợp đồng, GCN, đối tác... hoặc nhấn ⌘K</span>
+            <kbd className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 px-1.5 h-5 inline-flex items-center text-[10px] font-semibold text-fg-muted bg-surface border border-zinc-200/80 rounded shadow-xs">
+              ⌘K
+            </kbd>
+          </button>
         </div>
 
         <div className="flex-1" />
@@ -73,7 +130,7 @@ export function Topbar({
           <button
             type="button"
             onClick={() => setWsOpen((o) => !o)}
-            className="h-9 px-3 inline-flex items-center gap-2 rounded-lg bg-surface ring-1 ring-zinc-200/80 hover:ring-zinc-300 text-sm transition-all shadow-xs">
+            className="h-9 px-3 inline-flex items-center gap-2 rounded-lg bg-surface ring-1 ring-zinc-200/80 hover:ring-[#c89968]/45 text-sm transition-all shadow-xs">
             
             <span className={`h-2 w-2 rounded-full ${wsDot} ${wsGlow}`} />
             <span className="font-semibold text-fg-primary hidden sm:inline">
@@ -114,14 +171,22 @@ export function Topbar({
           }
         </div>
 
-        <button
-          type="button"
-          aria-label="Thông báo"
-          className="relative h-9 w-9 inline-flex items-center justify-center rounded-lg text-fg-secondary hover:bg-surface-subtle hover:text-fg-primary transition-colors">
-          
-          <BellIcon className="h-[17px] w-[17px]" />
-          <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-danger ring-2 ring-surface" />
-        </button>
+        <div ref={notifRef} className="relative">
+          <button
+            type="button"
+            aria-label="Thông báo"
+            onClick={() => setNotifOpen((o) => !o)}
+            className={`relative h-9 w-9 inline-flex items-center justify-center rounded-lg transition-colors ${
+              notifOpen
+                ? 'bg-[#fcf2e3] text-[#9c6d3e] ring-1 ring-[#c89968]/40'
+                : 'text-fg-secondary hover:bg-surface-subtle hover:text-fg-primary'
+            }`}>
+            <BellIcon className="h-[17px] w-[17px]" />
+            <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-danger ring-2 ring-surface" />
+            <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-danger animate-ping opacity-60" />
+          </button>
+          {notifOpen && <NotificationsDropdown onClose={() => setNotifOpen(false)} />}
+        </div>
 
         <div ref={userRef} className="relative">
           <button
@@ -182,6 +247,14 @@ export function Topbar({
           }
         </div>
       </header>
+
+      {/* Command Palette */}
+      <CommandPalette
+        open={paletteOpen}
+        onClose={() => setPaletteOpen(false)}
+        onNavigate={(k) => onNavigate?.(k)}
+        hasPermission={hasPermission}
+      />
 
       {/* Modals */}
       <ProfileModal open={showProfile} onClose={() => setShowProfile(false)} />
