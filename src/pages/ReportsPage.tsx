@@ -1235,11 +1235,27 @@ export function ReportsPage({
                     return <Cell key={i} fill="url(#rep2BarFillPrev)" />;
                   })}
                 </Bar>
+                {yearForecast && (
+                  <ReferenceLine
+                    y={yearForecast.projectedBn}
+                    stroke="#9c6d3e"
+                    strokeDasharray="5 4"
+                    strokeWidth={1.5}
+                    ifOverflow="extendDomain"
+                    label={{
+                      value: `Dự báo cuối năm · ${yearForecast.projectedBn.toFixed(2)} tỷ`,
+                      position: 'insideTopRight',
+                      fill: '#9c6d3e',
+                      fontSize: 11,
+                      fontWeight: 600,
+                    }}
+                  />
+                )}
               </BarChart>
             </ResponsiveContainer>
           </div>
           <p className="mt-3 text-[11px] text-zinc-500 leading-relaxed border-t border-zinc-100 pt-3">
-            Năm hiện tại là dữ liệu lũy kế đến hôm nay. Cột pattern gạch chéo nghĩa là chưa có dữ liệu.
+            Năm hiện tại là dữ liệu lũy kế đến hôm nay. Đường gạch nét là <span className="font-semibold text-amber-800">dự báo cuối năm</span> dựa trên tốc độ hiện tại ({(yearForecast?.progress ? yearForecast.progress * 100 : 0).toFixed(0)}% năm đã qua). Cột pattern gạch chéo nghĩa là chưa có dữ liệu.
           </p>
         </ContentCard>
 
