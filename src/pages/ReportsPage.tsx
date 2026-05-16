@@ -21,7 +21,6 @@ import {
   DropletsIcon,
   UserCircle2Icon,
   TrophyIcon,
-  LockIcon,
 } from 'lucide-react';
 import {
   BarChart,
@@ -144,17 +143,11 @@ const GCN_STATUS_LABEL: Record<string, string> = {
 
 export function ReportsPage({
   onNavigate,
-  personalMode = false,
 }: {
   onNavigate: (k: RouteKey) => void;
-  personalMode?: boolean;
 }) {
   const { hasPermission, currentUser } = useAuth();
   const canExport = hasPermission('reports.export');
-  const isAdmin = currentUser?.role === 'super_admin';
-  const isManager = currentUser?.role === 'manager';
-  const canPickAnyEmployee = isAdmin || isManager;
-  const scopeLocked = personalMode || (!canPickAnyEmployee);
 
   // --- Data state ---
   const [summary, setSummary] = useState<ReportsSummary | null>(null);
@@ -165,10 +158,13 @@ export function ReportsPage({
   // --- Filter state ---
   const [reportType, setReportType] = useState('overview');
   const [time, setTime] = useState('year');
-  const [employee, setEmployee] = useState(scopeLocked ? currentUser?.name ?? '' : '');
+  const [employee, setEmployee] = useState('');
   const [field, setField] = useState('');
   const [status, setStatus] = useState('');
   const [exportOpen, setExportOpen] = useState(false);
+
+  // --- Data explorer tab ---
+  const [dataTab, setDataTab] = useState<'performance' | 'signed' | 'pending' | 'expiring' | 'gcn'>('signed');
 
   // --- Section-local tab states ---
   const [signedScope, setSignedScope] = useState<SignedScope>('month');
