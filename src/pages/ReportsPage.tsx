@@ -516,6 +516,8 @@ export function ReportsPage({
                 tone: 'indigo',
                 icon: <FileTextIcon className="h-4 w-4" />,
                 hint: 'Tất cả hợp đồng',
+                sparkline: contractSpark,
+                delta: contractsDelta,
               },
               {
                 label: 'Còn hiệu lực',
@@ -523,6 +525,7 @@ export function ReportsPage({
                 tone: 'emerald',
                 icon: <CheckCircle2Icon className="h-4 w-4" />,
                 hint: 'Hợp đồng đang hoạt động',
+                sparkline: contractSpark,
               },
               {
                 label: 'Sắp hết 60 ngày',
@@ -552,6 +555,8 @@ export function ReportsPage({
                 tone: 'cyan',
                 icon: <WalletIcon className="h-4 w-4" />,
                 hint: 'Lũy kế đến hôm nay',
+                sparkline: revenueSpark,
+                delta: revenueDelta,
               },
               {
                 label: 'Doanh thu năm trước',
@@ -562,6 +567,7 @@ export function ReportsPage({
                 tone: 'emerald',
                 icon: <WalletIcon className="h-4 w-4" />,
                 hint: 'Năm trước',
+                sparkline: revenueSpark.slice(0, -1),
               },
               {
                 label: 'Tác phẩm',
