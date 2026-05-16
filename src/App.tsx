@@ -122,7 +122,7 @@ function AppContent() {
         onBack={() => setRoute('dashboard')} />);
 
 
-    if ((route === 'reports' || route === 'reports.me') && !hasPermission('reports.view'))
+    if (route === 'reports' && !hasPermission('reports.view'))
     return (
       <AccessDenied
         requiredPermission="reports.view"
@@ -230,9 +230,6 @@ function AppContent() {
     }
     if (route === 'reports') {
       return <ReportsPage onNavigate={setRoute} />;
-    }
-    if (route === 'reports.me') {
-      return <ReportsPage onNavigate={setRoute} personalMode />;
     }
     if (route === 'admin.users') {
       return <UsersPage />;

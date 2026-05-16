@@ -80,12 +80,6 @@ const BUSINESS_REST: Item[] = [
   requiredPerm: 'reports.view'
 },
 {
-  key: 'reports.me',
-  label: 'Báo cáo của tôi',
-  icon: <UserCircle2Icon className="h-[15px] w-[15px]" />,
-  requiredPerm: 'reports.view'
-},
-{
   key: 'search',
   label: 'Tìm kiếm',
   icon: <SearchIcon className="h-[15px] w-[15px]" />,

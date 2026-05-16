@@ -141,6 +141,20 @@ body {
 /* Page transition wrapper */
 .page-enter { animation: fadeUp 320ms var(--ease-out) both; }
 
+/* Tab content swap — luxury smooth */
+@keyframes tabSwap {
+  from { opacity: 0; transform: translateY(8px) scale(0.992); filter: blur(2px); }
+  to   { opacity: 1; transform: translateY(0)   scale(1);     filter: blur(0); }
+}
+.tab-swap { animation: tabSwap 340ms var(--ease-out) both; }
+
+/* Animated underline indicator for premium tab strip */
+@keyframes underlineSlide {
+  from { transform: scaleX(0.4); opacity: 0; }
+  to   { transform: scaleX(1);   opacity: 1; }
+}
+.tab-underline { transform-origin: left center; animation: underlineSlide 320ms var(--ease-out) both; }
+
 /* Skeleton with traveling shimmer band */
 .skeleton {
   position: relative;

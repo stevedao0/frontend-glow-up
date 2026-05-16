@@ -142,8 +142,17 @@ export function MetricCard({
 
 }
 export function MetricStrip({ items }: {items: MetricCardProps[];}) {
+  const n = items.length;
+  // Chọn cột để KPI luôn cân đối — không bao giờ chừa ô trống
+  const cols =
+    n <= 2 ? 'grid-cols-1 sm:grid-cols-2'
+    : n === 3 ? 'grid-cols-1 sm:grid-cols-3'
+    : n === 4 ? 'grid-cols-2 lg:grid-cols-4'
+    : n === 5 ? 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-5'
+    : n === 6 ? 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-6'
+    : 'grid-cols-2 sm:grid-cols-3 xl:grid-cols-4';
   return (
-    <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-5 gap-4 stagger">
+    <div className={`grid ${cols} gap-5 stagger`}>
       {items.map((m, i) =>
       <MetricCard key={i} {...m} />
       )}
