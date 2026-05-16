@@ -326,10 +326,10 @@ body {
   --bg-muted: #e3dcc8;
   --bg-inverse: #2d2418;
   /* Walnut text — warm dark brown, not black */
-  --fg-primary: #3d2f20;
-  --fg-secondary: #5a4a3a;
-  --fg-muted: #8a7a6a;
-  --fg-subtle: #b5a899;
+  --fg-primary: #2d2218;
+  --fg-secondary: #4a3d2e;
+  --fg-muted: #6a5a4a;
+  --fg-subtle: #9c8e7e;
   --fg-inverse: #fbf7ee;
   /* Hairline warm borders */
   --border-subtle: rgba(61,47,32,0.06);
