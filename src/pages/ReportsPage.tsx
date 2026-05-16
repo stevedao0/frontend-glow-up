@@ -870,8 +870,75 @@ export function ReportsPage({
         </div>
       )}
 
-      {/* Section 1 — KPI tổng quan */}
-      {stats && (
+      {/* Personal KPI strip — chỉ khi đã có scopedEmployee */}
+      {scopedEmployee && (
+        <>
+          <div className="flex items-center gap-2 text-[12px] uppercase tracking-[0.14em] font-bold text-amber-800">
+            <UserCircle2Icon className="h-4 w-4" />
+            KPI cá nhân — {scopedEmployee.name}
+          </div>
+          <MetricStrip
+            items={[
+              {
+                label: 'HĐ ký năm nay',
+                value: formatNumber(scopedEmployee.signed_this_year),
+                tone: 'indigo',
+                icon: <FileTextIcon className="h-4 w-4" />,
+                hint: `Tuần này: ${scopedEmployee.signed_this_week} · Tháng: ${scopedEmployee.signed_this_month}`,
+              },
+              {
+                label: 'Doanh thu cá nhân',
+                value: scopedEmployee.total_value > 0
+                  ? `${(scopedEmployee.total_value / 1_000_000_000).toFixed(2)} tỷ`
+                  : '—',
+                tone: 'cyan',
+                icon: <WalletIcon className="h-4 w-4" />,
+                hint: scopedEmployee.avg_value > 0
+                  ? `TB/HĐ: ${formatCurrency(Math.round(scopedEmployee.avg_value))}`
+                  : 'Chưa có giá trị',
+              },
+              {
+                label: 'Đang chờ xử lý',
+                value: formatNumber(scopedEmployee.pending_count),
+                tone: scopedEmployee.pending_count >= 6 ? 'rose' : 'amber',
+                icon: <AlertCircleIcon className="h-4 w-4" />,
+                hint: scopedEmployee.pending_count >= 6 ? 'Quá tải — cần san tải' : 'Trong giới hạn',
+              },
+              {
+                label: 'Sắp hết hạn (phụ trách)',
+                value: formatNumber(scopedEmployee.expiring_soon),
+                tone: 'amber',
+                icon: <AlertTriangleIcon className="h-4 w-4" />,
+                hint: 'HĐ NV này phụ trách',
+              },
+              ranking
+                ? {
+                    label: 'Xếp hạng đội',
+                    value: `#${ranking.rank}/${ranking.total}`,
+                    tone: ranking.rank === 1 ? 'emerald' : ranking.rank <= 3 ? 'violet' : 'amber',
+                    icon: <TrophyIcon className="h-4 w-4" />,
+                    hint: ranking.topRevenue > 0
+                      ? `Top 1: ${(ranking.topRevenue / 1_000_000_000).toFixed(2)} tỷ`
+                      : 'Theo doanh thu',
+                  }
+                : {
+                    label: 'Xếp hạng đội',
+                    value: '—',
+                    tone: 'amber',
+                    icon: <TrophyIcon className="h-4 w-4" />,
+                  },
+            ]}
+          />
+          {!personalMode && (
+            <div className="-mt-2 mb-2 text-[11px] text-zinc-500 italic">
+              KPI tổng hệ thống bên dưới — không bị ảnh hưởng bởi filter nhân viên.
+            </div>
+          )}
+        </>
+      )}
+
+      {/* Section 1 — KPI tổng quan (ẩn trong personalMode để gọn) */}
+      {stats && !personalMode && (
         <>
           <MetricStrip
             items={[
