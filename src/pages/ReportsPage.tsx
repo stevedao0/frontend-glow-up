@@ -490,6 +490,13 @@ export function ReportsPage({
               Làm mới
             </Button>
             <Button
+              variant="secondary"
+              leftIcon={<PresentationIcon className="h-4 w-4" />}
+              onClick={() => setPresenting((v) => !v)}
+              title="Chế độ trình bày (ESC để thoát)">
+              {presenting ? 'Thoát trình bày' : 'Trình bày'}
+            </Button>
+            <Button
               variant="primary"
               leftIcon={<DownloadIcon className="h-4 w-4" />}
               onClick={() => setExportOpen(true)}
