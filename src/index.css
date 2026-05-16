@@ -506,3 +506,72 @@ body {
 .theme-dark-gold [class*="bg-gradient-to-r"][class*="from-yellow"] {
   background: var(--gradient-gold) !important;
 }
+
+/* Catch arbitrary cream/ivory backgrounds used in HeroPanel etc. */
+.theme-dark-gold [class*="bg-[#fa"],
+.theme-dark-gold [class*="bg-[#fb"],
+.theme-dark-gold [class*="bg-[#fc"],
+.theme-dark-gold [class*="bg-[#fd"],
+.theme-dark-gold [class*="bg-[#fe"],
+.theme-dark-gold [class*="bg-[#ff"],
+.theme-dark-gold [class*="bg-[#f2"],
+.theme-dark-gold [class*="bg-[#f1"],
+.theme-dark-gold [class*="bg-[#f5"],
+.theme-dark-gold [class*="bg-[#f7"],
+.theme-dark-gold [class*="bg-[#ef"],
+.theme-dark-gold [class*="bg-[#e9"],
+.theme-dark-gold [class*="bg-[#e3"] {
+  background-color: var(--bg-surface) !important;
+}
+.theme-dark-gold [class*="from-[#fa"],
+.theme-dark-gold [class*="from-[#fc"],
+.theme-dark-gold [class*="from-[#fb"],
+.theme-dark-gold [class*="from-[#ff"],
+.theme-dark-gold [class*="from-[#f2"],
+.theme-dark-gold [class*="from-[#f5"],
+.theme-dark-gold [class*="from-[#f7"] {
+  --tw-gradient-from: #1c1610 var(--tw-gradient-from-position) !important;
+  --tw-gradient-to: rgba(28,22,16,0) var(--tw-gradient-to-position) !important;
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important;
+}
+.theme-dark-gold [class*="via-[#fa"],
+.theme-dark-gold [class*="via-[#fc"],
+.theme-dark-gold [class*="via-[#fb"],
+.theme-dark-gold [class*="via-[#ff"],
+.theme-dark-gold [class*="via-[#f2"],
+.theme-dark-gold [class*="via-[#f5"] {
+  --tw-gradient-via: #221a12 !important;
+  --tw-gradient-via-position: 50% !important;
+  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-via) var(--tw-gradient-via-position), var(--tw-gradient-to) !important;
+}
+.theme-dark-gold [class*="to-[#fa"],
+.theme-dark-gold [class*="to-[#fc"],
+.theme-dark-gold [class*="to-[#fb"],
+.theme-dark-gold [class*="to-[#ff"],
+.theme-dark-gold [class*="to-[#f2"],
+.theme-dark-gold [class*="to-[#ef"],
+.theme-dark-gold [class*="to-[#e9"] {
+  --tw-gradient-to: #2a2014 var(--tw-gradient-to-position) !important;
+}
+.theme-dark-gold [class*="border-[#e3"],
+.theme-dark-gold [class*="border-[#ef"],
+.theme-dark-gold [class*="border-[#e9"],
+.theme-dark-gold [class*="border-[#f2"] {
+  border-color: var(--border-default) !important;
+}
+
+/* Recharts SVG dark background — kill white grid + tooltip */
+.theme-dark-gold .recharts-cartesian-grid line {
+  stroke: rgba(201,162,76,0.08) !important;
+}
+.theme-dark-gold .recharts-text {
+  fill: var(--fg-muted) !important;
+}
+.theme-dark-gold .recharts-default-tooltip {
+  background: var(--bg-surface) !important;
+  border: 1px solid var(--border-default) !important;
+  color: var(--fg-primary) !important;
+}
+
+/* Headings inside hero shouldn't be gold-gradient if they're long — only KPI numbers */
+.theme-dark-gold h1 { -webkit-text-fill-color: initial !important; color: #f5ead2 !important; background: none !important; }
