@@ -1327,8 +1327,10 @@ export function ReportsPage({
           </div>
         )}
       </ContentCard>
+      )}
 
       {/* Section 6 — Doanh thu */}
+      {sectionVis.revenue && (
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <ContentCard
           title="Doanh thu theo năm"
