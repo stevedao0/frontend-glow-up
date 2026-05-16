@@ -456,6 +456,14 @@ export function ReportsPage({
         }
       />
 
+      {/* Saved Views — góc nhìn lưu nhanh */}
+      <SavedViews
+        scope="reports"
+        current={currentView}
+        onApply={applyView}
+        isActive={isViewActive}
+      />
+
       {/* Filter Bar */}
       <FilterBar
         hasActive={hasActiveFilter}
