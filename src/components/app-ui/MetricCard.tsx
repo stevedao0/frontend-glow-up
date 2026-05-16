@@ -11,7 +11,30 @@ export type MetricCardProps = {
   };
   icon?: React.ReactNode;
   tone?: Tone;
+  sparkline?: number[];
 };
+
+function Sparkline({ data, tone }: { data: number[]; tone: 'up' | 'down' | 'flat' }) {
+  if (!data || data.length < 2) return null;
+  const w = 96;
+  const h = 28;
+  const min = Math.min(...data);
+  const max = Math.max(...data);
+  const range = max - min || 1;
+  const step = w / (data.length - 1);
+  const pts = data.map((v, i) => `${(i * step).toFixed(1)},${(h - ((v - min) / range) * h).toFixed(1)}`);
+  const d = `M${pts.join(' L')}`;
+  const area = `M0,${h} L${pts.join(' L')} L${w},${h} Z`;
+  const stroke = tone === 'down' ? '#b8302b' : tone === 'flat' ? '#9aa39d' : '#9c6d3e';
+  const fill = tone === 'down' ? 'rgba(184,48,43,0.10)' : tone === 'flat' ? 'rgba(154,163,157,0.10)' : 'rgba(200,153,104,0.18)';
+  return (
+    <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} className="opacity-90 group-hover:opacity-100 transition-opacity">
+      <path d={area} fill={fill} />
+      <path d={d} fill="none" stroke={stroke} strokeWidth="1.6" strokeLinejoin="round" strokeLinecap="round" />
+      <circle cx={(data.length - 1) * step} cy={h - ((data[data.length - 1] - min) / range) * h} r="2.2" fill={stroke} />
+    </svg>
+  );
+}
 const toneIconBg: Record<Tone, string> = {
   indigo: 'bg-amber-50 text-amber-700 ring-amber-100',
   violet: 'bg-amber-50 text-amber-700 ring-amber-100',
