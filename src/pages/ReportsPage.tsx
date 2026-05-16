@@ -1489,8 +1489,10 @@ export function ReportsPage({
           </div>
         </ContentCard>
       </div>
+      )}
 
       {/* Section 7 — GCN Report */}
+      {sectionVis.gcn && (
       <ContentCard
         title="Báo cáo GCN"
         description="Trạng thái cấp số & in giấy chứng nhận. Dữ liệu từ database thực."
