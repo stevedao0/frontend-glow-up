@@ -26,7 +26,9 @@ import {
   Tooltip,
   ResponsiveContainer,
   Cell,
+  ReferenceLine,
 } from 'recharts';
+import { PresentationIcon } from 'lucide-react';
 import { Page, PageHeader } from '../components/app-ui/Page';
 import { ContentCard } from '../components/app-ui/ContentCard';
 import { MetricStrip } from '../components/app-ui/MetricCard';
@@ -155,6 +157,22 @@ export function ReportsPage({
   const [signedScope, setSignedScope] = useState<SignedScope>('month');
   const [expiringScope, setExpiringScope] = useState('30d');
   const [hoverIdx, setHoverIdx] = useState<number | null>(null);
+  const [presenting, setPresenting] = useState(false);
+
+  // Presentation mode — toggle body class to hide chrome
+  useEffect(() => {
+    const root = document.documentElement;
+    if (presenting) root.classList.add('presentation-mode');
+    else root.classList.remove('presentation-mode');
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && presenting) setPresenting(false);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => {
+      window.removeEventListener('keydown', onKey);
+      root.classList.remove('presentation-mode');
+    };
+  }, [presenting]);
 
   // --- Data fetching ---
   const fetchData = React.useCallback(async () => {
@@ -270,15 +288,42 @@ export function ReportsPage({
     return summary.certificate_recent ?? [];
   }, [summary]);
 
-  // Revenue chart data
+  // Revenue chart data + forecast (dự báo cuối năm dựa trên lũy kế hiện tại)
+  const dayOfYearProgress = useMemo(() => {
+    const now = new Date();
+    const start = new Date(now.getFullYear(), 0, 0);
+    const diff = now.getTime() - start.getTime();
+    const day = Math.floor(diff / (1000 * 60 * 60 * 24));
+    return Math.max(1, day) / 365;
+  }, []);
+
   const revenueByYear = useMemo(() => {
     if (!summary) return [];
-    return (summary.revenue_by_year ?? []).map((y) => ({
-      ...y,
-      revenueBn: y.total_revenue == null ? 0 : y.total_revenue / 1_000_000_000,
-      isNull: y.total_revenue == null,
-    }));
-  }, [summary]);
+    const currentYear = new Date().getFullYear();
+    return (summary.revenue_by_year ?? []).map((y) => {
+      const revenueBn = y.total_revenue == null ? 0 : y.total_revenue / 1_000_000_000;
+      const isCurrent = y.year === currentYear && y.cumulative && !y.isNull;
+      const forecastBn = isCurrent ? revenueBn / dayOfYearProgress : 0;
+      return {
+        ...y,
+        revenueBn,
+        forecastBn,
+        isNull: y.total_revenue == null,
+        isCurrent,
+      };
+    });
+  }, [summary, dayOfYearProgress]);
+
+  // Forecast cho năm hiện tại — phục vụ insight/badge
+  const yearForecast = useMemo(() => {
+    const cur = revenueByYear.find((y) => y.isCurrent);
+    if (!cur || cur.revenueBn === 0) return null;
+    return {
+      projectedBn: cur.forecastBn,
+      currentBn: cur.revenueBn,
+      progress: dayOfYearProgress,
+    };
+  }, [revenueByYear, dayOfYearProgress]);
 
   // Stats
   const stats = summary
@@ -443,6 +488,13 @@ export function ReportsPage({
               leftIcon={<RefreshCwIcon className="h-4 w-4" />}
               onClick={handleRefresh}>
               Làm mới
+            </Button>
+            <Button
+              variant="secondary"
+              leftIcon={<PresentationIcon className="h-4 w-4" />}
+              onClick={() => setPresenting((v) => !v)}
+              title="Chế độ trình bày (ESC để thoát)">
+              {presenting ? 'Thoát trình bày' : 'Trình bày'}
             </Button>
             <Button
               variant="primary"
@@ -1183,11 +1235,27 @@ export function ReportsPage({
                     return <Cell key={i} fill="url(#rep2BarFillPrev)" />;
                   })}
                 </Bar>
+                {yearForecast && (
+                  <ReferenceLine
+                    y={yearForecast.projectedBn}
+                    stroke="#9c6d3e"
+                    strokeDasharray="5 4"
+                    strokeWidth={1.5}
+                    ifOverflow="extendDomain"
+                    label={{
+                      value: `Dự báo cuối năm · ${yearForecast.projectedBn.toFixed(2)} tỷ`,
+                      position: 'insideTopRight',
+                      fill: '#9c6d3e',
+                      fontSize: 11,
+                      fontWeight: 600,
+                    }}
+                  />
+                )}
               </BarChart>
             </ResponsiveContainer>
           </div>
           <p className="mt-3 text-[11px] text-zinc-500 leading-relaxed border-t border-zinc-100 pt-3">
-            Năm hiện tại là dữ liệu lũy kế đến hôm nay. Cột pattern gạch chéo nghĩa là chưa có dữ liệu.
+            Năm hiện tại là dữ liệu lũy kế đến hôm nay. Đường gạch nét là <span className="font-semibold text-amber-800">dự báo cuối năm</span> dựa trên tốc độ hiện tại ({(yearForecast?.progress ? yearForecast.progress * 100 : 0).toFixed(0)}% năm đã qua). Cột pattern gạch chéo nghĩa là chưa có dữ liệu.
           </p>
         </ContentCard>
 
