@@ -1604,6 +1604,7 @@ export function ReportsPage({
           </table>
         </div>
       </ContentCard>
+      )}
       </div>
 
       <ExportReportDialog
