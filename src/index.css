@@ -100,8 +100,85 @@ body {
 .scrollbar-thin::-webkit-scrollbar-thumb:hover {
   background: rgba(156, 109, 62, 0.32);
 }
-/* Reusable */
+/* === Motion library === */
 @keyframes shimmer {
   0% { transform: translateX(-100%); }
   100% { transform: translateX(100%); }
+}
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes scaleIn {
+  from { opacity: 0; transform: scale(0.96); }
+  to   { opacity: 1; transform: scale(1); }
+}
+@keyframes goldGlow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(200,153,104,0.0); }
+  50%      { box-shadow: 0 0 0 4px rgba(200,153,104,0.18); }
+}
+@keyframes countUp {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes ringPulse {
+  0%   { box-shadow: 0 0 0 0 rgba(200,153,104,0.45); }
+  100% { box-shadow: 0 0 0 8px rgba(200,153,104,0); }
+}
+
+/* Stagger fade-in for grids/lists */
+.stagger > * { opacity: 0; animation: fadeUp 420ms var(--ease-out) forwards; }
+.stagger > *:nth-child(1) { animation-delay: 20ms; }
+.stagger > *:nth-child(2) { animation-delay: 70ms; }
+.stagger > *:nth-child(3) { animation-delay: 120ms; }
+.stagger > *:nth-child(4) { animation-delay: 170ms; }
+.stagger > *:nth-child(5) { animation-delay: 220ms; }
+.stagger > *:nth-child(6) { animation-delay: 270ms; }
+.stagger > *:nth-child(7) { animation-delay: 320ms; }
+.stagger > *:nth-child(8) { animation-delay: 370ms; }
+.stagger > *:nth-child(n+9) { animation-delay: 420ms; }
+
+/* Page transition wrapper */
+.page-enter { animation: fadeUp 320ms var(--ease-out) both; }
+
+/* Skeleton with traveling shimmer band */
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(90deg, #efe9dc 0%, #f5f0e2 50%, #efe9dc 100%);
+}
+.skeleton::after {
+  content: '';
+  position: absolute; inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.55), transparent);
+  animation: shimmer 1.6s infinite;
+}
+
+/* Gold-frame hover ring */
+.gold-frame {
+  position: relative;
+  transition: box-shadow var(--duration-base) var(--ease-out),
+              transform var(--duration-base) var(--ease-out);
+}
+.gold-frame:hover {
+  box-shadow:
+    0 0 0 1px rgba(200,153,104,0.55),
+    0 0 0 4px rgba(200,153,104,0.10),
+    0 12px 28px -10px rgba(156,109,62,0.25);
+  transform: translateY(-1px);
+}
+
+/* Premium focus ring */
+.focus-gold:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(200,153,104,0.35), 0 0 0 1px rgba(156,109,62,0.55);
+}
+
+/* Tabular numbers helper */
+.nums { font-variant-numeric: tabular-nums; font-feature-settings: 'tnum' 1; }
+
+/* Dot-grid alt — finer */
+.dot-grid-fine {
+  background-image: radial-gradient(rgba(156,109,62,0.14) 1px, transparent 1px);
+  background-size: 14px 14px;
 }
