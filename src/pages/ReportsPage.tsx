@@ -1047,16 +1047,16 @@ export function ReportsPage({
                 onMouseLeave={() => setHoverIdx(null)}>
                 <defs>
                   <linearGradient id="rep2BarFill" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#818cf8" stopOpacity={1} />
-                    <stop offset="100%" stopColor="#6366f1" stopOpacity={0.85} />
+                    <stop offset="0%" stopColor="#e6c79a" stopOpacity={1} />
+                    <stop offset="100%" stopColor="#c89968" stopOpacity={0.95} />
                   </linearGradient>
                   <linearGradient id="rep2BarFillHover" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#a78bfa" stopOpacity={1} />
-                    <stop offset="100%" stopColor="#7c3aed" stopOpacity={1} />
+                    <stop offset="0%" stopColor="#f0d4ad" stopOpacity={1} />
+                    <stop offset="100%" stopColor="#9c6d3e" stopOpacity={1} />
                   </linearGradient>
                   <linearGradient id="rep2BarFillPrev" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#d4d4d8" stopOpacity={1} />
-                    <stop offset="100%" stopColor="#a1a1aa" stopOpacity={1} />
+                    <stop offset="0%" stopColor="#efe4d2" stopOpacity={1} />
+                    <stop offset="100%" stopColor="#c9b89a" stopOpacity={0.9} />
                   </linearGradient>
                   <pattern
                     id="rep2NullPattern"
@@ -1064,45 +1064,46 @@ export function ReportsPage({
                     width="6"
                     height="6"
                     patternTransform="rotate(45)">
-                    <rect width="6" height="6" fill="#f4f4f5" />
+                    <rect width="6" height="6" fill="#faf5ec" />
                     <line
                       x1="0"
                       y1="0"
                       x2="0"
                       y2="6"
-                      stroke="#d4d4d8"
+                      stroke="#d9c8a8"
                       strokeWidth="2"
                     />
                   </pattern>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e4e4e7" vertical={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke="#ece3d2" vertical={false} />
                 <XAxis
                   dataKey="year"
-                  stroke="#a1a1aa"
+                  stroke="#9c8c6e"
                   fontSize={12}
                   tickLine={false}
                   axisLine={false}
                   dy={4}
                 />
                 <YAxis
-                  stroke="#a1a1aa"
+                  stroke="#9c8c6e"
                   fontSize={11}
                   tickLine={false}
                   axisLine={false}
                   dx={-4}
                 />
                 <Tooltip
-                  cursor={{ fill: 'rgba(99,102,241,0.06)' }}
+                  cursor={{ fill: 'rgba(200,153,104,0.10)' }}
                   contentStyle={{
-                    border: 'none',
-                    borderRadius: 10,
-                    background: 'rgba(15, 15, 25, 0.92)',
+                    border: '1px solid rgba(200,153,104,0.35)',
+                    borderRadius: 12,
+                    background: 'rgba(28, 22, 16, 0.94)',
+                    backdropFilter: 'blur(8px)',
                     color: '#fff',
                     fontSize: 12,
                     padding: '8px 12px',
-                    boxShadow: '0 10px 30px rgba(15,15,25,0.25)',
+                    boxShadow: '0 14px 40px rgba(156,109,62,0.28)',
                   }}
-                  labelStyle={{ color: '#a5b4fc', fontWeight: 600, marginBottom: 2 }}
+                  labelStyle={{ color: '#e6c79a', fontWeight: 600, marginBottom: 2 }}
                   itemStyle={{ color: '#fff' }}
                   formatter={(_v: number, _n: unknown, p: any) => {
                     const d = p?.payload;
