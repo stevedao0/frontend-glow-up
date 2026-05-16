@@ -157,6 +157,22 @@ export function ReportsPage({
   const [signedScope, setSignedScope] = useState<SignedScope>('month');
   const [expiringScope, setExpiringScope] = useState('30d');
   const [hoverIdx, setHoverIdx] = useState<number | null>(null);
+  const [presenting, setPresenting] = useState(false);
+
+  // Presentation mode — toggle body class to hide chrome
+  useEffect(() => {
+    const root = document.documentElement;
+    if (presenting) root.classList.add('presentation-mode');
+    else root.classList.remove('presentation-mode');
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && presenting) setPresenting(false);
+    };
+    window.addEventListener('keydown', onKey);
+    return () => {
+      window.removeEventListener('keydown', onKey);
+      root.classList.remove('presentation-mode');
+    };
+  }, [presenting]);
 
   // --- Data fetching ---
   const fetchData = React.useCallback(async () => {
