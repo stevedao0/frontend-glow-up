@@ -1629,7 +1629,8 @@ export function ReportsPage({
       )}
 
       {/* Section 7 — GCN Report */}
-      {sectionVis.gcn && (
+      {sectionVis.gcn && dataTab === 'gcn' && (
+      <div key="tab-gcn" className="tab-swap">
       <ContentCard
         title="Báo cáo GCN"
         description="Trạng thái cấp số & in giấy chứng nhận. Dữ liệu từ database thực."
@@ -1741,6 +1742,7 @@ export function ReportsPage({
           </table>
         </div>
       </ContentCard>
+      </div>
       )}
       </div>
 
