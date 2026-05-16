@@ -1575,6 +1575,7 @@ export function ReportsPage({
           </table>
         </div>
       </ContentCard>
+      </div>
 
       <ExportReportDialog
         open={exportOpen}
@@ -1595,6 +1596,15 @@ export function ReportsPage({
                       : 'revenue'
         }
         timeLabel={TIME_OPTIONS.find((t) => t.value === time)?.label ?? 'Năm này'}
+      />
+
+      <DrilldownDrawer
+        open={!!drilldown}
+        onClose={() => setDrilldown(null)}
+        title={drilldown?.title ?? ''}
+        subtitle={drilldown?.subtitle}
+        primary={drilldown?.primary}
+        items={drilldown?.items}
       />
     </Page>
   );
