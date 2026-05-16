@@ -625,6 +625,26 @@ export function ReportsPage({
         </>
       )}
 
+      {/* Insight Panel + Goal — phân tích tự động & mục tiêu */}
+      {summary && (insights.length > 0 || stats) && (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 stagger">
+          {stats && (
+            <GoalProgressCard
+              current={stats.revenue2026}
+              year={new Date().getFullYear()}
+            />
+          )}
+          {insights.slice(0, 4).map((ins) => (
+            <InsightCard
+              key={ins.id}
+              tone={ins.tone}
+              title={ins.title}
+              description={ins.description}
+            />
+          ))}
+        </div>
+      )}
+
       {/* Section 2 — Hiệu suất nhân viên */}
       <ContentCard
         title="Hiệu suất xử lý theo nhân viên"
