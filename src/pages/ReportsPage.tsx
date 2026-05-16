@@ -1196,8 +1196,10 @@ export function ReportsPage({
           </div>
         )}
       </ContentCard>
+      )}
 
       {/* Section 5 — Hợp đồng sắp hết hạn cần tái ký */}
+      {sectionVis.expiring && (
       <ContentCard
         title="Hợp đồng sắp hết hạn cần tái ký"
         description="Ưu tiên xử lý theo mức độ khẩn cấp. Dữ liệu từ database thực."
