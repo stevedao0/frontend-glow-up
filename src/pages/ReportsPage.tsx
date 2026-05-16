@@ -57,7 +57,6 @@ import {
   type ReportInsight,
 } from '../data/reportData';
 import {
-  EMPLOYEE_PERFORMANCE,
   getPendingPriority,
   PENDING_CATEGORY_LABEL,
   filterSignedByScope,
@@ -66,12 +65,14 @@ import {
 } from '../data/reportEmployees';
 import {
   getReportsSummary,
+  getEmployeeStats,
   listExpiringContracts,
   listReportsCertificates,
   type ReportsSummary,
   type ExpiringContractItem,
   type CertificateListItem,
   type SignedContractItem,
+  type EmployeeStatsResponse,
 } from '../lib/reportsClient';
 import { TOKEN_KEY } from '../lib/authClient';
 import { formatCurrency, formatDate, formatNumber } from '../lib/format';
@@ -148,6 +149,7 @@ export function ReportsPage({
 
   // --- Data state ---
   const [summary, setSummary] = useState<ReportsSummary | null>(null);
+  const [employeeStats, setEmployeeStats] = useState<EmployeeStatsResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState<string | null>(null);
 
@@ -214,8 +216,12 @@ export function ReportsPage({
     setLoading(true);
     setFetchError(null);
     try {
-      const data = await getReportsSummary(token);
+      const [data, empStats] = await Promise.all([
+        getReportsSummary(token),
+        getEmployeeStats(token),
+      ]);
       setSummary(data);
+      setEmployeeStats(empStats);
     } catch (err: any) {
       setFetchError(err?.message || 'Không thể tải dữ liệu báo cáo.');
     } finally {
@@ -886,40 +892,33 @@ export function ReportsPage({
       )}
 
       {/* Section 2 — Hiệu suất nhân viên */}
-      {sectionVis.performance && (
-      <ContentCard
-        title="Hiệu suất xử lý theo nhân viên"
-        description="Theo dõi tải công việc và tỷ lệ hoàn thành. Dữ liệu nhân viên sẽ được cập nhật khi backend hỗ trợ thống kê theo người dùng."
-        padded={false}
-        accent
-        actions={
-          <Tabs
-            tabs={[
-              { value: '', label: 'Tất cả' },
-              { value: 'Tuấn', label: 'Tuấn' },
-              { value: 'Admin', label: 'Admin' },
-              { value: 'Nhân viên 1', label: 'NV 1' },
-            ]}
-            value={employee}
-            onChange={setEmployee}
-          />
-        }>
-        {EMPLOYEE_PERFORMANCE.length === 0 ? (
-          <EmptyState
-            title="Chưa có dữ liệu hiệu suất nhân viên"
-            description="Backend chưa hỗ trợ thống kê theo người dùng. Dữ liệu sẽ được cập nhật khi có API phù hợp."
-            icon={<AlertCircleIcon className="h-5 w-5" />}
-          />
-        ) : (
+      {sectionVis.performance && employeeStats && employeeStats.employees.length > 0 && (
+        <ContentCard
+          title="Hiệu suất xử lý theo nhân viên"
+          description="Theo dõi tải công việc và tỷ lệ hoàn thành. Dữ liệu từ hợp đồng đã ký."
+          padded={false}
+          accent
+          actions={
+            <Tabs
+              tabs={[
+                { value: '', label: 'Tất cả' },
+                ...employeeStats.employees.map((e) => ({
+                  value: e.name,
+                  label: e.name,
+                })),
+              ]}
+              value={employee}
+              onChange={setEmployee}
+            />
+          }>
           <EmployeePerformanceTable
             items={
               employee
-                ? EMPLOYEE_PERFORMANCE.filter((e) => e.name === employee)
-                : EMPLOYEE_PERFORMANCE
+                ? employeeStats.employees.filter((e) => e.name === employee)
+                : employeeStats.employees
             }
           />
-        )}
-      </ContentCard>
+        </ContentCard>
       )}
 
       {/* Section 3 — Hợp đồng đã ký */}
@@ -1636,6 +1635,25 @@ export function ReportsPage({
                       ? 'gcn'
                       : 'revenue'
         }
+        contractsFilters={{
+          q: undefined,
+          year: undefined,
+          domain: field || undefined,
+          status: status || undefined,
+          date_from: undefined,
+          date_to: undefined,
+        }}
+        expiringFilters={{
+          days: expiringScope === '7d' ? 7 : expiringScope === '30d' ? 30 : expiringScope === '60d' ? 60 : 90,
+          domain: field || undefined,
+          q: undefined,
+        }}
+        revenueFilters={{
+          year: undefined,
+          domain: field || undefined,
+          date_from: undefined,
+          date_to: undefined,
+        }}
         timeLabel={TIME_OPTIONS.find((t) => t.value === time)?.label ?? 'Năm này'}
       />
 

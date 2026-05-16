@@ -94,6 +94,23 @@ export type CertificateListResponse = {
   total: number;
 };
 
+export type EmployeeStatsItem = {
+  name: string;
+  signed_this_week: number;
+  signed_this_month: number;
+  signed_this_quarter: number;
+  signed_this_year: number;
+  total_value: number;
+  avg_value: number;
+  pending_count: number;
+  expiring_soon: number;
+};
+
+export type EmployeeStatsResponse = {
+  employees: EmployeeStatsItem[];
+  total_employees: number;
+};
+
 // =============================================================================
 // API calls
 // =============================================================================
@@ -149,4 +166,142 @@ export function listExpiringContracts(
     `/reports/contracts/expiring${suffix ? `?${suffix}` : ""}`,
     { token }
   );
+}
+
+/**
+ * Get employee performance statistics.
+ * GET /api/reports/employees
+ *
+ * Returns stats per employee: signed contracts, values, pending, expiring soon.
+ */
+export function getEmployeeStats(token: string): Promise<EmployeeStatsResponse> {
+  return apiRequest<EmployeeStatsResponse>("/reports/employees", { token });
+}
+
+// =============================================================================
+// Export functions — download Excel (.xlsx) files
+// =============================================================================
+
+export type ExportContractsParams = {
+  q?: string;
+  year?: number;
+  domain?: string;
+  status?: string;
+  date_from?: string;
+  date_to?: string;
+};
+
+export type ExportExpiringParams = {
+  days?: number;
+  domain?: string;
+  q?: string;
+};
+
+export type ExportRevenueParams = {
+  year?: number;
+  domain?: string;
+  date_from?: string;
+  date_to?: string;
+};
+
+/**
+ * Build query string from params
+ */
+function buildExportParams(params: Record<string, string | number | undefined>): string {
+  const qs = new URLSearchParams();
+  for (const [key, value] of Object.entries(params)) {
+    if (value !== undefined && value !== null && value !== "") {
+      qs.set(key, String(value));
+    }
+  }
+  const suffix = qs.toString();
+  return suffix ? `?${suffix}` : "";
+}
+
+/**
+ * Generic export download using fetch with blob response
+ */
+async function downloadExportFile(
+  url: string,
+  token: string,
+  filename: string
+): Promise<void> {
+  const response = await fetch(url, {
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    // Try to parse error from JSON response
+    let errorMessage = `Export failed: ${response.status} ${response.statusText}`;
+    try {
+      const errorData = await response.json();
+      if (errorData.detail) {
+        errorMessage = errorData.detail;
+      }
+    } catch {
+      // Not JSON, use default message
+    }
+    throw new Error(errorMessage);
+  }
+
+  const contentType = response.headers.get("content-type") || "";
+  if (!contentType.includes("spreadsheetml") && !contentType.includes("excel")) {
+    throw new Error(`Invalid content-type: ${contentType}. Expected Excel file.`);
+  }
+
+  const blob = await response.blob();
+  const blobUrl = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = blobUrl;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(blobUrl);
+}
+
+/**
+ * Export contracts to Excel (.xlsx)
+ * GET /api/reports/contracts/export-xlsx
+ */
+export async function exportContractsExcel(
+  token: string,
+  params: ExportContractsParams = {}
+): Promise<void> {
+  const suffix = buildExportParams(params);
+  const url = `/api/reports/contracts/export-xlsx${suffix}`;
+  // Generate filename with current date
+  const today = new Date().toISOString().slice(0, 10).replace(/-/g, "");
+  await downloadExportFile(url, token, `bao_cao_hop_dong_${today}.xlsx`);
+}
+
+/**
+ * Export expiring contracts to Excel (.xlsx)
+ * GET /api/reports/contracts/expiring/export-xlsx
+ */
+export async function exportExpiringContractsExcel(
+  token: string,
+  params: ExportExpiringParams = {}
+): Promise<void> {
+  const suffix = buildExportParams(params);
+  const url = `/api/reports/contracts/expiring/export-xlsx${suffix}`;
+  const today = new Date().toISOString().slice(0, 10).replace(/-/g, "");
+  await downloadExportFile(url, token, `hop_dong_sap_het_han_${today}.xlsx`);
+}
+
+/**
+ * Export revenue summary to Excel (.xlsx)
+ * GET /api/reports/revenue/export-xlsx
+ */
+export async function exportRevenueExcel(
+  token: string,
+  params: ExportRevenueParams = {}
+): Promise<void> {
+  const suffix = buildExportParams(params);
+  const url = `/api/reports/revenue/export-xlsx${suffix}`;
+  const today = new Date().toISOString().slice(0, 10).replace(/-/g, "");
+  await downloadExportFile(url, token, `bao_cao_doanh_thu_${today}.xlsx`);
 }

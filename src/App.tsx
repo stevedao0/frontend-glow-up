@@ -12,6 +12,7 @@ import { PlaceholderPage } from './pages/PlaceholderPage';
 import { LoginPage } from './pages/LoginPage';
 import { UsersPage } from './pages/UsersPage';
 import { PermissionsPage } from './pages/PermissionsPage';
+import { GlobalSearchPage } from './pages/GlobalSearchPage';
 import { AccessDenied } from './components/app-ui/AccessDenied';
 import { RouteKey, ROUTE_PATHS, WORKSPACES } from './data/routes';
 import { AuthProvider, useAuth } from './lib/auth';
@@ -235,6 +236,17 @@ function AppContent() {
     }
     if (route === 'admin.permissions') {
       return <PermissionsPage />;
+    }
+    if (route === 'search') {
+      return (
+        <GlobalSearchPage
+          onNavigate={setRoute}
+          onOpenDetail={(id) => {
+            setActiveContractId(id);
+            setRoute('contracts.detail');
+          }}
+        />
+      );
     }
     const meta = PLACEHOLDER_META[route];
     if (!meta) return null;
