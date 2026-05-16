@@ -19,6 +19,9 @@ import {
   GitCompareIcon,
   MoonIcon,
   DropletsIcon,
+  UserCircle2Icon,
+  TrophyIcon,
+  LockIcon,
 } from 'lucide-react';
 import {
   BarChart,
@@ -141,11 +144,17 @@ const GCN_STATUS_LABEL: Record<string, string> = {
 
 export function ReportsPage({
   onNavigate,
+  personalMode = false,
 }: {
   onNavigate: (k: RouteKey) => void;
+  personalMode?: boolean;
 }) {
-  const { hasPermission } = useAuth();
+  const { hasPermission, currentUser } = useAuth();
   const canExport = hasPermission('reports.export');
+  const isAdmin = currentUser?.role === 'super_admin';
+  const isManager = currentUser?.role === 'manager';
+  const canPickAnyEmployee = isAdmin || isManager;
+  const scopeLocked = personalMode || (!canPickAnyEmployee);
 
   // --- Data state ---
   const [summary, setSummary] = useState<ReportsSummary | null>(null);
