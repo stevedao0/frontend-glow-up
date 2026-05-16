@@ -12,6 +12,11 @@ export type MetricCardProps = {
   icon?: React.ReactNode;
   tone?: Tone;
   sparkline?: number[];
+  onClick?: () => void;
+  compare?: {
+    value: string;
+    label?: string;
+  };
 };
 
 function Sparkline({ data, tone }: { data: number[]; tone: 'up' | 'down' | 'flat' }) {
@@ -70,9 +75,16 @@ export function MetricCard({
   icon,
   tone = 'indigo',
   sparkline,
+  onClick,
+  compare,
 }: MetricCardProps) {
+  const interactive = !!onClick;
+  const Tag: any = interactive ? 'button' : 'div';
   return (
-    <div className="group relative bg-white rounded-2xl ring-1 ring-zinc-900/[0.06] shadow-[0_1px_2px_rgba(15,15,25,0.04),0_2px_6px_rgba(15,15,25,0.03)] hover:shadow-[0_0_0_1px_rgba(200,153,104,0.5),0_0_0_4px_rgba(200,153,104,0.10),0_14px_30px_-10px_rgba(156,109,62,0.25)] hover:-translate-y-1 transition-all duration-200 ease-out p-5 overflow-hidden">
+    <Tag
+      onClick={onClick}
+      type={interactive ? 'button' : undefined}
+      className={`group relative bg-white rounded-2xl ring-1 ring-zinc-900/[0.06] shadow-[0_1px_2px_rgba(15,15,25,0.04),0_2px_6px_rgba(15,15,25,0.03)] hover:shadow-[0_0_0_1px_rgba(200,153,104,0.5),0_0_0_4px_rgba(200,153,104,0.10),0_14px_30px_-10px_rgba(156,109,62,0.25)] hover:-translate-y-1 transition-all duration-200 ease-out p-5 overflow-hidden ${interactive ? 'cursor-pointer text-left w-full focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-600' : ''}`}>
       <div
         className={`absolute inset-x-0 top-0 h-px bg-gradient-to-r ${toneAccentFrom[tone]} opacity-50 group-hover:opacity-100 transition-opacity`} />
       <div
@@ -117,9 +129,16 @@ export function MetricCard({
             <Sparkline data={sparkline} tone={delta?.tone || 'flat'} />
           )}
         </div>
+        {compare && (
+          <div className="mt-2 flex items-center gap-1.5 text-[11px] text-zinc-500">
+            <span className="inline-block h-1.5 w-3 rounded-sm bg-zinc-300" />
+            <span className="font-medium">{compare.label ?? 'Kỳ trước'}:</span>
+            <span className="tabular-nums text-zinc-700">{compare.value}</span>
+          </div>
+        )}
         {hint && <p className="text-xs text-zinc-500 mt-2">{hint}</p>}
       </div>
-    </div>);
+    </Tag>);
 
 }
 export function MetricStrip({ items }: {items: MetricCardProps[];}) {

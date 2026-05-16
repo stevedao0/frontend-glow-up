@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   RefreshCwIcon,
   DownloadIcon,
@@ -16,6 +16,9 @@ import {
   PrinterIcon,
   Music2Icon,
   AlertCircleIcon,
+  GitCompareIcon,
+  MoonIcon,
+  DropletsIcon,
 } from 'lucide-react';
 import {
   BarChart,
@@ -45,6 +48,9 @@ import { TableSkeleton } from '../components/app-ui/TableSkeleton';
 import { InsightCard } from '../components/app-ui/InsightCard';
 import { SavedViews, type ViewState } from '../components/app-ui/SavedViews';
 import { GoalProgressCard } from '../components/app-ui/GoalProgressCard';
+import { DrilldownDrawer, type DrilldownItem } from '../components/app-ui/DrilldownDrawer';
+import { ExportSnapshotMenu } from '../components/app-ui/ExportSnapshotMenu';
+import { WidgetVisibilityMenu, useWidgetVisibility } from '../components/app-ui/WidgetVisibilityMenu';
 import {
   FIELD_CATEGORIES,
   buildReportInsights,
@@ -158,21 +164,44 @@ export function ReportsPage({
   const [expiringScope, setExpiringScope] = useState('30d');
   const [hoverIdx, setHoverIdx] = useState<number | null>(null);
   const [presenting, setPresenting] = useState(false);
+  const [darkPreset, setDarkPreset] = useState(false);
+  const [watermark, setWatermark] = useState('');
+  const [comparePrev, setComparePrev] = useState(false);
+  const [drilldown, setDrilldown] = useState<null | {
+    title: string;
+    subtitle?: string;
+    primary?: { label: string; value: string; hint?: string };
+    items: DrilldownItem[];
+  }>(null);
+  const { vis: sectionVis, toggle: toggleSection, reset: resetSections } = useWidgetVisibility();
+  const snapshotRef = useRef<HTMLDivElement>(null);
 
   // Presentation mode — toggle body class to hide chrome
   useEffect(() => {
     const root = document.documentElement;
-    if (presenting) root.classList.add('presentation-mode');
-    else root.classList.remove('presentation-mode');
+    if (presenting) {
+      root.classList.add('presentation-mode');
+      if (darkPreset) root.classList.add('dark-preset');
+      else root.classList.remove('dark-preset');
+      if (watermark) {
+        root.classList.add('with-watermark');
+        const main = document.querySelector('main');
+        if (main) main.setAttribute('data-watermark', watermark);
+      } else {
+        root.classList.remove('with-watermark');
+      }
+    } else {
+      root.classList.remove('presentation-mode', 'dark-preset', 'with-watermark');
+    }
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && presenting) setPresenting(false);
     };
     window.addEventListener('keydown', onKey);
     return () => {
       window.removeEventListener('keydown', onKey);
-      root.classList.remove('presentation-mode');
+      root.classList.remove('presentation-mode', 'dark-preset', 'with-watermark');
     };
-  }, [presenting]);
+  }, [presenting, darkPreset, watermark]);
 
   // --- Data fetching ---
   const fetchData = React.useCallback(async () => {
@@ -300,7 +329,7 @@ export function ReportsPage({
   const revenueByYear = useMemo(() => {
     if (!summary) return [];
     const currentYear = new Date().getFullYear();
-    return (summary.revenue_by_year ?? []).map((y) => {
+    const list = (summary.revenue_by_year ?? []).map((y) => {
       const revenueBn = y.total_revenue == null ? 0 : y.total_revenue / 1_000_000_000;
       const isCurrent = y.year === currentYear && y.cumulative && !y.isNull;
       const forecastBn = isCurrent ? revenueBn / dayOfYearProgress : 0;
@@ -312,6 +341,11 @@ export function ReportsPage({
         isCurrent,
       };
     });
+    // Thêm prevRevenueBn = năm liền trước trong cùng dataset
+    return list.map((y, i) => ({
+      ...y,
+      prevRevenueBn: i > 0 ? list[i - 1].revenueBn : 0,
+    }));
   }, [summary, dayOfYearProgress]);
 
   // Forecast cho năm hiện tại — phục vụ insight/badge
@@ -423,6 +457,102 @@ export function ReportsPage({
     fetchData();
   };
 
+  // ---- Drilldown handlers ----
+  const openRevenueDrilldown = () => {
+    if (!summary) return;
+    const items: DrilldownItem[] = (summary.revenue_by_year ?? []).map((y) => {
+      const v = y.total_revenue ?? 0;
+      const max = Math.max(
+        ...(summary.revenue_by_year ?? []).map((r) => r.total_revenue ?? 0),
+        1,
+      );
+      return {
+        label: `Năm ${y.year}${y.cumulative ? ' (lũy kế)' : ''}`,
+        value: v > 0 ? `${(v / 1_000_000_000).toFixed(2)} tỷ` : '—',
+        hint: `${y.contract_count} hợp đồng`,
+        bar: (v / max) * 100,
+        tone: y.year === new Date().getFullYear() ? 'positive' : 'default',
+      };
+    });
+    setDrilldown({
+      title: 'Phân tích doanh thu',
+      subtitle: 'Bóc tách doanh thu theo từng năm',
+      primary: stats
+        ? {
+            label: `Doanh thu ${new Date().getFullYear()}`,
+            value:
+              stats.revenue2026 > 0
+                ? `${(stats.revenue2026 / 1_000_000_000).toFixed(2)} tỷ VND`
+                : 'Chưa có',
+            hint: yearForecast
+              ? `Dự báo cuối năm: ${yearForecast.projectedBn.toFixed(2)} tỷ`
+              : undefined,
+          }
+        : undefined,
+      items,
+    });
+  };
+
+  const openContractsDrilldown = () => {
+    if (!summary || !stats) return;
+    const items: DrilldownItem[] = [
+      { label: 'Còn hiệu lực', value: formatNumber(stats.active), tone: 'positive', bar: (stats.active / Math.max(1, stats.totalContracts)) * 100 },
+      { label: 'Sắp hết 30 ngày', value: formatNumber(stats.expiringIn30Days), tone: 'warn', bar: (stats.expiringIn30Days / Math.max(1, stats.totalContracts)) * 100 },
+      { label: 'Sắp hết 60 ngày', value: formatNumber(stats.expiringIn60Days), tone: 'warn', bar: (stats.expiringIn60Days / Math.max(1, stats.totalContracts)) * 100 },
+      { label: 'Đã hết hạn', value: formatNumber(stats.expired), tone: 'negative', bar: (stats.expired / Math.max(1, stats.totalContracts)) * 100 },
+      { label: 'Chờ tái ký', value: formatNumber(stats.pendingRenewal), tone: 'warn', bar: (stats.pendingRenewal / Math.max(1, stats.totalContracts)) * 100 },
+    ];
+    setDrilldown({
+      title: 'Phân tích hợp đồng',
+      subtitle: 'Tỷ trọng theo trạng thái',
+      primary: {
+        label: 'Tổng hợp đồng',
+        value: formatNumber(stats.totalContracts),
+        hint: contractsDelta ? `${contractsDelta.value} so với năm trước` : undefined,
+      },
+      items,
+    });
+  };
+
+  const openExpiringDrilldown = () => {
+    if (!summary || !stats) return;
+    const items: DrilldownItem[] = [
+      { label: '≤ 7 ngày', value: formatNumber((summary.expiring_contracts ?? []).filter((r) => r.days_left <= 7).length), tone: 'negative' },
+      { label: '8 - 30 ngày', value: formatNumber((summary.expiring_contracts ?? []).filter((r) => r.days_left > 7 && r.days_left <= 30).length), tone: 'warn' },
+      { label: '31 - 60 ngày', value: formatNumber((summary.expiring_contracts ?? []).filter((r) => r.days_left > 30 && r.days_left <= 60).length), tone: 'warn' },
+      { label: '61 - 90 ngày', value: formatNumber((summary.expiring_contracts ?? []).filter((r) => r.days_left > 60 && r.days_left <= 90).length), tone: 'default' },
+    ];
+    setDrilldown({
+      title: 'Hợp đồng sắp hết hạn',
+      subtitle: 'Theo mức độ khẩn cấp',
+      primary: {
+        label: 'Sắp hết 60 ngày',
+        value: formatNumber(stats.expiringIn60Days),
+        hint: `Trong đó ${stats.expiringIn30Days} hợp đồng còn ≤ 30 ngày`,
+      },
+      items,
+    });
+  };
+
+  const openGcnDrilldown = () => {
+    if (!stats || !summary) return;
+    const total = stats.gcnDraft + stats.gcnTestPrinted + stats.gcnFinalPrinted;
+    const items: DrilldownItem[] = [
+      { label: 'Bản nháp', value: formatNumber(stats.gcnDraft), tone: 'warn', bar: (stats.gcnDraft / Math.max(1, total)) * 100 },
+      { label: 'In thử', value: formatNumber(stats.gcnTestPrinted), tone: 'default', bar: (stats.gcnTestPrinted / Math.max(1, total)) * 100 },
+      { label: 'In chính thức', value: formatNumber(stats.gcnFinalPrinted), tone: 'positive', bar: (stats.gcnFinalPrinted / Math.max(1, total)) * 100 },
+    ];
+    setDrilldown({
+      title: 'Phân tích GCN',
+      subtitle: 'Trạng thái cấp số & in',
+      primary: {
+        label: 'Tổng GCN',
+        value: formatNumber(summary.certificate_total ?? total),
+      },
+      items,
+    });
+  };
+
   // ---- Loading / Error states ----
   if (loading) {
     return (
@@ -490,12 +620,50 @@ export function ReportsPage({
               Làm mới
             </Button>
             <Button
+              variant={comparePrev ? 'primary' : 'secondary'}
+              leftIcon={<GitCompareIcon className="h-4 w-4" />}
+              onClick={() => setComparePrev((v) => !v)}
+              title="So sánh kỳ trước (overlay bar năm liền trước)">
+              {comparePrev ? 'Đang so sánh' : 'So sánh kỳ'}
+            </Button>
+            <WidgetVisibilityMenu
+              vis={sectionVis}
+              onToggle={toggleSection}
+              onReset={resetSections}
+            />
+            <ExportSnapshotMenu targetRef={snapshotRef} filename="bao-cao" />
+            <Button
               variant="secondary"
               leftIcon={<PresentationIcon className="h-4 w-4" />}
               onClick={() => setPresenting((v) => !v)}
               title="Chế độ trình bày (ESC để thoát)">
               {presenting ? 'Thoát trình bày' : 'Trình bày'}
             </Button>
+            {presenting && (
+              <>
+                <Button
+                  variant={darkPreset ? 'primary' : 'secondary'}
+                  leftIcon={<MoonIcon className="h-4 w-4" />}
+                  onClick={() => setDarkPreset((v) => !v)}
+                  title="Theme tối khi trình bày">
+                  Dark
+                </Button>
+                <Button
+                  variant={watermark ? 'primary' : 'secondary'}
+                  leftIcon={<DropletsIcon className="h-4 w-4" />}
+                  onClick={() => {
+                    if (watermark) {
+                      setWatermark('');
+                    } else {
+                      const v = window.prompt('Watermark (vd: DRAFT, CONFIDENTIAL):', 'CONFIDENTIAL');
+                      if (v) setWatermark(v.trim().toUpperCase());
+                    }
+                  }}
+                  title="Watermark trên nền">
+                  {watermark || 'Watermark'}
+                </Button>
+              </>
+            )}
             <Button
               variant="primary"
               leftIcon={<DownloadIcon className="h-4 w-4" />}
@@ -507,6 +675,8 @@ export function ReportsPage({
           </>
         }
       />
+
+      <div ref={snapshotRef}>
 
       {/* Saved Views — góc nhìn lưu nhanh */}
       <SavedViews
@@ -597,9 +767,13 @@ export function ReportsPage({
                 value: formatNumber(stats.totalContracts),
                 tone: 'indigo',
                 icon: <FileTextIcon className="h-4 w-4" />,
-                hint: 'Tất cả hợp đồng',
+                hint: 'Tất cả hợp đồng · Click để xem chi tiết',
                 sparkline: contractSpark,
                 delta: contractsDelta,
+                onClick: openContractsDrilldown,
+                compare: comparePrev && stats.contracts2025
+                  ? { value: formatNumber(stats.contracts2025), label: 'Năm trước' }
+                  : undefined,
               },
               {
                 label: 'Còn hiệu lực',
@@ -608,13 +782,15 @@ export function ReportsPage({
                 icon: <CheckCircle2Icon className="h-4 w-4" />,
                 hint: 'Hợp đồng đang hoạt động',
                 sparkline: contractSpark,
+                onClick: openContractsDrilldown,
               },
               {
                 label: 'Sắp hết 60 ngày',
                 value: formatNumber(stats.expiringIn60Days),
                 tone: 'amber',
                 icon: <AlertTriangleIcon className="h-4 w-4" />,
-                hint: `Trong đó ${stats.expiringIn30Days} hết 30 ngày`,
+                hint: `Trong đó ${stats.expiringIn30Days} hết 30 ngày · Click chi tiết`,
+                onClick: openExpiringDrilldown,
               },
               {
                 label: 'Hết hạn',
@@ -622,6 +798,7 @@ export function ReportsPage({
                 tone: 'rose',
                 icon: <XCircleIcon className="h-4 w-4" />,
                 hint: 'Cần rà soát tái ký',
+                onClick: openExpiringDrilldown,
               },
             ]}
           />
@@ -636,9 +813,16 @@ export function ReportsPage({
                     : '—',
                 tone: 'cyan',
                 icon: <WalletIcon className="h-4 w-4" />,
-                hint: 'Lũy kế đến hôm nay',
+                hint: 'Lũy kế đến hôm nay · Click để bóc tách',
                 sparkline: revenueSpark,
                 delta: revenueDelta,
+                onClick: openRevenueDrilldown,
+                compare: comparePrev && stats.revenue2025
+                  ? {
+                      value: `${(stats.revenue2025 / 1_000_000_000).toFixed(2)} tỷ`,
+                      label: 'Năm trước',
+                    }
+                  : undefined,
               },
               {
                 label: 'Doanh thu năm trước',
@@ -650,6 +834,7 @@ export function ReportsPage({
                 icon: <WalletIcon className="h-4 w-4" />,
                 hint: 'Năm trước',
                 sparkline: revenueSpark.slice(0, -1),
+                onClick: openRevenueDrilldown,
               },
               {
                 label: 'Tác phẩm',
@@ -663,7 +848,8 @@ export function ReportsPage({
                 value: formatNumber(stats.gcnDraft),
                 tone: 'amber',
                 icon: <FileTextIcon className="h-4 w-4" />,
-                hint: 'Chờ cấp số & in',
+                hint: 'Chờ cấp số & in · Click chi tiết',
+                onClick: openGcnDrilldown,
               },
               {
                 label: 'GCN in chính thức',
@@ -671,6 +857,7 @@ export function ReportsPage({
                 tone: 'violet',
                 icon: <AwardIcon className="h-4 w-4" />,
                 hint: 'Đã phát hành',
+                onClick: openGcnDrilldown,
               },
             ]}
           />
@@ -678,7 +865,8 @@ export function ReportsPage({
       )}
 
       {/* Insight Panel + Goal — phân tích tự động & mục tiêu */}
-      {summary && (insights.length > 0 || stats) && (
+      {/* Insight Panel + Goal */}
+      {sectionVis.insights && summary && (insights.length > 0 || stats) && (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 stagger">
           {stats && (
             <GoalProgressCard
@@ -698,6 +886,7 @@ export function ReportsPage({
       )}
 
       {/* Section 2 — Hiệu suất nhân viên */}
+      {sectionVis.performance && (
       <ContentCard
         title="Hiệu suất xử lý theo nhân viên"
         description="Theo dõi tải công việc và tỷ lệ hoàn thành. Dữ liệu nhân viên sẽ được cập nhật khi backend hỗ trợ thống kê theo người dùng."
@@ -731,8 +920,10 @@ export function ReportsPage({
           />
         )}
       </ContentCard>
+      )}
 
       {/* Section 3 — Hợp đồng đã ký */}
+      {sectionVis.signed && (
       <ContentCard
         title="Hợp đồng đã ký"
         description="Danh sách hợp đồng đã ký với giá trị. Dữ liệu từ database thực."
@@ -853,8 +1044,10 @@ export function ReportsPage({
           </div>
         )}
       </ContentCard>
+      )}
 
       {/* Section 4 — Hợp đồng chưa ký / chờ xử lý */}
+      {sectionVis.pending && (
       <ContentCard
         title="Hợp đồng chưa ký / chờ xử lý"
         description="Hồ sơ đang tồn — biết đang thiếu bước gì và ai phụ trách."
@@ -1003,8 +1196,10 @@ export function ReportsPage({
           </div>
         )}
       </ContentCard>
+      )}
 
       {/* Section 5 — Hợp đồng sắp hết hạn cần tái ký */}
+      {sectionVis.expiring && (
       <ContentCard
         title="Hợp đồng sắp hết hạn cần tái ký"
         description="Ưu tiên xử lý theo mức độ khẩn cấp. Dữ liệu từ database thực."
@@ -1132,8 +1327,10 @@ export function ReportsPage({
           </div>
         )}
       </ContentCard>
+      )}
 
       {/* Section 6 — Doanh thu */}
+      {sectionVis.revenue && (
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <ContentCard
           title="Doanh thu theo năm"
@@ -1217,11 +1414,22 @@ export function ReportsPage({
                     ];
                   }}
                 />
+                {comparePrev && (
+                  <Bar
+                    dataKey="prevRevenueBn"
+                    radius={[6, 6, 0, 0]}
+                    fill="#d4c4a8"
+                    fillOpacity={0.55}
+                    minPointSize={2}
+                    name="Năm liền trước"
+                  />
+                )}
                 <Bar
                   dataKey="revenueBn"
                   radius={[6, 6, 0, 0]}
                   onMouseEnter={(_: unknown, idx: number) => setHoverIdx(idx)}
-                  minPointSize={4}>
+                  minPointSize={4}
+                  name="Năm hiện tại">
                   {revenueByYear.map((y, i) => {
                     if (y.isNull)
                       return <Cell key={i} fill="url(#rep2NullPattern)" />;
@@ -1292,8 +1500,10 @@ export function ReportsPage({
           </div>
         </ContentCard>
       </div>
+      )}
 
       {/* Section 7 — GCN Report */}
+      {sectionVis.gcn && (
       <ContentCard
         title="Báo cáo GCN"
         description="Trạng thái cấp số & in giấy chứng nhận. Dữ liệu từ database thực."
@@ -1405,6 +1615,8 @@ export function ReportsPage({
           </table>
         </div>
       </ContentCard>
+      )}
+      </div>
 
       <ExportReportDialog
         open={exportOpen}
@@ -1425,6 +1637,15 @@ export function ReportsPage({
                       : 'revenue'
         }
         timeLabel={TIME_OPTIONS.find((t) => t.value === time)?.label ?? 'Năm này'}
+      />
+
+      <DrilldownDrawer
+        open={!!drilldown}
+        onClose={() => setDrilldown(null)}
+        title={drilldown?.title ?? ''}
+        subtitle={drilldown?.subtitle}
+        primary={drilldown?.primary}
+        items={drilldown?.items}
       />
     </Page>
   );
