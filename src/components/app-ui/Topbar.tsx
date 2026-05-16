@@ -248,6 +248,14 @@ export function Topbar({
         </div>
       </header>
 
+      {/* Command Palette */}
+      <CommandPalette
+        open={paletteOpen}
+        onClose={() => setPaletteOpen(false)}
+        onNavigate={(k) => onNavigate?.(k)}
+        hasPermission={hasPermission}
+      />
+
       {/* Modals */}
       <ProfileModal open={showProfile} onClose={() => setShowProfile(false)} />
       <ChangePasswordModal
