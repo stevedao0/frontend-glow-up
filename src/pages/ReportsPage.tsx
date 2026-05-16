@@ -767,9 +767,13 @@ export function ReportsPage({
                 value: formatNumber(stats.totalContracts),
                 tone: 'indigo',
                 icon: <FileTextIcon className="h-4 w-4" />,
-                hint: 'Tất cả hợp đồng',
+                hint: 'Tất cả hợp đồng · Click để xem chi tiết',
                 sparkline: contractSpark,
                 delta: contractsDelta,
+                onClick: openContractsDrilldown,
+                compare: comparePrev && stats.contracts2025
+                  ? { value: formatNumber(stats.contracts2025), label: 'Năm trước' }
+                  : undefined,
               },
               {
                 label: 'Còn hiệu lực',
@@ -778,13 +782,15 @@ export function ReportsPage({
                 icon: <CheckCircle2Icon className="h-4 w-4" />,
                 hint: 'Hợp đồng đang hoạt động',
                 sparkline: contractSpark,
+                onClick: openContractsDrilldown,
               },
               {
                 label: 'Sắp hết 60 ngày',
                 value: formatNumber(stats.expiringIn60Days),
                 tone: 'amber',
                 icon: <AlertTriangleIcon className="h-4 w-4" />,
-                hint: `Trong đó ${stats.expiringIn30Days} hết 30 ngày`,
+                hint: `Trong đó ${stats.expiringIn30Days} hết 30 ngày · Click chi tiết`,
+                onClick: openExpiringDrilldown,
               },
               {
                 label: 'Hết hạn',
@@ -792,6 +798,7 @@ export function ReportsPage({
                 tone: 'rose',
                 icon: <XCircleIcon className="h-4 w-4" />,
                 hint: 'Cần rà soát tái ký',
+                onClick: openExpiringDrilldown,
               },
             ]}
           />
@@ -806,9 +813,16 @@ export function ReportsPage({
                     : '—',
                 tone: 'cyan',
                 icon: <WalletIcon className="h-4 w-4" />,
-                hint: 'Lũy kế đến hôm nay',
+                hint: 'Lũy kế đến hôm nay · Click để bóc tách',
                 sparkline: revenueSpark,
                 delta: revenueDelta,
+                onClick: openRevenueDrilldown,
+                compare: comparePrev && stats.revenue2025
+                  ? {
+                      value: `${(stats.revenue2025 / 1_000_000_000).toFixed(2)} tỷ`,
+                      label: 'Năm trước',
+                    }
+                  : undefined,
               },
               {
                 label: 'Doanh thu năm trước',
@@ -820,6 +834,7 @@ export function ReportsPage({
                 icon: <WalletIcon className="h-4 w-4" />,
                 hint: 'Năm trước',
                 sparkline: revenueSpark.slice(0, -1),
+                onClick: openRevenueDrilldown,
               },
               {
                 label: 'Tác phẩm',
@@ -833,7 +848,8 @@ export function ReportsPage({
                 value: formatNumber(stats.gcnDraft),
                 tone: 'amber',
                 icon: <FileTextIcon className="h-4 w-4" />,
-                hint: 'Chờ cấp số & in',
+                hint: 'Chờ cấp số & in · Click chi tiết',
+                onClick: openGcnDrilldown,
               },
               {
                 label: 'GCN in chính thức',
@@ -841,6 +857,7 @@ export function ReportsPage({
                 tone: 'violet',
                 icon: <AwardIcon className="h-4 w-4" />,
                 hint: 'Đã phát hành',
+                onClick: openGcnDrilldown,
               },
             ]}
           />
