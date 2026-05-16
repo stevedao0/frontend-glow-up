@@ -319,45 +319,52 @@ body {
    ========================================= */
 .theme-dark-gold {
   --font-serif: 'Cormorant Garamond', 'Playfair Display', Georgia, serif;
-  --bg-app: #14100a;
-  --bg-surface: #1c1610;
-  --bg-subtle: #221a12;
-  --bg-muted: #2a2014;
-  --bg-inverse: #f5ead2;
-  --fg-primary: #f0e4c8;
-  --fg-secondary: #c9b48a;
-  --fg-muted: #8c7a5a;
-  --fg-subtle: #6b5d44;
-  --fg-inverse: #14100a;
-  --border-subtle: rgba(201,162,76,0.10);
-  --border-default: rgba(201,162,76,0.18);
-  --border-strong: rgba(201,162,76,0.32);
-  --accent-primary: #c9a24c;
-  --accent-primary-soft: rgba(201,162,76,0.12);
-  --accent-secondary: #e8c878;
-  --accent-secondary-soft: rgba(232,200,120,0.10);
-  --accent-neutral: #8c6f47;
-  --accent-neutral-soft: rgba(140,111,71,0.14);
-  --success: #5fb88a;
-  --warning: #e8c878;
-  --danger: #d97766;
-  --info: #6ba8c8;
-  --gradient-gold: linear-gradient(135deg, #c9a24c 0%, #e8c878 50%, #c9a24c 100%);
-  --shadow-gold: 0 8px 32px -8px rgba(201,162,76,0.35);
+  /* Obsidian surfaces — true black with subtle warm undertone */
+  --bg-app: #0a0a0a;
+  --bg-surface: #141414;
+  --bg-subtle: #1a1a1a;
+  --bg-muted: #222222;
+  --bg-inverse: #f5f5f5;
+  /* Platinum text — warm silver, not cold gray */
+  --fg-primary: #f0f0f0;
+  --fg-secondary: #c0c0c0;
+  --fg-muted: #888888;
+  --fg-subtle: #5a5a5a;
+  --fg-inverse: #0a0a0a;
+  /* Hairline borders — barely-there platinum */
+  --border-subtle: rgba(255,255,255,0.06);
+  --border-default: rgba(255,255,255,0.12);
+  --border-strong: rgba(255,255,255,0.22);
+  /* Accents — platinum + cool steel blue */
+  --accent-primary: #e5e5e5;          /* platinum */
+  --accent-primary-soft: rgba(229,229,229,0.08);
+  --accent-secondary: #4a90e2;        /* electric steel blue */
+  --accent-secondary-soft: rgba(74,144,226,0.10);
+  --accent-neutral: #888888;
+  --accent-neutral-soft: rgba(255,255,255,0.06);
+  /* Semantic */
+  --success: #4ade80;
+  --warning: #fbbf24;
+  --danger: #f87171;
+  --info: #60a5fa;
+  /* Platinum gradient — brushed metal feel */
+  --gradient-gold: linear-gradient(135deg, #ffffff 0%, #c0c0c0 50%, #888888 100%);
+  --shadow-gold: 0 8px 32px -8px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.04);
 }
 .theme-dark-gold body {
   background:
-    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(201,162,76,0.08), transparent 60%),
-    radial-gradient(ellipse 60% 40% at 100% 100%, rgba(140,111,71,0.06), transparent 60%),
-    #14100a;
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(74,144,226,0.05), transparent 60%),
+    radial-gradient(ellipse 60% 40% at 100% 100%, rgba(255,255,255,0.02), transparent 60%),
+    #0a0a0a;
   color: var(--fg-primary);
 }
 .theme-dark-gold h1,
 .theme-dark-gold h2,
 .theme-dark-gold h3 {
-  font-family: var(--font-serif);
-  letter-spacing: -0.01em;
-  color: #f5ead2;
+  font-family: var(--font-sans);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: #ffffff;
 }
 
 /* === Global override map for hardcoded Tailwind colors === */
