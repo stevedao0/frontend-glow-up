@@ -703,51 +703,6 @@ export function ReportsPage({
               Làm mới
             </Button>
             <Button
-              variant={comparePrev ? 'primary' : 'secondary'}
-              leftIcon={<GitCompareIcon className="h-4 w-4" />}
-              onClick={() => setComparePrev((v) => !v)}
-              title="So sánh kỳ trước (overlay bar năm liền trước)">
-              {comparePrev ? 'Đang so sánh' : 'So sánh kỳ'}
-            </Button>
-            <WidgetVisibilityMenu
-              vis={sectionVis}
-              onToggle={toggleSection}
-              onReset={resetSections}
-            />
-            <ExportSnapshotMenu targetRef={snapshotRef} filename="bao-cao" />
-            <Button
-              variant="secondary"
-              leftIcon={<PresentationIcon className="h-4 w-4" />}
-              onClick={() => setPresenting((v) => !v)}
-              title="Chế độ trình bày (ESC để thoát)">
-              {presenting ? 'Thoát trình bày' : 'Trình bày'}
-            </Button>
-            {presenting && (
-              <>
-                <Button
-                  variant={darkPreset ? 'primary' : 'secondary'}
-                  leftIcon={<MoonIcon className="h-4 w-4" />}
-                  onClick={() => setDarkPreset((v) => !v)}
-                  title="Theme tối khi trình bày">
-                  Dark
-                </Button>
-                <Button
-                  variant={watermark ? 'primary' : 'secondary'}
-                  leftIcon={<DropletsIcon className="h-4 w-4" />}
-                  onClick={() => {
-                    if (watermark) {
-                      setWatermark('');
-                    } else {
-                      const v = window.prompt('Watermark (vd: DRAFT, CONFIDENTIAL):', 'CONFIDENTIAL');
-                      if (v) setWatermark(v.trim().toUpperCase());
-                    }
-                  }}
-                  title="Watermark trên nền">
-                  {watermark || 'Watermark'}
-                </Button>
-              </>
-            )}
-            <Button
               variant="primary"
               leftIcon={<DownloadIcon className="h-4 w-4" />}
               onClick={() => setExportOpen(true)}
@@ -755,6 +710,53 @@ export function ReportsPage({
               title={!canExport ? 'Không có quyền xuất báo cáo' : undefined}>
               Xuất báo cáo
             </Button>
+            <ActionOverflowMenu
+              actions={[
+                {
+                  label: comparePrev ? 'Tắt so sánh kỳ' : 'So sánh kỳ trước',
+                  description: 'Overlay bar năm liền trước lên biểu đồ',
+                  icon: <GitCompareIcon className="h-4 w-4" />,
+                  active: comparePrev,
+                  onClick: () => setComparePrev((v) => !v),
+                },
+                {
+                  label: presenting ? 'Thoát chế độ trình bày' : 'Chế độ trình bày',
+                  description: 'Ẩn chrome, full-screen (ESC để thoát)',
+                  icon: <PresentationIcon className="h-4 w-4" />,
+                  active: presenting,
+                  onClick: () => setPresenting((v) => !v),
+                },
+                ...(presenting
+                  ? [
+                      {
+                        label: darkPreset ? 'Tắt theme tối' : 'Theme tối khi trình bày',
+                        icon: <MoonIcon className="h-4 w-4" />,
+                        active: darkPreset,
+                        onClick: () => setDarkPreset((v) => !v),
+                      },
+                      {
+                        label: watermark ? `Xóa watermark (${watermark})` : 'Thêm watermark',
+                        icon: <DropletsIcon className="h-4 w-4" />,
+                        active: !!watermark,
+                        onClick: () => {
+                          if (watermark) {
+                            setWatermark('');
+                          } else {
+                            const v = window.prompt('Watermark (vd: DRAFT, CONFIDENTIAL):', 'CONFIDENTIAL');
+                            if (v) setWatermark(v.trim().toUpperCase());
+                          }
+                        },
+                      },
+                    ]
+                  : []),
+              ]}
+            />
+            <WidgetVisibilityMenu
+              vis={sectionVis}
+              onToggle={toggleSection}
+              onReset={resetSections}
+            />
+            <ExportSnapshotMenu targetRef={snapshotRef} filename="bao-cao" />
           </>
         }
       />
