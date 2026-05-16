@@ -1027,24 +1027,54 @@ export function ReportsPage({
 
       {/* Insight Panel + Goal — phân tích tự động & mục tiêu */}
       {/* Insight Panel + Goal */}
-      {sectionVis.insights && summary && (insights.length > 0 || stats) && (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 stagger">
-          {stats && (
-            <GoalProgressCard
-              current={stats.revenue2026}
-              year={new Date().getFullYear()}
-            />
-          )}
-          {insights.slice(0, 4).map((ins) => (
-            <InsightCard
-              key={ins.id}
-              tone={ins.tone}
-              title={ins.title}
-              description={ins.description}
-            />
-          ))}
-        </div>
-      )}
+      {sectionVis.insights && summary && (insights.length > 0 || stats) && (() => {
+        // Ưu tiên hiển thị: rose (Khẩn cấp) luôn ở đầu, không thu gọn
+        const sorted = [...insights].sort((a, b) => {
+          const w = (t: string) => (t === 'rose' ? 0 : t === 'amber' ? 1 : 2);
+          return w(a.tone) - w(b.tone);
+        });
+        const critical = sorted.filter((i) => i.tone === 'rose');
+        const others = sorted.filter((i) => i.tone !== 'rose');
+        // Goal chiếm 1 ô + critical luôn hiện + 2 ô khác (vừa lưới 3 cột)
+        const visibleOthers = insightsExpanded ? others : others.slice(0, Math.max(0, 2 - critical.length));
+        const hiddenCount = others.length - visibleOthers.length;
+        return (
+          <>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 stagger">
+              {stats && (
+                <GoalProgressCard
+                  current={stats.revenue2026}
+                  year={new Date().getFullYear()}
+                />
+              )}
+              {critical.map((ins) => (
+                <InsightCard key={ins.id} tone={ins.tone} title={ins.title} description={ins.description} />
+              ))}
+              {visibleOthers.map((ins) => (
+                <InsightCard key={ins.id} tone={ins.tone} title={ins.title} description={ins.description} />
+              ))}
+            </div>
+            {hiddenCount > 0 && (
+              <button
+                type="button"
+                onClick={() => setInsightsExpanded(true)}
+                className="mt-2 inline-flex items-center gap-1.5 text-[12px] font-medium text-amber-800 hover:text-amber-900 transition-colors">
+                <ChevronDownIcon className="h-3.5 w-3.5" />
+                Xem thêm {hiddenCount} gợi ý
+              </button>
+            )}
+            {insightsExpanded && others.length > 2 - critical.length && (
+              <button
+                type="button"
+                onClick={() => setInsightsExpanded(false)}
+                className="mt-2 inline-flex items-center gap-1.5 text-[12px] font-medium text-zinc-500 hover:text-zinc-700 transition-colors">
+                <ChevronUpIcon className="h-3.5 w-3.5" />
+                Thu gọn
+              </button>
+            )}
+          </>
+        );
+      })()}
 
       {/* === TRUNG TÂM DỮ LIỆU — 1 panel, 5 view chuyển bằng tab === */}
       <DataExplorerTabs
