@@ -808,6 +808,68 @@ export function ReportsPage({
         </FilterField>
       </FilterBar>
 
+      {/* Scope Banner — hiển thị phạm vi đang xem */}
+      {(scopedEmployee || scopeLocked) && (
+        <div className={`flex items-center justify-between gap-3 px-4 py-3 rounded-lg border ${
+          personalMode
+            ? 'bg-gradient-to-r from-amber-50 via-amber-50/60 to-transparent border-amber-200/70'
+            : 'bg-zinc-50 border-zinc-200'
+        }`}>
+          <div className="flex items-center gap-3">
+            <span className={`h-9 w-9 rounded-full inline-flex items-center justify-center text-white text-sm font-bold shadow ${
+              personalMode ? 'bg-gradient-to-br from-amber-500 to-amber-700' : 'bg-zinc-600'
+            }`}>
+              {(scopedEmployee?.name ?? currentUser?.name ?? '?').slice(0, 1).toUpperCase()}
+            </span>
+            <div>
+              <p className="text-[13px] font-semibold text-zinc-900 flex items-center gap-2">
+                Phạm vi: {scopedEmployee?.name ?? currentUser?.name ?? '—'}
+                {scopeLocked && (
+                  <span className="inline-flex items-center gap-1 text-[10px] font-medium px-1.5 py-0.5 rounded bg-zinc-200/70 text-zinc-600">
+                    <LockIcon className="h-3 w-3" /> Khóa bởi quyền
+                  </span>
+                )}
+                {ranking && (
+                  <span className="inline-flex items-center gap-1 text-[10px] font-medium px-1.5 py-0.5 rounded bg-amber-100 text-amber-800">
+                    <TrophyIcon className="h-3 w-3" /> #{ranking.rank}/{ranking.total} doanh thu
+                  </span>
+                )}
+              </p>
+              <p className="text-[11.5px] text-zinc-500 mt-0.5">
+                {scopedEmployee
+                  ? `${scopedEmployee.signed_this_year} HĐ năm nay · ${formatCurrency(scopedEmployee.total_value)} · ${scopedEmployee.pending_count} chờ xử lý`
+                  : 'Chưa có thống kê cho nhân viên này.'}
+              </p>
+            </div>
+          </div>
+          {!scopeLocked && employee && (
+            <Button variant="secondary" size="sm" onClick={() => setEmployee('')}>
+              Xem toàn bộ
+            </Button>
+          )}
+          {!personalMode && !employee && canPickAnyEmployee && (
+            <Button
+              variant="secondary"
+              size="sm"
+              leftIcon={<UserCircle2Icon className="h-4 w-4" />}
+              onClick={() => onNavigate('reports.me')}>
+              Báo cáo của tôi
+            </Button>
+          )}
+        </div>
+      )}
+      {!scopedEmployee && !scopeLocked && (
+        <div className="flex items-center justify-end">
+          <Button
+            variant="secondary"
+            size="sm"
+            leftIcon={<UserCircle2Icon className="h-4 w-4" />}
+            onClick={() => onNavigate('reports.me')}>
+            Báo cáo của tôi
+          </Button>
+        </div>
+      )}
+
       {/* Section 1 — KPI tổng quan */}
       {stats && (
         <>
