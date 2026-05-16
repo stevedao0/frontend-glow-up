@@ -1044,8 +1044,10 @@ export function ReportsPage({
           </div>
         )}
       </ContentCard>
+      )}
 
       {/* Section 4 — Hợp đồng chưa ký / chờ xử lý */}
+      {sectionVis.pending && (
       <ContentCard
         title="Hợp đồng chưa ký / chờ xử lý"
         description="Hồ sơ đang tồn — biết đang thiếu bước gì và ai phụ trách."
