@@ -12,6 +12,11 @@ export type MetricCardProps = {
   icon?: React.ReactNode;
   tone?: Tone;
   sparkline?: number[];
+  onClick?: () => void;
+  compare?: {
+    value: string;
+    label?: string;
+  };
 };
 
 function Sparkline({ data, tone }: { data: number[]; tone: 'up' | 'down' | 'flat' }) {
