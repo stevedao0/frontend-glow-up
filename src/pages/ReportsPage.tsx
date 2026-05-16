@@ -21,7 +21,6 @@ import {
   DropletsIcon,
   UserCircle2Icon,
   TrophyIcon,
-  LockIcon,
 } from 'lucide-react';
 import {
   BarChart,
@@ -144,17 +143,11 @@ const GCN_STATUS_LABEL: Record<string, string> = {
 
 export function ReportsPage({
   onNavigate,
-  personalMode = false,
 }: {
   onNavigate: (k: RouteKey) => void;
-  personalMode?: boolean;
 }) {
   const { hasPermission, currentUser } = useAuth();
   const canExport = hasPermission('reports.export');
-  const isAdmin = currentUser?.role === 'super_admin';
-  const isManager = currentUser?.role === 'manager';
-  const canPickAnyEmployee = isAdmin || isManager;
-  const scopeLocked = personalMode || (!canPickAnyEmployee);
 
   // --- Data state ---
   const [summary, setSummary] = useState<ReportsSummary | null>(null);
@@ -165,10 +158,13 @@ export function ReportsPage({
   // --- Filter state ---
   const [reportType, setReportType] = useState('overview');
   const [time, setTime] = useState('year');
-  const [employee, setEmployee] = useState(scopeLocked ? currentUser?.name ?? '' : '');
+  const [employee, setEmployee] = useState('');
   const [field, setField] = useState('');
   const [status, setStatus] = useState('');
   const [exportOpen, setExportOpen] = useState(false);
+
+  // --- Data explorer tab ---
+  const [dataTab, setDataTab] = useState<'performance' | 'signed' | 'pending' | 'expiring' | 'gcn'>('signed');
 
   // --- Section-local tab states ---
   const [signedScope, setSignedScope] = useState<SignedScope>('month');
@@ -472,12 +468,7 @@ export function ReportsPage({
     return [{ value: '', label: 'Tất cả' }, ...opts];
   }, [employeeStats]);
 
-  // Khi scope bị khóa (staff hoặc personalMode), ép employee = currentUser
-  useEffect(() => {
-    if (scopeLocked && currentUser?.name && employee !== currentUser.name) {
-      setEmployee(currentUser.name);
-    }
-  }, [scopeLocked, currentUser, employee]);
+  // (Đã bỏ scopeLock — tất cả thành viên team xem chung)
 
   // Người nhân viên đang được scope (có thể là chính user hoặc người admin chọn)
   const scopedEmployee = useMemo(() => {
@@ -652,15 +643,9 @@ export function ReportsPage({
   return (
     <Page>
       <PageHeader
-        breadcrumb={personalMode ? '/bg/reports/me' : '/bg/reports'}
-        title={personalMode ? 'Báo cáo của tôi' : 'Báo cáo'}
-        description={
-          personalMode
-            ? `Bảng tổng hợp hiệu suất cá nhân của ${currentUser?.name ?? 'bạn'} — KPI, xếp hạng, hợp đồng phụ trách.`
-            : scopeLocked
-            ? `Bạn chỉ xem dữ liệu của ${currentUser?.name ?? 'mình'}. Liên hệ quản lý để mở rộng quyền.`
-            : 'Theo dõi hợp đồng, hiệu suất xử lý theo nhân viên, doanh thu, GCN và danh sách cần tái ký.'
-        }
+        breadcrumb="/bg/reports"
+        title="Báo cáo"
+        description="Theo dõi hợp đồng, hiệu suất xử lý theo nhân viên, doanh thu, GCN và danh sách cần tái ký."
         actions={
           <>
             <Button
@@ -782,7 +767,6 @@ export function ReportsPage({
             onChange={setEmployee}
             options={dynamicEmployeeOptions}
             placeholder="Tất cả"
-            disabled={scopeLocked}
           />
         </FilterField>
         <FilterField label="Lĩnh vực" width="w-44">
@@ -808,27 +792,16 @@ export function ReportsPage({
         </FilterField>
       </FilterBar>
 
-      {/* Scope Banner — hiển thị phạm vi đang xem */}
-      {(scopedEmployee || scopeLocked) && (
-        <div className={`flex items-center justify-between gap-3 px-4 py-3 rounded-lg border ${
-          personalMode
-            ? 'bg-gradient-to-r from-amber-50 via-amber-50/60 to-transparent border-amber-200/70'
-            : 'bg-zinc-50 border-zinc-200'
-        }`}>
+      {/* Scope Banner — chỉ hiện khi đã chọn nhân viên cụ thể */}
+      {scopedEmployee && (
+        <div className="flex items-center justify-between gap-3 px-4 py-3 rounded-xl border border-amber-200/70 bg-gradient-to-r from-amber-50 via-amber-50/60 to-transparent">
           <div className="flex items-center gap-3">
-            <span className={`h-9 w-9 rounded-full inline-flex items-center justify-center text-white text-sm font-bold shadow ${
-              personalMode ? 'bg-gradient-to-br from-amber-500 to-amber-700' : 'bg-zinc-600'
-            }`}>
-              {(scopedEmployee?.name ?? currentUser?.name ?? '?').slice(0, 1).toUpperCase()}
+            <span className="h-9 w-9 rounded-full inline-flex items-center justify-center text-white text-sm font-bold shadow bg-gradient-to-br from-amber-500 to-amber-700">
+              {scopedEmployee.name.slice(0, 1).toUpperCase()}
             </span>
             <div>
               <p className="text-[13px] font-semibold text-zinc-900 flex items-center gap-2">
-                Phạm vi: {scopedEmployee?.name ?? currentUser?.name ?? '—'}
-                {scopeLocked && (
-                  <span className="inline-flex items-center gap-1 text-[10px] font-medium px-1.5 py-0.5 rounded bg-zinc-200/70 text-zinc-600">
-                    <LockIcon className="h-3 w-3" /> Khóa bởi quyền
-                  </span>
-                )}
+                Đang xem: {scopedEmployee.name}
                 {ranking && (
                   <span className="inline-flex items-center gap-1 text-[10px] font-medium px-1.5 py-0.5 rounded bg-amber-100 text-amber-800">
                     <TrophyIcon className="h-3 w-3" /> #{ranking.rank}/{ranking.total} doanh thu
@@ -836,46 +809,22 @@ export function ReportsPage({
                 )}
               </p>
               <p className="text-[11.5px] text-zinc-500 mt-0.5">
-                {scopedEmployee
-                  ? `${scopedEmployee.signed_this_year} HĐ năm nay · ${formatCurrency(scopedEmployee.total_value)} · ${scopedEmployee.pending_count} chờ xử lý`
-                  : 'Chưa có thống kê cho nhân viên này.'}
+                {`${scopedEmployee.signed_this_year} HĐ năm nay · ${formatCurrency(scopedEmployee.total_value)} · ${scopedEmployee.pending_count} chờ xử lý`}
               </p>
             </div>
           </div>
-          {!scopeLocked && employee && (
-            <Button variant="secondary" size="sm" onClick={() => setEmployee('')}>
-              Xem toàn bộ
-            </Button>
-          )}
-          {!personalMode && !employee && canPickAnyEmployee && (
-            <Button
-              variant="secondary"
-              size="sm"
-              leftIcon={<UserCircle2Icon className="h-4 w-4" />}
-              onClick={() => onNavigate('reports.me')}>
-              Báo cáo của tôi
-            </Button>
-          )}
-        </div>
-      )}
-      {!scopedEmployee && !scopeLocked && (
-        <div className="flex items-center justify-end">
-          <Button
-            variant="secondary"
-            size="sm"
-            leftIcon={<UserCircle2Icon className="h-4 w-4" />}
-            onClick={() => onNavigate('reports.me')}>
-            Báo cáo của tôi
+          <Button variant="secondary" size="sm" onClick={() => setEmployee('')}>
+            Xem toàn bộ
           </Button>
         </div>
       )}
 
-      {/* Personal KPI strip — chỉ khi đã có scopedEmployee */}
+      {/* KPI cá nhân — chỉ khi đã chọn 1 nhân viên */}
       {scopedEmployee && (
         <>
           <div className="flex items-center gap-2 text-[12px] uppercase tracking-[0.14em] font-bold text-amber-800">
             <UserCircle2Icon className="h-4 w-4" />
-            KPI cá nhân — {scopedEmployee.name}
+            KPI của {scopedEmployee.name}
           </div>
           <MetricStrip
             items={[
@@ -887,7 +836,7 @@ export function ReportsPage({
                 hint: `Tuần này: ${scopedEmployee.signed_this_week} · Tháng: ${scopedEmployee.signed_this_month}`,
               },
               {
-                label: 'Doanh thu cá nhân',
+                label: 'Doanh thu',
                 value: scopedEmployee.total_value > 0
                   ? `${(scopedEmployee.total_value / 1_000_000_000).toFixed(2)} tỷ`
                   : '—',
@@ -905,40 +854,22 @@ export function ReportsPage({
                 hint: scopedEmployee.pending_count >= 6 ? 'Quá tải — cần san tải' : 'Trong giới hạn',
               },
               {
-                label: 'Sắp hết hạn (phụ trách)',
+                label: 'Sắp hết hạn',
                 value: formatNumber(scopedEmployee.expiring_soon),
                 tone: 'amber',
                 icon: <AlertTriangleIcon className="h-4 w-4" />,
                 hint: 'HĐ NV này phụ trách',
               },
-              ranking
-                ? {
-                    label: 'Xếp hạng đội',
-                    value: `#${ranking.rank}/${ranking.total}`,
-                    tone: ranking.rank === 1 ? 'emerald' : ranking.rank <= 3 ? 'violet' : 'amber',
-                    icon: <TrophyIcon className="h-4 w-4" />,
-                    hint: ranking.topRevenue > 0
-                      ? `Top 1: ${(ranking.topRevenue / 1_000_000_000).toFixed(2)} tỷ`
-                      : 'Theo doanh thu',
-                  }
-                : {
-                    label: 'Xếp hạng đội',
-                    value: '—',
-                    tone: 'amber',
-                    icon: <TrophyIcon className="h-4 w-4" />,
-                  },
             ]}
           />
-          {!personalMode && (
-            <div className="-mt-2 mb-2 text-[11px] text-zinc-500 italic">
-              KPI tổng hệ thống bên dưới — không bị ảnh hưởng bởi filter nhân viên.
-            </div>
-          )}
+          <div className="-mt-2 mb-2 text-[11px] text-zinc-500 italic">
+            KPI tổng hệ thống bên dưới — không bị ảnh hưởng bởi filter nhân viên.
+          </div>
         </>
       )}
 
-      {/* Section 1 — KPI tổng quan (ẩn trong personalMode để gọn) */}
-      {stats && !personalMode && (
+      {/* Section 1 — KPI tổng quan */}
+      {stats && (
         <>
           <MetricStrip
             items={[
@@ -1065,8 +996,23 @@ export function ReportsPage({
         </div>
       )}
 
+      {/* === TRUNG TÂM DỮ LIỆU — 1 panel, 5 view chuyển bằng tab === */}
+      <DataExplorerTabs
+        value={dataTab}
+        onChange={setDataTab}
+        counts={{
+          performance: employeeStats?.employees.length ?? 0,
+          signed: signedSummary.count,
+          pending: filteredPending.length,
+          expiring: filteredExpiring.length,
+          gcn: certRows.length,
+        }}
+        visible={sectionVis}
+      />
+
       {/* Section 2 — Hiệu suất nhân viên */}
-      {sectionVis.performance && employeeStats && employeeStats.employees.length > 0 && (
+      {sectionVis.performance && dataTab === 'performance' && employeeStats && employeeStats.employees.length > 0 && (
+        <div key="tab-performance" className="tab-swap">
         <ContentCard
           title="Hiệu suất xử lý theo nhân viên"
           description="Theo dõi tải công việc và tỷ lệ hoàn thành. Dữ liệu từ hợp đồng đã ký."
@@ -1093,10 +1039,12 @@ export function ReportsPage({
             }
           />
         </ContentCard>
+        </div>
       )}
 
       {/* Section 3 — Hợp đồng đã ký */}
-      {sectionVis.signed && (
+      {sectionVis.signed && dataTab === 'signed' && (
+      <div key="tab-signed" className="tab-swap">
       <ContentCard
         title="Hợp đồng đã ký"
         description="Danh sách hợp đồng đã ký với giá trị. Dữ liệu từ database thực."
@@ -1217,10 +1165,12 @@ export function ReportsPage({
           </div>
         )}
       </ContentCard>
+      </div>
       )}
 
       {/* Section 4 — Hợp đồng chưa ký / chờ xử lý */}
-      {sectionVis.pending && (
+      {sectionVis.pending && dataTab === 'pending' && (
+      <div key="tab-pending" className="tab-swap">
       <ContentCard
         title="Hợp đồng chưa ký / chờ xử lý"
         description="Hồ sơ đang tồn — biết đang thiếu bước gì và ai phụ trách."
@@ -1369,10 +1319,12 @@ export function ReportsPage({
           </div>
         )}
       </ContentCard>
+      </div>
       )}
 
       {/* Section 5 — Hợp đồng sắp hết hạn cần tái ký */}
-      {sectionVis.expiring && (
+      {sectionVis.expiring && dataTab === 'expiring' && (
+      <div key="tab-expiring" className="tab-swap">
       <ContentCard
         title="Hợp đồng sắp hết hạn cần tái ký"
         description="Ưu tiên xử lý theo mức độ khẩn cấp. Dữ liệu từ database thực."
@@ -1500,6 +1452,7 @@ export function ReportsPage({
           </div>
         )}
       </ContentCard>
+      </div>
       )}
 
       {/* Section 6 — Doanh thu */}
@@ -1676,7 +1629,8 @@ export function ReportsPage({
       )}
 
       {/* Section 7 — GCN Report */}
-      {sectionVis.gcn && (
+      {sectionVis.gcn && dataTab === 'gcn' && (
+      <div key="tab-gcn" className="tab-swap">
       <ContentCard
         title="Báo cáo GCN"
         description="Trạng thái cấp số & in giấy chứng nhận. Dữ liệu từ database thực."
@@ -1788,6 +1742,7 @@ export function ReportsPage({
           </table>
         </div>
       </ContentCard>
+      </div>
       )}
       </div>
 
@@ -1840,6 +1795,77 @@ export function ReportsPage({
         items={drilldown?.items}
       />
     </Page>
+  );
+}
+
+/** Premium segmented tab strip — gold underline, smooth indicator, count badges */
+type DataTabKey = 'performance' | 'signed' | 'pending' | 'expiring' | 'gcn';
+function DataExplorerTabs({
+  value,
+  onChange,
+  counts,
+  visible,
+}: {
+  value: DataTabKey;
+  onChange: (v: DataTabKey) => void;
+  counts: Record<DataTabKey, number>;
+  visible: { performance: boolean; signed: boolean; pending: boolean; expiring: boolean; gcn: boolean };
+}) {
+  const tabs: { key: DataTabKey; label: string; sub: string }[] = [
+    { key: 'signed', label: 'Đã ký', sub: 'Hợp đồng đã ký' },
+    { key: 'pending', label: 'Chờ xử lý', sub: 'Hợp đồng chưa ký' },
+    { key: 'expiring', label: 'Sắp hết hạn', sub: 'Cần tái ký' },
+    { key: 'performance', label: 'Nhân viên', sub: 'Hiệu suất xử lý' },
+    { key: 'gcn', label: 'GCN', sub: 'Giấy chứng nhận' },
+  ].filter((t) => visible[t.key]);
+  const active = tabs.find((t) => t.key === value);
+  return (
+    <div className="relative rounded-2xl bg-gradient-to-br from-white via-white to-amber-50/30 ring-1 ring-zinc-900/[0.06] shadow-[0_1px_2px_rgba(15,15,25,0.04),0_8px_24px_-12px_rgba(156,109,62,0.15)] overflow-hidden">
+      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-amber-500/40 to-transparent" />
+      <div className="flex items-stretch gap-1 p-2 overflow-x-auto scrollbar-thin">
+        {tabs.map((t) => {
+          const isActive = t.key === value;
+          const count = counts[t.key];
+          return (
+            <button
+              key={t.key}
+              type="button"
+              onClick={() => onChange(t.key)}
+              className={`group relative flex-1 min-w-[140px] px-4 py-3 rounded-xl text-left transition-all duration-200 ease-out ${
+                isActive
+                  ? 'bg-white shadow-[0_2px_8px_rgba(156,109,62,0.18),0_0_0_1px_rgba(200,153,104,0.35)] -translate-y-px'
+                  : 'hover:bg-white/60 hover:shadow-sm'
+              }`}>
+              <div className="flex items-center justify-between gap-2">
+                <span className={`text-[13px] font-semibold tracking-tight ${isActive ? 'text-amber-900' : 'text-zinc-700 group-hover:text-zinc-900'}`}>
+                  {t.label}
+                </span>
+                {count > 0 && (
+                  <span className={`inline-flex items-center justify-center min-w-5 h-5 px-1.5 rounded-full text-[10px] font-bold tabular-nums transition-colors ${
+                    isActive
+                      ? 'bg-gradient-to-br from-amber-500 to-amber-700 text-white shadow-[0_0_10px_rgba(200,153,104,0.45)]'
+                      : 'bg-zinc-100 text-zinc-600 group-hover:bg-amber-100 group-hover:text-amber-800'
+                  }`}>
+                    {count}
+                  </span>
+                )}
+              </div>
+              <p className={`mt-0.5 text-[10.5px] font-medium uppercase tracking-[0.1em] ${isActive ? 'text-amber-700/80' : 'text-zinc-400'}`}>
+                {t.sub}
+              </p>
+              {isActive && (
+                <span className="tab-underline absolute bottom-1 left-3 right-3 h-[2px] rounded-full bg-gradient-to-r from-amber-400 via-amber-600 to-amber-400 shadow-[0_0_8px_rgba(200,153,104,0.6)]" />
+              )}
+            </button>
+          );
+        })}
+      </div>
+      {active && (
+        <p className="px-5 pb-3 -mt-1 text-[11px] text-zinc-500">
+          Đang xem: <span className="font-semibold text-amber-800">{active.label}</span> — {active.sub.toLowerCase()}.
+        </p>
+      )}
+    </div>
   );
 }
 
