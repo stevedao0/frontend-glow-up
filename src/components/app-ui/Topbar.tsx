@@ -172,6 +172,8 @@ export function Topbar({
           }
         </div>
 
+        <ThemeToggle />
+
         <div ref={notifRef} className="relative">
           <button
             type="button"
