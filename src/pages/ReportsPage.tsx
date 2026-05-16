@@ -185,6 +185,7 @@ export function ReportsPage({
   const [darkPreset, setDarkPreset] = useState(false);
   const [watermark, setWatermark] = useState('');
   const [comparePrev, setComparePrev] = useState(false);
+  const [insightsExpanded, setInsightsExpanded] = useState(false);
   const [drilldown, setDrilldown] = useState<null | {
     title: string;
     subtitle?: string;
