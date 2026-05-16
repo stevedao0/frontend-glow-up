@@ -164,21 +164,44 @@ export function ReportsPage({
   const [expiringScope, setExpiringScope] = useState('30d');
   const [hoverIdx, setHoverIdx] = useState<number | null>(null);
   const [presenting, setPresenting] = useState(false);
+  const [darkPreset, setDarkPreset] = useState(false);
+  const [watermark, setWatermark] = useState('');
+  const [comparePrev, setComparePrev] = useState(false);
+  const [drilldown, setDrilldown] = useState<null | {
+    title: string;
+    subtitle?: string;
+    primary?: { label: string; value: string; hint?: string };
+    items: DrilldownItem[];
+  }>(null);
+  const { vis: sectionVis, toggle: toggleSection, reset: resetSections } = useWidgetVisibility();
+  const snapshotRef = useRef<HTMLDivElement>(null);
 
   // Presentation mode — toggle body class to hide chrome
   useEffect(() => {
     const root = document.documentElement;
-    if (presenting) root.classList.add('presentation-mode');
-    else root.classList.remove('presentation-mode');
+    if (presenting) {
+      root.classList.add('presentation-mode');
+      if (darkPreset) root.classList.add('dark-preset');
+      else root.classList.remove('dark-preset');
+      if (watermark) {
+        root.classList.add('with-watermark');
+        const main = document.querySelector('main');
+        if (main) main.setAttribute('data-watermark', watermark);
+      } else {
+        root.classList.remove('with-watermark');
+      }
+    } else {
+      root.classList.remove('presentation-mode', 'dark-preset', 'with-watermark');
+    }
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && presenting) setPresenting(false);
     };
     window.addEventListener('keydown', onKey);
     return () => {
       window.removeEventListener('keydown', onKey);
-      root.classList.remove('presentation-mode');
+      root.classList.remove('presentation-mode', 'dark-preset', 'with-watermark');
     };
-  }, [presenting]);
+  }, [presenting, darkPreset, watermark]);
 
   // --- Data fetching ---
   const fetchData = React.useCallback(async () => {
