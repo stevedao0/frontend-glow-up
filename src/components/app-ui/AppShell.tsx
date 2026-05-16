@@ -1,6 +1,7 @@
 ﻿import React from 'react';
 import { Sidebar } from './Sidebar';
 import { Topbar } from './Topbar';
+import { ThemeToggle } from './ThemeToggle';
 import { RouteKey } from '../../data/routes';
 export function AppShell({
   current,
@@ -45,6 +46,7 @@ export function AppShell({
           © 2026 VCPMC · Internal use only · Build prototype
         </footer>
       </div>
+      <ThemeToggle />
       <style>{`
         @keyframes fadein {
           from { opacity: 0; transform: translateY(4px); }

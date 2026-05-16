@@ -326,10 +326,10 @@ body {
   --bg-muted: #e3dcc8;
   --bg-inverse: #2d2418;
   /* Walnut text — warm dark brown, not black */
-  --fg-primary: #3d2f20;
-  --fg-secondary: #5a4a3a;
-  --fg-muted: #8a7a6a;
-  --fg-subtle: #b5a899;
+  --fg-primary: #2d2218;
+  --fg-secondary: #4a3d2e;
+  --fg-muted: #6a5a4a;
+  --fg-subtle: #9c8e7e;
   --fg-inverse: #fbf7ee;
   /* Hairline warm borders */
   --border-subtle: rgba(61,47,32,0.06);
@@ -526,4 +526,89 @@ body {
   -webkit-text-fill-color: var(--fg-primary) !important;
   color: var(--fg-primary) !important;
   background: none !important;
+}
+
+/* =========================================
+   OBSIDIAN DARK MODE — overrides .theme-dark-gold
+   Activate by adding .theme-obsidian to <html>
+   ========================================= */
+.theme-obsidian {
+  --bg-app: #0d0d0f;
+  --bg-surface: #16171a;
+  --bg-subtle: #1c1d21;
+  --bg-muted: #25272c;
+  --bg-inverse: #f0ece4;
+  --fg-primary: #ececec;
+  --fg-secondary: #b8b8b8;
+  --fg-muted: #8a8a8a;
+  --fg-subtle: #5a5a5a;
+  --fg-inverse: #0d0d0f;
+  --border-subtle: rgba(255,255,255,0.06);
+  --border-default: rgba(255,255,255,0.12);
+  --border-strong: rgba(255,255,255,0.22);
+  --accent-primary: #a8b89c;
+  --accent-primary-soft: rgba(168,184,156,0.10);
+  --accent-secondary: #d4af37;
+  --accent-secondary-soft: rgba(212,175,55,0.10);
+  --gradient-gold: linear-gradient(135deg, #ffffff 0%, #c8c8c8 100%);
+  --shadow-gold: 0 8px 32px -8px rgba(0,0,0,0.6);
+}
+.theme-obsidian body {
+  background:
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(168,184,156,0.04), transparent 60%),
+    #0d0d0f !important;
+  color: var(--fg-primary);
+}
+.theme-obsidian aside {
+  background: #0a0a0c !important;
+}
+.theme-obsidian header {
+  background: rgba(13,13,15,0.78) !important;
+}
+.theme-obsidian .marble-hero {
+  background:
+    radial-gradient(ellipse at 30% 20%, rgba(168,184,156,0.06), transparent 50%),
+    #16171a !important;
+}
+.theme-obsidian .nums {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+.theme-obsidian h1 {
+  color: #ffffff !important;
+  -webkit-text-fill-color: #ffffff !important;
+}
+.theme-obsidian .recharts-cartesian-grid line {
+  stroke: rgba(255,255,255,0.06) !important;
+}
+.theme-obsidian .hover\:bg-zinc-50:hover,
+.theme-obsidian .hover\:bg-zinc-100:hover,
+.theme-obsidian .hover\:bg-neutral-50:hover,
+.theme-obsidian .hover\:bg-stone-50:hover,
+.theme-obsidian .hover\:bg-gray-50:hover {
+  background-color: rgba(255,255,255,0.04) !important;
+}
+
+/* Theme toggle button */
+.theme-toggle {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  z-index: 50;
+  width: 44px;
+  height: 44px;
+  border-radius: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-default);
+  color: var(--fg-secondary);
+  box-shadow: var(--shadow-md);
+  cursor: pointer;
+  transition: transform 180ms var(--ease-out), background 180ms;
+}
+.theme-toggle:hover {
+  transform: translateY(-2px) scale(1.05);
+  background: var(--bg-subtle);
 }

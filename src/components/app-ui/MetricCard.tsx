@@ -152,7 +152,7 @@ export function MetricStrip({ items }: {items: MetricCardProps[];}) {
     : n === 6 ? 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-6'
     : 'grid-cols-2 sm:grid-cols-3 xl:grid-cols-4';
   return (
-    <div className={`grid ${cols} gap-5 stagger`}>
+    <div className={`grid ${cols} gap-6 stagger`}>
       {items.map((m, i) =>
       <MetricCard key={i} {...m} />
       )}
