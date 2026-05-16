@@ -298,6 +298,40 @@ export function ReportsPage({
       }
     : null;
 
+  // Sparkline series từ revenue_by_year (dùng cho KPI cards)
+  const contractSpark = useMemo(
+    () => (summary?.revenue_by_year ?? []).map((y) => y.contract_count || 0),
+    [summary]
+  );
+  const revenueSpark = useMemo(
+    () =>
+      (summary?.revenue_by_year ?? []).map((y) =>
+        y.total_revenue == null ? 0 : y.total_revenue / 1_000_000_000
+      ),
+    [summary]
+  );
+
+  // YoY delta cho doanh thu năm nay
+  const revenueDelta = useMemo(() => {
+    if (!stats || !stats.revenue2025) return undefined;
+    const diff = ((stats.revenue2026 - stats.revenue2025) / stats.revenue2025) * 100;
+    if (!isFinite(diff)) return undefined;
+    return {
+      value: `${diff >= 0 ? '+' : ''}${diff.toFixed(1)}%`,
+      tone: diff > 0.5 ? ('up' as const) : diff < -0.5 ? ('down' as const) : ('flat' as const),
+    };
+  }, [stats]);
+
+  const contractsDelta = useMemo(() => {
+    if (!stats || !stats.contracts2025) return undefined;
+    const diff = ((stats.contracts2026 - stats.contracts2025) / stats.contracts2025) * 100;
+    if (!isFinite(diff)) return undefined;
+    return {
+      value: `${diff >= 0 ? '+' : ''}${diff.toFixed(1)}%`,
+      tone: diff > 0.5 ? ('up' as const) : diff < -0.5 ? ('down' as const) : ('flat' as const),
+    };
+  }, [stats]);
+
   const hasActiveFilter =
     reportType !== 'overview' ||
     time !== 'year' ||
@@ -482,6 +516,8 @@ export function ReportsPage({
                 tone: 'indigo',
                 icon: <FileTextIcon className="h-4 w-4" />,
                 hint: 'Tất cả hợp đồng',
+                sparkline: contractSpark,
+                delta: contractsDelta,
               },
               {
                 label: 'Còn hiệu lực',
@@ -489,6 +525,7 @@ export function ReportsPage({
                 tone: 'emerald',
                 icon: <CheckCircle2Icon className="h-4 w-4" />,
                 hint: 'Hợp đồng đang hoạt động',
+                sparkline: contractSpark,
               },
               {
                 label: 'Sắp hết 60 ngày',
@@ -518,6 +555,8 @@ export function ReportsPage({
                 tone: 'cyan',
                 icon: <WalletIcon className="h-4 w-4" />,
                 hint: 'Lũy kế đến hôm nay',
+                sparkline: revenueSpark,
+                delta: revenueDelta,
               },
               {
                 label: 'Doanh thu năm trước',
@@ -528,6 +567,7 @@ export function ReportsPage({
                 tone: 'emerald',
                 icon: <WalletIcon className="h-4 w-4" />,
                 hint: 'Năm trước',
+                sparkline: revenueSpark.slice(0, -1),
               },
               {
                 label: 'Tác phẩm',
@@ -1007,16 +1047,16 @@ export function ReportsPage({
                 onMouseLeave={() => setHoverIdx(null)}>
                 <defs>
                   <linearGradient id="rep2BarFill" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#818cf8" stopOpacity={1} />
-                    <stop offset="100%" stopColor="#6366f1" stopOpacity={0.85} />
+                    <stop offset="0%" stopColor="#e6c79a" stopOpacity={1} />
+                    <stop offset="100%" stopColor="#c89968" stopOpacity={0.95} />
                   </linearGradient>
                   <linearGradient id="rep2BarFillHover" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#a78bfa" stopOpacity={1} />
-                    <stop offset="100%" stopColor="#7c3aed" stopOpacity={1} />
+                    <stop offset="0%" stopColor="#f0d4ad" stopOpacity={1} />
+                    <stop offset="100%" stopColor="#9c6d3e" stopOpacity={1} />
                   </linearGradient>
                   <linearGradient id="rep2BarFillPrev" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="0%" stopColor="#d4d4d8" stopOpacity={1} />
-                    <stop offset="100%" stopColor="#a1a1aa" stopOpacity={1} />
+                    <stop offset="0%" stopColor="#efe4d2" stopOpacity={1} />
+                    <stop offset="100%" stopColor="#c9b89a" stopOpacity={0.9} />
                   </linearGradient>
                   <pattern
                     id="rep2NullPattern"
@@ -1024,45 +1064,46 @@ export function ReportsPage({
                     width="6"
                     height="6"
                     patternTransform="rotate(45)">
-                    <rect width="6" height="6" fill="#f4f4f5" />
+                    <rect width="6" height="6" fill="#faf5ec" />
                     <line
                       x1="0"
                       y1="0"
                       x2="0"
                       y2="6"
-                      stroke="#d4d4d8"
+                      stroke="#d9c8a8"
                       strokeWidth="2"
                     />
                   </pattern>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e4e4e7" vertical={false} />
+                <CartesianGrid strokeDasharray="3 3" stroke="#ece3d2" vertical={false} />
                 <XAxis
                   dataKey="year"
-                  stroke="#a1a1aa"
+                  stroke="#9c8c6e"
                   fontSize={12}
                   tickLine={false}
                   axisLine={false}
                   dy={4}
                 />
                 <YAxis
-                  stroke="#a1a1aa"
+                  stroke="#9c8c6e"
                   fontSize={11}
                   tickLine={false}
                   axisLine={false}
                   dx={-4}
                 />
                 <Tooltip
-                  cursor={{ fill: 'rgba(99,102,241,0.06)' }}
+                  cursor={{ fill: 'rgba(200,153,104,0.10)' }}
                   contentStyle={{
-                    border: 'none',
-                    borderRadius: 10,
-                    background: 'rgba(15, 15, 25, 0.92)',
+                    border: '1px solid rgba(200,153,104,0.35)',
+                    borderRadius: 12,
+                    background: 'rgba(28, 22, 16, 0.94)',
+                    backdropFilter: 'blur(8px)',
                     color: '#fff',
                     fontSize: 12,
                     padding: '8px 12px',
-                    boxShadow: '0 10px 30px rgba(15,15,25,0.25)',
+                    boxShadow: '0 14px 40px rgba(156,109,62,0.28)',
                   }}
-                  labelStyle={{ color: '#a5b4fc', fontWeight: 600, marginBottom: 2 }}
+                  labelStyle={{ color: '#e6c79a', fontWeight: 600, marginBottom: 2 }}
                   itemStyle={{ color: '#fff' }}
                   formatter={(_v: number, _n: unknown, p: any) => {
                     const d = p?.payload;
