@@ -17,6 +17,7 @@ import { Input } from './Input';
 import { CommandPalette } from './CommandPalette';
 import { NotificationsDropdown } from './NotificationsDropdown';
 import { RouteKey } from '../../data/routes';
+import { ThemeToggle } from './ThemeToggle';
 
 const ROUTE_LABELS: Partial<Record<RouteKey, { label: string; group?: string }>> = {
   dashboard: { label: 'Dashboard', group: 'Tổng quan' },
@@ -170,6 +171,8 @@ export function Topbar({
             </div>
           }
         </div>
+
+        <ThemeToggle />
 
         <div ref={notifRef} className="relative">
           <button
