@@ -1319,10 +1319,12 @@ export function ReportsPage({
           </div>
         )}
       </ContentCard>
+      </div>
       )}
 
       {/* Section 5 — Hợp đồng sắp hết hạn cần tái ký */}
-      {sectionVis.expiring && (
+      {sectionVis.expiring && dataTab === 'expiring' && (
+      <div key="tab-expiring" className="tab-swap">
       <ContentCard
         title="Hợp đồng sắp hết hạn cần tái ký"
         description="Ưu tiên xử lý theo mức độ khẩn cấp. Dữ liệu từ database thực."
