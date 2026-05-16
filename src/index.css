@@ -314,48 +314,48 @@ body {
 
 
 /* =========================================
-   LUXURY DARK GOLD THEME (toggle on <html>)
-   Class: .theme-dark-gold
+   WARM LINEN + SAGE THEME — easy on eyes, premium
+   Class: .theme-dark-gold (kept for compatibility)
    ========================================= */
 .theme-dark-gold {
   --font-serif: 'Cormorant Garamond', 'Playfair Display', Georgia, serif;
-  /* Obsidian surfaces — true black with subtle warm undertone */
-  --bg-app: #0a0a0a;
-  --bg-surface: #141414;
-  --bg-subtle: #1a1a1a;
-  --bg-muted: #222222;
-  --bg-inverse: #f5f5f5;
-  /* Platinum text — warm silver, not cold gray */
-  --fg-primary: #f0f0f0;
-  --fg-secondary: #c0c0c0;
-  --fg-muted: #888888;
-  --fg-subtle: #5a5a5a;
-  --fg-inverse: #0a0a0a;
-  /* Hairline borders — barely-there platinum */
-  --border-subtle: rgba(255,255,255,0.06);
-  --border-default: rgba(255,255,255,0.12);
-  --border-strong: rgba(255,255,255,0.22);
-  /* Accents — platinum + cool steel blue */
-  --accent-primary: #e5e5e5;          /* platinum */
-  --accent-primary-soft: rgba(229,229,229,0.08);
-  --accent-secondary: #4a90e2;        /* electric steel blue */
-  --accent-secondary-soft: rgba(74,144,226,0.10);
-  --accent-neutral: #888888;
-  --accent-neutral-soft: rgba(255,255,255,0.06);
-  /* Semantic */
-  --success: #4ade80;
-  --warning: #fbbf24;
-  --danger: #f87171;
-  --info: #60a5fa;
-  /* Platinum gradient — brushed metal feel */
-  --gradient-gold: linear-gradient(135deg, #ffffff 0%, #c0c0c0 50%, #888888 100%);
-  --shadow-gold: 0 8px 32px -8px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.04);
+  /* Linen surfaces — warm off-white, never pure white */
+  --bg-app: #f5f0e6;
+  --bg-surface: #fbf7ee;
+  --bg-subtle: #ede7d8;
+  --bg-muted: #e3dcc8;
+  --bg-inverse: #2d2418;
+  /* Walnut text — warm dark brown, not black */
+  --fg-primary: #3d2f20;
+  --fg-secondary: #5a4a3a;
+  --fg-muted: #8a7a6a;
+  --fg-subtle: #b5a899;
+  --fg-inverse: #fbf7ee;
+  /* Hairline warm borders */
+  --border-subtle: rgba(61,47,32,0.06);
+  --border-default: rgba(61,47,32,0.12);
+  --border-strong: rgba(61,47,32,0.22);
+  /* Accents — sage green primary, brass secondary */
+  --accent-primary: #7a8c6e;
+  --accent-primary-soft: rgba(122,140,110,0.10);
+  --accent-secondary: #a8b89c;
+  --accent-secondary-soft: rgba(168,184,156,0.14);
+  --accent-neutral: #8a7a6a;
+  --accent-neutral-soft: rgba(138,122,106,0.10);
+  /* Semantic — muted, not neon */
+  --success: #5a8a5c;
+  --warning: #b8860b;
+  --danger: #b8302b;
+  --info: #4a7a9c;
+  /* Soft sage gradient for KPI numbers */
+  --gradient-gold: linear-gradient(135deg, #3d2f20 0%, #5a4a3a 100%);
+  --shadow-gold: 0 8px 32px -8px rgba(122,140,110,0.18), 0 1px 3px rgba(61,47,32,0.06);
 }
 .theme-dark-gold body {
   background:
-    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(74,144,226,0.05), transparent 60%),
-    radial-gradient(ellipse 60% 40% at 100% 100%, rgba(255,255,255,0.02), transparent 60%),
-    #0a0a0a;
+    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(122,140,110,0.06), transparent 60%),
+    radial-gradient(ellipse 60% 40% at 100% 100%, rgba(184,134,11,0.04), transparent 60%),
+    #f5f0e6;
   color: var(--fg-primary);
 }
 .theme-dark-gold h1,
@@ -363,11 +363,11 @@ body {
 .theme-dark-gold h3 {
   font-family: var(--font-sans);
   font-weight: 600;
-  letter-spacing: -0.02em;
-  color: #ffffff;
+  letter-spacing: -0.015em;
+  color: var(--fg-primary);
 }
 
-/* === Global override map for hardcoded Tailwind colors === */
+/* === Tailwind hardcoded color overrides → linen palette === */
 .theme-dark-gold .bg-white,
 .theme-dark-gold [class*="bg-white"] {
   background-color: var(--bg-surface) !important;
@@ -417,7 +417,6 @@ body {
 .theme-dark-gold .text-gray-400 {
   color: var(--fg-subtle) !important;
 }
-.theme-dark-gold .border,
 .theme-dark-gold [class*="border-zinc-"],
 .theme-dark-gold [class*="border-neutral-"],
 .theme-dark-gold [class*="border-stone-"],
@@ -439,27 +438,27 @@ body {
 .theme-dark-gold .hover\:bg-neutral-50:hover,
 .theme-dark-gold .hover\:bg-stone-50:hover,
 .theme-dark-gold .hover\:bg-gray-50:hover {
-  background-color: rgba(255,255,255,0.04) !important;
+  background-color: rgba(122,140,110,0.08) !important;
 }
 
-/* Sidebar — pure obsidian with hairline divider */
+/* Sidebar — soft warm cream, slightly deeper than app bg */
 .theme-dark-gold aside {
-  background: #0a0a0a !important;
+  background: linear-gradient(180deg, #ede7d8 0%, #e8e1cf 100%) !important;
   border-right: 1px solid var(--border-default);
 }
 
-/* Topbar — frosted obsidian glass */
+/* Topbar — frosted linen glass */
 .theme-dark-gold header {
-  background: rgba(10,10,10,0.75) !important;
-  backdrop-filter: blur(16px) saturate(140%);
+  background: rgba(251,247,238,0.80) !important;
+  backdrop-filter: blur(14px) saturate(140%);
   border-bottom: 1px solid var(--border-default);
 }
 
-/* Inputs */
+/* Inputs — cream paper */
 .theme-dark-gold input,
 .theme-dark-gold select,
 .theme-dark-gold textarea {
-  background-color: var(--bg-subtle) !important;
+  background-color: var(--bg-surface) !important;
   color: var(--fg-primary) !important;
   border-color: var(--border-default) !important;
 }
@@ -468,107 +467,50 @@ body {
   color: var(--fg-subtle) !important;
 }
 
-/* KPI numbers — brushed platinum gradient */
-.theme-dark-gold .nums,
-.theme-dark-gold [class*="text-[28px]"],
-.theme-dark-gold [class*="text-3xl"],
-.theme-dark-gold [class*="text-4xl"] {
-  background: var(--gradient-gold);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: transparent;
+/* KPI numbers — solid walnut, NOT gradient (readability first) */
+.theme-dark-gold .nums {
+  color: var(--fg-primary) !important;
+  -webkit-text-fill-color: var(--fg-primary) !important;
+  background: none !important;
 }
 
-/* Hero panel — obsidian with subtle blue glow */
+/* Hero panel — soft cream with sage glow */
 .theme-dark-gold .marble-hero {
   background:
-    radial-gradient(ellipse at 30% 20%, rgba(74,144,226,0.06), transparent 50%),
-    radial-gradient(ellipse at 80% 80%, rgba(255,255,255,0.03), transparent 50%),
-    #141414 !important;
+    radial-gradient(ellipse at 30% 20%, rgba(122,140,110,0.10), transparent 50%),
+    radial-gradient(ellipse at 80% 80%, rgba(184,134,11,0.06), transparent 50%),
+    #fbf7ee !important;
   border: 1px solid var(--border-default) !important;
   box-shadow: var(--shadow-gold);
 }
 
-/* Hover frame — cool platinum ring */
+/* Hover frame — sage ring */
 .theme-dark-gold .gold-frame:hover {
   box-shadow:
-    0 0 0 1px rgba(255,255,255,0.18),
-    0 0 0 4px rgba(74,144,226,0.06),
-    0 12px 28px -10px rgba(0,0,0,0.6) !important;
+    0 0 0 1px rgba(122,140,110,0.40),
+    0 0 0 4px rgba(122,140,110,0.08),
+    0 12px 28px -10px rgba(61,47,32,0.15) !important;
+  transform: translateY(-1px);
 }
 
 /* Scrollbar */
 .theme-dark-gold .scrollbar-thin::-webkit-scrollbar-thumb {
-  background: rgba(255,255,255,0.15);
+  background: rgba(122,140,110,0.25);
 }
 .theme-dark-gold .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-  background: rgba(255,255,255,0.30);
+  background: rgba(122,140,110,0.45);
 }
 
-/* Tab underline — electric steel blue */
+/* Tab underline — sage gradient */
 .theme-dark-gold .tab-underline,
 .theme-dark-gold [class*="bg-gradient-to-r"][class*="from-amber"],
 .theme-dark-gold [class*="bg-gradient-to-r"][class*="from-yellow"] {
-  background: linear-gradient(90deg, #4a90e2, #ffffff, #4a90e2) !important;
+  background: linear-gradient(90deg, #7a8c6e, #a8b89c, #7a8c6e) !important;
 }
 
-/* Catch arbitrary cream/ivory backgrounds used in HeroPanel etc. */
-.theme-dark-gold [class*="bg-[#fa"],
-.theme-dark-gold [class*="bg-[#fb"],
-.theme-dark-gold [class*="bg-[#fc"],
-.theme-dark-gold [class*="bg-[#fd"],
-.theme-dark-gold [class*="bg-[#fe"],
-.theme-dark-gold [class*="bg-[#ff"],
-.theme-dark-gold [class*="bg-[#f2"],
-.theme-dark-gold [class*="bg-[#f1"],
-.theme-dark-gold [class*="bg-[#f5"],
-.theme-dark-gold [class*="bg-[#f7"],
-.theme-dark-gold [class*="bg-[#ef"],
-.theme-dark-gold [class*="bg-[#e9"],
-.theme-dark-gold [class*="bg-[#e3"] {
-  background-color: var(--bg-surface) !important;
-}
-.theme-dark-gold [class*="from-[#fa"],
-.theme-dark-gold [class*="from-[#fc"],
-.theme-dark-gold [class*="from-[#fb"],
-.theme-dark-gold [class*="from-[#ff"],
-.theme-dark-gold [class*="from-[#f2"],
-.theme-dark-gold [class*="from-[#f5"],
-.theme-dark-gold [class*="from-[#f7"] {
-  --tw-gradient-from: #141414 var(--tw-gradient-from-position) !important;
-  --tw-gradient-to: rgba(20,20,20,0) var(--tw-gradient-to-position) !important;
-  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to) !important;
-}
-.theme-dark-gold [class*="via-[#fa"],
-.theme-dark-gold [class*="via-[#fc"],
-.theme-dark-gold [class*="via-[#fb"],
-.theme-dark-gold [class*="via-[#ff"],
-.theme-dark-gold [class*="via-[#f2"],
-.theme-dark-gold [class*="via-[#f5"] {
-  --tw-gradient-via: #1a1a1a !important;
-  --tw-gradient-via-position: 50% !important;
-  --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-via) var(--tw-gradient-via-position), var(--tw-gradient-to) !important;
-}
-.theme-dark-gold [class*="to-[#fa"],
-.theme-dark-gold [class*="to-[#fc"],
-.theme-dark-gold [class*="to-[#fb"],
-.theme-dark-gold [class*="to-[#ff"],
-.theme-dark-gold [class*="to-[#f2"],
-.theme-dark-gold [class*="to-[#ef"],
-.theme-dark-gold [class*="to-[#e9"] {
-  --tw-gradient-to: #222222 var(--tw-gradient-to-position) !important;
-}
-.theme-dark-gold [class*="border-[#e3"],
-.theme-dark-gold [class*="border-[#ef"],
-.theme-dark-gold [class*="border-[#e9"],
-.theme-dark-gold [class*="border-[#f2"] {
-  border-color: var(--border-default) !important;
-}
-
-/* Recharts SVG dark — kill white grid + tooltip */
+/* Recharts — sage grid + cream tooltip */
 .theme-dark-gold .recharts-cartesian-grid line {
-  stroke: rgba(255,255,255,0.06) !important;
+  stroke: rgba(61,47,32,0.08) !important;
 }
 .theme-dark-gold .recharts-text {
   fill: var(--fg-muted) !important;
@@ -579,5 +521,9 @@ body {
   color: var(--fg-primary) !important;
 }
 
-/* H1 stays solid white, not gradient */
-.theme-dark-gold h1 { -webkit-text-fill-color: initial !important; color: #ffffff !important; background: none !important; }
+/* H1 solid walnut */
+.theme-dark-gold h1 {
+  -webkit-text-fill-color: var(--fg-primary) !important;
+  color: var(--fg-primary) !important;
+  background: none !important;
+}
