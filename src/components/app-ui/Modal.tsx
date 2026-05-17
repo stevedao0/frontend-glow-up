@@ -95,6 +95,7 @@ export function Modal({
         onClick={onClose} />
 
       <div
+        ref={dialogRef}
         role="dialog"
         aria-modal="true"
         aria-label={title}
