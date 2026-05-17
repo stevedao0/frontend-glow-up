@@ -1,6 +1,14 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { XIcon } from 'lucide-react';
 type ModalSize = 'sm' | 'md' | 'lg' | 'xl' | '2xl';
+
+function getFocusableElements(container: HTMLElement): HTMLElement[] {
+  const selector =
+    'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+  return Array.from(container.querySelectorAll(selector)).filter(
+    (el): el is HTMLElement => el instanceof HTMLElement
+  );
+}
 
 export function Modal({
   open,
@@ -25,17 +33,50 @@ export function Modal({
   /** When true, children render edge-to-edge (no padding). Useful for hero covers. */
   bleed?: boolean;
 }) {
+  const dialogRef = useRef<HTMLDivElement>(null);
+  const titleRef = useRef<HTMLHeadingElement>(null);
+
   useEffect(() => {
     if (!open) return;
     const prev = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
+
+    // Focus the title when the dialog opens
+    const timer = setTimeout(() => {
+      titleRef.current?.focus();
+    }, 0);
+
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') onClose();
+      if (e.key === 'Escape') {
+        onClose();
+        return;
+      }
+      if (e.key !== 'Tab' || !dialogRef.current) return;
+
+      const focusables = getFocusableElements(dialogRef.current);
+      if (focusables.length === 0) return;
+
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+
+      if (e.shiftKey) {
+        if (document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        }
+      } else {
+        if (document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+      }
     };
+
     window.addEventListener('keydown', onKey);
     return () => {
       document.body.style.overflow = prev;
       window.removeEventListener('keydown', onKey);
+      clearTimeout(timer);
     };
   }, [open, onClose]);
   if (!open) return null;
@@ -54,6 +95,7 @@ export function Modal({
         onClick={onClose} />
 
       <div
+        ref={dialogRef}
         role="dialog"
         aria-modal="true"
         aria-label={title}
@@ -70,7 +112,11 @@ export function Modal({
 
         <header className="relative z-10 px-5 py-4 border-b border-[#e3d2b3]/40 flex items-start gap-3 bg-white/80 backdrop-blur-sm">
           <div className="min-w-0 flex-1">
-            <h2 className="text-sm font-semibold text-[#2d2419] tracking-tight">
+            <h2
+              ref={titleRef}
+              tabIndex={-1}
+              className="text-sm font-semibold text-[#2d2419] tracking-tight outline-none focus-visible:ring-2 focus-visible:ring-[#c89968]/60 rounded-sm"
+            >
               {title}
             </h2>
             {description &&
