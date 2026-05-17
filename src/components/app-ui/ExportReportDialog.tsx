@@ -583,6 +583,7 @@ export function ExportReportDialog({
           }
         `}</style>
       </div>
+      </div>
     </div>
   );
 }
