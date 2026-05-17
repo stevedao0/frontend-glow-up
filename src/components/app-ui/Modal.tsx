@@ -112,7 +112,11 @@ export function Modal({
 
         <header className="relative z-10 px-5 py-4 border-b border-[#e3d2b3]/40 flex items-start gap-3 bg-white/80 backdrop-blur-sm">
           <div className="min-w-0 flex-1">
-            <h2 className="text-sm font-semibold text-[#2d2419] tracking-tight">
+            <h2
+              ref={titleRef}
+              tabIndex={-1}
+              className="text-sm font-semibold text-[#2d2419] tracking-tight outline-none focus-visible:ring-2 focus-visible:ring-[#c89968]/60 rounded-sm"
+            >
               {title}
             </h2>
             {description &&
