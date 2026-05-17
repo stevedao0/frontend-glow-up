@@ -105,7 +105,7 @@ export function ContractsListPage({
 }) {
   // Auth
   const { currentUser, hasPermission } = useAuth();
-  const canEdit = hasPermission('contracts.edit');
+  const canEdit = hasPermission('contracts.update');
   const canDelete = hasPermission('contracts.delete');
 
   // Filter state

@@ -75,6 +75,8 @@ import {
   getEmployeeContracts,
   listExpiringContracts,
   listReportsCertificates,
+  listPendingContracts,
+  listSignedContracts,
   type ReportsSummary,
   type ExpiringContractItem,
   type CertificateListItem,
@@ -83,6 +85,9 @@ import {
   type EmployeeOptionsResponse,
   type EmployeePerformanceResponse,
   type EmployeeContractsResponse,
+  type PendingContractsResponse,
+  type PendingContractItem,
+  type SignedContractsResponse,
 } from '../lib/reportsClient';
 import { TOKEN_KEY } from '../lib/authClient';
 import { formatCurrency, formatDate, formatNumber } from '../lib/format';
@@ -107,25 +112,17 @@ const TIME_OPTIONS = [
   { value: 'custom', label: 'Tùy chỉnh' },
 ];
 
-const EMPLOYEE_OPTIONS = [
-  { value: 'Tuấn', label: 'Tuấn' },
-  { value: 'Admin', label: 'Admin' },
-  { value: 'Nhân viên 1', label: 'Nhân viên 1' },
-];
-
 const FIELD_OPTIONS = FIELD_CATEGORIES.map((c) => ({
   value: c.label,
   label: c.label,
 }));
 
 const STATUS_OPTIONS = [
-  { value: 'signed', label: 'Đã ký' },
-  { value: 'unsigned', label: 'Chưa ký' },
-  { value: 'draft', label: 'Bản nháp' },
+  { value: '', label: 'Tất cả' },
+  { value: 'active', label: 'Hoạt động' },
   { value: 'expiring', label: 'Sắp hết hạn' },
   { value: 'expired', label: 'Hết hạn' },
-  { value: 'pending_renewal', label: 'Chờ tái ký' },
-  { value: 'renewed', label: 'Đã tái ký' },
+  { value: 'pending', label: 'Chưa có giá trị' },
 ];
 
 const EXPIRING_FILTER_TABS = [
@@ -163,6 +160,8 @@ export function ReportsPage({
   const [employeeOptions, setEmployeeOptions] = useState<EmployeeOptionsResponse | null>(null);
   const [employeePerformance, setEmployeePerformance] = useState<EmployeePerformanceResponse | null>(null);
   const [employeeContracts, setEmployeeContracts] = useState<EmployeeContractsResponse | null>(null);
+  const [pendingContracts, setPendingContracts] = useState<PendingContractsResponse | null>(null);
+  const [signedContracts, setSignedContracts] = useState<SignedContractsResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState<string | null>(null);
 
@@ -179,8 +178,12 @@ export function ReportsPage({
 
   // --- Section-local tab states ---
   const [signedScope, setSignedScope] = useState<SignedScope>('month');
+  const [signedYearFilter, setSignedYearFilter] = useState<number | null>(null);
   const [signedPage, setSignedPage] = useState(1);
   const SIGNED_PAGE_SIZE = 20;
+  const [pendingPage, setPendingPage] = useState(1);
+  const PENDING_PAGE_SIZE = 20;
+  const [pendingYearFilter, setPendingYearFilter] = useState<number | null>(null);
   const [expiringScope, setExpiringScope] = useState('30d');
   const [hoverIdx, setHoverIdx] = useState<number | null>(null);
   const [presenting, setPresenting] = useState(false);
@@ -254,6 +257,57 @@ export function ReportsPage({
     fetchData();
   }, [fetchData]);
 
+  // --- Fetch pending contracts from API ---
+  const fetchPendingContracts = React.useCallback(async () => {
+    const token = localStorage.getItem(TOKEN_KEY);
+    if (!token) return;
+
+    try {
+      const result = await listPendingContracts(token, {
+        page: pendingPage,
+        page_size: PENDING_PAGE_SIZE,
+        year: pendingYearFilter || undefined,
+        employee: employee || undefined,
+        field: field || undefined,
+      });
+      setPendingContracts(result);
+    } catch (err: any) {
+      console.error('Failed to fetch pending contracts:', err);
+    }
+  }, [pendingPage, pendingYearFilter, employee, field]);
+
+  useEffect(() => {
+    if (dataTab === 'pending') {
+      fetchPendingContracts();
+    }
+  }, [dataTab, fetchPendingContracts]);
+
+  // --- Fetch signed contracts from API ---
+  const fetchSignedContracts = React.useCallback(async () => {
+    const token = localStorage.getItem(TOKEN_KEY);
+    if (!token) return;
+
+    try {
+      const result = await listSignedContracts(token, {
+        page: signedPage,
+        page_size: SIGNED_PAGE_SIZE,
+        scope: signedScope,
+        year: signedYearFilter || undefined,
+        employee: employee || undefined,
+        field: field || undefined,
+      });
+      setSignedContracts(result);
+    } catch (err: any) {
+      console.error('Failed to fetch signed contracts:', err);
+    }
+  }, [signedPage, signedScope, signedYearFilter, employee, field]);
+
+  useEffect(() => {
+    if (dataTab === 'signed') {
+      fetchSignedContracts();
+    }
+  }, [dataTab, fetchSignedContracts]);
+
   // --- Fetch employee performance when employee filter changes ---
   const fetchEmployeePerformance = React.useCallback(async () => {
     const token = localStorage.getItem(TOKEN_KEY);
@@ -287,6 +341,12 @@ export function ReportsPage({
     fetchEmployeePerformance();
   }, [fetchEmployeePerformance]);
 
+  // Reset pages when scope/filter changes
+  useEffect(() => {
+    setSignedPage(1);
+    setPendingPage(1);
+  }, [signedScope, signedYearFilter, pendingYearFilter, employee, field]);
+
   // --- Derived data ---
   const insights = useMemo<ReportInsight[]>(() => {
     if (!summary) return [];
@@ -295,80 +355,30 @@ export function ReportsPage({
 
   const today = useMemo(() => new Date().toISOString().slice(0, 10), []);
 
+  // Use API data for signed contracts
   const signedRows = useMemo<SignedContractItem[]>(() => {
-    if (!summary) return [];
-    const all = summary.signed_contracts ?? [];
-    const todayDate = new Date(today);
-    return all.filter((r) => {
-      if (!r.signed_date) return false;
-      const signed = new Date(r.signed_date);
-      const days = Math.floor(
-        (todayDate.getTime() - signed.getTime()) / (1000 * 60 * 60 * 24)
-      );
-      if (signedScope === 'week') return days <= 7;
-      if (signedScope === 'month') return days <= 31;
-      if (signedScope === 'quarter') return days <= 92;
-      return true;
-    });
-  }, [summary, signedScope, today]);
+    return signedContracts?.items ?? [];
+  }, [signedContracts]);
 
   const signedSummary = useMemo(() => {
-    const count = signedRows.length;
-    const totalValue = signedRows.reduce((s, r) => s + (r.value ?? 0), 0);
+    const count = signedContracts?.total ?? 0;
+    const totalValue = (signedContracts?.items ?? []).reduce((s: number, r: SignedContractItem) => s + (r.value ?? 0), 0);
     const avg = count > 0 ? totalValue / count : 0;
     return { count, totalValue, avg };
-  }, [signedRows]);
+  }, [signedContracts]);
 
-  const signedTotalPages = Math.max(1, Math.ceil(signedRows.length / SIGNED_PAGE_SIZE));
+  const signedTotalPages = Math.max(1, Math.ceil((signedContracts?.total ?? 0) / SIGNED_PAGE_SIZE));
   const signedCurrentPage = Math.min(signedPage, signedTotalPages);
-  const signedPagedRows = useMemo(
-    () => signedRows.slice((signedCurrentPage - 1) * SIGNED_PAGE_SIZE, signedCurrentPage * SIGNED_PAGE_SIZE),
-    [signedRows, signedCurrentPage]
-  );
-  useEffect(() => { setSignedPage(1); }, [signedScope]);
 
-  // Pending contracts: derive from contracts with missing data
-  const pendingRows = useMemo<ResolvedPendingRow[]>(() => {
-    if (!summary) return [];
-    // Derive "pending" from contracts that have null values or status issues
-    return summary.signed_contracts
-      .filter((c) => {
-        // Show contracts with null values as "pending" for missing finance
-        return (
-          c.value == null ||
-          c.renewal_status === 'PENDING_RENEWAL'
-        );
-      })
-      .slice(0, 20)
-      .map((c, i) => ({
-        id: `pending-${c.id}`,
-        contractRecordId: c.id,
-        category: c.value == null ? 'missing_finance' : 'awaiting_partner',
-        assignee: '—',
-        createdAt: c.signed_date ?? today,
-        daysStuck: c.signed_date
-          ? Math.floor(
-              (new Date(today).getTime() - new Date(c.signed_date).getTime()) /
-                (1000 * 60 * 60 * 24)
-            )
-          : 0,
-        missingStep:
-          c.value == null ? 'Thiếu giá trị hợp đồng' : 'Chờ phản hồi tái ký',
-        contract: {
-          id: c.id,
-          don_vi_ten: c.partner,
-          ten_bang_hieu: c.brand,
-          linh_vuc_hien_thi: c.field ?? '',
-        },
-      }));
-  }, [summary, today]);
+  // Pending contracts from API
+  const pendingRows = useMemo<PendingContractItem[]>(() => {
+    return pendingContracts?.items ?? [];
+  }, [pendingContracts]);
 
-  const filteredPending = useMemo(() => {
-    if (!employee) return pendingRows;
-    return pendingRows.filter((r) => r.assignee === employee);
-  }, [pendingRows, employee]);
+  const pendingTotalPages = Math.max(1, Math.ceil((pendingContracts?.total ?? 0) / PENDING_PAGE_SIZE));
+  const pendingCurrentPage = Math.min(pendingPage, pendingTotalPages);
 
-  // Expiring contracts from API
+  // Expiring contracts from summary
   const filteredExpiring = useMemo<ExpiringContractItem[]>(() => {
     if (!summary) return [];
     let rows = summary.expiring_contracts ?? [];
@@ -415,6 +425,12 @@ export function ReportsPage({
       prevRevenueBn: i > 0 ? list[i - 1].revenueBn : 0,
     }));
   }, [summary, dayOfYearProgress]);
+
+  // Available years for filter dropdown (from revenue_by_year)
+  const availableYears = useMemo(() => {
+    if (!summary) return [];
+    return (summary.revenue_by_year ?? []).map((y) => y.year).sort((a, b) => b - a);
+  }, [summary]);
 
   // Forecast cho năm hiện tại — phục vụ insight/badge
   const yearForecast = useMemo(() => {
@@ -857,11 +873,11 @@ export function ReportsPage({
         <div className="flex items-center justify-between gap-3 px-4 py-3 rounded-xl border border-amber-200/70 bg-gradient-to-r from-amber-50 via-amber-50/60 to-transparent">
           <div className="flex items-center gap-3">
             <span className="h-9 w-9 rounded-full inline-flex items-center justify-center text-white text-sm font-bold shadow bg-gradient-to-br from-amber-500 to-amber-700">
-              {scopedEmployee.name.slice(0, 1).toUpperCase()}
+              {scopedEmployee.employee_name.slice(0, 1).toUpperCase()}
             </span>
             <div>
               <p className="text-[13px] font-semibold text-zinc-900 flex items-center gap-2">
-                Đang xem: {scopedEmployee.name}
+                Đang xem: {scopedEmployee.employee_name}
                 {ranking && (
                   <span className="inline-flex items-center gap-1 text-[10px] font-medium px-1.5 py-0.5 rounded bg-amber-100 text-amber-800">
                     <TrophyIcon className="h-3 w-3" /> #{ranking.rank}/{ranking.total} doanh thu
@@ -1092,8 +1108,8 @@ export function ReportsPage({
         onChange={setDataTab}
         counts={{
           performance: employeePerformance?.summary.total_employees ?? 0,
-          signed: signedSummary.count,
-          pending: filteredPending.length,
+          signed: signedContracts?.total ?? signedSummary.count,
+          pending: pendingContracts?.total ?? 0,
           expiring: filteredExpiring.length,
           gcn: certRows.length,
         }}
@@ -1225,11 +1241,31 @@ export function ReportsPage({
         padded={false}
         accent
         actions={
-          <Tabs
-            tabs={SIGNED_TABS}
-            value={signedScope}
-            onChange={(v) => setSignedScope(v as SignedScope)}
-          />
+          <div className="flex items-center gap-2">
+            {/* Year filter */}
+            <select
+              className="h-8 px-2 pr-7 text-xs rounded-lg border border-zinc-300 bg-white text-zinc-700 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 outline-none appearance-none cursor-pointer"
+              value={signedYearFilter || ''}
+              onChange={(e) => {
+                setSignedYearFilter(e.target.value ? Number(e.target.value) : null);
+                setSignedPage(1);
+              }}
+              style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 8px center' }}
+            >
+              <option value="">Tất cả năm</option>
+              {availableYears.map((yr) => (
+                <option key={yr} value={yr}>{yr}</option>
+              ))}
+            </select>
+            <Tabs
+              tabs={SIGNED_TABS}
+              value={signedScope}
+              onChange={(v) => {
+                setSignedScope(v as SignedScope);
+                setSignedPage(1);
+              }}
+            />
+          </div>
         }>
         {/* Summary strip */}
         <div className="grid grid-cols-3 gap-4 px-5 py-4 border-b border-zinc-100/80 bg-zinc-50/40">
@@ -1274,7 +1310,7 @@ export function ReportsPage({
                 </tr>
               </thead>
               <tbody>
-                {signedPagedRows.map((r) => (
+                {signedRows.map((r) => (
                   <tr
                     key={r.id}
                     className="border-b border-zinc-100 last:border-0 hover:bg-amber-50/30 transition-colors cursor-pointer"
@@ -1336,12 +1372,12 @@ export function ReportsPage({
                 ))}
               </tbody>
             </table>
-            {signedRows.length > SIGNED_PAGE_SIZE && (
+            {signedContracts && signedContracts.total > SIGNED_PAGE_SIZE && (
               <div className="flex items-center justify-between px-5 py-3 border-t border-zinc-100 bg-zinc-50/40 text-[12px]">
                 <span className="text-zinc-600 tabular-nums">
                   Hiển thị <span className="font-semibold text-zinc-900">{(signedCurrentPage - 1) * SIGNED_PAGE_SIZE + 1}</span>
-                  –<span className="font-semibold text-zinc-900">{Math.min(signedCurrentPage * SIGNED_PAGE_SIZE, signedRows.length)}</span>
-                  {' '}/ <span className="font-semibold text-zinc-900">{signedRows.length}</span> hợp đồng
+                  –<span className="font-semibold text-zinc-900">{Math.min(signedCurrentPage * SIGNED_PAGE_SIZE, signedContracts.total)}</span>
+                  {' '}/ <span className="font-semibold text-zinc-900">{signedContracts.total}</span> hợp đồng
                 </span>
                 <div className="flex items-center gap-1">
                   <button
@@ -1379,13 +1415,30 @@ export function ReportsPage({
         padded={false}
         accent
         actions={
-          <Button
-            variant="ghost"
-            size="sm"
-            leftIcon={<EyeIcon className="h-3.5 w-3.5" />}
-            onClick={() => onNavigate('contracts.list')}>
-            Xem tất cả
-          </Button>
+          <div className="flex items-center gap-2">
+            {/* Year filter */}
+            <select
+              className="h-8 px-2 pr-7 text-xs rounded-lg border border-zinc-300 bg-white text-zinc-700 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 outline-none appearance-none cursor-pointer"
+              value={pendingYearFilter || ''}
+              onChange={(e) => {
+                setPendingYearFilter(e.target.value ? Number(e.target.value) : null);
+                setPendingPage(1);
+              }}
+              style={{ backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E")`, backgroundRepeat: 'no-repeat', backgroundPosition: 'right 8px center' }}
+            >
+              <option value="">Tất cả năm</option>
+              {availableYears.map((yr) => (
+                <option key={yr} value={yr}>{yr}</option>
+              ))}
+            </select>
+            <Button
+              variant="ghost"
+              size="sm"
+              leftIcon={<EyeIcon className="h-3.5 w-3.5" />}
+              onClick={() => onNavigate('contracts.list')}>
+              Xem tất cả
+            </Button>
+          </div>
         }>
         {/* Category strip */}
         <div className="flex flex-wrap gap-1.5 px-5 py-3 border-b border-zinc-100/80 bg-zinc-50/40">
@@ -1394,7 +1447,7 @@ export function ReportsPage({
               keyof typeof PENDING_CATEGORY_LABEL
             >
           ).map((k) => {
-            const count = filteredPending.filter((r) => r.category === k).length;
+            const count = pendingRows.filter((r) => r.category === k).length;
             return (
               <span
                 key={k}
@@ -1415,7 +1468,7 @@ export function ReportsPage({
           })}
         </div>
 
-        {filteredPending.length === 0 ? (
+        {pendingRows.length === 0 ? (
           <EmptyState
             title="Không có hồ sơ nào đang chờ xử lý"
             description="Tốt — workspace đang sạch."
@@ -1426,6 +1479,7 @@ export function ReportsPage({
             <table className="w-full text-sm">
               <thead>
                 <tr className="bg-gradient-to-b from-amber-50/30 via-zinc-50 to-zinc-50/30 border-b border-zinc-200">
+                  <Th>Số hợp đồng</Th>
                   <Th>Đơn vị / Bảng hiệu</Th>
                   <Th>Lĩnh vực</Th>
                   <Th>Người phụ trách</Th>
@@ -1437,55 +1491,57 @@ export function ReportsPage({
                 </tr>
               </thead>
               <tbody>
-                {filteredPending.map((p) => {
-                  const priority = getPendingPriority(p.daysStuck);
+                {pendingRows.map((p) => {
+                  const priority = getPendingPriority(p.days_pending);
                   return (
                     <tr
                       key={p.id}
                       className="border-b border-zinc-100 last:border-0 hover:bg-amber-50/20 transition-colors">
+                      <td className="px-4 py-3.5 align-top whitespace-nowrap">
+                        <span className="font-mono text-[13px] font-semibold text-amber-800">
+                          {p.contract_no}
+                        </span>
+                      </td>
                       <td className="px-4 py-3.5 align-top max-w-[260px]">
                         <p className="text-[14px] font-semibold text-zinc-900 leading-snug line-clamp-2">
-                          {p.contract?.don_vi_ten ?? '—'}
+                          {p.partner || '—'}
                         </p>
-                        {p.contract?.ten_bang_hieu && (
+                        {p.brand && (
                           <p className="mt-0.5 text-[12px] text-zinc-500 truncate">
-                            {p.contract.ten_bang_hieu}
+                            {p.brand}
                           </p>
                         )}
                       </td>
                       <td className="px-4 py-3.5 align-top text-[13px] text-zinc-700">
-                        {p.contract?.linh_vuc_hien_thi ?? '—'}
+                        {p.field ?? '—'}
                       </td>
                       <td className="px-4 py-3.5 align-top text-[13px]">
                         <span className="inline-flex items-center gap-1.5">
                           <span className="h-5 w-5 rounded-full bg-gradient-to-br from-amber-600 to-amber-600 text-white text-[10px] font-bold inline-flex items-center justify-center shrink-0">
-                            {p.assignee && p.assignee !== '—' ? p.assignee.slice(0, 1).toUpperCase() : '?'}
+                            {p.nguoi_thuc_hien && p.nguoi_thuc_hien !== '' ? p.nguoi_thuc_hien.slice(0, 1).toUpperCase() : '?'}
                           </span>
-                          <span className="text-zinc-700">{p.assignee}</span>
+                          <span className="text-zinc-700">{p.nguoi_thuc_hien || '—'}</span>
                         </span>
                       </td>
                       <td className="px-4 py-3.5 align-top tabular-nums text-[13px] whitespace-nowrap text-zinc-700">
-                        {formatDate(p.createdAt)}
+                        {p.signed_date ? formatDate(p.signed_date) : '—'}
                       </td>
                       <td className="px-4 py-3.5 align-top text-right tabular-nums whitespace-nowrap text-[13px]">
                         <span
                           className={`font-semibold ${
-                            p.daysStuck > 14
+                            p.days_pending > 14
                               ? 'text-rose-700'
-                              : p.daysStuck >= 7
+                              : p.days_pending >= 7
                                 ? 'text-amber-700'
                                 : 'text-zinc-700'
                           }`}>
-                          {p.daysStuck} ngày
+                          {p.days_pending} ngày
                         </span>
                       </td>
                       <td className="px-4 py-3.5 align-top text-[13px] max-w-[220px]">
                         <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[11px] font-medium bg-amber-50 text-amber-700 ring-1 ring-inset ring-amber-600/15">
-                          {PENDING_CATEGORY_LABEL[p.category]}
+                          {PENDING_CATEGORY_LABEL[p.category as keyof typeof PENDING_CATEGORY_LABEL] ?? p.category}
                         </span>
-                        <p className="mt-1 text-[11.5px] text-zinc-500 leading-snug line-clamp-1">
-                          {p.missingStep}
-                        </p>
                       </td>
                       <td className="px-4 py-3.5 align-top">
                         <StatusBadge tone={priority.tone} dot>
@@ -1518,6 +1574,34 @@ export function ReportsPage({
                 })}
               </tbody>
             </table>
+            {pendingContracts && pendingContracts.total > PENDING_PAGE_SIZE && (
+              <div className="flex items-center justify-between px-5 py-3 border-t border-zinc-100 bg-zinc-50/40 text-[12px]">
+                <span className="text-zinc-600 tabular-nums">
+                  Hiển thị <span className="font-semibold text-zinc-900">{(pendingCurrentPage - 1) * PENDING_PAGE_SIZE + 1}</span>
+                  –<span className="font-semibold text-zinc-900">{Math.min(pendingCurrentPage * PENDING_PAGE_SIZE, pendingContracts.total)}</span>
+                  {' '}/ <span className="font-semibold text-zinc-900">{pendingContracts.total}</span> hồ sơ
+                </span>
+                <div className="flex items-center gap-1">
+                  <button
+                    type="button"
+                    onClick={() => setPendingPage((p) => Math.max(1, p - 1))}
+                    disabled={pendingCurrentPage <= 1}
+                    className="px-2.5 py-1 rounded-md ring-1 ring-zinc-900/10 bg-white text-zinc-700 hover:bg-amber-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
+                    ← Trước
+                  </button>
+                  <span className="px-2 text-zinc-600 tabular-nums">
+                    Trang <span className="font-semibold text-zinc-900">{pendingCurrentPage}</span> / {pendingTotalPages}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => setPendingPage((p) => Math.min(pendingTotalPages, p + 1))}
+                    disabled={pendingCurrentPage >= pendingTotalPages}
+                    className="px-2.5 py-1 rounded-md ring-1 ring-zinc-900/10 bg-white text-zinc-700 hover:bg-amber-50 disabled:opacity-40 disabled:cursor-not-allowed transition-colors">
+                    Sau →
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </ContentCard>
@@ -1964,7 +2048,9 @@ export function ReportsPage({
                     ? 'expiring'
                     : reportType === 'gcn'
                       ? 'gcn'
-                      : 'revenue'
+                      : reportType === 'full_data'
+                        ? 'full_data'
+                        : 'revenue'
         }
         contractsFilters={{
           q: undefined,
@@ -1980,6 +2066,23 @@ export function ReportsPage({
           q: undefined,
         }}
         revenueFilters={{
+          year: undefined,
+          domain: field || undefined,
+          date_from: undefined,
+          date_to: undefined,
+        }}
+        signedFilters={{
+          scope: signedScope,
+          year: signedYearFilter || undefined,
+          employee: employee || undefined,
+          field: field || undefined,
+        }}
+        pendingFilters={{
+          year: pendingYearFilter || undefined,
+          employee: employee || undefined,
+          field: field || undefined,
+        }}
+        fullDataFilters={{
           year: undefined,
           domain: field || undefined,
           date_from: undefined,
@@ -2013,13 +2116,14 @@ function DataExplorerTabs({
   counts: Record<DataTabKey, number>;
   visible: { performance: boolean; signed: boolean; pending: boolean; expiring: boolean; gcn: boolean };
 }) {
-  const tabs: { key: DataTabKey; label: string; sub: string }[] = [
+  const allTabs: { key: DataTabKey; label: string; sub: string }[] = [
     { key: 'signed', label: 'Đã ký', sub: 'Hợp đồng đã ký' },
     { key: 'pending', label: 'Chờ xử lý', sub: 'Hợp đồng chưa ký' },
     { key: 'expiring', label: 'Sắp hết hạn', sub: 'Cần tái ký' },
     { key: 'performance', label: 'Nhân viên', sub: 'Hiệu suất xử lý' },
     { key: 'gcn', label: 'GCN', sub: 'Giấy chứng nhận' },
-  ].filter((t) => visible[t.key]);
+  ];
+  const tabs = allTabs.filter((t) => visible[t.key]);
   const active = tabs.find((t) => t.key === value);
   return (
     <div className="relative rounded-2xl bg-gradient-to-br from-white via-white to-amber-50/30 ring-1 ring-zinc-900/[0.06] shadow-[0_1px_2px_rgba(15,15,25,0.04),0_8px_24px_-12px_rgba(156,109,62,0.15)] overflow-hidden">
@@ -2027,7 +2131,7 @@ function DataExplorerTabs({
       <div className="flex items-stretch gap-1 p-2 overflow-x-auto scrollbar-thin">
         {tabs.map((t) => {
           const isActive = t.key === value;
-          const count = counts[t.key];
+          const count = counts[t.key as DataTabKey];
           return (
             <button
               key={t.key}

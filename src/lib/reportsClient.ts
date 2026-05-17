@@ -14,6 +14,11 @@ export type RevenueYearItem = {
   contract_count: number;
   total_revenue: number | null;
   cumulative: boolean;
+  isNull?: boolean;
+  isCurrent?: boolean;
+  revenueBn?: number;
+  forecastBn?: number;
+  prevRevenueBn?: number;
 };
 
 export type ExpiringContractItem = {
@@ -353,6 +358,88 @@ export function getEmployeeContracts(
 }
 
 // =============================================================================
+// NEW: Pending contracts — contracts needing action
+// =============================================================================
+
+export type PendingContractItem = {
+  id: number;
+  contract_no: string;
+  partner: string;
+  brand: string | null;
+  field: string | null;
+  signed_date: string | null;
+  renewal_status: string | null;
+  value: number | null;
+  nguoi_thuc_hien: string | null;
+  days_pending: number;
+  category: 'missing_finance' | 'awaiting_partner' | 'draft' | 'no_gcn';
+};
+
+export type PendingContractsResponse = {
+  items: PendingContractItem[];
+  total: number;
+};
+
+/**
+ * Get pending contracts — contracts needing action (no value, pending renewal, etc.)
+ * GET /api/reports/contracts/pending
+ */
+export function listPendingContracts(
+  token: string,
+  params: { page?: number; page_size?: number; year?: number; employee?: string; field?: string } = {}
+): Promise<PendingContractsResponse> {
+  const qs = new URLSearchParams();
+  if (params.page) qs.set("page", String(params.page));
+  if (params.page_size) qs.set("page_size", String(params.page_size));
+  if (params.year) qs.set("year", String(params.year));
+  if (params.employee) qs.set("employee", params.employee);
+  if (params.field) qs.set("field", params.field);
+  const suffix = qs.toString();
+  return apiRequest<PendingContractsResponse>(
+    `/reports/contracts/pending${suffix ? `?${suffix}` : ""}`,
+    { token }
+  );
+}
+
+// =============================================================================
+// NEW: Signed contracts with filters
+// =============================================================================
+
+/**
+ * Get signed contracts with optional filters.
+ * GET /api/reports/contracts/signed
+ */
+export function listSignedContracts(
+  token: string,
+  params: {
+    page?: number;
+    page_size?: number;
+    scope?: string;
+    year?: number;
+    employee?: string;
+    field?: string;
+  } = {}
+): Promise<SignedContractsResponse> {
+  const qs = new URLSearchParams();
+  if (params.page) qs.set("page", String(params.page));
+  if (params.page_size) qs.set("page_size", String(params.page_size));
+  if (params.scope) qs.set("scope", params.scope);
+  if (params.year) qs.set("year", String(params.year));
+  if (params.employee) qs.set("employee", params.employee);
+  if (params.field) qs.set("field", params.field);
+  const suffix = qs.toString();
+  return apiRequest<SignedContractsResponse>(
+    `/reports/contracts/signed${suffix ? `?${suffix}` : ""}`,
+    { token }
+  );
+}
+
+export type SignedContractsResponse = {
+  items: SignedContractItem[];
+  total: number;
+};
+
+// =============================================================================
 // Export functions — download Excel (.xlsx) files
 // =============================================================================
 
@@ -478,4 +565,68 @@ export async function exportRevenueExcel(
   const url = `/api/reports/revenue/export-xlsx${suffix}`;
   const today = new Date().toISOString().slice(0, 10).replace(/-/g, "");
   await downloadExportFile(url, token, `bao_cao_doanh_thu_${today}.xlsx`);
+}
+
+/**
+ * Export signed contracts to Excel (.xlsx)
+ * GET /api/reports/contracts/signed/export-xlsx
+ */
+export async function exportSignedContractsExcel(
+  token: string,
+  params: { scope?: string; year?: number; employee?: string; field?: string } = {}
+): Promise<void> {
+  const qs = new URLSearchParams();
+  if (params.scope) qs.set("scope", params.scope);
+  if (params.year) qs.set("year", String(params.year));
+  if (params.employee) qs.set("employee", params.employee);
+  if (params.field) qs.set("field", params.field);
+  const suffix = qs.toString() ? `?${qs.toString()}` : "";
+  const url = `/api/reports/contracts/signed/export-xlsx${suffix}`;
+  const today = new Date().toISOString().slice(0, 10).replace(/-/g, "");
+  await downloadExportFile(url, token, `hop_dong_da_ky_${today}.xlsx`);
+}
+
+/**
+ * Export pending contracts to Excel (.xlsx)
+ * GET /api/reports/contracts/pending/export-xlsx
+ */
+export async function exportPendingContractsExcel(
+  token: string,
+  params: { year?: number; employee?: string; field?: string } = {}
+): Promise<void> {
+  const qs = new URLSearchParams();
+  if (params.year) qs.set("year", String(params.year));
+  if (params.employee) qs.set("employee", params.employee);
+  if (params.field) qs.set("field", params.field);
+  const suffix = qs.toString() ? `?${qs.toString()}` : "";
+  const url = `/api/reports/contracts/pending/export-xlsx${suffix}`;
+  const today = new Date().toISOString().slice(0, 10).replace(/-/g, "");
+  await downloadExportFile(url, token, `hop_dong_cho_xu_ly_${today}.xlsx`);
+}
+
+/**
+ * Export full contract data to Excel (.xlsx)
+ * GET /api/reports/full-data/export-xlsx
+ * 
+ * Columns: STT, Tên đơn vị, Địa chỉ, Bảng hiệu, Địa chỉ kinh doanh,
+ *          Số điện thoại, Khu vực kinh doanh, Số tiền trước thuế
+ */
+export async function exportFullDataExcel(
+  token: string,
+  params: {
+    year?: number;
+    domain?: string;
+    date_from?: string;
+    date_to?: string;
+  } = {}
+): Promise<void> {
+  const qs = new URLSearchParams();
+  if (params.year) qs.set("year", String(params.year));
+  if (params.domain) qs.set("domain", params.domain);
+  if (params.date_from) qs.set("date_from", params.date_from);
+  if (params.date_to) qs.set("date_to", params.date_to);
+  const suffix = qs.toString() ? `?${qs.toString()}` : "";
+  const url = `/api/reports/full-data/export-xlsx${suffix}`;
+  const today = new Date().toISOString().slice(0, 10).replace(/-/g, "");
+  await downloadExportFile(url, token, `du_lieu_toan_bo_${today}.xlsx`);
 }

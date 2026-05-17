@@ -24,26 +24,25 @@ export const ROLE_DEFS = {
     name: 'Super Admin',
     description: 'Toàn quyền hệ thống.',
     permissions: [
-    'dashboard.view',
-    'contracts.view',
+    'portal.access',
+    'contracts.read',
     'contracts.create',
-    'contracts.edit',
+    'contracts.update',
     'contracts.delete',
-    'contracts.export',
-    'certificates.view',
-    'certificates.create',
-    'certificates.print_test',
-    'certificates.print_final',
+    'annexes.read',
+    'annexes.create',
+    'annexes.update',
+    'annexes.delete',
+    'catalogue.upload',
+    'works.read',
+    'works.import',
     'reports.view',
     'reports.export',
-    'search.view',
-    'admin.users.view',
-    'admin.users.create',
-    'admin.users.edit',
-    'admin.roles.view',
-    'admin.roles.edit',
-    'ai.view',
-    'settings.view']
+    'admin.users.manage',
+    'admin.system.manage',
+    'admin.ops.view',
+    'admin.data.manage',
+    'youtube.cookies.manage']
 
   },
   manager: {
@@ -51,19 +50,23 @@ export const ROLE_DEFS = {
     name: 'Manager',
     description: 'Quản lý nghiệp vụ, xem báo cáo và xử lý hợp đồng/GCN.',
     permissions: [
-    'dashboard.view',
-    'contracts.view',
+    'portal.access',
+    'contracts.read',
     'contracts.create',
-    'contracts.edit',
+    'contracts.update',
     'contracts.delete',
-    'contracts.export',
-    'certificates.view',
-    'certificates.create',
-    'certificates.print_test',
+    'annexes.read',
+    'annexes.create',
+    'annexes.update',
+    'annexes.delete',
+    'catalogue.upload',
+    'works.read',
+    'works.import',
     'reports.view',
     'reports.export',
-    'search.view',
-    'ai.view']
+    'admin.users.manage',
+    'admin.data.manage',
+    'youtube.cookies.manage']
 
   },
   staff: {
@@ -72,13 +75,16 @@ export const ROLE_DEFS = {
     description:
     'Nhân viên nhập liệu và xử lý hợp đồng trong domain được phân quyền.',
     permissions: [
-    'dashboard.view',
-    'contracts.view',
+    'portal.access',
+    'contracts.read',
     'contracts.create',
-    'contracts.edit',
-    'certificates.view',
-    'certificates.create',
-    'search.view']
+    'annexes.read',
+    'catalogue.upload',
+    'works.read',
+    'works.import',
+    'reports.view',
+    'admin.users.manage',
+    'youtube.cookies.manage']
 
   }
 };

@@ -15,6 +15,9 @@ import {
   exportContractsExcel,
   exportExpiringContractsExcel,
   exportRevenueExcel,
+  exportSignedContractsExcel,
+  exportPendingContractsExcel,
+  exportFullDataExcel,
   type ExportContractsParams,
   type ExportExpiringParams,
   type ExportRevenueParams,
@@ -22,7 +25,7 @@ import {
 import { TOKEN_KEY } from '../../lib/authClient';
 
 // Report types that are SUPPORTED for export
-type SupportedReportType = 'contracts' | 'expiring' | 'revenue';
+type SupportedReportType = 'contracts' | 'expiring' | 'revenue' | 'signed' | 'pending' | 'full_data';
 
 // Full report type enum (includes unsupported types)
 type ReportType =
@@ -33,7 +36,8 @@ type ReportType =
   | 'employee'
   | 'signed'
   | 'pending'
-  | 'gcn';
+  | 'gcn'
+  | 'full_data';
 
 type ReportFormat = 'excel' | 'pdf' | 'word';
 
@@ -65,6 +69,12 @@ const REPORT_TYPE_OPTIONS: ReportOption[] = [
     supportedFormats: ['excel'],
   },
   {
+    value: 'full_data',
+    label: 'Xuất dữ liệu đầy đủ',
+    supported: true,
+    supportedFormats: ['excel'],
+  },
+  {
     value: 'summary',
     label: 'Báo cáo tổng hợp',
     supported: false,
@@ -81,16 +91,14 @@ const REPORT_TYPE_OPTIONS: ReportOption[] = [
   {
     value: 'signed',
     label: 'Hợp đồng đã ký',
-    supported: false,
-    disabledReason: 'Đang phát triển',
-    supportedFormats: [],
+    supported: true,
+    supportedFormats: ['excel'],
   },
   {
     value: 'pending',
     label: 'Hợp đồng chưa ký',
-    supported: false,
-    disabledReason: 'Đang phát triển',
-    supportedFormats: [],
+    supported: true,
+    supportedFormats: ['excel'],
   },
   {
     value: 'gcn',
@@ -134,6 +142,9 @@ export interface ExportReportDialogProps {
   contractsFilters?: ExportContractsParams;
   expiringFilters?: ExportExpiringParams;
   revenueFilters?: ExportRevenueParams;
+  signedFilters?: { scope?: string; year?: number; employee?: string; field?: string };
+  pendingFilters?: { year?: number; employee?: string; field?: string };
+  fullDataFilters?: { year?: number; domain?: string; date_from?: string; date_to?: string };
   defaultType?: ReportType;
   timeLabel?: string;
 }
@@ -144,6 +155,9 @@ export function ExportReportDialog({
   contractsFilters = {},
   expiringFilters = {},
   revenueFilters = {},
+  signedFilters = {},
+  pendingFilters = {},
+  fullDataFilters = {},
   defaultType = 'contracts',
 }: ExportReportDialogProps) {
   const [reportType, setReportType] = useState<ReportType>(defaultType);
@@ -207,6 +221,15 @@ export function ExportReportDialog({
         case 'revenue':
           await exportRevenueExcel(token, revenueFilters);
           break;
+        case 'signed':
+          await exportSignedContractsExcel(token, signedFilters);
+          break;
+        case 'pending':
+          await exportPendingContractsExcel(token, pendingFilters);
+          break;
+        case 'full_data':
+          await exportFullDataExcel(token, fullDataFilters);
+          break;
         default:
           setError('Loại báo cáo chưa được hỗ trợ.');
           return;
@@ -218,7 +241,7 @@ export function ExportReportDialog({
     } finally {
       setIsExporting(false);
     }
-  }, [reportType, format, isSupported, supportedFormats, currentReport, contractsFilters, expiringFilters, revenueFilters, onClose]);
+  }, [reportType, format, isSupported, supportedFormats, currentReport, contractsFilters, expiringFilters, revenueFilters, signedFilters, pendingFilters, fullDataFilters, onClose]);
 
   if (!open) return null;
 
@@ -237,11 +260,11 @@ export function ExportReportDialog({
         role="dialog"
         aria-modal="true"
         aria-label="Xuất báo cáo"
-        className="relative w-full max-w-4xl max-h-[90vh] bg-zinc-50 rounded-2xl ring-1 ring-zinc-900/[0.06] shadow-2xl shadow-zinc-950/30 overflow-hidden flex flex-col"
+        className="relative w-full max-w-5xl max-h-[90vh] flex flex-col bg-zinc-50 rounded-2xl ring-1 ring-zinc-900/[0.06] shadow-2xl shadow-zinc-950/30 overflow-hidden"
         style={{ animation: 'modalIn 220ms cubic-bezier(0.32,0.72,0,1)' }}
       >
-        {/* Premium gradient header */}
-        <header className="relative overflow-hidden text-white">
+        {/* Header - fixed height */}
+        <header className="relative overflow-hidden text-white shrink-0">
           <div
             aria-hidden
             className="absolute inset-0"
@@ -283,16 +306,16 @@ export function ExportReportDialog({
 
         {/* Error message */}
         {error && (
-          <div className="mx-5 mt-3 flex items-center gap-2 px-4 py-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700">
+          <div className="mx-5 mt-2 flex items-center gap-2 px-4 py-2.5 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700 shrink-0">
             <AlertCircleIcon className="h-4 w-4 shrink-0" />
             {error}
           </div>
         )}
 
-        {/* Body */}
-        <div className="flex-1 overflow-y-auto grid grid-cols-1 lg:grid-cols-5 gap-0">
-          {/* Left — options */}
-          <div className="lg:col-span-2 p-5 space-y-5 lg:border-r lg:border-zinc-200 bg-white">
+        {/* Body - scrollable */}
+        <div className="flex-1 min-h-0 flex flex-col lg:flex-row overflow-hidden">
+          {/* Left panel - options */}
+          <aside className="w-full lg:w-72 shrink-0 min-h-0 overflow-y-auto p-4 lg:p-5 space-y-5 lg:border-r lg:border-zinc-200 bg-white">
             {/* Report type */}
             <section>
               <h3 className="text-[11px] font-semibold uppercase tracking-[0.1em] text-zinc-500 mb-2">
@@ -407,30 +430,30 @@ export function ExportReportDialog({
                 <p>{currentReport?.disabledReason}</p>
               </div>
             )}
-          </div>
+          </aside>
 
-          {/* Right — preview */}
-          <div className="lg:col-span-3 p-5 bg-zinc-100/50">
-            <h3 className="text-[11px] font-semibold uppercase tracking-[0.1em] text-zinc-500 mb-2">
-              4. Xem trước báo cáo
+          {/* Right panel - preview */}
+          <main className="flex-1 min-h-0 overflow-y-auto p-4 lg:p-5 bg-zinc-100/50">
+            <h3 className="text-[11px] font-semibold uppercase tracking-[0.1em] text-zinc-500 mb-2 sticky top-0 bg-zinc-100/50 py-1">
+              3. Xem trước báo cáo
             </h3>
             <div className="bg-white rounded-xl ring-1 ring-zinc-900/[0.06] shadow-[0_1px_2px_rgba(15,15,25,0.04),0_8px_24px_rgba(15,15,25,0.06)] overflow-hidden">
-              {/* Document header — formal */}
-              <div className="px-6 py-5 border-b border-zinc-200 text-center">
+              {/* Document header */}
+              <div className="px-5 py-4 border-b border-zinc-200 text-center">
                 <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-zinc-700">
                   Trung tâm Bảo vệ Quyền tác giả Âm nhạc Việt Nam
                 </p>
-                <div className="mt-1 mx-auto w-12 h-px bg-zinc-300" />
-                <h4 className="mt-3 text-base font-bold text-zinc-900 uppercase tracking-tight">
+                <div className="mt-1 mx-auto w-10 h-px bg-zinc-300" />
+                <h4 className="mt-2 text-sm font-bold text-zinc-900 uppercase tracking-tight">
                   {reportTitle}
                 </h4>
-                <p className="mt-1 text-[12px] text-zinc-600">
+                <p className="mt-0.5 text-[12px] text-zinc-600">
                   {isSupported ? 'Xuất Excel (.xlsx)' : 'Chưa hỗ trợ'}
                 </p>
               </div>
 
               {/* Info panel */}
-              <div className="px-6 py-3 border-b border-zinc-100 grid grid-cols-3 gap-3 text-[11px]">
+              <div className="px-5 py-3 border-b border-zinc-100 grid grid-cols-3 gap-3 text-[11px]">
                 <div>
                   <span className="block text-zinc-500">Định dạng</span>
                   <span className="font-semibold text-zinc-900">
@@ -450,11 +473,11 @@ export function ExportReportDialog({
               </div>
 
               {/* Preview content */}
-              <div className="px-6 py-5">
+              <div className="px-5 py-4">
                 {isSupported ? (
-                  <div className="space-y-3">
+                  <div className="space-y-2">
                     <div className="flex items-center gap-3 text-sm text-zinc-600">
-                      <FileSpreadsheetIcon className="h-8 w-8 text-emerald-600" />
+                      <FileSpreadsheetIcon className="h-7 w-7 text-emerald-600 shrink-0" />
                       <div>
                         <p className="font-medium text-zinc-900">File Excel sẽ bao gồm:</p>
                         <ul className="mt-1 text-xs text-zinc-500 space-y-0.5">
@@ -482,14 +505,39 @@ export function ExportReportDialog({
                               <li>• Sheet Theo năm: doanh thu theo năm</li>
                             </>
                           )}
+                          {reportType === 'signed' && (
+                            <>
+                              <li>• Danh sách hợp đồng đã ký</li>
+                              <li>• Thông tin: Số HĐ, đơn vị, lĩnh vực</li>
+                              <li>• Ngày ký, thời hạn, giá trị</li>
+                              <li>• Trạng thái GCN, nhân viên phụ trách</li>
+                            </>
+                          )}
+                          {reportType === 'pending' && (
+                            <>
+                              <li>• Danh sách hợp đồng chưa ký</li>
+                              <li>• Thông tin: Số HĐ, đơn vị, lĩnh vực</li>
+                              <li>• Phân loại: thiếu tài chính, chờ tái ký</li>
+                              <li>• Nhân viên phụ trách, ngày ký</li>
+                            </>
+                          )}
+                          {reportType === 'full_data' && (
+                            <>
+                              <li>• Xuất toàn bộ dữ liệu hợp đồng</li>
+                              <li>• STT, Tên đơn vị, Địa chỉ</li>
+                              <li>• Bảng hiệu, Số điện thoại</li>
+                              <li>• Số tiền trước thuế</li>
+                              <li>• Dòng tổng cộng ở cuối file</li>
+                            </>
+                          )}
                         </ul>
                       </div>
                     </div>
                   </div>
                 ) : (
-                  <div className="text-center py-8">
-                    <div className="h-12 w-12 mx-auto mb-3 rounded-full bg-zinc-100 flex items-center justify-center">
-                      <AlertCircleIcon className="h-6 w-6 text-zinc-400" />
+                  <div className="text-center py-6">
+                    <div className="h-10 w-10 mx-auto mb-2 rounded-full bg-zinc-100 flex items-center justify-center">
+                      <AlertCircleIcon className="h-5 w-5 text-zinc-400" />
                     </div>
                     <p className="text-sm text-zinc-500">
                       Báo cáo này chưa được hỗ trợ xuất.
@@ -501,11 +549,11 @@ export function ExportReportDialog({
                 )}
               </div>
             </div>
-          </div>
+          </main>
         </div>
 
-        {/* Footer */}
-        <footer className="px-5 py-3 border-t border-zinc-200 bg-white flex items-center justify-end gap-2">
+        {/* Footer - fixed at bottom */}
+        <footer className="px-5 py-3 border-t border-zinc-200 bg-white shrink-0 flex items-center justify-end gap-2">
           <Button variant="ghost" onClick={onClose} disabled={isExporting}>
             Hủy
           </Button>

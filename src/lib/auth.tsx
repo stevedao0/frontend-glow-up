@@ -144,6 +144,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const hasPermission = (perm: string) => {
     if (!currentUser) return false;
+    // Use backend permissions from API (includes role defaults + per-user overrides)
+    if (currentUser.backendPermissions.length > 0) {
+      return currentUser.backendPermissions.includes(perm);
+    }
+    // Fallback to static ROLE_DEFS if backend permissions not loaded yet
     const perms = rolePermissions[currentUser.role] || [];
     return perms.includes(perm);
   };

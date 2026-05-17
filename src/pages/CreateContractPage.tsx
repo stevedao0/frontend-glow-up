@@ -222,9 +222,19 @@ export function CreateContractPage({
       : createDefaultContractDraft();
     // Auto-fill assignee from logged-in user
     if (currentUser) {
+      // Match against known assignee keys (normalize whitespace and case)
+      const nameMap: Record<string, string> = {
+        'Tuan': 'Tuan',
+        'Tuấn': 'Tuan',
+        'Admin': 'Admin',
+        'Nhan vien 1': 'Nhan vien 1',
+        'Nhân viên 1': 'Nhan vien 1',
+      };
+      const rawName = currentUser.name || currentUser.email || '';
+      const normalized = nameMap[rawName] || rawName;
       baseDraft.assignee = {
-        name: currentUser.full_name || currentUser.email || '',
-        email: currentUser.email || '',
+        name: normalized,
+        email: CREATE_CONTRACT_ASSIGNEE_EMAILS[normalized] || currentUser.email || '',
       };
     }
     // Default signedDate to today if not set
@@ -1933,35 +1943,20 @@ export function CreateContractPage({
                 <h4 className="text-xs font-semibold uppercase tracking-[0.1em] text-zinc-500 mb-3">
                   Người thực hiện
                 </h4>
-                <FieldGrid>
-                  <Select
-                    label="Người thực hiện"
-                    value={draft.assignee.name}
-                    onChange={(value) =>
-                      updateDraft((current) => ({
-                        ...current,
-                        assignee: {
-                          name: value,
-                          email: CREATE_CONTRACT_ASSIGNEE_EMAILS[value] || '',
-                        },
-                      }))
-                    }
-                    options={CREATE_CONTRACT_ASSIGNEE_OPTIONS}
-                  />
-                  <Input
-                    label="Email người thực hiện"
-                    type="email"
-                    value={draft.assignee.email}
-                    onChange={(e) =>
-                      updateDraft((current) => ({
-                        ...current,
-                        assignee: { ...current.assignee, email: e.target.value },
-                      }))
-                    }
-                    disabled
-                    hint="Tự động điền theo người thực hiện"
-                  />
-                </FieldGrid>
+                <Select
+                  label="Người thực hiện"
+                  value={draft.assignee.name}
+                  onChange={(value) =>
+                    updateDraft((current) => ({
+                      ...current,
+                      assignee: {
+                        name: value,
+                        email: CREATE_CONTRACT_ASSIGNEE_EMAILS[value] || '',
+                      },
+                    }))
+                  }
+                  options={CREATE_CONTRACT_ASSIGNEE_OPTIONS}
+                />
               </div>
             </div>
           </FormSection>

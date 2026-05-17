@@ -57,7 +57,7 @@ export function ContractEditPage({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const { hasPermission } = useAuth();
-  const canEdit = hasPermission('contracts.edit');
+  const canEdit = hasPermission('contracts.update');
   const [detail, setDetail] = useState<ApiContractDetail | null>(null);
 
   // Editable form state
@@ -204,7 +204,7 @@ export function ContractEditPage({
         description="Chinh sua thong tin hop dong tren DB chinh (port 5432)."
         actions={
           <div className="flex items-center gap-2">
-            {!hasPermission('contracts.edit') && (
+            {!hasPermission('contracts.update') && (
               <span className="inline-flex items-center gap-1 text-xs text-amber-600 bg-amber-50 px-2 py-1 rounded-md ring-1 ring-amber-600/20">
                 <LockIcon className="h-3.5 w-3.5" />
                 Read-only — Khong co quyen chinh sua

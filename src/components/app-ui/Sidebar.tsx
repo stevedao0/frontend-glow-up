@@ -31,7 +31,7 @@ const TOP: Item[] = [
   key: 'dashboard',
   label: 'Dashboard',
   icon: <LayoutDashboardIcon className="h-[15px] w-[15px]" />,
-  requiredPerm: 'dashboard.view'
+  requiredPerm: 'portal.access'
 }];
 
 const CONTRACTS_CHILDREN: Item[] = [
@@ -39,7 +39,7 @@ const CONTRACTS_CHILDREN: Item[] = [
   key: 'contracts.list',
   label: 'Danh sách hợp đồng',
   icon: <ListIcon className="h-[15px] w-[15px]" />,
-  requiredPerm: 'contracts.view'
+  requiredPerm: 'contracts.read'
 },
 {
   key: 'contracts.create',
@@ -51,13 +51,13 @@ const CONTRACTS_CHILDREN: Item[] = [
   key: 'contracts.gcn',
   label: 'Giấy chứng nhận',
   icon: <AwardIcon className="h-[15px] w-[15px]" />,
-  requiredPerm: 'certificates.view'
+  requiredPerm: 'contracts.read'
 },
 {
   key: 'contracts.print',
   label: 'In GCN',
   icon: <PrinterIcon className="h-[15px] w-[15px]" />,
-  requiredPerm: 'certificates.view'
+  requiredPerm: 'contracts.read'
 }];
 
 const BUSINESS_REST: Item[] = [
@@ -65,13 +65,13 @@ const BUSINESS_REST: Item[] = [
   key: 'annexes',
   label: 'Phụ lục',
   icon: <PaperclipIcon className="h-[15px] w-[15px]" />,
-  requiredPerm: 'contracts.view'
+  requiredPerm: 'annexes.read'
 },
 {
   key: 'dispatch',
   label: 'Công văn',
   icon: <MailIcon className="h-[15px] w-[15px]" />,
-  requiredPerm: 'contracts.view'
+  requiredPerm: 'annexes.read'
 },
 {
   key: 'reports',
@@ -83,7 +83,7 @@ const BUSINESS_REST: Item[] = [
   key: 'search',
   label: 'Tìm kiếm',
   icon: <SearchIcon className="h-[15px] w-[15px]" />,
-  requiredPerm: 'search.view'
+  requiredPerm: 'works.read'
 }];
 
 const SYSTEM: Item[] = [
@@ -91,20 +91,20 @@ const SYSTEM: Item[] = [
   key: 'admin.users',
   label: 'Quản lý người dùng',
   icon: <ShieldIcon className="h-[15px] w-[15px]" />,
-  requiredPerm: 'admin.users.view'
+  requiredPerm: 'admin.users.manage'
 },
 {
   key: 'admin.permissions',
   label: 'Ma trận phân quyền',
   icon: <ShieldIcon className="h-[15px] w-[15px]" />,
-  requiredPerm: 'admin.roles.view'
+  requiredPerm: 'admin.users.manage'
 },
 {
   key: 'assistant',
   label: 'AI Assistant',
   icon: <SparklesIcon className="h-[15px] w-[15px]" />,
   badge: 'Beta',
-  requiredPerm: 'ai.view'
+  requiredPerm: 'portal.access'
 }];
 
 const CONTRACT_KEYS: RouteKey[] = [...CONTRACTS_CHILDREN.map((c) => c.key), 'contracts.detail'];
@@ -217,7 +217,7 @@ export function Sidebar({
           {TOP.map((it) => renderItem(it))}
         </div>
 
-        {hasPermission('contracts.view') &&
+        {hasPermission('contracts.read') &&
         <>
             {groupLabel('Nghiệp vụ')}
             <div className="flex flex-col gap-0.5">

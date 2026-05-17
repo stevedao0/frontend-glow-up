@@ -95,31 +95,24 @@ function AppContent() {
   }
   const renderPage = () => {
     // Permission checks
-    if (route === 'contracts.list' && !hasPermission('contracts.view'))
+    if (route === 'contracts.list' && !hasPermission('contracts.read'))
     return (
       <AccessDenied
-        requiredPermission="contracts.view"
+        requiredPermission="contracts.read"
         onBack={() => setRoute('dashboard')} />);
 
 
-    if (route === 'contracts.detail' && !hasPermission('contracts.view'))
+    if (route === 'contracts.detail' && !hasPermission('contracts.read'))
     return (
       <AccessDenied
-        requiredPermission="contracts.view"
+        requiredPermission="contracts.read"
         onBack={() => setRoute('dashboard')} />);
 
-    if (route === 'contracts.edit' && !hasPermission('contracts.view'))
+    if (route === 'contracts.edit' && !hasPermission('contracts.update'))
     return (
       <AccessDenied
-        requiredPermission="contracts.view"
+        requiredPermission="contracts.update"
         onBack={() => setRoute('contracts.list')} />);
-
-
-    if (route === 'contracts.gcn' && !hasPermission('certificates.view'))
-    return (
-      <AccessDenied
-        requiredPermission="certificates.view"
-        onBack={() => setRoute('dashboard')} />);
 
 
     if (route === 'reports' && !hasPermission('reports.view'))
@@ -129,31 +122,31 @@ function AppContent() {
         onBack={() => setRoute('dashboard')} />);
 
 
-    if (route === 'search' && !hasPermission('search.view'))
+    if (route === 'search' && !hasPermission('works.read'))
     return (
       <AccessDenied
-        requiredPermission="search.view"
+        requiredPermission="works.read"
         onBack={() => setRoute('dashboard')} />);
 
 
-    if (route === 'admin.users' && !hasPermission('admin.users.view'))
+    if (route === 'admin.users' && !hasPermission('admin.users.manage'))
     return (
       <AccessDenied
-        requiredPermission="admin.users.view"
+        requiredPermission="admin.users.manage"
         onBack={() => setRoute('dashboard')} />);
 
 
-    if (route === 'admin.permissions' && !hasPermission('admin.roles.view'))
+    if (route === 'admin.permissions' && !hasPermission('admin.users.manage'))
     return (
       <AccessDenied
-        requiredPermission="admin.roles.view"
+        requiredPermission="admin.users.manage"
         onBack={() => setRoute('dashboard')} />);
 
 
-    if (route === 'assistant' && !hasPermission('ai.view'))
+    if (route === 'assistant' && !hasPermission('portal.access'))
     return (
       <AccessDenied
-        requiredPermission="ai.view"
+        requiredPermission="portal.access"
         onBack={() => setRoute('dashboard')} />);
 
 
