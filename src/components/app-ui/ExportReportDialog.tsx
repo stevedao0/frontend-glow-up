@@ -249,18 +249,19 @@ export function ExportReportDialog({
   const reportTitle = currentReport?.label ?? 'Báo cáo';
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 overflow-y-auto overscroll-contain">
       <div
-        className="absolute inset-0 bg-zinc-950/40 backdrop-blur-[2px]"
+        className="fixed inset-0 bg-zinc-950/40 backdrop-blur-[2px]"
         style={{ animation: 'fadeIn 180ms ease-out' }}
         onClick={onClose}
       />
 
+      <div className="relative min-h-full flex items-center justify-center p-4">
       <div
         role="dialog"
         aria-modal="true"
         aria-label="Xuất báo cáo"
-        className="relative w-full max-w-5xl max-h-[90vh] flex flex-col bg-zinc-50 rounded-2xl ring-1 ring-zinc-900/[0.06] shadow-2xl shadow-zinc-950/30 overflow-hidden"
+        className="relative w-full max-w-5xl max-h-[calc(100vh-2rem)] my-auto flex flex-col bg-zinc-50 rounded-2xl ring-1 ring-zinc-900/[0.06] shadow-2xl shadow-zinc-950/30 overflow-hidden"
         style={{ animation: 'modalIn 220ms cubic-bezier(0.32,0.72,0,1)' }}
       >
         {/* Header - fixed height */}
