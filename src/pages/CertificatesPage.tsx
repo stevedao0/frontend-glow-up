@@ -339,16 +339,8 @@ export function CertificatesPage({
               >
                 In chính thức ({hasNumber})
               </Button>
-              <Button
-                variant="secondary"
-                size="sm"
-                leftIcon={<FileSpreadsheetIcon className="h-3.5 w-3.5" />}
-                disabled
-                title="Xuất Excel — đang phát triển"
-              >
-                Xuất Excel
-              </Button>
             </div>
+
             <div className="flex-1" />
             <Button variant="ghost" size="sm" className="text-amber-800" onClick={() => setSelected(new Set())}>
               Bỏ chọn
