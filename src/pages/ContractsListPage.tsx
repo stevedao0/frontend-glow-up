@@ -138,6 +138,13 @@ export function ContractsListPage({
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(30);
   const [reloadTick, setReloadTick] = useState(0);
+  // Density toggle (UI only, no API impact)
+  const [density, setDensity] = useState<'compact' | 'mid' | 'detail'>('compact');
+  const cellPad = density === 'compact' ? 'px-3 py-1.5' : density === 'mid' ? 'px-4 py-2.5' : 'px-4 py-3.5';
+  const firstCellPad = density === 'compact' ? 'pl-4 pr-2 py-1.5' : density === 'mid' ? 'pl-5 pr-2 py-2.5' : 'pl-5 pr-2 py-3.5';
+  const unitClamp = density === 'compact' ? 'line-clamp-1' : 'line-clamp-2';
+  const addrClamp = density === 'compact' ? 'line-clamp-1' : 'line-clamp-2';
+  const areasShown = density === 'detail' ? 2 : 1;
 
   // Action modal state (Xuất Word / Xem dữ liệu GCN / Xóa)
   const [actionModal, setActionModal] = useState<{
