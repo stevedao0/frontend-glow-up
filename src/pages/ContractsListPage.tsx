@@ -138,6 +138,13 @@ export function ContractsListPage({
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(30);
   const [reloadTick, setReloadTick] = useState(0);
+  // Density toggle (UI only, no API impact)
+  const [density, setDensity] = useState<'compact' | 'mid' | 'detail'>('compact');
+  const cellPad = density === 'compact' ? 'px-3 py-1.5' : density === 'mid' ? 'px-4 py-2.5' : 'px-4 py-3.5';
+  const firstCellPad = density === 'compact' ? 'pl-4 pr-2 py-1.5' : density === 'mid' ? 'pl-5 pr-2 py-2.5' : 'pl-5 pr-2 py-3.5';
+  const unitClamp = density === 'compact' ? 'line-clamp-1' : 'line-clamp-2';
+  const addrClamp = density === 'compact' ? 'line-clamp-1' : 'line-clamp-2';
+  const areasShown = density === 'detail' ? 2 : 1;
 
   // Action modal state (Xuất Word / Xem dữ liệu GCN / Xóa)
   const [actionModal, setActionModal] = useState<{
@@ -640,11 +647,31 @@ export function ContractsListPage({
           icon={<XCircleIcon className="h-5 w-5" />} /> :
 
 
-        <div className="overflow-x-auto">
+        <>
+        <div className="flex items-center justify-between px-4 py-2 border-b border-zinc-100 bg-zinc-50/40">
+            <span className="text-[12px] text-zinc-500">
+              {formatNumber(totalRows)} dòng hiển thị · trang {page}/{Math.max(totalPages, 1)}
+            </span>
+            <div className="inline-flex rounded-md ring-1 ring-zinc-200 bg-white overflow-hidden text-[12px]">
+              {(['compact','mid','detail'] as const).map((d) => (
+                <button
+                  key={d}
+                  type="button"
+                  onClick={() => setDensity(d)}
+                  className={`px-2.5 py-1 transition-colors ${density === d ? 'bg-amber-100 text-amber-900 font-semibold' : 'text-zinc-600 hover:bg-zinc-50'}`}
+                  aria-pressed={density === d}
+                >
+                  {d === 'compact' ? 'Gọn' : d === 'mid' ? 'Vừa' : 'Chi tiết'}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="overflow-auto max-h-[72vh]">
             <table className="w-full text-sm">
-              <thead>
-                <tr className="bg-gradient-to-b from-amber-50/40 via-zinc-50 to-zinc-50/30 border-b border-zinc-200">
-                  <th className="w-10 pl-5 pr-2 py-3.5">
+              <thead className="sticky top-0 z-10">
+                <tr className="bg-gradient-to-b from-amber-50 via-zinc-50 to-zinc-50 border-b border-zinc-200 shadow-[0_1px_0_0_rgba(0,0,0,0.04)]">
+                  <th className={`w-10 ${firstCellPad}`}>
                     <Checkbox
                     checked={allSelected}
                     indeterminate={someSelected}
@@ -676,17 +703,23 @@ export function ContractsListPage({
                 renewalKey === 'RENEWED' ?
                 'success' :
                 'neutral';
+                const areas = r.music_usage_areas ?? [];
+                const areaTooltip = areas.length > 0
+                  ? areas.map((a, i) =>
+                      `${i + 1}. ${a.area_name || '(không có tên)'}${a.scale_description ? ` — ${a.scale_description}` : ''}${a.music_usage_type ? ` · ${a.music_usage_type}` : ''}`
+                    ).join('\n')
+                  : '';
                 return (
                   <tr
                     key={r.id}
                     onClick={() => onOpenDetail(r.id)}
-                    className={`group/row relative border-b border-zinc-100 last:border-0 transition-all cursor-pointer ${isSelected ? 'bg-amber-50/60 hover:bg-amber-50/80' : 'hover:bg-amber-50/40 hover:shadow-[inset_0_1px_0_rgba(99,102,241,0.06),inset_0_-1px_0_rgba(99,102,241,0.06)]'}`}>
+                    className={`group/row relative border-b border-zinc-100 last:border-0 transition-all cursor-pointer ${isSelected ? 'bg-amber-50/60 hover:bg-amber-50/80' : 'hover:bg-amber-50/40'}`}>
                     
                       {/* Selection cell + left bar */}
-                      <td className="relative pl-5 pr-2 py-3.5 align-top">
+                      <td className={`relative ${firstCellPad} align-top`}>
                         <span
                         aria-hidden
-                        className={`absolute left-0 top-0 bottom-0 w-[3px] bg-gradient-to-b from-amber-500 to-amber-500 transition-opacity ${isSelected ? 'opacity-100 shadow-[0_0_8px_rgba(129,140,248,0.5)]' : 'opacity-0 group-hover/row:opacity-90'}`} />
+                        className={`absolute left-0 top-0 bottom-0 w-[3px] bg-amber-500 transition-opacity ${isSelected ? 'opacity-100' : 'opacity-0 group-hover/row:opacity-90'}`} />
                       
                         <Checkbox
                         checked={isSelected}
@@ -696,7 +729,7 @@ export function ContractsListPage({
                       </td>
 
                       {/* Contract no — link style */}
-                      <td className="px-4 py-3.5 align-top whitespace-nowrap">
+                      <td className={`${cellPad} align-top whitespace-nowrap`}>
                         <button
                         type="button"
                         onClick={(e) => {
@@ -710,14 +743,14 @@ export function ContractsListPage({
                       </td>
 
                       {/* Đơn vị + bảng hiệu */}
-                      <td className="px-4 py-3.5 align-top max-w-[280px]">
+                      <td className={`${cellPad} align-top max-w-[260px]`}>
                         <p
-                        className="text-[14px] font-semibold text-zinc-900 leading-snug line-clamp-2"
+                        className={`text-[13px] font-semibold text-zinc-900 leading-snug ${unitClamp}`}
                         title={r.don_vi_ten}>
                         
                           {r.don_vi_ten}
                         </p>
-                        {r.ten_bang_hieu &&
+                        {r.ten_bang_hieu && density !== 'compact' &&
                       <p
                         className="mt-0.5 text-[12px] text-zinc-500 truncate"
                         title={r.ten_bang_hieu}>
@@ -728,105 +761,90 @@ export function ContractsListPage({
                       </td>
 
                       {/* Địa chỉ */}
-                      <td className="px-4 py-3.5 align-top max-w-[260px]">
+                      <td className={`${cellPad} align-top max-w-[240px]`}>
                         <p
-                        className="text-[12.5px] text-zinc-600 leading-snug line-clamp-2"
+                        className={`text-[12.5px] text-zinc-600 leading-snug ${addrClamp}`}
                         title={r.dia_chi_su_dung}>
                         
                           {r.dia_chi_su_dung}
                         </p>
                       </td>
 
-                      {/* Lĩnh vực */}
-                      <td className="px-4 py-3.5 align-top">
+                      {/* Lĩnh vực — summarized */}
+                      <td className={`${cellPad} align-top max-w-[220px]`}>
                         <div className="flex flex-col gap-1">
                           <span className="text-zinc-700 text-[13px] font-medium">
                             {r.linh_vuc_hien_thi}
                           </span>
-                          {r.music_usage_areas && r.music_usage_areas.length > 0 ? (
-                            <>
-                              {r.music_usage_areas.slice(0, 2).map((area, idx) => (
+                          {areas.length > 0 ? (
+                            <div className="flex flex-wrap items-center gap-1">
+                              {areas.slice(0, areasShown).map((area, idx) => {
+                                const label =
+                                  area.area_name ||
+                                  area.scale_description ||
+                                  area.music_usage_type ||
+                                  '—';
+                                return (
+                                  <span
+                                    key={idx}
+                                    className="inline-flex items-center px-1.5 py-0.5 rounded text-[11px] text-zinc-600 bg-zinc-100 ring-1 ring-inset ring-zinc-900/5 max-w-[180px] truncate"
+                                    title={`${area.area_name || ''}${area.scale_description ? ' — ' + area.scale_description : ''}${area.music_usage_type ? ' · ' + area.music_usage_type : ''}`}
+                                  >
+                                    {label}
+                                  </span>
+                                );
+                              })}
+                              {areas.length > areasShown && (
                                 <span
-                                  key={idx}
-                                  className="inline-flex flex-wrap items-center gap-x-1 gap-y-0.5 text-[11px] text-zinc-600 leading-snug"
+                                  className="inline-flex items-center px-1.5 py-0.5 rounded text-[10.5px] font-medium bg-amber-50 text-amber-700 ring-1 ring-inset ring-amber-600/20 cursor-help"
+                                  title={areaTooltip}
                                 >
-                                  {area.scale_description && (
-                                    <span className="font-medium text-zinc-700">
-                                      {area.scale_description}
-                                    </span>
-                                  )}
-                                  {area.area_name && (
-                                    <span className="text-zinc-400">·</span>
-                                  )}
-                                  {area.area_name && (
-                                    <span className="text-zinc-500">{area.area_name}</span>
-                                  )}
-                                  {area.music_usage_type && (
-                                    <>
-                                      <span className="text-zinc-400">·</span>
-                                      <span className="text-zinc-500">{area.music_usage_type}</span>
-                                    </>
-                                  )}
-                                </span>
-                              ))}
-                              {r.music_usage_areas.length > 2 && (
-                                <span
-                                  className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[10.5px] font-medium bg-amber-50 text-amber-700 ring-1 ring-inset ring-amber-600/20 self-start cursor-help"
-                                  title={r.music_usage_areas.slice(2).map(
-                                    (a, i) =>
-                                      `${i + 3}. ${a.area_name || '(không có tên)'}${
-                                        a.scale_description ? ` — ${a.scale_description}` : ''
-                                      }${a.music_usage_type ? ` · ${a.music_usage_type}` : ''}`,
-                                  ).join('\n')}
-                                >
-                                  +{r.music_usage_areas.length - 2} khu vực
+                                  +{areas.length - areasShown} khu vực
                                 </span>
                               )}
-                            </>
+                              <button
+                                type="button"
+                                onClick={(e) => { e.stopPropagation(); onOpenDetail(r.id); }}
+                                className="text-[11px] text-amber-700 hover:text-amber-900 hover:underline"
+                              >
+                                Xem chi tiết
+                              </button>
+                            </div>
                           ) : (
-                            <>
-                              {r.loai_hinh_karaoke && (
-                                <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[10.5px] font-medium bg-zinc-100 text-zinc-700 ring-1 ring-inset ring-zinc-900/5 self-start">
-                                  {r.loai_hinh_karaoke}
-                                  {r.tong_so_phong != null && (
-                                    <>
-                                      <span className="text-zinc-400">·</span>
-                                      <span className="tabular-nums font-semibold">
-                                        {r.tong_so_phong} phòng
-                                      </span>
-                                    </>
-                                  )}
-                                </span>
-                              )}
-                            </>
+                            r.loai_hinh_karaoke && (
+                              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10.5px] font-medium bg-zinc-100 text-zinc-700 ring-1 ring-inset ring-zinc-900/5 self-start">
+                                {r.loai_hinh_karaoke}
+                                {r.tong_so_phong != null && (
+                                  <>
+                                    <span className="text-zinc-400">·</span>
+                                    <span className="tabular-nums font-semibold">
+                                      {r.tong_so_phong} phòng
+                                    </span>
+                                  </>
+                                )}
+                              </span>
+                            )
                           )}
                         </div>
                       </td>
 
                       {/* Ngày lập */}
-                      <td className="px-4 py-3.5 align-top text-zinc-700 tabular-nums whitespace-nowrap text-[13px]">
+                      <td className={`${cellPad} align-top text-zinc-700 tabular-nums whitespace-nowrap text-[13px]`}>
                         {formatDate(r.ngay_lap_hop_dong)}
                       </td>
 
                       {/* Hiệu lực */}
-                      <td className="px-4 py-3.5 align-top whitespace-nowrap">
+                      <td className={`${cellPad} align-top whitespace-nowrap`}>
                         <p className="text-zinc-700 tabular-nums text-[13px]">
                           {formatDate(r.ngay_bat_dau)}
                         </p>
                         <p className="text-zinc-500 tabular-nums text-[12px]">
                           → {formatDate(r.ngay_ket_thuc)}
                         </p>
-                        {exp.status === 'expiring' &&
-                      <span className="inline-flex mt-1">
-                            <StatusBadge tone="warning" dot>
-                              Sắp hết · {exp.daysLeft}d
-                            </StatusBadge>
-                          </span>
-                      }
                       </td>
 
                       {/* Giá trị chưa GTGT */}
-                      <td className="px-4 py-3.5 align-top text-right tabular-nums whitespace-nowrap">
+                      <td className={`${cellPad} align-top text-right tabular-nums whitespace-nowrap`}>
                         {r.royalty_amount_before_vat == null ?
                       <span className="text-zinc-400 italic text-xs">
                             Chưa có
@@ -842,28 +860,36 @@ export function ContractsListPage({
                       }
                       </td>
 
-                      {/* Trạng thái — 2 badges stacked */}
-                      <td className="px-4 py-3.5 align-top">
-                        <div className="flex flex-col gap-1 items-start">
-                          {exp.status === 'active' &&
-                        <StatusBadge tone="success" dot>
-                              Còn hiệu lực
+                      {/* Trạng thái — compact: single primary pill */}
+                      <td className={`${cellPad} align-top`}>
+                        {density === 'compact' ? (
+                          <div className="flex items-center gap-1 flex-wrap" title={`${RENEWAL_LABEL[renewalKey]}${exp.status === 'expiring' ? ` · còn ${exp.daysLeft} ngày` : ''}`}>
+                            {exp.status === 'active' && (
+                              <StatusBadge tone="success" dot>Hiệu lực</StatusBadge>
+                            )}
+                            {exp.status === 'expiring' && (
+                              <StatusBadge tone="warning" dot>Sắp hết · {exp.daysLeft}d</StatusBadge>
+                            )}
+                            {exp.status === 'expired' && (
+                              <StatusBadge tone="danger" dot>Hết hạn</StatusBadge>
+                            )}
+                          </div>
+                        ) : (
+                          <div className="flex flex-col gap-1 items-start">
+                            {exp.status === 'active' && (
+                              <StatusBadge tone="success" dot>Còn hiệu lực</StatusBadge>
+                            )}
+                            {exp.status === 'expiring' && (
+                              <StatusBadge tone="warning" dot>Sắp hết · {exp.daysLeft}d</StatusBadge>
+                            )}
+                            {exp.status === 'expired' && (
+                              <StatusBadge tone="danger" dot>Hết hạn</StatusBadge>
+                            )}
+                            <StatusBadge tone={renewalTone}>
+                              {RENEWAL_LABEL[renewalKey]}
                             </StatusBadge>
-                        }
-                          {exp.status === 'expiring' &&
-                        <StatusBadge tone="warning" dot>
-                              Sắp hết hạn
-                            </StatusBadge>
-                        }
-                          {exp.status === 'expired' &&
-                        <StatusBadge tone="danger" dot>
-                              Hết hạn
-                            </StatusBadge>
-                        }
-                          <StatusBadge tone={renewalTone}>
-                            {RENEWAL_LABEL[renewalKey]}
-                          </StatusBadge>
-                        </div>
+                          </div>
+                        )}
                       </td>
 
                       {/* Actions */}
@@ -926,6 +952,7 @@ export function ContractsListPage({
               </tbody>
             </table>
           </div>
+        </>
         }
 
         {!loading && contracts.length > 0 &&
