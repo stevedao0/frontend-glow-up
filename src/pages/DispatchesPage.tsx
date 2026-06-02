@@ -1175,7 +1175,7 @@ function SettingsTab() {
         <h3 className="text-sm font-medium text-zinc-700 mb-3">Template công văn đang dùng</h3>
         <div className="text-xs text-zinc-500 space-y-1">
           <div><span className="font-medium text-zinc-700">File:</span> cong van_tai ky_karaoke.docx</div>
-          <div><span className="font-medium text-zinc-700">Path:</span> F:\APPs\templates\Background\cong van_tai ky_karaoke.docx</div>
+          
           <div className="mt-2"><span className="font-medium text-zinc-700">Placeholders được hỗ trợ:</span></div>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-1 mt-1">
             {['so_cong_van', 'ngay_ky_cong_van', 'thang_ky_cong_van ', 'nam_ky_cong_van', 'TEN_DON_VI', 'so_hop_dong', 'ngay_ky_hop_dong', 'ngay_het_hieu_luc_HD'].map(p => (
