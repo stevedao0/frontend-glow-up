@@ -198,14 +198,6 @@ export function ContractEditPage({
       }),
     };
 
-    // #region agent log - contract_no trace
-    fetch('http://127.0.0.1:7247/ingest/8a5eb014-b35b-4484-a78b-4d64b93cb08f',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'f8a336'},body:JSON.stringify({sessionId:'f8a336',location:'ContractEditPage.tsx:handleSave',message:'Edit save payload money fields',data:{royalty_amount_before_vat:formData.royalty_amount_before_vat,vat_rate:formData.vat_rate,vat_amount:formData.vat_amount,royalty_amount_after_vat:formData.royalty_amount_after_vat,contract_no:formData.contract_no},timestamp:Date.now(),hypothesisId:'fix_edit'})}).catch(()=>{});
-    // #endregion
-
-    // #region agent log - money flow trace
-    fetch('http://127.0.0.1:7247/ingest/8a5eb014-b35b-4484-a78b-4d64b93cb08f',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'f8a336'},body:JSON.stringify({sessionId:'f8a336',location:'ContractEditPage.tsx:handleSave',message:'Edit save payload money fields',data:{royalty_amount_before_vat:formData.royalty_amount_before_vat,vat_rate:formData.vat_rate,vat_amount:formData.vat_amount,royalty_amount_after_vat:formData.royalty_amount_after_vat},timestamp:Date.now(),hypothesisId:'fix_edit'})}).catch(()=>{});
-    // #endregion
-
     console.log('[ContractEdit] Saving payload:', JSON.stringify(payload, null, 2));
 
     try {
@@ -843,11 +835,7 @@ function mapDetailToForm(detail: ApiContractDetail): EditableContractForm {
     return value;
   }
 
-    // #region agent log - money load trace
-    fetch('http://127.0.0.1:7247/ingest/8a5eb014-b35b-4484-a78b-4d64b93cb08f',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'f8a336'},body:JSON.stringify({sessionId:'f8a336',location:'ContractEditPage.tsx:mapDetailToForm',message:'Edit load money+contract_no from API',data:{royalty_amount_before_vat:detail.royalty_amount_before_vat,vat_rate:detail.vat_rate,vat_amount:detail.vat_amount,royalty_amount_after_vat:detail.royalty_amount_after_vat,legacy_amount_before_gtgt:detail.financial?.amount_before_gtgt,legacy_gtgt_percent:detail.financial?.gtgt_percent,legacy_total:detail.financial?.total_amount,contract_no:detail.contract_no},timestamp:Date.now(),hypothesisId:'fix_edit_load'})}).catch(()=>{});
-    // #endregion
-
-    return {
+  return {
     contract_no: detail.contract_no || '',
     ngay_lap_hop_dong: toDateInputValue(detail.dates?.signed_date),
     contract_year: detail.contract_year ?? null,
