@@ -301,8 +301,8 @@ export function PermissionsPage() {
 
       <PageHeader
         breadcrumb="/admin/permissions"
-        title="Phân quyền người dùng"
-        description="Chọn người dùng để chỉnh sửa role, quyền và phạm vi domain."
+        title="Phân quyền"
+        description="Kiểm soát truy cập theo module, hành động và phạm vi domain cho từng người dùng."
         actions={
           <>
             {isDirty && (
