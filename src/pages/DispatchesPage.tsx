@@ -195,9 +195,6 @@ function RenewalContractsTab({ onNavigate }: { onNavigate: () => void }) {
   useEffect(() => { setPage(1); }, [yearFilter, monthFilter, statusFilter]);
 
   const toggleAll = () => {
-    // #region DEBUG bb0769
-    _pageLog('TOGGLE_ALL_CLICK', { beforeCount: selected.size, filteredCount: filtered.length });
-    // #endregion
     if (selected.size === filtered.length) {
       setSelected(new Set());
     } else {
