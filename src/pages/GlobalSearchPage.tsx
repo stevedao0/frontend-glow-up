@@ -412,27 +412,20 @@ export function GlobalSearchPage({ onNavigate, onOpenDetail }: GlobalSearchPageP
           />
         </div>
 
-        {/* Scope Tabs */}
+        {/* Scope Tabs — only real types from API */}
         <div className="flex flex-wrap gap-2 mb-5">
-          {SCOPE_OPTIONS.map((option) => (
+          {SCOPE_OPTIONS.filter((o) => !o.disabled).map((option) => (
             <button
               key={option.value}
               type="button"
-              onClick={() => !option.disabled && setScope(option.value)}
-              disabled={option.disabled}
-              title={option.disabled ? option.disabledReason : undefined}
-              className={`px-4 py-2 rounded-lg text-[13px] font-medium transition-all ${
+              onClick={() => setScope(option.value)}
+              className={`px-3.5 py-1.5 rounded-lg text-[12px] font-medium transition-all ${
                 scope === option.value
                   ? 'bg-amber-600 text-white shadow-sm'
-                  : option.disabled
-                  ? 'bg-zinc-100 text-zinc-400 cursor-not-allowed'
                   : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200'
               }`}
             >
               {option.label}
-              {option.disabled && (
-                <span className="ml-1.5 text-[10px] opacity-60">🔒</span>
-              )}
             </button>
           ))}
         </div>
