@@ -521,32 +521,33 @@ export function DashboardPage({
         </ContentCard>
       </div>
 
-      {/* Recent contracts — hidden since we no longer have recent contracts data in summary */}
+      {/* Quick actions — real navigation only */}
       <ContentCard
-        title="Hợp đồng gần đây"
-        description="Xem từ trang danh sách hợp đồng"
-        padded={false}
-        actions={
-          <Button
-            variant="secondary"
-            size="sm"
-            rightIcon={<ArrowRightIcon className="h-3.5 w-3.5" />}
-            onClick={() => onNavigate('contracts.list')}
-          >
-            Xem danh sách
-          </Button>
-        }
+        title="Thao tác nhanh"
+        description="Đi tới các trang nghiệp vụ chính"
+        accent
       >
-        <div className="py-12 text-center text-sm text-zinc-400">
-          Xem hợp đồng tại trang{' '}
-          <button
-            className="text-amber-700 hover:underline"
-            onClick={() => onNavigate('contracts.list')}
-          >
-            Danh sách hợp đồng
-          </button>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
+          {[
+            { label: 'Tạo hợp đồng', icon: FilePlusIcon, route: 'contracts.create' as RouteKey },
+            { label: 'Danh sách HĐ', icon: ListIcon, route: 'contracts.list' as RouteKey },
+            { label: 'Giấy chứng nhận', icon: AwardIcon, route: 'certificates' as RouteKey },
+            { label: 'In GCN', icon: PrinterIcon, route: 'contracts.print' as RouteKey },
+            { label: 'Công văn', icon: MailIcon, route: 'dispatches' as RouteKey },
+            { label: 'Báo cáo', icon: BarChart3Icon, route: 'reports' as RouteKey },
+          ].map((a) => (
+            <button
+              key={a.label}
+              onClick={() => onNavigate(a.route)}
+              className="group flex flex-col items-center justify-center gap-1.5 px-3 py-3 rounded-xl ring-1 ring-zinc-200/80 bg-white hover:bg-amber-50/60 hover:ring-amber-200 transition text-zinc-700 hover:text-amber-800"
+            >
+              <a.icon className="h-4 w-4 opacity-70 group-hover:opacity-100" />
+              <span className="text-xs font-medium tracking-tight">{a.label}</span>
+            </button>
+          ))}
         </div>
       </ContentCard>
     </Page>
   );
 }
+
