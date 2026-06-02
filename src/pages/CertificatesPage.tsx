@@ -4,8 +4,6 @@ import {
   AwardIcon,
   CheckCircle2Icon,
   EyeIcon,
-  FileSpreadsheetIcon,
-  FileTextIcon,
   HashIcon,
   PlusIcon,
   PrinterIcon,
@@ -25,7 +23,6 @@ import { FilterBar, FilterField } from '../components/app-ui/FilterBar';
 import { Pagination } from '../components/app-ui/Pagination';
 import { TableSkeleton } from '../components/app-ui/TableSkeleton';
 import { EmptyState } from '../components/app-ui/EmptyState';
-import { SummaryHero } from '../components/app-ui/SummaryHero';
 import { CertificateQuickView } from '../components/app-ui/CertificateQuickView';
 import {
   CERTIFICATE_STATUS_LABEL,
