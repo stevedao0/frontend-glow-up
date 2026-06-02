@@ -447,7 +447,7 @@ export function ContractsListPage({
     <Page>
       <PageHeader
         breadcrumb="/bg/contracts"
-        title="Danh sách hợp đồng"
+        title="Hợp đồng"
         description="Quản lý hợp đồng Background/Karaoke đã ký, bản nháp và trạng thái hiệu lực."
         actions={
         <>
@@ -455,67 +455,21 @@ export function ContractsListPage({
             variant="secondary"
             leftIcon={<RefreshCwIcon className="h-4 w-4" />}
             onClick={triggerRefresh}>
-            
               Làm mới
-            </Button>
-            <Button
-            variant="secondary"
-            leftIcon={<FileSpreadsheetIcon className="h-4 w-4" />}
-            onClick={() => {}}
-            title="Chua trien khai xuat Excel"
-            disabled>
-
-              Xuất Excel
             </Button>
             <Button
             variant="primary"
             leftIcon={<FilePlusIcon className="h-4 w-4" />}
             onClick={() => {
-              // Pass the first (newest) contract to pre-populate the create form
               if (onCreateNew && contracts.length > 0) {
                 onCreateNew(contracts[0]);
               }
               onNavigate('contracts.create');
             }}>
-            
-              Tạo hợp đồng mới
+              Tạo hợp đồng
             </Button>
           </>
         } />
-      
-
-      <SummaryHero
-        label="Operations Summary · Background"
-        title="Tình trạng vận hành toàn bộ workspace"
-        description="Số liệu tổng hợp hợp đồng Background đến thời điểm hiện tại."
-        stats={[
-        {
-          label: 'Tổng hợp đồng BG',
-          value: statsLoading ? '—' : formatNumber(summaryStats?.totalContracts ?? 0),
-          tone: 'indigo'
-        },
-        {
-          label: 'Còn hiệu lực',
-          value: statsLoading ? '—' : formatNumber(summaryStats?.active ?? 0),
-          tone: 'emerald'
-        },
-        {
-          label: 'Sắp hết 30 ngày',
-          value: statsLoading ? '—' : formatNumber(summaryStats?.expiringIn30Days ?? 0),
-          tone: 'amber'
-        },
-        {
-          label: 'Hết hạn',
-          value: statsLoading ? '—' : formatNumber(summaryStats?.expired ?? 0),
-          tone: 'rose'
-        },
-        {
-          label: 'Chờ tái ký',
-          value: statsLoading ? '—' : formatNumber(summaryStats?.pendingRenewal ?? 0),
-          tone: 'violet'
-        }]
-        } />
-      
 
       <MetricStrip
         items={[
@@ -527,28 +481,29 @@ export function ContractsListPage({
           hint: 'Tất cả thời kỳ'
         },
         {
+          label: 'Đang hiệu lực',
+          value: statsLoading ? '—' : formatNumber(summaryStats?.active ?? 0),
+          tone: 'emerald',
+          icon: <CheckCircle2Icon className="h-4 w-4" />,
+        },
+        {
+          label: 'Sắp hết hạn',
+          value: statsLoading ? '—' : formatNumber(summaryStats?.expiringIn30Days ?? 0),
+          tone: 'amber',
+          icon: <AlertTriangleIcon className="h-4 w-4" />,
+          hint: '≤ 30 ngày'
+        },
+        {
+          label: 'Đã hết hạn',
+          value: statsLoading ? '—' : formatNumber(summaryStats?.expired ?? 0),
+          tone: 'rose',
+          icon: <XCircleIcon className="h-4 w-4" />,
+        },
+        {
           label: 'Hợp đồng 2026',
           value: statsLoading ? '—' : formatNumber(summaryStats?.contracts2026 ?? 0),
           tone: 'violet',
           icon: <CalendarRangeIcon className="h-4 w-4" />,
-          delta: {
-            value: 'Năm hiện tại',
-            tone: 'flat'
-          }
-        },
-        {
-          label: 'Còn hiệu lực',
-          value: statsLoading ? '—' : formatNumber(summaryStats?.active ?? 0),
-          tone: 'emerald',
-          icon: <CheckCircle2Icon className="h-4 w-4" />,
-          hint: '3,6% tổng số'
-        },
-        {
-          label: 'Sắp hết 30 ngày',
-          value: statsLoading ? '—' : formatNumber(summaryStats?.expiringIn30Days ?? 0),
-          tone: 'amber',
-          icon: <AlertTriangleIcon className="h-4 w-4" />,
-          hint: 'Cần xử lý sớm'
         },
         {
           label: 'Doanh thu 2026',
@@ -556,15 +511,12 @@ export function ContractsListPage({
             ? '—'
             : (summaryStats?.revenue2026 ?? 0) > 0
               ? `${(summaryStats!.revenue2026 / 1_000_000_000).toFixed(2)} tỷ`
-              : 'Chưa có',
+              : '—',
           tone: 'cyan',
           icon: <WalletIcon className="h-4 w-4" />,
-          delta: {
-            value: 'Lũy kế năm',
-            tone: 'flat'
-          }
         }]
         } />
+
       
 
       <FilterBar
