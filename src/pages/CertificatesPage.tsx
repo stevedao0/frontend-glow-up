@@ -323,9 +323,9 @@ export function CertificatesPage({
                 variant="secondary"
                 size="sm"
                 leftIcon={<HashIcon className="h-3.5 w-3.5" />}
-                disabled={noNumber === 0}
-                title={noNumber === 0 ? 'Không có GCN nào chưa được cấp số trong lựa chọn' : ''}
-                onClick={() => alert(`Cấp số cho ${noNumber} GCN — chức năng đang phát triển.`)}
+                onClick={() => {}}
+                disabled={true}
+                title="Chưa hỗ trợ cấp số hàng loạt"
               >
                 Cấp số GCN ({noNumber})
               </Button>
@@ -333,9 +333,9 @@ export function CertificatesPage({
                 variant="secondary"
                 size="sm"
                 leftIcon={<CheckCircle2Icon className="h-3.5 w-3.5" />}
-                disabled={hasNumber === 0}
-                title={hasNumber === 0 ? 'Không có GCN nào có số để in chính thức' : ''}
-                onClick={() => alert(`In chính thức ${hasNumber} GCN — chức năng đang phát triển.`)}
+                onClick={() => {}}
+                disabled={true}
+                title="Chưa hỗ trợ in hàng loạt"
               >
                 In chính thức ({hasNumber})
               </Button>
