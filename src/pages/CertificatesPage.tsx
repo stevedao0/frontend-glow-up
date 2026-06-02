@@ -532,9 +532,6 @@ export function CertificatesPage({
           setQuickView(null);
           setDetailView({ id: record.id });
         }}
-        onPrintTest={(record) => {
-          alert(`In thử GCN số ${record.certificate_no || record.contract_no} — chức năng đang phát triển.`);
-        }}
         onPrintFinal={(record) => {
           alert(`In chính thức GCN số ${record.certificate_no || record.contract_no} — chức năng đang phát triển.`);
         }}
