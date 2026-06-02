@@ -2284,6 +2284,9 @@ export function CreateContractPage({
             >
               Hủy
             </Button>
+            <Button variant="ghost" onClick={handleSaveDraft}>
+              Lưu nháp cục bộ
+            </Button>
             <div className="flex-1" />
             <Button
               variant="primary"
@@ -2293,9 +2296,6 @@ export function CreateContractPage({
               title="Tạo hợp đồng chính thức"
             >
               {isCreateLoading ? 'Đang tạo...' : 'Tạo hợp đồng'}
-            </Button>
-            <Button variant="secondary" onClick={handleSaveDraft}>
-              Lưu nháp cục bộ
             </Button>
           </div>
         </div>
