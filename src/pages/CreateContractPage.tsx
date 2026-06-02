@@ -359,8 +359,6 @@ export function CreateContractPage({
   };
 
   const handlePrefillData = (prefillData: PrefillSourceResponse) => {
-    console.log('[CreateContract] handlePrefillData called with:', prefillData);
-
     // Extract domain code from string
     const domainCodeMap: Record<string, import('../lib/contractCreateTypes').BackgroundDomainCode> = {
       'KARAOKE': 'KARAOKE',
@@ -432,7 +430,6 @@ export function CreateContractPage({
     if (!legalFullAddress && usageFullAddress) {
       legalFullAddress = usageFullAddress;
       legalAddressLine = usageAddressLine;
-      console.log('[template-search] WARNING: No real legal address found; using usage_full_address fallback');
     }
 
     // Determine usage_same_as_legal
@@ -480,14 +477,6 @@ export function CreateContractPage({
 
     // Check if it's a karaoke domain
     const isKaraokeDomain = ['KARAOKE', 'PHONG_THU_AM'].includes(prefillData.domain_code || '');
-
-    // Log normalized data
-    console.log('[template-search] Prefill normalized:', {
-      legal_full_address: legalFullAddress,
-      usage_full_address: usageFullAddress,
-      music_usage_areas_count: musicUsageAreas.length,
-      generated_from_room_sections: generatedFromRoomSections,
-    });
 
     updateDraft((current) => {
       // Track old template ID for logging
@@ -597,28 +586,7 @@ export function CreateContractPage({
         },
       };
 
-      // Draft shape validation logging
-      console.log('[CreateContract] draft shape after prefill:', {
-        template_contract_id: prefillData.contract_id,
-        template_contract_no: prefillData.contract_no,
-        validation: {
-          calculationLines_isArray: Array.isArray(newDraft.calculationLines),
-          calculationLines_length: newDraft.calculationLines?.length,
-          musicUsageAreas_isArray: Array.isArray(newDraft.areaBased.musicUsageAreas),
-          musicUsageAreas_length: newDraft.areaBased.musicUsageAreas?.length,
-          roomSections_isArray: Array.isArray(newDraft.karaoke.roomSections),
-          roomSections_length: newDraft.karaoke.roomSections?.length,
-          locations_isArray: Array.isArray(newDraft.areaBased.locations),
-          locations_length: newDraft.areaBased.locations?.length,
-        },
-        draft_legal_name: newDraft.customer.legalName,
-        draft_brand_name: newDraft.customer.brandName,
-        draft_legal_full_address: newDraft.customer.legalFullAddress,
-        draft_usage_full_address: newDraft.location.usageFullAddress,
-        draft_music_usage_areas_count: newDraft.areaBased.musicUsageAreas?.length ?? 0,
-        old_template_contract_id: oldTemplateId,
-        cleared_previous_template_data: true,
-      });
+      updateDraft(() => newDraft);
 
       return newDraft;
     });
@@ -1219,26 +1187,12 @@ export function CreateContractPage({
     setCreateError(null);
     setCreateResult(null);
 
-    console.log("[create-contract] submitting", {
-      contract_no: candidatePayload.contract_no,
-      contract_year: candidatePayload.contract_year,
-      region_code: candidatePayload.region_code,
-      field_code: candidatePayload.field_code,
-    });
-
     try {
       const result = await createAndExportDocx(token, {
         draft,
         client_preflight: candidatePayload,
       });
       setCreateResult(result);
-      console.log("[create-contract] result", {
-        ok: result.ok,
-        mode: result.mode,
-        error_code: result.error_code,
-        contract_no: result.contract_no,
-        message: result.message,
-      });
       if (!result.ok) {
         // Build detailed error message
         let errorMsg = result.message || 'Tạo hợp đồng thất bại.';
@@ -1301,7 +1255,6 @@ export function CreateContractPage({
   // =========================================================================
 
   const handleSaveDraft = () => {
-    console.log('Local create draft only:', draft);
     setIsDirty(false);
   };
 

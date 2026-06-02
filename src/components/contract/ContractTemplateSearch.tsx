@@ -140,9 +140,7 @@ export function ContractTemplateSearch({
         throw new Error('Không tìm thấy token đăng nhập');
       }
 
-      console.log('[template-search] Loading prefill for contract:', contract.id);
       const prefillData = await getContractPrefillSource(token, contract.id);
-      console.log('[template-search] Prefill data received:', prefillData);
 
       setPreviewData(prefillData);
 
@@ -150,9 +148,7 @@ export function ContractTemplateSearch({
       onTemplateSelected?.(contract.id, contract.contract_no);
 
       // Send prefill data to parent - this should update the form
-      console.log('[template-search] Calling onPrefillData...');
       onPrefillData?.(prefillData);
-      console.log('[template-search] onPrefillData called successfully');
 
       // Collapse search
       setIsExpanded(false);

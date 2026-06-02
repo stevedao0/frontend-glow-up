@@ -198,11 +198,8 @@ export function ContractEditPage({
       }),
     };
 
-    console.log('[ContractEdit] Saving payload:', JSON.stringify(payload, null, 2));
-
     try {
       const result = await updateContract(token, detail.id, payload);
-      console.log('[ContractEdit] Save result:', result);
       setSaveResult(result);
 
       if (result.ok && result.write_performed) {
