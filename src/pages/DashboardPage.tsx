@@ -529,12 +529,13 @@ export function DashboardPage({
       >
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
           {[
-            { label: 'Tạo hợp đồng', icon: FilePlusIcon, route: 'contracts.create' as RouteKey },
+          { label: 'Tạo hợp đồng', icon: FilePlusIcon, route: 'contracts.create' as RouteKey },
             { label: 'Danh sách HĐ', icon: ListIcon, route: 'contracts.list' as RouteKey },
-            { label: 'Giấy chứng nhận', icon: AwardIcon, route: 'certificates' as RouteKey },
+            { label: 'Giấy chứng nhận', icon: AwardIcon, route: 'contracts.gcn' as RouteKey },
             { label: 'In GCN', icon: PrinterIcon, route: 'contracts.print' as RouteKey },
-            { label: 'Công văn', icon: MailIcon, route: 'dispatches' as RouteKey },
+            { label: 'Công văn', icon: MailIcon, route: 'dispatch' as RouteKey },
             { label: 'Báo cáo', icon: BarChart3Icon, route: 'reports' as RouteKey },
+
           ].map((a) => (
             <button
               key={a.label}
