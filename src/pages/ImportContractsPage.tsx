@@ -9,11 +9,13 @@ import {
   XIcon,
   LoaderIcon,
   FileIcon,
+  ShieldAlertIcon,
 } from "lucide-react";
 import { Page, PageHeader } from "../components/app-ui/Page";
 import { ContentCard } from "../components/app-ui/ContentCard";
 import { Button } from "../components/app-ui/Button";
 import { Modal } from "../components/app-ui/Modal";
+import { StepIndicator } from "../components/app-ui/StepIndicator";
 import { RouteKey } from "../data/routes";
 import { importContracts, getTemplateUrl, type ImportResult } from "../lib/importClient";
 import { useAuth } from "../lib/auth";
@@ -22,17 +24,33 @@ interface ImportContractsPageProps {
   onNavigate: (route: RouteKey) => void;
 }
 
+function formatFileSize(bytes: number): string {
+  if (!bytes || Number.isNaN(bytes)) return "—";
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
+  return `${(bytes / 1024 / 1024).toFixed(2)} MB`;
+}
+
+function formatDate(ts?: number): string {
+  if (!ts) return "—";
+  try {
+    return new Date(ts).toLocaleString("vi-VN");
+  } catch {
+    return "—";
+  }
+}
+
 export function ImportContractsPage({ onNavigate }: ImportContractsPageProps) {
-  const { currentUser, hasPermission } = useAuth();
+  const { currentUser } = useAuth();
   const [isDragging, setIsDragging] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [importResult, setImportResult] = useState<ImportResult | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [showResultModal, setShowResultModal] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Kiểm tra quyền: chỉ admin và manager được upload
   const canUpload = currentUser?.backendRole === "admin" || currentUser?.backendRole === "mod";
 
   const handleDragOver = (e: React.DragEvent) => {
@@ -49,20 +67,17 @@ export function ImportContractsPage({ onNavigate }: ImportContractsPageProps) {
     e.preventDefault();
     setIsDragging(false);
     const file = e.dataTransfer.files[0];
-    if (file) {
-      validateAndSetFile(file);
-    }
+    if (file) validateAndSetFile(file);
   };
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      validateAndSetFile(file);
-    }
+    if (file) validateAndSetFile(file);
   };
 
   const validateAndSetFile = (file: File) => {
     setError(null);
+    setImportResult(null);
     if (!file.name.match(/\.(xlsx|xls)$/i)) {
       setError("Chỉ chấp nhận file Excel (.xlsx, .xls)");
       return;
@@ -72,7 +87,7 @@ export function ImportContractsPage({ onNavigate }: ImportContractsPageProps) {
 
   const handleUpload = async () => {
     if (!selectedFile) return;
-
+    setShowConfirm(false);
     setIsUploading(true);
     setError(null);
     setImportResult(null);
@@ -82,7 +97,7 @@ export function ImportContractsPage({ onNavigate }: ImportContractsPageProps) {
       setImportResult(result);
       setShowResultModal(true);
     } catch (err: any) {
-      setError(err.message || "Upload thất bại");
+      setError(err?.message || "Upload thất bại");
     } finally {
       setIsUploading(false);
     }
@@ -101,9 +116,7 @@ export function ImportContractsPage({ onNavigate }: ImportContractsPageProps) {
   const clearFile = () => {
     setSelectedFile(null);
     setError(null);
-    if (fileInputRef.current) {
-      fileInputRef.current.value = "";
-    }
+    if (fileInputRef.current) fileInputRef.current.value = "";
   };
 
   if (!canUpload) {
@@ -113,19 +126,30 @@ export function ImportContractsPage({ onNavigate }: ImportContractsPageProps) {
           <AlertCircleIcon className="w-16 h-16 text-amber-500" />
           <h2 className="text-xl font-semibold text-zinc-800">Không có quyền truy cập</h2>
           <p className="text-zinc-500 text-center max-w-md">
-            Chỉ admin và manager mới được phép upload dữ liệu từ file Excel.
+            Chỉ admin và quản lý mới được phép nhập dữ liệu hợp đồng từ file Excel.
           </p>
-          <Button onClick={() => onNavigate("dashboard")}> Quay về Dashboard</Button>
+          <Button onClick={() => onNavigate("dashboard")}>Quay về Dashboard</Button>
         </div>
       </Page>
     );
   }
 
+  const hasResult = !!importResult;
+  const steps = [
+    { label: "Chọn file", completed: !!selectedFile || hasResult },
+    { label: "Xác nhận", completed: isUploading || hasResult },
+    { label: "Kết quả", completed: hasResult },
+  ];
+
+  const total = importResult?.total_rows ?? 0;
+  const success = importResult?.success_count ?? 0;
+  const errors = importResult?.error_count ?? 0;
+
   return (
     <Page>
       <PageHeader
-        title="Import Hợp Đồng"
-        description="Upload file Excel để nhập dữ liệu hợp đồng. Các trường không bắt buộc có thể bỏ trống."
+        title="Import hợp đồng"
+        description="Nhập dữ liệu hợp đồng từ file Excel vào hệ thống chính. Hãy kiểm tra kỹ file trước khi import — dữ liệu sẽ được ghi trực tiếp vào CSDL."
         breadcrumb="Admin / Import"
         actions={
           <Button
@@ -133,29 +157,32 @@ export function ImportContractsPage({ onNavigate }: ImportContractsPageProps) {
             leftIcon={<DownloadIcon className="w-4 h-4" />}
             onClick={handleDownloadTemplate}
           >
-            Tải Template
+            Tải template
           </Button>
         }
       />
 
+      <div className="mb-4">
+        <StepIndicator steps={steps} />
+      </div>
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Upload Area */}
-        <div className="lg:col-span-2">
+        <div className="lg:col-span-2 space-y-4">
           <ContentCard>
             <div className="p-6">
-              <h3 className="text-lg font-semibold text-zinc-800 mb-4">Upload File Excel</h3>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-zinc-800">Chọn file Excel</h3>
+                <span className="text-xs text-zinc-500">Hỗ trợ .xlsx, .xls</span>
+              </div>
 
-              {/* Drop Zone */}
               <div
-                className={`
-                  border-2 border-dashed rounded-xl p-8 text-center transition-all duration-200
-                  ${isDragging
+                className={`border-2 border-dashed rounded-xl p-8 text-center transition-all duration-200 ${
+                  isDragging
                     ? "border-[#c89968] bg-[#c89968]/5"
                     : selectedFile
-                      ? "border-green-400 bg-green-50"
+                      ? "border-green-400 bg-green-50/60"
                       : "border-zinc-300 hover:border-[#c89968]/50 hover:bg-[#c89968]/5"
-                  }
-                `}
+                }`}
                 onDragOver={handleDragOver}
                 onDragLeave={handleDragLeave}
                 onDrop={handleDrop}
@@ -174,47 +201,49 @@ export function ImportContractsPage({ onNavigate }: ImportContractsPageProps) {
                     <div className="w-14 h-14 rounded-full bg-green-100 flex items-center justify-center">
                       <FileSpreadsheetIcon className="w-7 h-7 text-green-600" />
                     </div>
-                    <div>
-                      <p className="font-medium text-zinc-800">{selectedFile.name}</p>
-                      <p className="text-sm text-zinc-500">
-                        {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
+                    <div className="text-center">
+                      <p className="font-medium text-zinc-800 break-all">{selectedFile.name}</p>
+                      <p className="text-xs text-zinc-500 mt-1">
+                        {formatFileSize(selectedFile.size)} · Cập nhật {formatDate(selectedFile.lastModified)}
                       </p>
                     </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={clearFile}
-                      leftIcon={<XIcon className="w-4 h-4" />}
-                    >
-                      Xóa file
-                    </Button>
+                    <div className="flex gap-2">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => fileInputRef.current?.click()}
+                        leftIcon={<UploadIcon className="w-4 h-4" />}
+                      >
+                        Đổi file
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={clearFile}
+                        leftIcon={<XIcon className="w-4 h-4" />}
+                      >
+                        Xóa file
+                      </Button>
+                    </div>
                   </div>
                 ) : (
-                  <label htmlFor="file-upload" className="cursor-pointer">
+                  <label htmlFor="file-upload" className="cursor-pointer block">
                     <div className="flex flex-col items-center gap-3">
                       <div className="w-14 h-14 rounded-full bg-[#c89968]/10 flex items-center justify-center">
                         <UploadIcon className="w-7 h-7 text-[#c89968]" />
                       </div>
                       <div>
-                        <p className="font-medium text-zinc-800">
-                          Kéo thả file Excel vào đây
-                        </p>
+                        <p className="font-medium text-zinc-800">Kéo thả file Excel vào đây</p>
                         <p className="text-sm text-zinc-500 mt-1">
                           hoặc{" "}
-                          <span className="text-[#c89968] font-medium hover:underline">
-                            chọn file
-                          </span>
+                          <span className="text-[#c89968] font-medium hover:underline">chọn file</span>
                         </p>
                       </div>
-                      <p className="text-xs text-zinc-400 mt-2">
-                        Hỗ trợ: .xlsx, .xls
-                      </p>
                     </div>
                   </label>
                 )}
               </div>
 
-              {/* Error Message */}
               {error && (
                 <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-lg flex items-start gap-3">
                   <XCircleIcon className="w-5 h-5 text-red-500 shrink-0 mt-0.5" />
@@ -222,95 +251,111 @@ export function ImportContractsPage({ onNavigate }: ImportContractsPageProps) {
                 </div>
               )}
 
-              {/* Upload Button */}
-              <div className="mt-6 flex justify-end">
-                <Button
-                  onClick={handleUpload}
-                  disabled={!selectedFile || isUploading}
-                  leftIcon={
-                    isUploading ? (
-                      <LoaderIcon className="w-4 h-4 animate-spin" />
-                    ) : (
-                      <UploadIcon className="w-4 h-4" />
-                    )
-                  }
-                >
-                  {isUploading ? "Đang upload..." : "Upload & Import"}
-                </Button>
+              <div className="mt-6 flex items-center justify-between gap-3 flex-wrap">
+                <p className="text-xs text-zinc-500 flex items-center gap-1.5">
+                  <ShieldAlertIcon className="w-3.5 h-3.5 text-amber-500" />
+                  Dữ liệu sẽ được ghi vào CSDL chính. Hãy kiểm tra file trước khi xác nhận.
+                </p>
+                <div className="flex gap-2">
+                  {selectedFile && !isUploading && (
+                    <Button variant="secondary" onClick={clearFile}>
+                      Hủy
+                    </Button>
+                  )}
+                  <Button
+                    onClick={() => setShowConfirm(true)}
+                    disabled={!selectedFile || isUploading}
+                    leftIcon={
+                      isUploading ? (
+                        <LoaderIcon className="w-4 h-4 animate-spin" />
+                      ) : (
+                        <UploadIcon className="w-4 h-4" />
+                      )
+                    }
+                  >
+                    {isUploading ? "Đang import..." : "Import vào hệ thống"}
+                  </Button>
+                </div>
               </div>
             </div>
           </ContentCard>
+
+          {hasResult && (
+            <ContentCard>
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-lg font-semibold text-zinc-800">Kết quả import gần nhất</h3>
+                  <Button variant="ghost" size="sm" onClick={() => setShowResultModal(true)}>
+                    Xem chi tiết
+                  </Button>
+                </div>
+                <div className="grid grid-cols-3 gap-3">
+                  <div className="p-3 rounded-lg bg-zinc-50 ring-1 ring-zinc-200">
+                    <p className="text-xs text-zinc-500">Tổng dòng</p>
+                    <p className="text-xl font-semibold text-zinc-800">{total}</p>
+                  </div>
+                  <div className="p-3 rounded-lg bg-green-50 ring-1 ring-green-200">
+                    <p className="text-xs text-green-700">Đã import</p>
+                    <p className="text-xl font-semibold text-green-700">{success}</p>
+                  </div>
+                  <div className="p-3 rounded-lg bg-red-50 ring-1 ring-red-200">
+                    <p className="text-xs text-red-700">Lỗi</p>
+                    <p className="text-xl font-semibold text-red-700">{errors}</p>
+                  </div>
+                </div>
+              </div>
+            </ContentCard>
+          )}
         </div>
 
-        {/* Instructions */}
         <div>
           <ContentCard>
             <div className="p-6">
               <h3 className="text-lg font-semibold text-zinc-800 mb-4">Hướng dẫn</h3>
 
               <div className="space-y-4">
-                <div className="flex gap-3">
-                  <div className="w-7 h-7 rounded-full bg-[#c89968] text-white flex items-center justify-center text-sm font-semibold shrink-0">
-                    1
+                {[
+                  { n: 1, title: "Tải template", desc: "Tải file Excel mẫu để đảm bảo đúng cấu trúc cột." },
+                  { n: 2, title: "Điền dữ liệu", desc: "Nhập thông tin hợp đồng theo từng dòng trong file." },
+                  { n: 3, title: "Chọn & xác nhận", desc: "Upload file rồi xác nhận trước khi ghi vào CSDL." },
+                ].map((s) => (
+                  <div key={s.n} className="flex gap-3">
+                    <div className="w-7 h-7 rounded-full bg-[#c89968] text-white flex items-center justify-center text-sm font-semibold shrink-0">
+                      {s.n}
+                    </div>
+                    <div>
+                      <p className="font-medium text-zinc-800">{s.title}</p>
+                      <p className="text-sm text-zinc-500 mt-0.5">{s.desc}</p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="font-medium text-zinc-800">Tải template</p>
-                    <p className="text-sm text-zinc-500 mt-0.5">
-                      Tải file Excel mẫu về máy
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex gap-3">
-                  <div className="w-7 h-7 rounded-full bg-[#c89968] text-white flex items-center justify-center text-sm font-semibold shrink-0">
-                    2
-                  </div>
-                  <div>
-                    <p className="font-medium text-zinc-800">Điền dữ liệu</p>
-                    <p className="text-sm text-zinc-500 mt-0.5">
-                      Nhập thông tin vào các cột trong file
-                    </p>
-                  </div>
-                </div>
-
-                <div className="flex gap-3">
-                  <div className="w-7 h-7 rounded-full bg-[#c89968] text-white flex items-center justify-center text-sm font-semibold shrink-0">
-                    3
-                  </div>
-                  <div>
-                    <p className="font-medium text-zinc-800">Upload file</p>
-                    <p className="text-sm text-zinc-500 mt-0.5">
-                      Kéo thả hoặc chọn file đã chuẩn bị
-                    </p>
-                  </div>
-                </div>
+                ))}
               </div>
 
               <div className="mt-6 pt-4 border-t border-zinc-200">
-                <h4 className="font-medium text-zinc-700 mb-2">Lưu ý:</h4>
-                <ul className="text-sm text-zinc-500 space-y-1.5">
+                <h4 className="font-medium text-zinc-700 mb-2">Lưu ý</h4>
+                <ul className="text-sm text-zinc-600 space-y-1.5">
                   <li className="flex items-start gap-2">
-                    <span className="text-red-500">*</span>
-                    Số hợp đồng và Năm là bắt buộc
+                    <span className="text-red-500 mt-0.5">*</span>
+                    <span>Số hợp đồng và Năm là bắt buộc.</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="text-amber-500">!</span>
-                    Các trường khác tùy chọn
+                    <span className="text-amber-500 mt-0.5">!</span>
+                    <span>Các trường khác có thể bỏ trống.</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="text-blue-500">i</span>
-                    Hợp đồng trùng sẽ được cập nhật
+                    <span className="text-blue-500 mt-0.5">i</span>
+                    <span>Hợp đồng trùng sẽ được cập nhật theo dữ liệu mới.</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <span className="text-green-500">i</span>
-                    Định dạng ngày: DD/MM/YYYY
+                    <span className="text-green-600 mt-0.5">i</span>
+                    <span>Định dạng ngày: DD/MM/YYYY.</span>
                   </li>
                 </ul>
               </div>
 
               <div className="mt-6 p-3 bg-blue-50 rounded-lg">
                 <p className="text-xs text-blue-700">
-                  <strong>Lĩnh vực:</strong> karaoke, cafe, nha_hang, khach_san
+                  <strong>Lĩnh vực hỗ trợ:</strong> karaoke, cafe, nha_hang, khach_san
                 </p>
               </div>
             </div>
@@ -318,58 +363,84 @@ export function ImportContractsPage({ onNavigate }: ImportContractsPageProps) {
         </div>
       </div>
 
+      {/* Confirmation Modal */}
+      <Modal
+        isOpen={showConfirm}
+        onClose={() => setShowConfirm(false)}
+        title="Xác nhận import"
+      >
+        <div className="p-6 space-y-4">
+          <div className="flex items-start gap-3 p-4 rounded-lg bg-amber-50 border border-amber-200">
+            <ShieldAlertIcon className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
+            <div className="text-sm text-amber-800">
+              Dữ liệu trong file sẽ được ghi trực tiếp vào CSDL chính. Hợp đồng trùng số sẽ bị cập nhật theo file. Thao tác này không thể hoàn tác tự động.
+            </div>
+          </div>
+          {selectedFile && (
+            <div className="p-3 rounded-lg bg-zinc-50 ring-1 ring-zinc-200 text-sm">
+              <p className="font-medium text-zinc-800 break-all">{selectedFile.name}</p>
+              <p className="text-xs text-zinc-500 mt-1">
+                {formatFileSize(selectedFile.size)} · Cập nhật {formatDate(selectedFile.lastModified)}
+              </p>
+            </div>
+          )}
+          <div className="flex justify-end gap-2 pt-2">
+            <Button variant="secondary" onClick={() => setShowConfirm(false)} disabled={isUploading}>
+              Hủy
+            </Button>
+            <Button onClick={handleUpload} disabled={isUploading}
+              leftIcon={isUploading ? <LoaderIcon className="w-4 h-4 animate-spin" /> : <UploadIcon className="w-4 h-4" />}
+            >
+              {isUploading ? "Đang import..." : "Xác nhận import"}
+            </Button>
+          </div>
+        </div>
+      </Modal>
+
       {/* Result Modal */}
       <Modal
         isOpen={showResultModal}
         onClose={() => setShowResultModal(false)}
-        title="Kết quả Import"
+        title="Kết quả import"
       >
         <div className="p-6">
           {importResult && (
             <>
-              {/* Summary */}
               <div className="grid grid-cols-3 gap-4 mb-6">
-                <div className="text-center p-4 bg-green-50 rounded-lg">
-                  <CheckCircle2Icon className="w-8 h-8 text-green-500 mx-auto mb-2" />
-                  <p className="text-2xl font-bold text-green-700">
-                    {importResult.success_count}
-                  </p>
-                  <p className="text-sm text-green-600">Thành công</p>
-                </div>
-                <div className="text-center p-4 bg-red-50 rounded-lg">
-                  <XCircleIcon className="w-8 h-8 text-red-500 mx-auto mb-2" />
-                  <p className="text-2xl font-bold text-red-700">
-                    {importResult.error_count}
-                  </p>
-                  <p className="text-sm text-red-600">Lỗi</p>
-                </div>
-                <div className="text-center p-4 bg-zinc-100 rounded-lg">
+                <div className="text-center p-4 bg-zinc-50 rounded-lg ring-1 ring-zinc-200">
                   <FileIcon className="w-8 h-8 text-zinc-500 mx-auto mb-2" />
-                  <p className="text-2xl font-bold text-zinc-700">
-                    {importResult.total_rows}
-                  </p>
+                  <p className="text-2xl font-bold text-zinc-700">{total}</p>
                   <p className="text-sm text-zinc-600">Tổng dòng</p>
+                </div>
+                <div className="text-center p-4 bg-green-50 rounded-lg ring-1 ring-green-200">
+                  <CheckCircle2Icon className="w-8 h-8 text-green-500 mx-auto mb-2" />
+                  <p className="text-2xl font-bold text-green-700">{success}</p>
+                  <p className="text-sm text-green-600">Đã import</p>
+                </div>
+                <div className="text-center p-4 bg-red-50 rounded-lg ring-1 ring-red-200">
+                  <XCircleIcon className="w-8 h-8 text-red-500 mx-auto mb-2" />
+                  <p className="text-2xl font-bold text-red-700">{errors}</p>
+                  <p className="text-sm text-red-600">Lỗi</p>
                 </div>
               </div>
 
-              {/* Errors List */}
-              {importResult.errors.length > 0 && (
+              {importResult.errors.length > 0 ? (
                 <div>
-                  <h4 className="font-medium text-zinc-700 mb-2">Chi tiết lỗi:</h4>
+                  <h4 className="font-medium text-zinc-700 mb-2">Chi tiết lỗi</h4>
                   <div className="max-h-60 overflow-y-auto border border-red-200 rounded-lg">
                     <table className="w-full text-sm">
                       <thead className="bg-red-50 sticky top-0">
                         <tr>
-                          <th className="text-left p-2 font-medium">Dòng</th>
+                          <th className="text-left p-2 font-medium w-16">Dòng</th>
                           <th className="text-left p-2 font-medium">Lỗi</th>
                         </tr>
                       </thead>
                       <tbody>
                         {importResult.errors.map((err, idx) => (
-                          <tr key={idx} className="border-t border-red-100">
-                            <td className="p-2 font-mono">{err.row}</td>
+                          <tr key={idx} className="border-t border-red-100 align-top">
+                            <td className="p-2 font-mono text-zinc-700">{err.row}</td>
                             <td className="p-2 text-red-700">
-                              <ul className="list-disc list-inside">
+                              <ul className="list-disc list-inside space-y-0.5">
                                 {err.errors.map((e, i) => (
                                   <li key={i}>{e}</li>
                                 ))}
@@ -381,14 +452,14 @@ export function ImportContractsPage({ onNavigate }: ImportContractsPageProps) {
                     </table>
                   </div>
                 </div>
+              ) : (
+                <div className="p-4 bg-green-50 border border-green-200 rounded-lg text-sm text-green-700">
+                  Tất cả {total} dòng đã được xử lý không có lỗi.
+                </div>
               )}
 
-              {/* Actions */}
               <div className="mt-6 flex justify-end gap-3">
-                <Button
-                  variant="secondary"
-                  onClick={() => setShowResultModal(false)}
-                >
+                <Button variant="secondary" onClick={() => setShowResultModal(false)}>
                   Đóng
                 </Button>
                 <Button
@@ -398,7 +469,7 @@ export function ImportContractsPage({ onNavigate }: ImportContractsPageProps) {
                     setImportResult(null);
                   }}
                 >
-                  Import thêm
+                  Import file khác
                 </Button>
               </div>
             </>
