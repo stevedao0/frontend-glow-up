@@ -106,7 +106,7 @@ function mapApiRecord(row: ApiCertificateRecord): CertificateRecord {
 }
 
 export function CertificatesPage({
-  onNavigate: _onNavigate
+  onNavigate
 }: {onNavigate: (k: RouteKey) => void;}) {
   const [records, setRecords] = useState<CertificateRecord[]>([]);
   const [summary, setSummary] = useState<CertificatesSummary>(EMPTY_SUMMARY);
