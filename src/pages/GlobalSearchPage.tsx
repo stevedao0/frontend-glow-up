@@ -3,7 +3,7 @@ import { SearchIcon, LoaderIcon } from 'lucide-react';
 import { Page, PageHeader } from '../components/app-ui/Page';
 import { Button } from '../components/app-ui/Button';
 import { Select } from '../components/app-ui/Select';
-import { SearchBox } from '../components/app-ui/SearchBox';
+
 import { SearchSuggestions } from '../components/search/SearchSuggestions';
 import { SearchResultCard } from '../components/search/SearchResultCard';
 import { SearchResultSkeleton } from '../components/search/SearchResultSkeleton';
@@ -107,8 +107,7 @@ interface GlobalSearchPageProps {
 }
 
 export function GlobalSearchPage({ onNavigate, onOpenDetail }: GlobalSearchPageProps) {
-  const { hasPermission } = useAuth();
-  const canExportExcel = hasPermission('contracts.export');
+  useAuth();
 
   // Search state
   const [query, setQuery] = useState('');
@@ -338,12 +337,9 @@ export function GlobalSearchPage({ onNavigate, onOpenDetail }: GlobalSearchPageP
 
   // Clear all filters
   const clearFilters = useCallback(() => {
-    setQuery('');
-    setDebouncedQuery('');
     setYear('');
     setLinhVuc('');
     setStatus('');
-    setFieldCode('');
     setPage(1);
   }, []);
 
@@ -476,17 +472,6 @@ export function GlobalSearchPage({ onNavigate, onOpenDetail }: GlobalSearchPageP
             />
           </div>
 
-          <div className="flex items-center gap-2" title="API hiện chưa hỗ trợ lọc mã quyền trong trang Search">
-            <span className="text-[12px] font-medium text-zinc-400">Mã quyền:</span>
-            <Select
-              value=""
-              onChange={() => {}}
-              options={FIELD_CODE_OPTIONS}
-              placeholder="Tất cả"
-              className="w-28"
-              disabled
-            />
-          </div>
 
           <div className="flex items-center gap-2 ml-auto">
             <span className="text-[12px] font-medium text-zinc-500">Sắp xếp:</span>
@@ -612,12 +597,6 @@ export function GlobalSearchPage({ onNavigate, onOpenDetail }: GlobalSearchPageP
           </div>
         )}
 
-        {/* Export Disabled Note */}
-        {!canExportExcel && showResults && (
-          <div className="text-center text-xs text-zinc-400 pt-4">
-            Xuất Excel hiện đang disabled — cần thêm API xuất Excel cho tìm kiếm toàn cục
-          </div>
-        )}
       </div>
     </Page>
   );
