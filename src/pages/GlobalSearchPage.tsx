@@ -14,13 +14,11 @@ import {
   CONTRACT_YEAR_OPTIONS,
   LINH_VUC_OPTIONS,
   STATUS_OPTIONS,
-  FIELD_CODE_OPTIONS,
   StatusFilter,
 } from '../data/contractOptions';
 import {
   ApiContractItem,
   getContracts,
-  type ContractsListResponse,
 } from '../lib/contractsClient';
 import { useAuth } from '../lib/auth';
 import { TOKEN_KEY } from '../lib/authClient';
