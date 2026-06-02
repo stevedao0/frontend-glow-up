@@ -1,15 +1,9 @@
-import React, { useState, useEffect, useCallback, useRef, useMemo } from 'react';
-import {
-  SearchIcon,
-  FileTextIcon,
-  LoaderIcon,
-  FileSpreadsheetIcon,
-  RefreshCwIcon,
-} from 'lucide-react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { SearchIcon, LoaderIcon } from 'lucide-react';
 import { Page, PageHeader } from '../components/app-ui/Page';
 import { Button } from '../components/app-ui/Button';
 import { Select } from '../components/app-ui/Select';
-import { SearchBox } from '../components/app-ui/SearchBox';
+
 import { SearchSuggestions } from '../components/search/SearchSuggestions';
 import { SearchResultCard } from '../components/search/SearchResultCard';
 import { SearchResultSkeleton } from '../components/search/SearchResultSkeleton';
@@ -20,13 +14,11 @@ import {
   CONTRACT_YEAR_OPTIONS,
   LINH_VUC_OPTIONS,
   STATUS_OPTIONS,
-  FIELD_CODE_OPTIONS,
   StatusFilter,
 } from '../data/contractOptions';
 import {
   ApiContractItem,
   getContracts,
-  type ContractsListResponse,
 } from '../lib/contractsClient';
 import { useAuth } from '../lib/auth';
 import { TOKEN_KEY } from '../lib/authClient';
@@ -115,8 +107,7 @@ interface GlobalSearchPageProps {
 }
 
 export function GlobalSearchPage({ onNavigate, onOpenDetail }: GlobalSearchPageProps) {
-  const { hasPermission } = useAuth();
-  const canExportExcel = hasPermission('contracts.export');
+  useAuth();
 
   // Search state
   const [query, setQuery] = useState('');
@@ -346,12 +337,9 @@ export function GlobalSearchPage({ onNavigate, onOpenDetail }: GlobalSearchPageP
 
   // Clear all filters
   const clearFilters = useCallback(() => {
-    setQuery('');
-    setDebouncedQuery('');
     setYear('');
     setLinhVuc('');
     setStatus('');
-    setFieldCode('');
     setPage(1);
   }, []);
 
@@ -424,27 +412,20 @@ export function GlobalSearchPage({ onNavigate, onOpenDetail }: GlobalSearchPageP
           />
         </div>
 
-        {/* Scope Tabs */}
+        {/* Scope Tabs — only real types from API */}
         <div className="flex flex-wrap gap-2 mb-5">
-          {SCOPE_OPTIONS.map((option) => (
+          {SCOPE_OPTIONS.filter((o) => !o.disabled).map((option) => (
             <button
               key={option.value}
               type="button"
-              onClick={() => !option.disabled && setScope(option.value)}
-              disabled={option.disabled}
-              title={option.disabled ? option.disabledReason : undefined}
-              className={`px-4 py-2 rounded-lg text-[13px] font-medium transition-all ${
+              onClick={() => setScope(option.value)}
+              className={`px-3.5 py-1.5 rounded-lg text-[12px] font-medium transition-all ${
                 scope === option.value
                   ? 'bg-amber-600 text-white shadow-sm'
-                  : option.disabled
-                  ? 'bg-zinc-100 text-zinc-400 cursor-not-allowed'
                   : 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200'
               }`}
             >
               {option.label}
-              {option.disabled && (
-                <span className="ml-1.5 text-[10px] opacity-60">🔒</span>
-              )}
             </button>
           ))}
         </div>
@@ -484,17 +465,6 @@ export function GlobalSearchPage({ onNavigate, onOpenDetail }: GlobalSearchPageP
             />
           </div>
 
-          <div className="flex items-center gap-2" title="API hiện chưa hỗ trợ lọc mã quyền trong trang Search">
-            <span className="text-[12px] font-medium text-zinc-400">Mã quyền:</span>
-            <Select
-              value=""
-              onChange={() => {}}
-              options={FIELD_CODE_OPTIONS}
-              placeholder="Tất cả"
-              className="w-28"
-              disabled
-            />
-          </div>
 
           <div className="flex items-center gap-2 ml-auto">
             <span className="text-[12px] font-medium text-zinc-500">Sắp xếp:</span>
@@ -620,12 +590,6 @@ export function GlobalSearchPage({ onNavigate, onOpenDetail }: GlobalSearchPageP
           </div>
         )}
 
-        {/* Export Disabled Note */}
-        {!canExportExcel && showResults && (
-          <div className="text-center text-xs text-zinc-400 pt-4">
-            Xuất Excel hiện đang disabled — cần thêm API xuất Excel cho tìm kiếm toàn cục
-          </div>
-        )}
       </div>
     </Page>
   );
