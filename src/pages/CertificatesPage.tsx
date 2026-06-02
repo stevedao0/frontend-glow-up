@@ -507,15 +507,16 @@ export function CertificatesPage({
           setQuickView(null);
           setDetailView({ id: record.id });
         }}
-        onPrintFinal={(record) => {
-          alert(`In chính thức GCN số ${record.certificate_no || record.contract_no} — chức năng đang phát triển.`);
+        onPrintFinal={() => {
+          setQuickView(null);
+          onNavigate('contracts.print');
         }}
       />
 
       {detailView && (
         <CertificateDetailPage
           certificateId={detailView.id}
-          onNavigate={_onNavigate}
+          onNavigate={onNavigate}
           onBack={() => setDetailView(null)}
         />
       )}
