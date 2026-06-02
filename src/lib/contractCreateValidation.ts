@@ -150,8 +150,8 @@ export const validateContractDraft = (
   // Validate domain-specific fields
   issues.push(...validateDomainSpecificFields(draft));
 
-  // Validate calculation lines
-  issues.push(...validateCalculationLines(draft.calculationLines));
+  // Validate calculation lines (only for karaoke domains)
+  issues.push(...validateCalculationLines(draft.calculationLines, draft.domain.domainCode));
 
   return issues;
 };
@@ -679,16 +679,28 @@ export const validateCalculationLine = (
 
 /**
  * Validate a karaoke phong calculation line.
+ * 
+ * Note: Only report ERROR when:
+ * 1. Line is enabled AND
+ * 2. Line has a result (meaning it was calculated) AND
+ * 3. totalRooms <= 0
+ * 
+ * If line is enabled but has no result, it's a warning because the user
+ * may be using Phase 2 direct input instead of calculation.
  */
 const validateKaraokePhongLine = (line: RoyaltyCalculationLine): ValidationIssue[] => {
   const issues: ValidationIssue[] = [];
   const input = line.input as { module: 'KARAOKE_PHONG'; totalRooms: number; baseSalary: number };
 
   if (input.totalRooms <= 0) {
+    // Only ERROR if line is enabled AND has a result (was calculated)
+    // If no result yet, it's a warning - user might be using Phase 2 direct input
+    const hasResult = line.result !== undefined;
+    const severity = (line.enabled && hasResult) ? 'error' : 'warning';
     issues.push({
       field: `${line.id}.input.totalRooms`,
       message: 'Số phòng phải lớn hơn 0.',
-      severity: line.enabled ? 'error' : 'warning',
+      severity,
     });
   }
 
@@ -705,16 +717,28 @@ const validateKaraokePhongLine = (line: RoyaltyCalculationLine): ValidationIssue
 
 /**
  * Validate a karaoke box calculation line.
+ * 
+ * Note: Only report ERROR when:
+ * 1. Line is enabled AND
+ * 2. Line has a result (meaning it was calculated) AND
+ * 3. totalBoxes <= 0
+ * 
+ * If line is enabled but has no result, it's a warning because the user
+ * may be using Phase 2 direct input instead of calculation.
  */
 const validateKaraokeBoxLine = (line: RoyaltyCalculationLine): ValidationIssue[] => {
   const issues: ValidationIssue[] = [];
   const input = line.input as { module: 'KARAOKE_BOX'; totalBoxes: number; baseSalary: number };
 
   if (input.totalBoxes <= 0) {
+    // Only ERROR if line is enabled AND has a result (was calculated)
+    // If no result yet, it's a warning - user might be using Phase 2 direct input
+    const hasResult = line.result !== undefined;
+    const severity = (line.enabled && hasResult) ? 'error' : 'warning';
     issues.push({
       field: `${line.id}.input.totalBoxes`,
       message: 'Số box phải lớn hơn 0.',
-      severity: line.enabled ? 'error' : 'warning',
+      severity,
     });
   }
 
@@ -731,9 +755,13 @@ const validateKaraokeBoxLine = (line: RoyaltyCalculationLine): ValidationIssue[]
 
 /**
  * Validate all calculation lines in a draft.
+ * 
+ * @param lines - Calculation lines to validate
+ * @param domainCode - Domain code to determine which validation applies
  */
 export const validateCalculationLines = (
-  lines: RoyaltyCalculationLine[]
+  lines: RoyaltyCalculationLine[],
+  domainCode: BackgroundDomainCode = 'KARAOKE'
 ): ValidationIssue[] => {
   const issues: ValidationIssue[] = [];
 
@@ -746,11 +774,18 @@ export const validateCalculationLines = (
     });
   }
 
+  // Only validate karaoke lines for karaoke domains
+  const isKaraokeDomain = isKaraokeCalcDomain(domainCode);
+
   // Validate each line
   for (const line of lines) {
-    if (line.enabled) {
-      issues.push(...validateCalculationLine(line));
-    }
+    if (!line.enabled) continue;
+    
+    // Skip karaoke-specific lines (KARAOKE_PHONG, KARAOKE_BOX) for non-karaoke domains
+    const isKaraokeLine = line.input.module === 'KARAOKE_PHONG' || line.input.module === 'KARAOKE_BOX';
+    if (isKaraokeLine && !isKaraokeDomain) continue;
+    
+    issues.push(...validateCalculationLine(line));
   }
 
   return issues;
@@ -760,7 +795,8 @@ export const validateCalculationLines = (
  * Check if a draft has valid calculation lines for preflight.
  */
 export const hasValidCalculationLines = (
-  lines: RoyaltyCalculationLine[]
+  lines: RoyaltyCalculationLine[],
+  domainCode: BackgroundDomainCode = 'KARAOKE'
 ): boolean => {
   const enabledLines = lines.filter((line) => line.enabled);
 
@@ -768,8 +804,8 @@ export const hasValidCalculationLines = (
     return false;
   }
 
-  // Check for blocking errors
-  const allIssues = validateCalculationLines(lines);
+  // Check for blocking errors (only for karaoke domains)
+  const allIssues = validateCalculationLines(lines, domainCode);
   const blockingErrors = allIssues.filter(
     (issue) => issue.severity === 'error' && issue.field.includes('.input.')
   );

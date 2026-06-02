@@ -4,10 +4,6 @@ import {
   RefreshCwIcon,
   SaveIcon,
   PrinterIcon,
-  AwardIcon,
-  FileBadge2Icon,
-  CheckCircle2Icon,
-  AlertTriangleIcon,
 } from 'lucide-react';
 import { Page, PageHeader } from '../components/app-ui/Page';
 import { ContentCard } from '../components/app-ui/ContentCard';
@@ -16,22 +12,21 @@ import { Input } from '../components/app-ui/Input';
 import { Textarea } from '../components/app-ui/Textarea';
 import { Select } from '../components/app-ui/Select';
 import { StatusBadge } from '../components/app-ui/StatusBadge';
-import { CertificatePaperPreview } from '../modules/certificates/CertificatePaperPreview';
-import { GCN_LOCKED_OFFSET } from '../modules/certificates/certificateLayoutLocked';
-import type { CertificatePreviewData } from '../modules/certificates/certificateTypes';
+import type { CertificateRecord } from '../data/certificateRecords';
 import {
-  CertificateRecord,
   CERTIFICATE_STATUS_LABEL,
   CertificateStatus,
 } from '../data/certificateRecords';
 import {
   getCertificate,
-  getCertificateContextDryRun,
   updateCertificate,
   syncCertificate,
   printCertificate,
-  type CertificatePreviewContext,
+  assignCertificateNumber,
+  getCertificatePrintLogs,
   type CertificateUpdatePayload,
+  type CertificatePrintResponse,
+  type CertificatePrintLogItem,
 } from '../lib/certificatesClient';
 import { formatDate } from '../lib/format';
 import { RouteKey } from '../data/routes';
@@ -132,17 +127,19 @@ export function CertificateDetailPage({
   onBack?: () => void;
 }) {
   const [record, setRecord] = useState<CertificateRecord | null>(null);
-  const [context, setContext] = useState<CertificatePreviewContext | null>(null);
+  const [printLogs, setPrintLogs] = useState<CertificatePrintLogItem[]>([]);
   const [form, setForm] = useState<FormState>(emptyForm);
-  const [showSafeArea, setShowSafeArea] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [syncing, setSyncing] = useState(false);
-  const [printing, setPrinting] = useState(false);
+  const [assignLoading, setAssignLoading] = useState(false);
+  const [printLoading, setPrintLoading] = useState(false);
+  const [showAssignModal, setShowAssignModal] = useState(false);
+  const [showPrintModal, setShowPrintModal] = useState(false);
+  const [reprintReason, setReprintReason] = useState('');
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState<'success' | 'error'>('success');
-  const isPrintRoute = window.location.search.includes('print') || window.location.pathname.endsWith('/print');
 
   const fetchData = useCallback(async () => {
     const token = localStorage.getItem(TOKEN_KEY);
@@ -154,9 +151,9 @@ export function CertificateDetailPage({
     setLoading(true);
     setError('');
     try {
-      const [detailRes, contextRes] = await Promise.all([
+      const [detailRes, logsRes] = await Promise.all([
         getCertificate(token, certificateId),
-        getCertificateContextDryRun(token, certificateId),
+        getCertificatePrintLogs(token, certificateId).catch(() => ({ ok: true, certificate_id: certificateId, logs: [] })),
       ]);
       const cert = detailRes.certificate;
       const mapped: CertificateRecord = {
@@ -183,11 +180,14 @@ export function CertificateDetailPage({
         printed_at: cert.printed_at,
         printed_by: cert.printed_by,
         print_count: cert.print_count || 0,
+        last_printed_at: cert.last_printed_at || null,
+        last_print_file: cert.last_print_file || null,
+        last_print_reason: cert.last_print_reason || null,
         has_qr_image: cert.has_qr_image,
       };
       setRecord(mapped);
       setForm(toForm(mapped));
-      setContext(contextRes.context);
+      setPrintLogs(logsRes.logs || []);
     } catch (err: any) {
       setError(String(err?.message || 'Không tải được GCN'));
     } finally {
@@ -198,17 +198,6 @@ export function CertificateDetailPage({
   useEffect(() => {
     fetchData();
   }, [fetchData]);
-
-  // Print mode: auto-trigger print dialog
-  useEffect(() => {
-    if (!isPrintRoute || !record) return;
-    document.body.classList.add('certificate-print-mode');
-    const timer = window.setTimeout(() => window.print(), 450);
-    return () => {
-      window.clearTimeout(timer);
-      document.body.classList.remove('certificate-print-mode');
-    };
-  }, [record, isPrintRoute]);
 
   const showToast = (msg: string, type: 'success' | 'error' = 'success') => {
     setMessage(msg);
@@ -273,22 +262,55 @@ export function CertificateDetailPage({
     }
   };
 
-  const handlePrint = async (type: 'test' | 'final') => {
+  const handleAssignNumber = async (numberToAssign: string) => {
     const token = localStorage.getItem(TOKEN_KEY);
-    if (!token) return;
-    setPrinting(true);
+    if (!token || !numberToAssign.trim()) return;
+    setAssignLoading(true);
     try {
-      const res = await printCertificate(token, certificateId, type);
+      const res = await assignCertificateNumber(token, certificateId, {
+        certificate_no: numberToAssign.trim(),
+      });
       if (res.ok) {
-        showToast(`Đã ${type === 'test' ? 'in thử' : 'in chính thức'}`, 'success');
+        setShowAssignModal(false);
+        showToast(`Đã lưu số GCN: ${numberToAssign.trim()}`, 'success');
         await fetchData();
       } else {
-        showToast(res.message || 'Lỗi khi in', 'error');
+        const errMsg = res.errors?.map(e => e.message).join('; ') || res.message;
+        showToast(errMsg || 'Lỗi khi cấp số', 'error');
       }
     } catch (err: any) {
-      showToast(String(err?.message || 'Lỗi khi in'), 'error');
+      showToast(String(err?.message || 'Lỗi khi cấp số'), 'error');
     } finally {
-      setPrinting(false);
+      setAssignLoading(false);
+    }
+  };
+
+  const handleOfficialPrint = async () => {
+    const token = localStorage.getItem(TOKEN_KEY);
+    if (!token) { showToast('Chưa đăng nhập', 'error'); return; }
+    setPrintLoading(true);
+    try {
+      const res = await printCertificate(
+        token,
+        certificateId,
+        record!.print_count > 0 ? reprintReason : undefined,
+      );
+      handlePrintResponse(res);
+    } catch (err: any) {
+      showToast(String(err?.message || 'Lỗi khi in chính thức'), 'error');
+      setPrintLoading(false);
+    }
+  };
+
+  const handlePrintResponse = (res: CertificatePrintResponse) => {
+    if (res.ok) {
+      setShowPrintModal(false);
+      setReprintReason('');
+      showToast(res.message || `Đã in chính thức (lần ${res.print_count})`, 'success');
+      fetchData();
+    } else {
+      showToast(res.message || 'Lỗi khi in chính thức', 'error');
+      setPrintLoading(false);
     }
   };
 
@@ -298,54 +320,7 @@ export function CertificateDetailPage({
 
   const statusTone = form.status === 'final_printed' ? 'success' : form.status === 'test_printed' ? 'warning' : 'neutral';
 
-  const previewData: CertificatePreviewData = {
-    certificate_no: form.certificate_no,
-    certificate_issue_date: form.certificate_issue_date,
-    certificate_issue_day: form.certificate_issue_date ? form.certificate_issue_date.split('-')[2] : '',
-    certificate_issue_month: form.certificate_issue_date ? form.certificate_issue_date.split('-')[1] : '',
-    certificate_issue_year: form.certificate_issue_date ? form.certificate_issue_date.split('-')[0] : '',
-    organization_name: form.organization_name,
-    business_registration_no: form.business_registration_no,
-    address: form.address,
-    business_sign_name: form.business_sign_name,
-    business_location: form.business_location,
-    contract_no: form.contract_no,
-    effective_from: form.effective_from,
-    effective_to: form.effective_to,
-    gcn_scope_col_1_text: form.gcn_scope_col_1_text,
-    gcn_scope_col_2_text: form.gcn_scope_col_2_text,
-    gcn_scope_col_3_text: form.gcn_scope_col_3_text,
-    qr_image_data: form.qr_image_data,
-    offset_x_mm: form.offset_x_mm,
-    offset_y_mm: form.offset_y_mm,
-  };
-
-  const busy = saving || syncing || printing;
-
-  // Print route: show only the print view
-  if (isPrintRoute) {
-    if (loading) {
-      return (
-        <div className="gcn-locked-print-root">
-          <div className="p-8">Đang tải GCN...</div>
-        </div>
-      );
-    }
-    if (error || !record) {
-      return (
-        <div className="gcn-locked-print-root">
-          <div className="p-8">Không tìm thấy giấy chứng nhận.</div>
-        </div>
-      );
-    }
-    return (
-      <div className="gcn-locked-print-root">
-        <div className="gcn-locked-print-page">
-          <CertificatePaperPreview certificate={previewData} mode="print" />
-        </div>
-      </div>
-    );
-  }
+  const busy = saving || syncing;
 
   if (loading) {
     return (
@@ -392,25 +367,21 @@ export function CertificateDetailPage({
               Đồng bộ từ hợp đồng
             </Button>
             <Button
+              variant="secondary"
+              leftIcon={<PrinterIcon className="h-4 w-4" />}
+              onClick={() => {
+                sessionStorage.setItem('app_pending_print_certificate_id', String(certificateId));
+                sessionStorage.removeItem('app_pending_print_contract_id');
+                onNavigate('contracts.print');
+              }}>
+              Mở trang In GCN
+            </Button>
+            <Button
               variant="primary"
               leftIcon={<SaveIcon className="h-4 w-4" />}
               onClick={handleSave}
               disabled={busy}>
               Lưu GCN
-            </Button>
-            <Button
-              variant="secondary"
-              leftIcon={<PrinterIcon className="h-4 w-4" />}
-              onClick={() => handlePrint('test')}
-              disabled={busy}>
-              In thử
-            </Button>
-            <Button
-              variant="primary"
-              leftIcon={<AwardIcon className="h-4 w-4" />}
-              onClick={() => handlePrint('final')}
-              disabled={busy}>
-              In chính thức
             </Button>
           </>
         }
@@ -424,14 +395,41 @@ export function CertificateDetailPage({
 
       <div className="grid gap-5 xl:grid-cols-[520px_1fr]">
         <div className="space-y-5">
-          {/* Info Card */}
-          <ContentCard title="Thông tin GCN">
+          {/* Info Card — GCN status + print tracking + action buttons */}
+          <ContentCard title="Thông tin GCN" actions={
+            <div className="flex gap-2">
+              {!record.certificate_no ? (
+                <Button
+                  size="sm"
+                  variant="primary"
+                  leftIcon={<SaveIcon className="h-3.5 w-3.5" />}
+                  onClick={() => setShowAssignModal(true)}
+                >
+                  Cấp số GCN
+                </Button>
+              ) : (
+                <Button
+                  size="sm"
+                  variant="primary"
+                  leftIcon={<PrinterIcon className="h-3.5 w-3.5" />}
+                  onClick={() => setShowPrintModal(true)}
+                >
+                  {record.print_count > 0 ? 'In lại' : 'In chính thức'}
+                </Button>
+              )}
+            </div>
+          }>
             <div className="space-y-0">
+              <InfoRow label="Số GCN" value={record.certificate_no || '—'} mono />
+              <InfoRow label="Trạng thái" value={CERTIFICATE_STATUS_LABEL[record.status]} />
               <InfoRow label="Hợp đồng" value={record.contract_no} mono />
               <InfoRow label="Đơn vị" value={record.organization_name} />
               <InfoRow label="Hiệu lực từ" value={formatDate(record.effective_from)} mono />
               <InfoRow label="Hiệu lực đến" value={formatDate(record.effective_to)} mono />
               <InfoRow label="Số lần in" value={record.print_count} />
+              <InfoRow label="Ngày in đầu" value={formatDate(record.printed_at)} mono />
+              <InfoRow label="Ngày in cuối" value={formatDate(record.last_printed_at)} mono />
+              <InfoRow label="File in cuối" value={record.last_print_file || '—'} />
             </div>
           </ContentCard>
 
@@ -560,129 +558,78 @@ export function CertificateDetailPage({
                   </div>
                 </div>
               </section>
-
-              {/* Canh vị trí in */}
-              <section className="space-y-3">
-                <h3 className="text-sm font-semibold text-zinc-700">Canh vị trí in</h3>
-                <div className="space-y-2">
-                  <label className="text-[11px] font-medium text-zinc-600">Mã QR</label>
-                  <div
-                    className="rounded-xl border-2 border-dashed border-zinc-300 bg-zinc-50/50 p-4 transition-colors hover:bg-zinc-50"
-                    onDragOver={(e) => e.preventDefault()}
-                    onDrop={(e) => {
-                      e.preventDefault();
-                      const file = e.dataTransfer.files?.[0];
-                      if (file && file.type.startsWith('image/')) {
-                        const reader = new FileReader();
-                        reader.onload = () => {
-                          updateField('qr_image_data', String(reader.result || ''));
-                        };
-                        reader.readAsDataURL(file);
-                      }
-                    }}
-                  >
-                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-                      <div className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-lg border border-zinc-200 bg-white">
-                        {form.qr_image_data ? (
-                          <img src={form.qr_image_data} alt="QR preview" className="h-full w-full object-contain" />
-                        ) : (
-                          <span className="px-2 text-center text-xs text-zinc-400">Kéo QR vào đây</span>
-                        )}
-                      </div>
-                      <div className="min-w-0 flex-1 space-y-2">
-                        <p className="text-sm font-medium">Kéo file QR PNG/JPG vào khung này</p>
-                        <p className="text-xs text-zinc-500">
-                          Hoặc chọn file, hệ thống sẽ tự đổi sang data URL để in vào mẫu GCN.
-                        </p>
-                        <input
-                          type="file"
-                          accept="image/*"
-                          onChange={(e) => {
-                            const file = e.target.files?.[0];
-                            if (file) {
-                              const reader = new FileReader();
-                              reader.onload = () => {
-                                updateField('qr_image_data', String(reader.result || ''));
-                              };
-                              reader.readAsDataURL(file);
-                            }
-                          }}
-                          className="text-sm"
-                        />
-                      </div>
-                    </div>
-                  </div>
-                  <Textarea
-                    value={form.qr_image_data}
-                    onChange={(e) => updateField('qr_image_data', e.target.value)}
-                    rows={2}
-                    placeholder="Dán data:image/png;base64,... hoặc dữ liệu QR backend trả về"
-                  />
-                  <p className="text-xs text-zinc-500">QR sẽ in ở góc dưới bên trái mẫu GCN. Để trống nếu chưa có mã QR.</p>
-                </div>
-                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                  <Input
-                    label="Dịch ngang (mm)"
-                    type="number"
-                    step={String(GCN_LOCKED_OFFSET.stepMm)}
-                    value={String(form.offset_x_mm)}
-                    onChange={(e) => updateField('offset_x_mm', Number(e.target.value) || 0)}
-                  />
-                  <Input
-                    label="Dịch dọc (mm)"
-                    type="number"
-                    step={String(GCN_LOCKED_OFFSET.stepMm)}
-                    value={String(form.offset_y_mm)}
-                    onChange={(e) => updateField('offset_y_mm', Number(e.target.value) || 0)}
-                  />
-                </div>
-              </section>
-
-              {/* Actions */}
-              <div className="flex flex-wrap gap-2 border-t border-zinc-200 pt-4">
-                <Button
-                  variant="primary"
-                  leftIcon={<SaveIcon className="h-4 w-4" />}
-                  onClick={handleSave}
-                  disabled={busy}>
-                  Lưu thông tin GCN
-                </Button>
-                <Button
-                  variant="outline"
-                  leftIcon={<RefreshCwIcon className="h-4 w-4" />}
-                  onClick={() => record && setForm(toForm(record))}
-                  disabled={busy}>
-                  Hoàn tác thay đổi
-                </Button>
-              </div>
             </div>
           </ContentCard>
         </div>
-
-        {/* Preview Pane */}
-        <ContentCard
-          title="Bản xem trước"
-          description={
-            <label className="flex items-center gap-2 text-sm text-zinc-500">
-              <input
-                type="checkbox"
-                checked={showSafeArea}
-                onChange={(e) => setShowSafeArea(e.target.checked)}
-                className="h-4 w-4 rounded border-zinc-300"
-              />
-              Khung canh
-            </label>
-          }>
-          <CertificatePaperPreview certificate={previewData} showSafeArea={showSafeArea} />
-        </ContentCard>
       </div>
 
-      {/* Print Mode View */}
-      <div className="gcn-locked-print-root gcn-locked-print-root--inline">
-        <div className="gcn-locked-print-page">
-          <CertificatePaperPreview certificate={previewData} mode="print" />
+      {/* Assign Number Modal */}
+      {showAssignModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-950/40 backdrop-blur-[2px]">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm mx-4 p-6 space-y-4">
+            <h3 className="text-base font-semibold text-zinc-900">Cấp số GCN</h3>
+            <Input
+              label="Số GCN"
+              placeholder="VD: 0137/2026.GCN_KA"
+              value={form.certificate_no}
+              onChange={e => setForm(prev => ({ ...prev, certificate_no: e.target.value }))}
+              autoFocus
+            />
+            <div className="flex gap-2 justify-end">
+              <Button variant="secondary" onClick={() => setShowAssignModal(false)} disabled={assignLoading}>Hủy</Button>
+              <Button
+                variant="primary"
+                leftIcon={assignLoading ? undefined : <SaveIcon className="h-4 w-4" />}
+                onClick={() => handleAssignNumber(form.certificate_no)}
+                disabled={assignLoading || !form.certificate_no.trim()}
+              >
+                {assignLoading ? 'Đang lưu...' : 'Lưu số GCN'}
+              </Button>
+            </div>
+          </div>
         </div>
-      </div>
+      )}
+
+      {/* Print/Reprint Modal */}
+      {showPrintModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-zinc-950/40 backdrop-blur-[2px]">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-sm mx-4 p-6 space-y-4">
+            <h3 className="text-base font-semibold text-zinc-900">
+              {record.print_count > 0 ? 'In lại GCN' : 'In chính thức GCN'}
+            </h3>
+            {record.print_count > 0 && (
+              <div className="text-sm text-amber-600 bg-amber-50 rounded-lg px-3 py-2">
+                Đây là bản in lại (lần {record.print_count}). Vui lòng nhập lý do.
+              </div>
+            )}
+            {record.print_count > 0 && (
+              <Input
+                label="Lý do in lại (tùy chọn)"
+                placeholder="VD: Sửa lỗi in, bổ sung thông tin..."
+                value={reprintReason}
+                onChange={e => setReprintReason(e.target.value)}
+                autoFocus
+              />
+            )}
+            {!record.certificate_no && (
+              <div className="text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2">
+                Chưa có số GCN. Vui lòng cấp số trước.
+              </div>
+            )}
+            <div className="flex gap-2 justify-end">
+              <Button variant="secondary" onClick={() => { setShowPrintModal(false); setReprintReason(''); }} disabled={printLoading}>Hủy</Button>
+              <Button
+                variant="primary"
+                leftIcon={printLoading ? undefined : <PrinterIcon className="h-4 w-4" />}
+                onClick={handleOfficialPrint}
+                disabled={printLoading || !record.certificate_no}
+              >
+                {printLoading ? 'Đang in...' : (record.print_count > 0 ? 'In lại' : 'In chính thức')}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </Page>
   );
 }

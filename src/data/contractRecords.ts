@@ -26,6 +26,13 @@ export type ContractRecord = {
   loai_hinh_karaoke: string | null;
   tong_so_phong: number | null;
   tong_so_box: number | null;
+  // Phase 2 simplified royalty fields (canonical source)
+  royalty_amount_before_vat: number | null;
+  vat_rate: number | null;
+  vat_amount: number | null;
+  royalty_amount_after_vat: number | null;
+  // Phase 2: Music usage areas
+  music_usage_areas: Array<{ area_name: string; scale_description: string; music_usage_type: string }> | null;
 };
 
 // ---- Computed status helpers ----

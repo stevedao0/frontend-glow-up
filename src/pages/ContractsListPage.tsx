@@ -45,19 +45,20 @@ import {
   LINH_VUC_OPTIONS,
   STATUS_OPTIONS,
   FIELD_CODE_OPTIONS,
-  BACKGROUND_OPS_SUMMARY,
   StatusFilter } from
 '../data/contractOptions';
 import { formatCurrency, formatDate, formatNumber } from '../lib/format';
 import {
   ApiContractItem,
   getContracts,
+  getContractsSummary,
   exportDocxPreview,
   getCertificateContextDryRun,
   deleteContractCloneOnly,
   type ExportPreviewResult,
   type CertificateContextResult,
   type DeleteContractCloneOnlyResult,
+  type ContractsSummaryStats,
 } from '../lib/contractsClient';
 import { useAuth } from '../lib/auth';
 import { TOKEN_KEY } from '../lib/authClient';
@@ -88,9 +89,17 @@ function toContractRecord(item: ApiContractItem): ContractRecord {
     is_renewable: item.is_renewable ?? false,
     loai_hinh_karaoke: item.loai_hinh_karaoke || null,
     tong_so_phong: item.tong_so_phong ?? null,
-    tong_so_box: item.tong_so_box ?? null
+    tong_so_box: item.tong_so_box ?? null,
+    // Phase 2 simplified royalty fields (canonical source)
+    royalty_amount_before_vat: item.royalty_amount_before_vat ?? null,
+    vat_rate: item.vat_rate ?? null,
+    vat_amount: item.vat_amount ?? null,
+    royalty_amount_after_vat: item.royalty_amount_after_vat ?? null,
+    // Phase 2: Music usage areas
+    music_usage_areas: item.music_usage_areas ?? null,
   };
 }
+
 export function ContractsListPage({
   onNavigate,
   onOpenDetail,
@@ -122,6 +131,9 @@ export function ContractsListPage({
   const [contracts, setContracts] = useState<ContractRecord[]>([]);
   const [total, setTotal] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
+  // KPI stats from real API (SummaryHero + MetricStrip)
+  const [summaryStats, setSummaryStats] = useState<ContractsSummaryStats | null>(null);
+  const [statsLoading, setStatsLoading] = useState(true);
   // Pagination
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(30);
@@ -406,6 +418,31 @@ export function ContractsListPage({
       cancelled = true;
     };
   }, [keyword, year, linhVuc, fieldCode, status, page, pageSize, reloadTick]);
+
+  // Fetch KPI summary stats from real API
+  useEffect(() => {
+    let cancelled = false;
+    async function loadSummaryStats() {
+      setStatsLoading(true);
+      try {
+        const token = localStorage.getItem(TOKEN_KEY);
+        if (!token) {
+          if (!cancelled) setStatsLoading(false);
+          return;
+        }
+        const stats = await getContractsSummary(token);
+        if (!cancelled) setSummaryStats(stats);
+      } catch {
+        if (!cancelled) setSummaryStats(null);
+      } finally {
+        if (!cancelled) setStatsLoading(false);
+      }
+    }
+    loadSummaryStats();
+    return () => {
+      cancelled = true;
+    };
+  }, [reloadTick]);
   return (
     <Page>
       <PageHeader
@@ -454,27 +491,27 @@ export function ContractsListPage({
         stats={[
         {
           label: 'Tổng hợp đồng BG',
-          value: formatNumber(BACKGROUND_OPS_SUMMARY.totalBackground),
+          value: statsLoading ? '—' : formatNumber(summaryStats?.totalContracts ?? 0),
           tone: 'indigo'
         },
         {
           label: 'Còn hiệu lực',
-          value: formatNumber(BACKGROUND_OPS_SUMMARY.active),
+          value: statsLoading ? '—' : formatNumber(summaryStats?.active ?? 0),
           tone: 'emerald'
         },
         {
           label: 'Sắp hết 30 ngày',
-          value: formatNumber(BACKGROUND_OPS_SUMMARY.expiringIn30Days),
+          value: statsLoading ? '—' : formatNumber(summaryStats?.expiringIn30Days ?? 0),
           tone: 'amber'
         },
         {
           label: 'Hết hạn',
-          value: formatNumber(BACKGROUND_OPS_SUMMARY.expired),
+          value: statsLoading ? '—' : formatNumber(summaryStats?.expired ?? 0),
           tone: 'rose'
         },
         {
           label: 'Chờ tái ký',
-          value: formatNumber(BACKGROUND_OPS_SUMMARY.pendingRenewal),
+          value: statsLoading ? '—' : formatNumber(summaryStats?.pendingRenewal ?? 0),
           tone: 'violet'
         }]
         } />
@@ -484,14 +521,14 @@ export function ContractsListPage({
         items={[
         {
           label: 'Tổng hợp đồng',
-          value: formatNumber(BACKGROUND_OPS_SUMMARY.totalBackground),
+          value: statsLoading ? '—' : formatNumber(summaryStats?.totalContracts ?? 0),
           tone: 'indigo',
           icon: <FileTextIcon className="h-4 w-4" />,
           hint: 'Tất cả thời kỳ'
         },
         {
           label: 'Hợp đồng 2026',
-          value: formatNumber(BACKGROUND_OPS_SUMMARY.contracts2026),
+          value: statsLoading ? '—' : formatNumber(summaryStats?.contracts2026 ?? 0),
           tone: 'violet',
           icon: <CalendarRangeIcon className="h-4 w-4" />,
           delta: {
@@ -501,21 +538,25 @@ export function ContractsListPage({
         },
         {
           label: 'Còn hiệu lực',
-          value: formatNumber(BACKGROUND_OPS_SUMMARY.active),
+          value: statsLoading ? '—' : formatNumber(summaryStats?.active ?? 0),
           tone: 'emerald',
           icon: <CheckCircle2Icon className="h-4 w-4" />,
           hint: '3,6% tổng số'
         },
         {
           label: 'Sắp hết 30 ngày',
-          value: formatNumber(BACKGROUND_OPS_SUMMARY.expiringIn30Days),
+          value: statsLoading ? '—' : formatNumber(summaryStats?.expiringIn30Days ?? 0),
           tone: 'amber',
           icon: <AlertTriangleIcon className="h-4 w-4" />,
           hint: 'Cần xử lý sớm'
         },
         {
           label: 'Doanh thu 2026',
-          value: '1,075 tỷ',
+          value: statsLoading
+            ? '—'
+            : (summaryStats?.revenue2026 ?? 0) > 0
+              ? `${(summaryStats!.revenue2026 / 1_000_000_000).toFixed(2)} tỷ`
+              : 'Chưa có',
           tone: 'cyan',
           icon: <WalletIcon className="h-4 w-4" />,
           delta: {
@@ -670,7 +711,7 @@ export function ContractsListPage({
                   <Th>Lĩnh vực</Th>
                   <Th>Ngày lập</Th>
                   <Th>Hiệu lực</Th>
-                  <Th align="right">Giá trị</Th>
+                  <Th align="right">Giá trị chưa GTGT</Th>
                   <Th>Trạng thái</Th>
                   <th className="w-10 pr-3" />
                 </tr>
@@ -755,19 +796,63 @@ export function ContractsListPage({
                           <span className="text-zinc-700 text-[13px] font-medium">
                             {r.linh_vuc_hien_thi}
                           </span>
-                          {r.loai_hinh_karaoke &&
-                        <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[10.5px] font-medium bg-zinc-100 text-zinc-700 ring-1 ring-inset ring-zinc-900/5 self-start">
-                              {r.loai_hinh_karaoke}
-                              {r.tong_so_phong != null &&
-                          <>
-                                  <span className="text-zinc-400">·</span>
-                                  <span className="tabular-nums font-semibold">
-                                    {r.tong_so_phong} phòng
-                                  </span>
-                                </>
-                          }
-                            </span>
-                        }
+                          {r.music_usage_areas && r.music_usage_areas.length > 0 ? (
+                            <>
+                              {r.music_usage_areas.slice(0, 2).map((area, idx) => (
+                                <span
+                                  key={idx}
+                                  className="inline-flex flex-wrap items-center gap-x-1 gap-y-0.5 text-[11px] text-zinc-600 leading-snug"
+                                >
+                                  {area.scale_description && (
+                                    <span className="font-medium text-zinc-700">
+                                      {area.scale_description}
+                                    </span>
+                                  )}
+                                  {area.area_name && (
+                                    <span className="text-zinc-400">·</span>
+                                  )}
+                                  {area.area_name && (
+                                    <span className="text-zinc-500">{area.area_name}</span>
+                                  )}
+                                  {area.music_usage_type && (
+                                    <>
+                                      <span className="text-zinc-400">·</span>
+                                      <span className="text-zinc-500">{area.music_usage_type}</span>
+                                    </>
+                                  )}
+                                </span>
+                              ))}
+                              {r.music_usage_areas.length > 2 && (
+                                <span
+                                  className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[10.5px] font-medium bg-amber-50 text-amber-700 ring-1 ring-inset ring-amber-600/20 self-start cursor-help"
+                                  title={r.music_usage_areas.slice(2).map(
+                                    (a, i) =>
+                                      `${i + 3}. ${a.area_name || '(không có tên)'}${
+                                        a.scale_description ? ` — ${a.scale_description}` : ''
+                                      }${a.music_usage_type ? ` · ${a.music_usage_type}` : ''}`,
+                                  ).join('\n')}
+                                >
+                                  +{r.music_usage_areas.length - 2} khu vực
+                                </span>
+                              )}
+                            </>
+                          ) : (
+                            <>
+                              {r.loai_hinh_karaoke && (
+                                <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[10.5px] font-medium bg-zinc-100 text-zinc-700 ring-1 ring-inset ring-zinc-900/5 self-start">
+                                  {r.loai_hinh_karaoke}
+                                  {r.tong_so_phong != null && (
+                                    <>
+                                      <span className="text-zinc-400">·</span>
+                                      <span className="tabular-nums font-semibold">
+                                        {r.tong_so_phong} phòng
+                                      </span>
+                                    </>
+                                  )}
+                                </span>
+                              )}
+                            </>
+                          )}
                         </div>
                       </td>
 
@@ -793,19 +878,19 @@ export function ContractsListPage({
                       }
                       </td>
 
-                      {/* Giá trị */}
+                      {/* Giá trị chưa GTGT */}
                       <td className="px-4 py-3.5 align-top text-right tabular-nums whitespace-nowrap">
-                        {r.so_tien_value == null ?
+                        {r.royalty_amount_before_vat == null ?
                       <span className="text-zinc-400 italic text-xs">
                             Chưa có
                           </span> :
-                      r.so_tien_value === 0 ?
+                      r.royalty_amount_before_vat === 0 ?
                       <span className="text-zinc-500 text-xs">
                             Chưa tính
                           </span> :
 
                       <span className="font-semibold text-zinc-900 text-[13px]">
-                            {formatCurrency(r.so_tien_value)}
+                            {formatCurrency(r.royalty_amount_before_vat)}
                           </span>
                       }
                       </td>
@@ -1245,8 +1330,13 @@ export function ContractsListPage({
                 )}
                 {!actionModal.deleteResult.ok && (
                   <div className="rounded-lg bg-rose-50 p-3 text-xs text-rose-700">
-                    <p className="font-semibold">Không thể xóa record này.</p>
+                    <p className="font-semibold">Không thể xóa hợp đồng này.</p>
                     <p className="mt-1">{actionModal.deleteResult.message}</p>
+                    {actionModal.deleteResult.mode === 'main_db_disabled' && (
+                      <p className="mt-1 text-rose-600">
+                        Liên hệ admin để bật chức năng xóa trên DATABASE chính.
+                      </p>
+                    )}
                   </div>
                 )}
               </div>

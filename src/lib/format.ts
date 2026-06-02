@@ -30,5 +30,6 @@ export function formatDate(v: string) {
 }
 
 export function formatNumber(v: number) {
+  if (v == null || Number.isNaN(v)) return '0';
   return new Intl.NumberFormat('vi-VN').format(v);
 }

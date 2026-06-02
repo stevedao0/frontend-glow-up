@@ -6,6 +6,11 @@ export function getStoredToken(): string | null {
   return localStorage.getItem(TOKEN_KEY);
 }
 
+// Alias for convenience - wraps getStoredToken
+export function getToken(): string | null {
+  return getStoredToken();
+}
+
 export type ApiUser = {
   id: number;
   email?: string | null;

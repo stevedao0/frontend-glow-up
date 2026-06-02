@@ -4,9 +4,21 @@ import {
   PrinterIcon,
   PencilIcon,
   MailIcon,
-  CheckCircle2Icon } from
-'lucide-react';
-import { ActivityKind } from '../../data/mockDashboard';
+  CheckCircle2Icon,
+} from 'lucide-react';
+
+type ActivityKind = 'create' | 'print' | 'update' | 'dispatch' | 'approve';
+
+export type ActivityListProps = {
+  items: {
+    id: string;
+    actor: string;
+    action: string;
+    target: string;
+    time: string;
+    kind: ActivityKind;
+  }[];
+};
 const iconMap: Record<
   ActivityKind,
   {

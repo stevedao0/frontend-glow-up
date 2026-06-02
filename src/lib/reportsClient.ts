@@ -480,14 +480,19 @@ function buildExportParams(params: Record<string, string | number | undefined>):
 }
 
 /**
- * Generic export download using fetch with blob response
+ * Generic export download using fetch with blob response.
+ * The URL is relative to the API base (e.g. "/api/reports/contracts/export-xlsx").
  */
 async function downloadExportFile(
   url: string,
   token: string,
   filename: string
 ): Promise<void> {
-  const response = await fetch(url, {
+  const apiBase = (import.meta.env.VITE_API_BASE_URL || "/api").replace(/\/$/, "");
+  // Strip any /api prefix from the url before prepending, to avoid double /api/api/
+  const cleanPath = url.replace(/^\/?api\//, "");
+  const fullUrl = `${apiBase}/${cleanPath}`;
+  const response = await fetch(fullUrl, {
     method: "GET",
     headers: {
       Authorization: `Bearer ${token}`,
@@ -626,7 +631,7 @@ export async function exportFullDataExcel(
   if (params.date_from) qs.set("date_from", params.date_from);
   if (params.date_to) qs.set("date_to", params.date_to);
   const suffix = qs.toString() ? `?${qs.toString()}` : "";
-  const url = `/api/reports/full-data/export-xlsx${suffix}`;
+  const url = `/api/reports/full_data/export-xlsx${suffix}`;
   const today = new Date().toISOString().slice(0, 10).replace(/-/g, "");
   await downloadExportFile(url, token, `du_lieu_toan_bo_${today}.xlsx`);
 }

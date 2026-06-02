@@ -116,7 +116,7 @@ export type CommonContractInfo = {
   signedDate: string;
   /** Năm hợp đồng */
   contractYear: string;
-  /** Mã vùng (e.g., HDQTGAN-PN) */
+  /** Mã vùng (e.g., HĐQTGAN-PN) */
   regionCode: string;
   /** Khu vực (e.g., PN) */
   areaCode: string;
@@ -222,8 +222,6 @@ export type ContractTermInfo = {
 // =============================================================================
 
 export type AssigneeInfo = {
-  /** Tên người thực hiện */
-  name: string;
   /** Email người thực hiện */
   email: string;
 };
@@ -899,7 +897,6 @@ export type ContractRecordsCandidate = {
   usage_ward: string;
   usage_province: string;
   usage_full_address: string;
-  nguoi_thuc_hien_name: string;
   nguoi_thuc_hien_email: string;
   loai_hinh_karaoke: 'PHONG' | 'BOX';
   tong_so_phong: number;

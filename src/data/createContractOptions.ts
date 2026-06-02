@@ -14,27 +14,29 @@ import type {
 } from '../lib/contractCreateTypes';
 
 // =============================================================================
-// ASSIGNEE OPTIONS
+// ASSIGNEE OPTIONS (email-based)
 // =============================================================================
 
+// Note: Real user data is fetched from API via useEmployeeOptions hook
+// Kept for backward compatibility if needed
 export const CREATE_CONTRACT_ASSIGNEE_OPTIONS = [
-  { value: 'Tuan', label: 'Tuan' },
-  { value: 'Admin', label: 'Admin' },
-  { value: 'Nhan vien 1', label: 'Nhan vien 1' },
+  { value: 'tuan@vcpmc.org', label: 'tuan@vcpmc.org' },
+  { value: 'admin@vcpmc.org', label: 'admin@vcpmc.org' },
+  { value: 'user1@vcpmc.org', label: 'user1@vcpmc.org' },
 ];
 
-export const CREATE_CONTRACT_ASSIGNEE_EMAILS: Record<string, string> = {
-  Tuan: 'tuan@vcpmc.org',
-  Admin: 'admin@vcpmc.org',
-  'Nhan vien 1': 'user1@vcpmc.org',
-};
+export const CREATE_CONTRACT_ASSIGNEE_EMAILS = [
+  'tuan@vcpmc.org',
+  'admin@vcpmc.org',
+  'user1@vcpmc.org',
+];
 
 // =============================================================================
 // REGION & AREA OPTIONS
 // =============================================================================
 
 export const CREATE_CONTRACT_REGION_OPTIONS = [
-  { value: 'HDQTGAN-PN', label: 'HDQTGAN-PN' },
+  { value: 'HĐQTGAN-PN', label: 'HĐQTGAN-PN' },
 ];
 
 export const CREATE_CONTRACT_AREA_OPTIONS = [

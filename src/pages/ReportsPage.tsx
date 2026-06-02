@@ -326,6 +326,7 @@ export function ReportsPage({
         const contracts = await getEmployeeContracts(token, employee, {
           domain: field || undefined,
           status: status || undefined,
+          year: signedYearFilter || undefined,
           page_size: 50,
         });
         setEmployeeContracts(contracts);
@@ -335,7 +336,7 @@ export function ReportsPage({
     } catch (err: any) {
       console.error('Failed to fetch employee performance:', err);
     }
-  }, [employee, field, status]);
+  }, [employee, field, status, signedYearFilter]);
 
   useEffect(() => {
     fetchEmployeePerformance();

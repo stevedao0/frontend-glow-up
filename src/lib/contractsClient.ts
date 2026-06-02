@@ -114,6 +114,12 @@ export type KvcDocxContextPreviewV2 = {
   amount_in_words: string;
 };
 
+export type MusicUsageAreaItem = {
+  area_name: string;
+  scale_description: string;
+  music_usage_type: string;
+};
+
 export type ApiContractItem = {
   id: number | string;
   contract_no: string;
@@ -134,6 +140,13 @@ export type ApiContractItem = {
   loai_hinh_karaoke?: string | null;
   tong_so_phong?: number | null;
   tong_so_box?: number | null;
+  // Phase 2 simplified royalty fields (canonical source)
+  royalty_amount_before_vat?: number | null;
+  vat_rate?: number | null;
+  vat_amount?: number | null;
+  royalty_amount_after_vat?: number | null;
+  // Phase 2: Music usage areas
+  music_usage_areas?: MusicUsageAreaItem[] | null;
 };
 
 export type ContractsListResponse = {
@@ -154,6 +167,11 @@ export type ApiContractDetail = {
     address?: string | null;
     legal_address?: string | null;
     usage_address?: string | null;
+    phone?: string | null;
+    email?: string | null;
+    representative?: string | null;
+    position?: string | null;
+    mst?: string | null;
   };
   domain: {
     display: string;
@@ -180,6 +198,17 @@ export type ApiContractDetail = {
   };
   status: string;
   raw: Record<string, unknown>;
+  music_usage_areas?: Array<{
+    area_name: string;
+    scale_description: string;
+    music_usage_type: string;
+  }>;
+  // Phase 2 simplified royalty fields (canonical source)
+  royalty_amount_before_vat?: number | null;
+  vat_rate?: number | null;
+  vat_amount?: number | null;
+  royalty_amount_after_vat?: number | null;
+  royalty_amount_in_words?: string | null;
 };
 
 export type CreateContractResponse = {
@@ -214,6 +243,61 @@ export type ContractsQuery = {
   status?: string;
   year?: string;
 };
+
+// =============================================================================
+// CONTRACT LIST KPI SUMMARY API — replaces static constants with live API calls
+// =============================================================================
+
+export type ContractsSummaryStats = {
+  totalContracts: number;
+  active: number;
+  expiringIn30Days: number;
+  expired: number;
+  pendingRenewal: number;
+  contracts2026: number;
+  contracts2025: number;
+  revenue2026: number;
+  revenue2025: number;
+  gcnDraft: number;
+  gcnFinalPrinted: number;
+  totalWorks: number;
+};
+
+/**
+ * Fetch real-time summary stats for the contracts list KPI cards.
+ * GET /api/reports/summary
+ *
+ * Returns KPIs, revenue by year — all computed live from DB.
+ * Replaces static KPI constants with live API calls.
+ */
+export function getContractsSummary(token: string): Promise<ContractsSummaryStats> {
+  return apiRequest<any>("/reports/summary", { token }).then((raw) => ({
+    totalContracts: raw.total_contracts ?? 0,
+    active: raw.active_count ?? 0,
+    expiringIn30Days: raw.expiring_30d_count ?? 0,
+    expired: raw.expired_count ?? 0,
+    pendingRenewal: raw.pending_renewal_count ?? 0,
+    gcnDraft: raw.gcn_draft ?? 0,
+    gcnFinalPrinted: raw.gcn_final_printed ?? 0,
+    totalWorks: raw.total_works ?? 0,
+    contracts2026:
+      (raw.revenue_by_year ?? [])
+        .find((y: any) => y.year === new Date().getFullYear())
+        ?.contract_count ?? 0,
+    contracts2025:
+      (raw.revenue_by_year ?? [])
+        .find((y: any) => y.year === new Date().getFullYear() - 1)
+        ?.contract_count ?? 0,
+    revenue2026:
+      (raw.revenue_by_year ?? [])
+        .find((y: any) => y.year === new Date().getFullYear())
+        ?.total_revenue ?? 0,
+    revenue2025:
+      (raw.revenue_by_year ?? [])
+        .find((y: any) => y.year === new Date().getFullYear() - 1)
+        ?.total_revenue ?? 0,
+  }));
+}
 
 export function getContracts(token: string, query: ContractsQuery): Promise<ContractsListResponse> {
   const params = new URLSearchParams();
@@ -897,6 +981,14 @@ export type UpdateContractResponse = {
 };
 
 export type UpdateContractPayload = {
+  // Contract info (fully editable)
+  contract_no?: string | null;
+  ngay_lap_hop_dong?: string | null;
+  contract_year?: number | null;
+  region_code?: string | null;
+  field_code?: string | null;
+  linh_vuc?: string | null;
+  // Partner info
   don_vi_ten?: string | null;
   ten_bang_hieu?: string | null;
   don_vi_dia_chi?: string | null;
@@ -906,15 +998,31 @@ export type UpdateContractPayload = {
   don_vi_nguoi_dai_dien?: string | null;
   don_vi_chuc_vu?: string | null;
   don_vi_mst?: string | null;
+  // Full address fields (post-2025 merger)
+  legal_address_line?: string | null;
+  legal_ward?: string | null;
+  legal_province?: string | null;
+  legal_full_address?: string | null;
+  usage_address_line?: string | null;
+  usage_ward?: string | null;
+  usage_province?: string | null;
+  usage_full_address?: string | null;
+  // Term
   ngay_bat_dau?: string | null;
   ngay_ket_thuc?: string | null;
-  so_tien_chua_gtgt_value?: number | null;
-  thue_percent?: number | null;
+  // Phase 2 simplified royalty fields
+  royalty_amount_before_vat?: number | null;
+  vat_rate?: number | null;
+  vat_amount?: number | null;
+  royalty_amount_after_vat?: number | null;
   renewal_status?: string | null;
   loai_hinh_karaoke?: string | null;
-  tong_so_phong?: number | null;
-  tong_so_box?: number | null;
   contract_note?: string | null;
+  music_usage_areas?: Array<{
+    area_name: string;
+    scale_description: string;
+    music_usage_type: string;
+  }>;
 };
 
 export function updateContract(
@@ -942,6 +1050,9 @@ export type CertificateContextResult = {
     contract_id: number | null;
     certificate_no: string | null;
     certificate_issue_date: string | null;
+    certificate_issue_day: string | null;
+    certificate_issue_month: string | null;
+    certificate_issue_year: string | null;
     contract_no: string;
     organization_name: string;
     business_registration_no: string;
@@ -953,7 +1064,13 @@ export type CertificateContextResult = {
     gcn_scope_col_3_text: string;
     effective_from: string | null;
     effective_to: string | null;
+    offset_x_mm: number;
+    offset_y_mm: number;
+    qr_image_data: string | null;
+    status: string;
     warnings: string[];
+    fieldOffsets?: Record<string, { dx: number; dy: number }>;
+    scopeColAlign?: { col1: 'left' | 'center' | 'right'; col2: 'left' | 'center' | 'right'; col3: 'left' | 'center' | 'right' };
   };
   locked_layout: Record<string, unknown>;
   write_performed: boolean;
@@ -1000,7 +1117,10 @@ export type CertificateDraftCreateResult = {
 export function createCertificateDraft(
   token: string,
   contractId: number,
-  payload?: { client_confirmation?: { clone_only_certificate_draft_confirmed?: boolean } }
+  payload?: {
+    client_confirmation?: { clone_only_certificate_draft_confirmed?: boolean };
+    client_certificate_no?: string | null;
+  }
 ): Promise<CertificateDraftCreateResult> {
   return apiRequest<CertificateDraftCreateResult>(
     `/contracts/${contractId}/certificates/draft`,

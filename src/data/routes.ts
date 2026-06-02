@@ -1,5 +1,5 @@
 export type RouteKey =
-'dashboard' |
+|'dashboard' |
 'contracts.list' |
 'contracts.detail' |
 'contracts.edit' |
@@ -12,6 +12,7 @@ export type RouteKey =
 'search' |
 'admin.users' |
 'admin.permissions' |
+'admin.import' |
 'assistant';
 
 export const ROUTE_PATHS: Record<RouteKey, string> = {
@@ -28,6 +29,7 @@ export const ROUTE_PATHS: Record<RouteKey, string> = {
   search: '/bg/search',
   'admin.users': '/admin/users',
   'admin.permissions': '/admin/permissions',
+  'admin.import': '/admin/import',
   assistant: '/assistant'
 };
 

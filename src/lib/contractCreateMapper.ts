@@ -151,9 +151,9 @@ export const createDefaultContractDraft = (): CreateContractDraft => {
       contractNumber: '',  // USER INPUT - leave empty
       signedDate: '',      // USER INPUT - leave empty
       contractYear: DEFAULT_CONTRACT_YEAR,
-      regionCode: 'HDQTGAN-PN',  // Default region
+      regionCode: 'HĐQTGAN-PN',  // Default region (Vietnamese accented)
       areaCode: '',
-      fieldCode: '',
+      fieldCode: 'PR',     // Default right code (Phat hanh)
     },
     customer: {
       // ALL CUSTOMER INFO MUST BE USER INPUT
@@ -187,7 +187,6 @@ export const createDefaultContractDraft = (): CreateContractDraft => {
       effectiveTo: '',    // USER INPUT
     },
     assignee: {
-      name: '',
       email: '',
     },
     notes: {
@@ -489,9 +488,26 @@ export const mapDraftToContractRecordsCandidate = (
     ])
     .filter(Boolean)
     .join('\n');
-  const amountBeforeGtgt = Math.max(0, Math.round(aggregation?.subtotalBeforeGtgt ?? 0));
-  const gtgtAmount = Math.max(0, Math.round(aggregation?.gtgtAmount ?? 0));
-  const totalAmount = Math.max(0, Math.round(aggregation?.totalAmount ?? 0));
+
+  // Phase 2: Check if direct input from form is available
+  // Use Phase 2 direct input when:
+  // 1. aggregation.subtotalBeforeGtgt is 0 (no calculation) AND
+  // 2. draft.areaBased.royaltyAmountBeforeVat > 0 (user entered value manually)
+  const aggregationHasValue = (aggregation?.subtotalBeforeGtgt ?? 0) > 0;
+  const phase2HasDirectInput = (draft.areaBased.royaltyAmountBeforeVat ?? 0) > 0;
+  
+  // Determine final amount: prefer Phase 2 direct input, fall back to aggregation
+  const royaltyAmountBeforeVat = phase2HasDirectInput && !aggregationHasValue
+    ? Math.max(0, Math.round(draft.areaBased.royaltyAmountBeforeVat ?? 0))
+    : Math.max(0, Math.round(aggregation?.subtotalBeforeGtgt ?? 0));
+  const vatRate = draft.areaBased.vatRate ?? 8;
+  const gtgtAmount = phase2HasDirectInput && !aggregationHasValue
+    ? Math.round(royaltyAmountBeforeVat * vatRate / 100)
+    : Math.max(0, Math.round(aggregation?.gtgtAmount ?? 0));
+  const totalAmount = royaltyAmountBeforeVat + gtgtAmount;
+
+  // Legacy financial fields (keep for backward compatibility)
+  const amountBeforeGtgt = royaltyAmountBeforeVat;
 
   // Phase 2: Music usage areas (strip id for DB)
   const musicUsageAreas = draft.areaBased.musicUsageAreas.map((area) => ({
@@ -500,11 +516,8 @@ export const mapDraftToContractRecordsCandidate = (
     music_usage_type: area.musicUsageType || '',
   }));
 
-  // Phase 2: Simplified royalty (direct input from form)
-  const royaltyAmountBeforeVat = Math.max(0, Math.round(aggregation?.subtotalBeforeGtgt ?? 0));
-  const vatRate = draft.areaBased.vatRate ?? 8;
-  const vatAmount = Math.round(royaltyAmountBeforeVat * vatRate / 100);
-  const royaltyAmountAfterVat = royaltyAmountBeforeVat + vatAmount;
+  // Phase 2: Simplified royalty (direct input from form) - already computed above
+  const royaltyAmountAfterVat = royaltyAmountBeforeVat + gtgtAmount;
 
   return {
     contract_no: contractNo,
@@ -536,18 +549,12 @@ export const mapDraftToContractRecordsCandidate = (
     usage_full_address: draft.location.usageFullAddress.trim(),
     // Legacy: keep full text for backward compat
     dia_chi_su_dung: draft.location.usageFullAddress.trim(),
-    nguoi_thuc_hien_name: draft.assignee.name.trim(),
     nguoi_thuc_hien_email: draft.assignee.email.trim(),
-    loai_hinh_karaoke: draft.karaoke.karaokeType,
-    tong_so_phong: draft.karaoke.totalRooms,
-    tong_so_box: draft.karaoke.totalBoxes,
-    karaoke_room_details_json: JSON.stringify(normalizedRoomSections),
-    room_display_text: roomDisplayText,
     ngay_bat_dau: draft.term.effectiveFrom,
     ngay_ket_thuc: draft.term.effectiveTo,
     // Legacy financial fields
     so_tien_chua_gtgt_value: amountBeforeGtgt,
-    thue_percent: draft.karaoke.gtgtPercent,
+    thue_percent: vatRate,
     thue_gtgt_value: gtgtAmount,
     so_tien_value: totalAmount,
     renewal_status: draft.domain.renewalStatus || 'NEW',
@@ -561,7 +568,7 @@ export const mapDraftToContractRecordsCandidate = (
     // Phase 2: Simplified royalty fields
     royalty_amount_before_vat: royaltyAmountBeforeVat,
     vat_rate: vatRate,
-    vat_amount: vatAmount,
+    vat_amount: gtgtAmount,
     royalty_amount_after_vat: royaltyAmountAfterVat,
     royalty_amount_in_words: numberToVietnameseWords(royaltyAmountAfterVat),
     // Phase BACKGROUND-TEMPLATE-REFACTOR: Export template selection
@@ -718,7 +725,9 @@ export const updateDomainSelection = (code: BackgroundDomainCode): DraftUpdater 
     ...current.domain,
     domainCode: code,
     domainDisplayName: getDomainDisplayName(code),
-    fieldCode: getCanonicalFieldCode(code),
+    // Only reset fieldCode to 'PR' if user has not explicitly selected one yet.
+    // This prevents overwriting a user's MR selection when they switch domains.
+    fieldCode: current.common.fieldCode || getCanonicalFieldCode(code),
     renewalStatus: current.domain.renewalStatus || 'NEW',
     referenceContractId: current.domain.referenceContractId,
     referenceContractNo: current.domain.referenceContractNo,
@@ -1823,7 +1832,6 @@ export const migrateLegacyDraft = (
       effectiveTo: String((legacyDraft as Record<string, unknown>).endDate || legacyDraft?.dates?.endDate || ''),
     },
     assignee: {
-      name: String((legacyDraft as Record<string, unknown>).assignee || legacyDraft?.assignee?.name || ''),
       email: String((legacyDraft as Record<string, unknown>).assigneeEmail || legacyDraft?.assignee?.email || ''),
     },
     notes: {

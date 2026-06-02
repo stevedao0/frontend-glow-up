@@ -65,11 +65,9 @@ export function CertificatePaperPreview({
 }: CertificatePaperPreviewProps) {
   const offsetX = mode === 'print' ? 0 : Number(certificate.offset_x_mm ?? GCN_LOCKED_OFFSET.defaultXmm);
   const offsetY = mode === 'print' ? 0 : Number(certificate.offset_y_mm ?? GCN_LOCKED_OFFSET.defaultYmm);
-  const contractNo = String(certificate.contract_no || '').trim();
-  const contractNoFontSize = contractNo.length > 36 ? 11.5 : 12.5;
   const issueParts = issueDateParts(certificate);
   const anchorTextByKey: Record<string, string> = {
-    contract_no: contractNo,
+    contract_no: String(certificate.contract_no || '').trim(),
     effective_from: formatDate(certificate.effective_from || ''),
     effective_to: formatDate(certificate.effective_to || ''),
     certificate_issue_day: issueParts.day,
@@ -102,13 +100,12 @@ export function CertificatePaperPreview({
 
   const fieldStyle = (field: CertificateFieldLayout) => {
     const isScope = field.key.startsWith('gcn_scope_col_');
-    const isScope1 = field.key === 'gcn_scope_col_1_text';
     const { dx, dy } = getFieldOffset(field.key);
     const align = isScope ? getColAlign(field.key) : field.align;
     return {
       ...boxStyle(field.x, field.y, field.width, field.height, dx, dy),
       fontSize: `${field.fontSize}pt`,
-      lineHeight: isScope1 ? '1.15' : isScope ? '1.1' : '1.15',
+      lineHeight: '1.2',
       fontWeight: field.bold ? 700 : 400,
       fontFamily: '"Times New Roman", serif',
     };
@@ -116,7 +113,6 @@ export function CertificatePaperPreview({
 
   const renderField = (field: CertificateFieldLayout) => {
     const isScope = field.key.startsWith('gcn_scope_col_');
-    const isScope1 = field.key === 'gcn_scope_col_1_text';
     const align = isScope ? getColAlign(field.key) : field.align;
     return (
       <div
@@ -140,17 +136,16 @@ export function CertificatePaperPreview({
 
           {GCN_BOTTOM_ANCHOR_LAYOUTS.map((field) => {
             const { dx, dy } = getFieldOffset(field.key);
-            const isContractNo = field.key === 'contract_no';
             return (
               <div
                 key={field.key}
                 className={`gcn-locked-bottom-anchor ${textAlignClass(field.align)} ${showSafeArea ? 'outline outline-1 outline-sky-300/70' : ''}`}
                 style={{
                   ...boxStyle(field.x, field.y, field.width, field.height, dx, dy),
-                  fontSize: `${isContractNo ? contractNoFontSize : field.fontSize}pt`,
+                  fontSize: `${field.fontSize}pt`,
                   fontWeight: field.bold ? 700 : 400,
                   fontFamily: '"Times New Roman", serif',
-                  lineHeight: '1.15',
+                  lineHeight: '1.2',
                 }}
               >
                 <span>{anchorTextByKey[field.key] || ''}</span>

@@ -1,8 +1,8 @@
 /**
  * Certificate record types — mirrors backend CertificateRecordRow model.
  *
- * Certificate data is fetched from /api/reports/summary (real-time from DB).
- * The old static CERTIFICATE_RECORDS and CERTIFICATE_STATS arrays have been removed.
+ * Workflow: Chưa cấp số → Đã cấp số → In chính thức → In lại (nếu cần)
+ * No test print workflow.
  */
 export type CertificateStatus = 'draft' | 'test_printed' | 'final_printed';
 
@@ -31,13 +31,16 @@ export type CertificateRecord = {
   printed_at: string | null;
   printed_by?: string | null;
   print_count: number;
+  last_printed_at?: string | null;
+  last_print_file?: string | null;
+  last_print_reason?: string | null;
   has_qr_image?: boolean;
 };
 
 export const CERTIFICATE_STATUS_LABEL: Record<CertificateStatus, string> = {
-  draft: 'Bản nháp',
+  draft: 'Chưa cấp số',
   test_printed: 'In thử',
-  final_printed: 'In chính thức',
+  final_printed: 'Đã in chính thức',
 };
 
 export const CERTIFICATE_STATUS_TONE: Record<

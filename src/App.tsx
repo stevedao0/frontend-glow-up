@@ -13,6 +13,8 @@ import { LoginPage } from './pages/LoginPage';
 import { UsersPage } from './pages/UsersPage';
 import { PermissionsPage } from './pages/PermissionsPage';
 import { GlobalSearchPage } from './pages/GlobalSearchPage';
+import { ImportContractsPage } from './pages/ImportContractsPage';
+import { DispatchesPage } from './pages/DispatchesPage';
 import { AccessDenied } from './components/app-ui/AccessDenied';
 import { RouteKey, ROUTE_PATHS, WORKSPACES } from './data/routes';
 import { AuthProvider, useAuth } from './lib/auth';
@@ -54,8 +56,18 @@ function AppContent() {
     const saved = sessionStorage.getItem('app_active_contract_id');
     return saved ? Number(saved) : null;
   });
+// #region DEBUG ea4965
+const _appLog = (msg: string, data: Record<string, unknown>) => fetch('http://127.0.0.1:7247/ingest/8a5eb014-b35b-4484-a78b-4d64b93cb08f',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'ea4965'},body:JSON.stringify({sessionId:'ea4965',runId:'initial',location:'App.tsx:55',message:msg,data,timestamp:Date.now()})}).catch(()=>{});
+// #endregion
   const [pendingPrintContractId, setPendingPrintContractId] = useState<number | null>(() => {
+// #region DEBUG ea4965
+    _appLog('STATE_INIT_pendingPrintContractId', { sessionStorage_id: sessionStorage.getItem('app_pending_print_contract_id'), ts: Date.now() });
+// #endregion
     const saved = sessionStorage.getItem('app_pending_print_contract_id');
+    return saved ? Number(saved) : null;
+  });
+  const [pendingPrintCertificateId, setPendingPrintCertificateId] = useState<number | null>(() => {
+    const saved = sessionStorage.getItem('app_pending_print_certificate_id');
     return saved ? Number(saved) : null;
   });
 
@@ -81,6 +93,15 @@ function AppContent() {
       sessionStorage.removeItem('app_pending_print_contract_id');
     }
   }, [pendingPrintContractId]);
+
+  // Persist pending print certificate ID
+  useEffect(() => {
+    if (pendingPrintCertificateId) {
+      sessionStorage.setItem('app_pending_print_certificate_id', String(pendingPrintCertificateId));
+    } else {
+      sessionStorage.removeItem('app_pending_print_certificate_id');
+    }
+  }, [pendingPrintCertificateId]);
 
   const [latestContractForCreate, setLatestContractForCreate] = useState<import('./data/contractRecords').ContractRecord | undefined>(undefined);
   // Default workspace to first allowed domain
@@ -149,6 +170,12 @@ function AppContent() {
         requiredPermission="portal.access"
         onBack={() => setRoute('dashboard')} />);
 
+    if (route === 'admin.import' && !['admin', 'mod'].includes(currentUser.backendRole))
+    return (
+      <AccessDenied
+        requiredPermission="admin.users.manage"
+        onBack={() => setRoute('dashboard')} />);
+
 
     if (route === 'dashboard') {
       return (
@@ -164,6 +191,9 @@ function AppContent() {
             setRoute('contracts.detail');
           }}
           onPrintCertificate={(contractId) => {
+// #region DEBUG ea4965
+            _appLog('ONPRINTCERTIFICATE_CALL', { contractId, ts: Date.now() });
+// #endregion
             setPendingPrintContractId(contractId);
             setRoute('contracts.print');
           }}
@@ -182,6 +212,9 @@ function AppContent() {
           }}
           onNavigate={setRoute}
           onCreateGcn={(contractId) => {
+// #region DEBUG ea4965
+            _appLog('ONCREATEGNCALL', { contractId, ts: Date.now() });
+// #endregion
             setPendingPrintContractId(contractId);
             setRoute('contracts.print');
           }}
@@ -219,7 +252,7 @@ function AppContent() {
       return <CertificatesPage onNavigate={setRoute} />;
     }
     if (route === 'contracts.print') {
-      return <CertificatePrintPage onNavigate={setRoute} initialContractId={pendingPrintContractId} onPrinted={() => setPendingPrintContractId(null)} />;
+      return <CertificatePrintPage onNavigate={setRoute} initialContractId={pendingPrintContractId} initialCertificateId={pendingPrintCertificateId} onPrinted={() => { setPendingPrintContractId(null); setPendingPrintCertificateId(null); }} />;
     }
     if (route === 'reports') {
       return <ReportsPage onNavigate={setRoute} />;
@@ -229,6 +262,9 @@ function AppContent() {
     }
     if (route === 'admin.permissions') {
       return <PermissionsPage />;
+    }
+    if (route === 'admin.import') {
+      return <ImportContractsPage onNavigate={setRoute} />;
     }
     if (route === 'search') {
       return (
@@ -240,6 +276,9 @@ function AppContent() {
           }}
         />
       );
+    }
+    if (route === 'dispatch') {
+      return <DispatchesPage onNavigate={setRoute} />;
     }
     const meta = PLACEHOLDER_META[route];
     if (!meta) return null;

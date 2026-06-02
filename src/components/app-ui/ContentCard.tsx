@@ -9,7 +9,7 @@ export function ContentCard({
   accent = false,
 }: {
   title?: string;
-  description?: string;
+  description?: React.ReactNode;
   actions?: React.ReactNode;
   children: React.ReactNode;
   padded?: boolean;

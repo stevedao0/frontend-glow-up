@@ -25,6 +25,7 @@ import type { RoyaltyTableData } from '../components/contract/WordLikeRoyaltyTab
 import { MusicUsageAreaSection } from '../components/contract/MusicUsageAreaSection';
 import { SimpleRoyaltyInput } from '../components/contract/SimpleRoyaltyInput';
 import { ContractTemplateSearch } from '../components/contract/ContractTemplateSearch';
+import { useEmployeeOptions } from '../hooks/useEmployeeOptions';
 import type { PrefillSourceResponse } from '../lib/contractsClient';
 import {
   AREA_USAGE_KIND_OPTIONS,
@@ -32,8 +33,6 @@ import {
   CALC_MODULE_NOT_IMPLEMENTED_PLACEHOLDER,
   CALCULATION_MODULE_OPTIONS,
   CREATE_CONTRACT_AREA_OPTIONS,
-  CREATE_CONTRACT_ASSIGNEE_EMAILS,
-  CREATE_CONTRACT_ASSIGNEE_OPTIONS,
   CREATE_CONTRACT_BACKGROUND_DOMAIN_OPTIONS,
   CREATE_CONTRACT_KARAOKE_USAGE_OPTIONS,
   CREATE_CONTRACT_PRICING_RENDER_OPTIONS,
@@ -215,6 +214,7 @@ export function CreateContractPage({
   initialDraftFromContract?: import('../data/contractRecords').ContractRecord;
 }) {
   const { currentUser } = useAuth();
+  const { employees, loading: employeesLoading } = useEmployeeOptions();
   const today = new Date().toISOString().split('T')[0];
   const [draft, setDraft] = useState<CreateContractDraft>(() => {
     const baseDraft = initialDraftFromContract
@@ -222,19 +222,13 @@ export function CreateContractPage({
       : createDefaultContractDraft();
     // Auto-fill assignee from logged-in user
     if (currentUser) {
-      // Match against known assignee keys (normalize whitespace and case)
-      const nameMap: Record<string, string> = {
-        'Tuan': 'Tuan',
-        'Tuấn': 'Tuan',
-        'Admin': 'Admin',
-        'Nhan vien 1': 'Nhan vien 1',
-        'Nhân viên 1': 'Nhan vien 1',
-      };
-      const rawName = currentUser.name || currentUser.email || '';
-      const normalized = nameMap[rawName] || rawName;
+      const userEmail = currentUser.email || '';
+      const matchingEmployee = employees.find(
+        (e) => e.email?.toLowerCase() === userEmail.toLowerCase() || e.name?.toLowerCase() === currentUser.name?.toLowerCase()
+      );
       baseDraft.assignee = {
-        name: normalized,
-        email: CREATE_CONTRACT_ASSIGNEE_EMAILS[normalized] || currentUser.email || '',
+        name: matchingEmployee?.name || currentUser.name || '',
+        email: matchingEmployee?.email || userEmail,
       };
     }
     // Default signedDate to today if not set
@@ -599,7 +593,6 @@ export function CreateContractPage({
         },
         assignee: {
           ...baseDraft.assignee,
-          name: current.assignee.name || baseDraft.assignee.name,
           email: current.assignee.email || baseDraft.assignee.email,
         },
       };
@@ -1943,63 +1936,52 @@ export function CreateContractPage({
                 <h4 className="text-xs font-semibold uppercase tracking-[0.1em] text-zinc-500 mb-3">
                   Người thực hiện
                 </h4>
-                <Select
-                  label="Người thực hiện"
-                  value={draft.assignee.name}
-                  onChange={(value) =>
-                    updateDraft((current) => ({
-                      ...current,
-                      assignee: {
-                        name: value,
-                        email: CREATE_CONTRACT_ASSIGNEE_EMAILS[value] || '',
-                      },
-                    }))
-                  }
-                  options={CREATE_CONTRACT_ASSIGNEE_OPTIONS}
-                />
+                {employeesLoading ? (
+                  <div className="h-10 bg-zinc-100 rounded-lg animate-pulse" />
+                ) : employees.length > 0 ? (
+                  <Select
+                    label="Người thực hiện"
+                    value={draft.assignee.email}
+                    onChange={(value) =>
+                      updateDraft((current) => ({
+                        ...current,
+                        assignee: {
+                          email: value,
+                        },
+                      }))
+                    }
+                    options={employees.map((e) => ({
+                      value: e.email || e.id,
+                      label: e.email || e.id,
+                    }))}
+                  />
+                ) : (
+                  <Select
+                    label="Người thực hiện"
+                    value={draft.assignee.email}
+                    onChange={(value) =>
+                      updateDraft((current) => ({
+                        ...current,
+                        assignee: {
+                          email: value,
+                        },
+                      }))
+                    }
+                    options={[
+                      { value: currentUser?.email || '', label: currentUser?.email || '' },
+                    ]}
+                  />
+                )}
               </div>
             </div>
           </FormSection>
 
-          <FormSection
-            title="4. Ghi chú & điều khoản"
-            description="Ghi chú nội bộ và điều khoản xuất hợp đồng"
-          >
-            <div className="space-y-4">
-              <Textarea
-                label="Ghi chú nội bộ"
-                value={draft.notes.internal}
-                onChange={(e) =>
-                  updateDraft((current) => ({
-                    ...current,
-                    notes: { ...current.notes, internal: e.target.value },
-                  }))
-                }
-                placeholder="Ghi chú cho nội bộ VCPMC..."
-              />
-              <Textarea
-                label="Điều khoản / Ghi chú xuất hợp đồng"
-                value={draft.notes.contractTerms}
-                onChange={(e) =>
-                  updateDraft((current) => ({
-                    ...current,
-                    notes: {
-                      ...current.notes,
-                      contractTerms: e.target.value,
-                    },
-                  }))
-                }
-                placeholder="Điều khoản sẽ xuất hiện trên hợp đồng..."
-              />
-            </div>
-          </FormSection>
-
           {/* =================================================================== */}
-          {/* SECTION 2: LĨNH VỰC */}
+          {/* SECTION 4: LĨNH VỰC */}
           {/* Domain selector - all Background domains */}
           {/* =================================================================== */}
           <FormSection
-            title="5. Lĩnh vực"
+            title="4. Lĩnh vực"
             description="Chọn lĩnh vực kinh doanh Background"
           >
             <div className="space-y-4">
@@ -2030,7 +2012,7 @@ export function CreateContractPage({
           {/* Phase BACKGROUND-TEMPLATE-REFACTOR: Template selection */}
           {/* =================================================================== */}
           <FormSection
-            title="6. Mẫu xuất hợp đồng"
+            title="5. Mẫu xuất hợp đồng"
             description="Chọn mẫu Word để xuất hợp đồng"
           >
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -2152,7 +2134,7 @@ export function CreateContractPage({
           </FormSection>
 
           {/* =================================================================== */}
-          {/* SECTION 3: KHU VỰC KINH DOANH */}
+          {/* SECTION 6: KHU VỰC KINH DOANH */}
           {/* Domain-specific fields */}
           {/* =================================================================== */}
           <FormSection

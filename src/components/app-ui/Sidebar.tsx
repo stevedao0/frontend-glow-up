@@ -14,7 +14,8 @@ import {
   SparklesIcon,
   ChevronDownIcon,
   LockIcon,
-  PrinterIcon } from
+  PrinterIcon,
+  UploadIcon } from
 'lucide-react';
 import { RouteKey } from '../../data/routes';
 import { useAuth } from '../../lib/auth';
@@ -100,6 +101,12 @@ const SYSTEM: Item[] = [
   requiredPerm: 'admin.users.manage'
 },
 {
+  key: 'admin.import',
+  label: 'Import Excel',
+  icon: <UploadIcon className="h-[15px] w-[15px]" />,
+  requiredPerm: 'admin.users.manage'
+},
+{
   key: 'assistant',
   label: 'AI Assistant',
   icon: <SparklesIcon className="h-[15px] w-[15px]" />,
@@ -121,7 +128,7 @@ export function Sidebar({
   );
   const renderItem = (it: Item, indent = false) => {
     const isManager = currentUser?.role === 'manager';
-    const isAdminItem = it.key === 'admin.users' || it.key === 'admin.permissions';
+    const isAdminItem = it.key === 'admin.users' || it.key === 'admin.permissions' || it.key === 'admin.import';
     const showDisabled = isManager && isAdminItem;
     const hasAccess = it.requiredPerm ? hasPermission(it.requiredPerm) : true;
     if (!hasAccess && !showDisabled) return null;

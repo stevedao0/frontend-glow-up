@@ -1,4 +1,5 @@
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import {
   XIcon,
   DownloadIcon,
@@ -138,7 +139,6 @@ const FORMAT_OPTIONS: {
 export interface ExportReportDialogProps {
   open: boolean;
   onClose: () => void;
-  // Current filter values from parent
   contractsFilters?: ExportContractsParams;
   expiringFilters?: ExportExpiringParams;
   revenueFilters?: ExportRevenueParams;
@@ -164,6 +164,7 @@ export function ExportReportDialog({
   const [format, setFormat] = useState<ReportFormat>('excel');
   const [isExporting, setIsExporting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
 
   // Reset state when dialog opens
   useEffect(() => {
@@ -184,6 +185,13 @@ export function ExportReportDialog({
       window.removeEventListener('keydown', onKey);
     };
   }, [open, defaultType, onClose]);
+
+  // Focus trap
+  useEffect(() => {
+    if (open && dialogRef.current) {
+      dialogRef.current.focus();
+    }
+  }, [open]);
 
   const currentReport = REPORT_TYPE_OPTIONS.find((r) => r.value === reportType);
   const isSupported = currentReport?.supported ?? false;
@@ -248,41 +256,32 @@ export function ExportReportDialog({
   const today = formatDate(new Date().toISOString().slice(0, 10));
   const reportTitle = currentReport?.label ?? 'Báo cáo';
 
-  return (
-    <div className="fixed inset-0 z-50 overflow-y-auto overscroll-contain">
+  const dialogContent = (
+    <div
+      className="fixed inset-0 z-[100] p-4"
+      role="presentation"
+    >
+      {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-zinc-950/40 backdrop-blur-[2px]"
-        style={{ animation: 'fadeIn 180ms ease-out' }}
+        className="absolute inset-0 bg-zinc-950/50 backdrop-blur-sm"
         onClick={onClose}
       />
 
-      <div className="relative min-h-full flex items-center justify-center p-4">
+      {/* Dialog */}
       <div
+        ref={dialogRef}
         role="dialog"
         aria-modal="true"
-        aria-label="Xuất báo cáo"
-        className="relative w-full max-w-5xl max-h-[calc(100vh-2rem)] my-auto flex flex-col bg-zinc-50 rounded-2xl ring-1 ring-zinc-900/[0.06] shadow-2xl shadow-zinc-950/30 overflow-hidden"
-        style={{ animation: 'modalIn 220ms cubic-bezier(0.32,0.72,0,1)' }}
+        aria-labelledby="export-dialog-title"
+        tabIndex={-1}
+        className="fixed left-1/2 top-1/2 z-50 w-[min(calc(100vw-32px),1100px)] max-h-[calc(100dvh-32px)] -translate-x-1/2 -translate-y-1/2 flex flex-col bg-zinc-50 rounded-2xl shadow-2xl shadow-zinc-950/40 overflow-hidden focus:outline-none"
+        style={{
+          animation: 'modalSlideIn 200ms ease-out',
+        }}
       >
-        {/* Header - fixed height */}
-        <header className="relative overflow-hidden text-white shrink-0">
-          <div
-            aria-hidden
-            className="absolute inset-0"
-            style={{
-              background: 'linear-gradient(135deg, #0a0a1a 0%, #1e1b4b 35%, #4c1d95 100%)',
-            }}
-          />
-          <div
-            aria-hidden
-            className="absolute -top-12 -right-12 h-44 w-44 rounded-full"
-            style={{
-              background: 'radial-gradient(circle, rgba(168,85,247,0.4) 0%, transparent 65%)',
-              filter: 'blur(20px)',
-            }}
-          />
-
-          <div className="relative px-5 py-4 flex items-center gap-3">
+        {/* Header */}
+        <header className="shrink-0 bg-gradient-to-r from-[#0a0a1a] via-[#1e1b4b] to-[#4c1d95] text-white">
+          <div className="px-5 py-4 flex items-center gap-3">
             <span className="h-9 w-9 rounded-xl bg-white/10 ring-1 ring-inset ring-white/20 inline-flex items-center justify-center">
               <DownloadIcon className="h-4 w-4" />
             </span>
@@ -290,7 +289,7 @@ export function ExportReportDialog({
               <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-amber-200/90">
                 Xuất báo cáo
               </p>
-              <h2 className="text-base font-semibold tracking-tight">
+              <h2 id="export-dialog-title" className="text-base font-semibold tracking-tight">
                 Tạo báo cáo Excel
               </h2>
             </div>
@@ -307,16 +306,16 @@ export function ExportReportDialog({
 
         {/* Error message */}
         {error && (
-          <div className="mx-5 mt-2 flex items-center gap-2 px-4 py-2.5 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700 shrink-0">
+          <div className="mx-5 mt-3 flex items-center gap-2 px-4 py-2.5 bg-red-50 border border-red-200 rounded-lg text-sm text-red-700 shrink-0">
             <AlertCircleIcon className="h-4 w-4 shrink-0" />
             {error}
           </div>
         )}
 
-        {/* Body - scrollable */}
-        <div className="flex-1 min-h-0 flex flex-col lg:flex-row overflow-hidden">
-          {/* Left panel - options */}
-          <aside className="w-full lg:w-72 shrink-0 min-h-0 overflow-y-auto p-4 lg:p-5 space-y-5 lg:border-r lg:border-zinc-200 bg-white">
+        {/* Body */}
+        <div className="flex-1 min-h-0 grid grid-cols-[300px_1fr] overflow-hidden">
+          {/* Left panel */}
+          <aside className="min-h-0 overflow-y-auto p-4 lg:p-5 space-y-5 border-r border-zinc-200 bg-white">
             {/* Report type */}
             <section>
               <h3 className="text-[11px] font-semibold uppercase tracking-[0.1em] text-zinc-500 mb-2">
@@ -374,7 +373,7 @@ export function ExportReportDialog({
               <h3 className="text-[11px] font-semibold uppercase tracking-[0.1em] text-zinc-500 mb-2">
                 2. Định dạng
               </h3>
-              <div className="grid grid-cols-1 gap-2">
+              <div className="space-y-2">
                 {FORMAT_OPTIONS.map((f) => {
                   const isActive = format === f.value;
                   const isSupportedFormat = supportedFormats.includes(f.value) && isSupported;
@@ -391,7 +390,7 @@ export function ExportReportDialog({
                       }}
                       disabled={!isSupportedFormat}
                       title={!isSupportedFormat && isSupported ? 'Chưa hỗ trợ' : undefined}
-                      className={`flex items-start gap-3 px-3 py-2.5 rounded-lg text-left transition-all ring-1 ${
+                      className={`w-full flex items-start gap-3 px-3 py-2.5 rounded-lg text-left transition-all ring-1 ${
                         isActive
                           ? 'bg-amber-50/60 ring-amber-700/20'
                           : !isSupportedFormat
@@ -434,11 +433,11 @@ export function ExportReportDialog({
           </aside>
 
           {/* Right panel - preview */}
-          <main className="flex-1 min-h-0 overflow-y-auto p-4 lg:p-5 bg-zinc-100/50">
-            <h3 className="text-[11px] font-semibold uppercase tracking-[0.1em] text-zinc-500 mb-2 sticky top-0 bg-zinc-100/50 py-1">
+          <main className="min-h-0 overflow-y-auto p-4 lg:p-5 bg-zinc-100/50">
+            <h3 className="text-[11px] font-semibold uppercase tracking-[0.1em] text-zinc-500 mb-3">
               3. Xem trước báo cáo
             </h3>
-            <div className="bg-white rounded-xl ring-1 ring-zinc-900/[0.06] shadow-[0_1px_2px_rgba(15,15,25,0.04),0_8px_24px_rgba(15,15,25,0.06)] overflow-hidden">
+            <div className="bg-white rounded-xl ring-1 ring-zinc-900/[0.06] shadow-sm overflow-hidden">
               {/* Document header */}
               <div className="px-5 py-4 border-b border-zinc-200 text-center">
                 <p className="text-[11px] font-bold uppercase tracking-[0.14em] text-zinc-700">
@@ -476,63 +475,65 @@ export function ExportReportDialog({
               {/* Preview content */}
               <div className="px-5 py-4">
                 {isSupported ? (
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-3 text-sm text-zinc-600">
-                      <FileSpreadsheetIcon className="h-7 w-7 text-emerald-600 shrink-0" />
-                      <div>
-                        <p className="font-medium text-zinc-900">File Excel sẽ bao gồm:</p>
-                        <ul className="mt-1 text-xs text-zinc-500 space-y-0.5">
-                          {reportType === 'contracts' && (
-                            <>
-                              <li>• Danh sách hợp đồng đầy đủ</li>
-                              <li>• Thông tin: Số HĐ, đơn vị, bảng hiệu, lĩnh vực</li>
-                              <li>• Trạng thái, ngày hiệu lực, hết hạn</li>
-                              <li>• Tiền trước thuế, VAT, tổng tiền</li>
-                              <li>• Dòng tổng cộng ở cuối file</li>
-                            </>
-                          )}
-                          {reportType === 'expiring' && (
-                            <>
-                              <li>• Hợp đồng sắp hết hạn</li>
-                              <li>• Số HĐ, đơn vị, lĩnh vực</li>
-                              <li>• Ngày hết hạn, số ngày còn lại</li>
-                              <li>• Highlight hợp đồng ≤30 ngày</li>
-                            </>
-                          )}
-                          {reportType === 'revenue' && (
-                            <>
-                              <li>• Sheet Tổng hợp: KPI chính</li>
-                              <li>• Sheet Theo lĩnh vực: phân bổ theo domain</li>
-                              <li>• Sheet Theo năm: doanh thu theo năm</li>
-                            </>
-                          )}
-                          {reportType === 'signed' && (
-                            <>
-                              <li>• Danh sách hợp đồng đã ký</li>
-                              <li>• Thông tin: Số HĐ, đơn vị, lĩnh vực</li>
-                              <li>• Ngày ký, thời hạn, giá trị</li>
-                              <li>• Trạng thái GCN, nhân viên phụ trách</li>
-                            </>
-                          )}
-                          {reportType === 'pending' && (
-                            <>
-                              <li>• Danh sách hợp đồng chưa ký</li>
-                              <li>• Thông tin: Số HĐ, đơn vị, lĩnh vực</li>
-                              <li>• Phân loại: thiếu tài chính, chờ tái ký</li>
-                              <li>• Nhân viên phụ trách, ngày ký</li>
-                            </>
-                          )}
+                  <div className="flex items-start gap-3 text-sm text-zinc-600">
+                    <FileSpreadsheetIcon className="h-7 w-7 text-emerald-600 shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-medium text-zinc-900">File Excel sẽ bao gồm:</p>
+                      <ul className="mt-1 text-xs text-zinc-500 space-y-0.5">
+                        {reportType === 'contracts' && (
+                          <>
+                            <li>• Danh sách hợp đồng đầy đủ</li>
+                            <li>• Thông tin: Số HĐ, đơn vị, bảng hiệu, lĩnh vực</li>
+                            <li>• Trạng thái, ngày hiệu lực, hết hạn</li>
+                            <li>• Tiền trước thuế, VAT, tổng tiền</li>
+                            <li>• Dòng tổng cộng ở cuối file</li>
+                          </>
+                        )}
+                        {reportType === 'expiring' && (
+                          <>
+                            <li>• Hợp đồng sắp hết hạn</li>
+                            <li>• Số HĐ, đơn vị, lĩnh vực</li>
+                            <li>• Ngày hết hạn, số ngày còn lại</li>
+                            <li>• Highlight hợp đồng ≤30 ngày</li>
+                          </>
+                        )}
+                        {reportType === 'revenue' && (
+                          <>
+                            <li>• Sheet Tổng hợp: KPI chính</li>
+                            <li>• Sheet Theo lĩnh vực: phân bổ theo domain</li>
+                            <li>• Sheet Theo năm: doanh thu theo năm</li>
+                          </>
+                        )}
+                        {reportType === 'signed' && (
+                          <>
+                            <li>• Danh sách hợp đồng đã ký</li>
+                            <li>• Thông tin: Số HĐ, đơn vị, lĩnh vực</li>
+                            <li>• Ngày ký, thời hạn, giá trị</li>
+                            <li>• Trạng thái GCN, nhân viên phụ trách</li>
+                          </>
+                        )}
+                        {reportType === 'pending' && (
+                          <>
+                            <li>• Danh sách hợp đồng chưa ký</li>
+                            <li>• Thông tin: Số HĐ, đơn vị, lĩnh vực</li>
+                            <li>• Phân loại: thiếu tài chính, chờ tái ký</li>
+                            <li>• Nhân viên phụ trách, ngày ký</li>
+                          </>
+                        )}
                           {reportType === 'full_data' && (
                             <>
-                              <li>• Xuất toàn bộ dữ liệu hợp đồng</li>
-                              <li>• STT, Tên đơn vị, Địa chỉ</li>
-                              <li>• Bảng hiệu, Số điện thoại</li>
-                              <li>• Số tiền trước thuế</li>
-                              <li>• Dòng tổng cộng ở cuối file</li>
+                              <li>• Toàn bộ dữ liệu hợp đồng</li>
+                              <li>• Số HĐ, Năm, Số phụ lục</li>
+                              <li>• Tên đơn vị, Địa chỉ, Điện thoại</li>
+                              <li>• Người đại diện, Chức vụ, MST, Email</li>
+                              <li>• Bảng hiệu, Địa chỉ sử dụng/pháp lý</li>
+                              <li>• Lĩnh vực, Ngày lập/bắt đầu/kết thúc</li>
+                              <li>• Tiền bản quyền, VAT, Tổng số phòng/box</li>
+                              <li>• Người thực hiện, Trạng thái gia hạn</li>
+                              <li>• Định dạng giống template import Excel</li>
                             </>
                           )}
-                        </ul>
-                      </div>
+                      </ul>
                     </div>
                   </div>
                 ) : (
@@ -553,8 +554,8 @@ export function ExportReportDialog({
           </main>
         </div>
 
-        {/* Footer - fixed at bottom */}
-        <footer className="px-5 py-3 border-t border-zinc-200 bg-white shrink-0 flex items-center justify-end gap-2">
+        {/* Footer */}
+        <footer className="shrink-0 px-5 py-3 border-t border-zinc-200 bg-white flex items-center justify-end gap-2">
           <Button variant="ghost" onClick={onClose} disabled={isExporting}>
             Hủy
           </Button>
@@ -576,16 +577,23 @@ export function ExportReportDialog({
         </footer>
 
         <style>{`
-          @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-          @keyframes modalIn {
-            from { opacity: 0; transform: translateY(8px) scale(0.98); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
+          @keyframes modalSlideIn {
+            from {
+              opacity: 0;
+              transform: scale(0.96) translateY(8px);
+            }
+            to {
+              opacity: 1;
+              transform: scale(1) translateY(0);
+            }
           }
         `}</style>
       </div>
-      </div>
     </div>
   );
+
+  // Render via Portal to document.body
+  return createPortal(dialogContent, document.body);
 }
 
 function CheckRow({
