@@ -35,7 +35,6 @@ const TOKEN_KEY = 'vcpmc_new_app_access_token';
 
 const STATUS_OPTIONS = [
   { value: 'draft', label: 'Bản nháp' },
-  { value: 'test_printed', label: 'Đã in thử' },
   { value: 'final_printed', label: 'Đã in chính thức' },
 ];
 
@@ -162,7 +161,7 @@ export function CertificateDetailPage({
         contract_id: cert.contract_id,
         certificate_no: cert.certificate_no || null,
         certificate_issue_date: cert.certificate_issue_date || null,
-        status: (cert.status === 'test_printed' || cert.status === 'final_printed' ? cert.status : 'draft') as CertificateStatus,
+        status: (cert.status === 'final_printed' ? 'final_printed' : 'draft') as CertificateStatus,
         organization_name: cert.organization_name || null,
         business_registration_no: cert.business_registration_no || null,
         address: cert.address || cert.business_location || null,
@@ -318,7 +317,7 @@ export function CertificateDetailPage({
     setForm(prev => ({ ...prev, [key]: value }));
   };
 
-  const statusTone = form.status === 'final_printed' ? 'success' : form.status === 'test_printed' ? 'warning' : 'neutral';
+  const statusTone = form.status === 'final_printed' ? 'success' : 'neutral';
 
   const busy = saving || syncing;
 

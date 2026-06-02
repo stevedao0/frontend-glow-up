@@ -47,11 +47,7 @@ export function CertificateQuickView({
   const hasNumber = !!record.certificate_no;
   const statusLabel = CERTIFICATE_STATUS_LABEL[record.status];
   const statusTone =
-  record.status === 'final_printed' ?
-  'success' :
-  record.status === 'test_printed' ?
-  'warning' :
-  'neutral';
+    record.status === 'final_printed' ? 'success' : 'neutral';
   return (
     <div className="fixed inset-0 z-50">
       <div
@@ -149,10 +145,10 @@ export function CertificateQuickView({
               </p>
               <div className="mt-3 flex flex-wrap items-center gap-1.5">
                 <span
-                  className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-medium ring-1 ring-inset ${record.status === 'final_printed' ? 'bg-emerald-400/15 text-emerald-200 ring-emerald-400/30' : record.status === 'test_printed' ? 'bg-amber-400/15 text-amber-200 ring-amber-400/30' : 'bg-white/10 text-zinc-300 ring-white/15'}`}>
+                  className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[11px] font-medium ring-1 ring-inset ${record.status === 'final_printed' ? 'bg-emerald-400/15 text-emerald-200 ring-emerald-400/30' : 'bg-white/10 text-zinc-300 ring-white/15'}`}>
                   
                   <span
-                    className={`h-1.5 w-1.5 rounded-full ${record.status === 'final_printed' ? 'bg-emerald-400' : record.status === 'test_printed' ? 'bg-amber-400' : 'bg-zinc-300'}`} />
+                    className={`h-1.5 w-1.5 rounded-full ${record.status === 'final_printed' ? 'bg-emerald-400' : 'bg-zinc-300'}`} />
                   
                   {statusLabel}
                 </span>
@@ -331,22 +327,22 @@ export function CertificateQuickView({
           <Button
             variant="primary"
             leftIcon={<PrinterIcon className="h-4 w-4" />}
-            onClick={() => onPrintTest?.(record)}
-            disabled={!onPrintTest}
-            title="GCN-P1 read-only: chua bat in thu">
-            
-              In thử
-            </Button>
-          }
-          {record.status === 'test_printed' &&
-          <Button
-            variant="primary"
-            leftIcon={<AwardIcon className="h-4 w-4" />}
             onClick={() => onPrintFinal?.(record)}
             disabled={!onPrintFinal}
-            title="GCN-P1 read-only: chua bat in chinh thuc">
-            
+            title="In chính thức GCN">
+
               In chính thức
+            </Button>
+          }
+          {record.print_count > 1 &&
+          <Button
+            variant="secondary"
+            leftIcon={<PrinterIcon className="h-4 w-4" />}
+            onClick={() => onPrintFinal?.(record)}
+            disabled={!onPrintFinal}
+            title="In lại GCN">
+
+              In lại
             </Button>
           }
           {hasNumber && record.status !== 'draft' &&

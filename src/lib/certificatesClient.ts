@@ -163,6 +163,7 @@ export type CertificateUpdateResponse = {
   mode: string;
   message: string;
   update_enabled: boolean;
+  // @deprecated — clone DB workflow removed; kept for backward compatibility
   clone_only_enabled: boolean;
   write_performed: boolean;
   certificate_id: number | null;

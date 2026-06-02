@@ -64,14 +64,15 @@ const HAS_NUMBER_OPTIONS = [
 const EMPTY_SUMMARY: CertificatesSummary = {
   total: 0,
   draft: 0,
-  test_printed: 0,
+  numbered: 0,
+  official_printed: 0,
   final_printed: 0,
   missing_number: 0,
   printed_multiple: 0,
 };
 
 function asStatus(value: string): CertificateStatus {
-  if (value === 'test_printed' || value === 'final_printed') return value;
+  if (value === 'final_printed') return 'final_printed';
   return 'draft';
 }
 
@@ -216,7 +217,7 @@ export function CertificatesPage({
   };
 
   const statusTone = (record: CertificateRecord) =>
-    record.status === 'final_printed' ? 'success' : record.status === 'test_printed' ? 'warning' : 'neutral';
+    record.status === 'final_printed' ? 'success' : 'neutral';
 
   return (
     <Page>
@@ -346,16 +347,6 @@ export function CertificatesPage({
                 onClick={() => alert(`Cấp số cho ${noNumber} GCN — chức năng đang phát triển.`)}
               >
                 Cấp số GCN ({noNumber})
-              </Button>
-              <Button
-                variant="secondary"
-                size="sm"
-                leftIcon={<PrinterIcon className="h-3.5 w-3.5" />}
-                disabled={hasNumber === 0}
-                title={hasNumber === 0 ? 'Không có GCN nào có số để in thử' : ''}
-                onClick={() => alert(`In thử ${hasNumber} GCN — chức năng đang phát triển.`)}
-              >
-                In thử ({hasNumber})
               </Button>
               <Button
                 variant="secondary"

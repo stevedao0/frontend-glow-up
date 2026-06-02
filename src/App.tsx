@@ -56,13 +56,7 @@ function AppContent() {
     const saved = sessionStorage.getItem('app_active_contract_id');
     return saved ? Number(saved) : null;
   });
-// #region DEBUG ea4965
-const _appLog = (msg: string, data: Record<string, unknown>) => fetch('http://127.0.0.1:7247/ingest/8a5eb014-b35b-4484-a78b-4d64b93cb08f',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'ea4965'},body:JSON.stringify({sessionId:'ea4965',runId:'initial',location:'App.tsx:55',message:msg,data,timestamp:Date.now()})}).catch(()=>{});
-// #endregion
   const [pendingPrintContractId, setPendingPrintContractId] = useState<number | null>(() => {
-// #region DEBUG ea4965
-    _appLog('STATE_INIT_pendingPrintContractId', { sessionStorage_id: sessionStorage.getItem('app_pending_print_contract_id'), ts: Date.now() });
-// #endregion
     const saved = sessionStorage.getItem('app_pending_print_contract_id');
     return saved ? Number(saved) : null;
   });
@@ -191,9 +185,6 @@ const _appLog = (msg: string, data: Record<string, unknown>) => fetch('http://12
             setRoute('contracts.detail');
           }}
           onPrintCertificate={(contractId) => {
-// #region DEBUG ea4965
-            _appLog('ONPRINTCERTIFICATE_CALL', { contractId, ts: Date.now() });
-// #endregion
             setPendingPrintContractId(contractId);
             setRoute('contracts.print');
           }}
@@ -212,9 +203,6 @@ const _appLog = (msg: string, data: Record<string, unknown>) => fetch('http://12
           }}
           onNavigate={setRoute}
           onCreateGcn={(contractId) => {
-// #region DEBUG ea4965
-            _appLog('ONCREATEGNCALL', { contractId, ts: Date.now() });
-// #endregion
             setPendingPrintContractId(contractId);
             setRoute('contracts.print');
           }}
