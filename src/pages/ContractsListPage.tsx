@@ -32,7 +32,7 @@ import { BulkActionBar } from '../components/app-ui/BulkActionBar';
 import { Pagination } from '../components/app-ui/Pagination';
 import { TableSkeleton } from '../components/app-ui/TableSkeleton';
 import { EmptyState } from '../components/app-ui/EmptyState';
-import { SummaryHero } from '../components/app-ui/SummaryHero';
+
 import { Modal } from '../components/app-ui/Modal';
 import { RouteKey } from '../data/routes';
 import {
