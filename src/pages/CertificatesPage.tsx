@@ -4,8 +4,6 @@ import {
   AwardIcon,
   CheckCircle2Icon,
   EyeIcon,
-  FileSpreadsheetIcon,
-  FileTextIcon,
   HashIcon,
   PlusIcon,
   PrinterIcon,
@@ -25,7 +23,6 @@ import { FilterBar, FilterField } from '../components/app-ui/FilterBar';
 import { Pagination } from '../components/app-ui/Pagination';
 import { TableSkeleton } from '../components/app-ui/TableSkeleton';
 import { EmptyState } from '../components/app-ui/EmptyState';
-import { SummaryHero } from '../components/app-ui/SummaryHero';
 import { CertificateQuickView } from '../components/app-ui/CertificateQuickView';
 import {
   CERTIFICATE_STATUS_LABEL,
@@ -109,7 +106,7 @@ function mapApiRecord(row: ApiCertificateRecord): CertificateRecord {
 }
 
 export function CertificatesPage({
-  onNavigate: _onNavigate
+  onNavigate
 }: {onNavigate: (k: RouteKey) => void;}) {
   const [records, setRecords] = useState<CertificateRecord[]>([]);
   const [summary, setSummary] = useState<CertificatesSummary>(EMPTY_SUMMARY);
@@ -223,8 +220,8 @@ export function CertificatesPage({
     <Page>
       <PageHeader
         breadcrumb="/bg/contracts/certificates"
-        title="Quản lý giấy chứng nhận"
-        description="Danh sách giấy chứng nhận từ hợp đồng background. Chỉ đọc, không ghi."
+        title="Giấy chứng nhận"
+        description="Danh sách, lịch sử và quản lý giấy chứng nhận."
         actions={
           <>
             <Button
@@ -234,40 +231,24 @@ export function CertificatesPage({
               disabled={loading}>
               Làm mới
             </Button>
-            <Button variant="secondary" leftIcon={<FileSpreadsheetIcon className="h-4 w-4" />} disabled title="Đang phát triển">
-              Xuất Excel
-            </Button>
-            <Button variant="secondary" leftIcon={<PrinterIcon className="h-4 w-4" />} disabled title="Đang phát triển">
-              In hàng loạt
-            </Button>
             <Button
               variant="primary"
               leftIcon={<PlusIcon className="h-4 w-4" />}
               onClick={() => onNavigate('contracts.print')}>
-              Tạo GCN
+              Tạo GCN / In GCN
             </Button>
           </>
         } />
 
-      <SummaryHero
-        label="Operations Summary · Giấy chứng nhận"
-        title="Tình trạng cấp & in giấy chứng nhận"
-        description="Số liệu từ certificate_records, chỉ đọc, không ghi."
-        stats={[
-          { label: 'Tổng GCN', value: summary.total, tone: 'indigo' },
-          { label: 'Đã cấp số', value: summary.numbered, tone: 'cyan' },
-          { label: 'Chưa cấp số', value: summary.missing_number, tone: 'amber' },
-          { label: 'Đã in chính thức', value: summary.official_printed, tone: 'emerald' },
-        ]} />
-
       <MetricStrip
         items={[
-          { label: 'Tổng GCN', value: formatNumber(summary.total), tone: 'indigo', icon: <AwardIcon className="h-4 w-4" /> },
-          { label: 'Đã cấp số', value: formatNumber(summary.numbered), tone: 'cyan', icon: <HashIcon className="h-4 w-4" />, hint: 'Đã có certificate_no' },
-          { label: 'Chưa cấp số', value: formatNumber(summary.missing_number), tone: 'amber', icon: <AlertTriangleIcon className="h-4 w-4" />, hint: 'Chưa có certificate_no' },
-          { label: 'In chính thức', value: formatNumber(summary.final_printed), tone: 'emerald', icon: <CheckCircle2Icon className="h-4 w-4" />, hint: 'final_printed' },
-          { label: 'Đã in nhiều lần', value: formatNumber(summary.printed_multiple), tone: 'violet', icon: <PrinterIcon className="h-4 w-4" />, hint: 'print_count > 1' },
+          { label: 'Tổng GCN', value: formatNumber(summary.total ?? 0), tone: 'indigo', icon: <AwardIcon className="h-4 w-4" /> },
+          { label: 'Đã cấp số', value: formatNumber(summary.numbered ?? 0), tone: 'cyan', icon: <HashIcon className="h-4 w-4" /> },
+          { label: 'Chưa cấp số', value: formatNumber(summary.missing_number ?? 0), tone: 'amber', icon: <AlertTriangleIcon className="h-4 w-4" /> },
+          { label: 'Đã in chính thức', value: formatNumber(summary.final_printed ?? 0), tone: 'emerald', icon: <CheckCircle2Icon className="h-4 w-4" /> },
+          { label: 'Đã in nhiều lần', value: formatNumber(summary.printed_multiple ?? 0), tone: 'violet', icon: <PrinterIcon className="h-4 w-4" /> },
         ]} />
+
 
       <FilterBar
         hasActive={hasActiveFilter}
@@ -358,16 +339,8 @@ export function CertificatesPage({
               >
                 In chính thức ({hasNumber})
               </Button>
-              <Button
-                variant="secondary"
-                size="sm"
-                leftIcon={<FileSpreadsheetIcon className="h-3.5 w-3.5" />}
-                disabled
-                title="Xuất Excel — đang phát triển"
-              >
-                Xuất Excel
-              </Button>
             </div>
+
             <div className="flex-1" />
             <Button variant="ghost" size="sm" className="text-amber-800" onClick={() => setSelected(new Set())}>
               Bỏ chọn
@@ -386,8 +359,8 @@ export function CertificatesPage({
           <TableSkeleton rows={8} cols={7} /> :
           displayRecords.length === 0 ?
             <EmptyState
-              title={total === 0 ? 'Chưa có GCN hoặc chưa bật tạo GCN.' : 'Không tìm thấy GCN phù hợp'}
-              description={total === 0 ? 'Backend chỉ đọc certificate_records, không tạo bản ghi mới.' : 'Thử điều chỉnh từ khóa hoặc xóa các bộ lọc để xem lại danh sách.'}
+              title={total === 0 ? 'Chưa có GCN' : 'Không tìm thấy GCN phù hợp'}
+              description={total === 0 ? 'Danh sách GCN hiện đang trống.' : 'Thử điều chỉnh từ khóa hoặc xóa các bộ lọc để xem lại danh sách.'}
               action={<Button variant="secondary" onClick={clearFilters}>Xóa bộ lọc</Button>}
               icon={<XCircleIcon className="h-5 w-5" />}
             /> :
@@ -495,8 +468,10 @@ export function CertificatesPage({
                         <td className="pr-3 pl-1 align-top text-right">
                           <RowActionsMenu
                             actions={[
-                              { label: 'Mở chi tiết', icon: <EyeIcon className="h-4 w-4" />, onClick: () => setDetailView({ id: record.id }) },
+                              { label: 'Xem chi tiết', icon: <EyeIcon className="h-4 w-4" />, onClick: () => setDetailView({ id: record.id }) },
+                              { label: 'Xem nhanh', icon: <EyeIcon className="h-4 w-4" />, onClick: () => openQuickView(record) },
                               { label: 'Cấp/sửa số GCN', icon: <HashIcon className="h-4 w-4" />, onClick: () => setDetailView({ id: record.id }) },
+                              { label: 'Mở trang In GCN', icon: <PrinterIcon className="h-4 w-4" />, onClick: () => onNavigate('contracts.print') },
                             ]}
                           />
                         </td>
@@ -532,15 +507,16 @@ export function CertificatesPage({
           setQuickView(null);
           setDetailView({ id: record.id });
         }}
-        onPrintFinal={(record) => {
-          alert(`In chính thức GCN số ${record.certificate_no || record.contract_no} — chức năng đang phát triển.`);
+        onPrintFinal={() => {
+          setQuickView(null);
+          onNavigate('contracts.print');
         }}
       />
 
       {detailView && (
         <CertificateDetailPage
           certificateId={detailView.id}
-          onNavigate={_onNavigate}
+          onNavigate={onNavigate}
           onBack={() => setDetailView(null)}
         />
       )}
