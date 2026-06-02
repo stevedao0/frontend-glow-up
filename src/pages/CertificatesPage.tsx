@@ -468,8 +468,10 @@ export function CertificatesPage({
                         <td className="pr-3 pl-1 align-top text-right">
                           <RowActionsMenu
                             actions={[
-                              { label: 'Mở chi tiết', icon: <EyeIcon className="h-4 w-4" />, onClick: () => setDetailView({ id: record.id }) },
+                              { label: 'Xem chi tiết', icon: <EyeIcon className="h-4 w-4" />, onClick: () => setDetailView({ id: record.id }) },
+                              { label: 'Xem nhanh', icon: <EyeIcon className="h-4 w-4" />, onClick: () => openQuickView(record) },
                               { label: 'Cấp/sửa số GCN', icon: <HashIcon className="h-4 w-4" />, onClick: () => setDetailView({ id: record.id }) },
+                              { label: 'Mở trang In GCN', icon: <PrinterIcon className="h-4 w-4" />, onClick: () => onNavigate('contracts.print') },
                             ]}
                           />
                         </td>
