@@ -203,9 +203,6 @@ function RenewalContractsTab({ onNavigate }: { onNavigate: () => void }) {
   };
 
   const toggleOne = (id: number) => {
-    // #region DEBUG bb0769
-    _pageLog('TOGGLE_ONE_CLICK', { contractId: id, beforeCount: selected.size });
-    // #endregion
     const next = new Set(selected);
     if (next.has(id)) next.delete(id);
     else next.add(id);
@@ -227,16 +224,7 @@ function RenewalContractsTab({ onNavigate }: { onNavigate: () => void }) {
     );
   });
 
-  useEffect(() => {
-    // #region DEBUG bb0769
-    _pageLog('SELECTED_CHANGED', { count: selected.size });
-    // #endregion
-  }, [selected]);
-
   const handleCreate = async () => {
-    // #region DEBUG bb0769
-    _pageLog('HANDLE_CREATE_CLICKED', { selectedCount: selected.size, dispatchNo, issueDate });
-    // #endregion
     if (selected.size === 0) {
       alert('Chọn ít nhất một đơn vị.');
       return;
