@@ -268,8 +268,8 @@ export function UsersPage() {
 
       <PageHeader
         breadcrumb="/admin/users"
-        title="Quản lý người dùng"
-        description="Tạo tài khoản, phân quyền và quản lý phạm vi xử lý nghiệp vụ."
+        title="Người dùng"
+        description="Quản lý tài khoản, vai trò và phạm vi nghiệp vụ được phép truy cập."
         actions={
           <>
             <Button
