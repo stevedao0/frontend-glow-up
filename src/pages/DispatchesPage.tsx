@@ -48,10 +48,6 @@ import type { RouteKey } from '../data/routes';
 // Types
 // =============================================================================
 
-// #region DEBUG bb0769
-const _pageLog = (msg: string, data: Record<string, unknown>) => fetch('http://127.0.0.1:7247/ingest/8a5eb014-b35b-4484-a78b-4d64b93cb08f',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'bb0769'},body:JSON.stringify({sessionId:'bb0769',runId:'pre-fix',location:'DispatchesPage.tsx:MODULE',message:msg,data,timestamp:Date.now()})}).catch(()=>{});
-// #endregion
-
 const STATUS_LABELS: Record<string, string> = {
   draft: 'Nháp',
   processing: 'Đang theo dõi',
@@ -75,11 +71,6 @@ type TabId = 'renewal' | 'new_sign' | 'created' | 'tracking' | 'settings';
 export function DispatchesPage({ onNavigate }: { onNavigate: (route: RouteKey) => void }) {
   const [activeTab, setActiveTab] = useState<TabId>('renewal');
 
-  // #region DEBUG bb0769
-  useEffect(() => { _pageLog('DISPATCH_PAGE_MOUNTED', {}); }, []);
-  useEffect(() => { _pageLog('ACTIVE_TAB_CHANGED', { tab: activeTab }); }, [activeTab]);
-  // #endregion
-
   return (
     <Page>
       <PageHeader
@@ -90,12 +81,7 @@ export function DispatchesPage({ onNavigate }: { onNavigate: (route: RouteKey) =
 
       <Tabs
         value={activeTab}
-        onChange={(v) => {
-          // #region DEBUG bb0769
-          _pageLog('TAB_CLICK', { newTab: v, currentTab: activeTab });
-          // #endregion
-          setActiveTab(v as TabId);
-        }}
+        onChange={(v) => setActiveTab(v as TabId)}
         tabs={[
           { value: 'renewal', label: 'Tái ký' },
           { value: 'new_sign', label: 'Ký mới' },
@@ -209,9 +195,6 @@ function RenewalContractsTab({ onNavigate }: { onNavigate: () => void }) {
   useEffect(() => { setPage(1); }, [yearFilter, monthFilter, statusFilter]);
 
   const toggleAll = () => {
-    // #region DEBUG bb0769
-    _pageLog('TOGGLE_ALL_CLICK', { beforeCount: selected.size, filteredCount: filtered.length });
-    // #endregion
     if (selected.size === filtered.length) {
       setSelected(new Set());
     } else {
@@ -220,9 +203,6 @@ function RenewalContractsTab({ onNavigate }: { onNavigate: () => void }) {
   };
 
   const toggleOne = (id: number) => {
-    // #region DEBUG bb0769
-    _pageLog('TOGGLE_ONE_CLICK', { contractId: id, beforeCount: selected.size });
-    // #endregion
     const next = new Set(selected);
     if (next.has(id)) next.delete(id);
     else next.add(id);
@@ -244,16 +224,7 @@ function RenewalContractsTab({ onNavigate }: { onNavigate: () => void }) {
     );
   });
 
-  useEffect(() => {
-    // #region DEBUG bb0769
-    _pageLog('SELECTED_CHANGED', { count: selected.size });
-    // #endregion
-  }, [selected]);
-
   const handleCreate = async () => {
-    // #region DEBUG bb0769
-    _pageLog('HANDLE_CREATE_CLICKED', { selectedCount: selected.size, dispatchNo, issueDate });
-    // #endregion
     if (selected.size === 0) {
       alert('Chọn ít nhất một đơn vị.');
       return;
@@ -310,7 +281,7 @@ function RenewalContractsTab({ onNavigate }: { onNavigate: () => void }) {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="bg-white rounded-lg border border-zinc-200 p-4">
           <div className="text-2xl font-bold text-zinc-900">{stats.total}</div>
-          <div className="text-xs text-zinc-500 mt-1">Tổng cần xử lý</div>
+          <div className="text-xs text-zinc-500 mt-1">Tổng nguồn tái ký</div>
         </div>
         <div className="bg-white rounded-lg border border-zinc-200 p-4">
           <div className="text-2xl font-bold text-blue-600">{stats.notSent}</div>
@@ -1204,7 +1175,7 @@ function SettingsTab() {
         <h3 className="text-sm font-medium text-zinc-700 mb-3">Template công văn đang dùng</h3>
         <div className="text-xs text-zinc-500 space-y-1">
           <div><span className="font-medium text-zinc-700">File:</span> cong van_tai ky_karaoke.docx</div>
-          <div><span className="font-medium text-zinc-700">Path:</span> F:\APPs\templates\Background\cong van_tai ky_karaoke.docx</div>
+          
           <div className="mt-2"><span className="font-medium text-zinc-700">Placeholders được hỗ trợ:</span></div>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-1 mt-1">
             {['so_cong_van', 'ngay_ky_cong_van', 'thang_ky_cong_van ', 'nam_ky_cong_van', 'TEN_DON_VI', 'so_hop_dong', 'ngay_ky_hop_dong', 'ngay_het_hieu_luc_HD'].map(p => (
