@@ -647,6 +647,7 @@ export function ContractsListPage({
           icon={<XCircleIcon className="h-5 w-5" />} /> :
 
 
+        <>
         <div className="flex items-center justify-between px-4 py-2 border-b border-zinc-100 bg-zinc-50/40">
             <span className="text-[12px] text-zinc-500">
               {formatNumber(totalRows)} dòng hiển thị · trang {page}/{Math.max(totalPages, 1)}
