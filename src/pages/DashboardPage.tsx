@@ -8,8 +8,12 @@ import {
   Music2Icon,
   WalletIcon,
   ArrowRightIcon,
-  ChevronRightIcon,
   RefreshCwIcon,
+  AwardIcon,
+  PrinterIcon,
+  MailIcon,
+  BarChart3Icon,
+  ListIcon,
 } from 'lucide-react';
 import {
   BarChart,
@@ -29,11 +33,11 @@ import { Button } from '../components/app-ui/Button';
 import { Select } from '../components/app-ui/Select';
 import { ProgressStatusPanel } from '../components/app-ui/ProgressStatusPanel';
 import { ExpiringList } from '../components/app-ui/ExpiringList';
-import { StatusBadge } from '../components/app-ui/StatusBadge';
 import { RouteKey } from '../data/routes';
-import { formatCurrency, formatDate, formatNumber } from '../lib/format';
+import { formatNumber } from '../lib/format';
 import { TOKEN_KEY } from '../lib/authClient';
 import { apiRequest } from '../lib/apiClient';
+
 
 const YEAR_OPTIONS = [
   { value: '2024', label: '2024' },
