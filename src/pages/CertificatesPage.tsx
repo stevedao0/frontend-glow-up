@@ -359,8 +359,8 @@ export function CertificatesPage({
           <TableSkeleton rows={8} cols={7} /> :
           displayRecords.length === 0 ?
             <EmptyState
-              title={total === 0 ? 'Chưa có GCN hoặc chưa bật tạo GCN.' : 'Không tìm thấy GCN phù hợp'}
-              description={total === 0 ? 'Backend chỉ đọc certificate_records, không tạo bản ghi mới.' : 'Thử điều chỉnh từ khóa hoặc xóa các bộ lọc để xem lại danh sách.'}
+              title={total === 0 ? 'Chưa có GCN' : 'Không tìm thấy GCN phù hợp'}
+              description={total === 0 ? 'Danh sách GCN hiện đang trống.' : 'Thử điều chỉnh từ khóa hoặc xóa các bộ lọc để xem lại danh sách.'}
               action={<Button variant="secondary" onClick={clearFilters}>Xóa bộ lọc</Button>}
               icon={<XCircleIcon className="h-5 w-5" />}
             /> :
