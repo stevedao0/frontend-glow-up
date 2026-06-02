@@ -134,9 +134,6 @@ type SimpleContractItem = {
   domain_group: string;
 };
 
-// #region DEBUG ea4965
-const _log = (msg: string, data: Record<string, unknown>) => fetch('http://127.0.0.1:7247/ingest/8a5eb014-b35b-4484-a78b-4d64b93cb08f',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'ea4965'},body:JSON.stringify({sessionId:'ea4965',runId:'initial',location:'CertificatePrintPage.tsx:143',message:msg,data,timestamp:Date.now()})}).catch(()=>{});
-// #endregion
 export function CertificatePrintPage({
   onNavigate,
   initialContractId,
@@ -148,9 +145,6 @@ export function CertificatePrintPage({
   initialCertificateId?: number | null;
   onPrinted?: () => void;
 }) {
-// #region DEBUG ea4965
-  _log('PAGE_MOUNT', { initialContractId, ts: Date.now() });
-// #endregion
   const [mode, setMode] = useState<PrintMode>('contract');
   const [showSafeArea, setShowSafeArea] = useState(false);
   const [message, setMessage] = useState('');
@@ -308,13 +302,7 @@ export function CertificatePrintPage({
 
   // Restore contract handoff from Contracts List → In GCN
   useEffect(() => {
-// #region DEBUG ea4965
-    _log('USEFFECT_CONTRACT_HANDSHAKE', { initialContractId, hasToken: !!localStorage.getItem(TOKEN_KEY), ts: Date.now() });
-// #endregion
     if (!initialContractId) {
-// #region DEBUG ea4965
-      _log('USEFFECT_NO_CONTRACT_ID', { initialContractId, ts: Date.now() });
-// #endregion
       return;
     }
     let cancelled = false;
@@ -322,20 +310,11 @@ export function CertificatePrintPage({
     async function fetchAndSelect() {
       const token = localStorage.getItem(TOKEN_KEY);
       if (!token || cancelled) {
-// #region DEBUG ea4965
-        _log('USEFFECT_GUARD_FAIL', { token: !!token, cancelled, ts: Date.now() });
-// #endregion
         return;
       }
       try {
-// #region DEBUG ea4965
-        _log('USEFFECT_FETCH_DETAIL_START', { initialContractId, ts: Date.now() });
-// #endregion
         const detail = await getContractDetail(token, initialContractId);
         if (cancelled) return;
-// #region DEBUG ea4965
-        _log('USEFFECT_DETAIL_RECEIVED', { detail_id: detail?.id, detail_contract_no: detail?.contract_no, ts: Date.now() });
-// #endregion
         setSelectedContract({
           id: detail.id,
           contract_no: detail.contract_no || '',
@@ -345,17 +324,8 @@ export function CertificatePrintPage({
         });
         setContractSearch('');
         setContractResults([]);
-// #region DEBUG ea4965
-        _log('USEFFECT_SETTSELECTED_CONTRACT', { selectedContract_id: detail.id, ts: Date.now() });
-// #endregion
         await loadContractContext(initialContractId);
-// #region DEBUG ea4965
-        _log('USEFFECT_LOADCTX_DONE', { initialContractId, ts: Date.now() });
-// #endregion
       } catch (err) {
-// #region DEBUG ea4965
-        _log('USEFFECT_FETCH_ERROR', { initialContractId, error: String(err), ts: Date.now() });
-// #endregion
         /* silently ignore */
       }
     }
@@ -771,12 +741,10 @@ function QrHelperExtensionPanel({ extStatus, extSendMsg, extSendMsgType, handleS
       </div>
 
       <div className="flex gap-1.5 flex-wrap">
-        <button type="button" onClick={() => { fetch('http://127.0.0.1:7247/ingest/8a5eb014-b35b-4484-a78b-4d64b93cb08f',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'1d6f31'},body:JSON.stringify({sessionId:'1d6f31',runId:'pre-fix',hypothesisId:'C',location:'CertificatePrintPage.tsx:721',message:'BTN_SEND_CLICK',data:{handleSendToExtension:typeof handleSendToExtension,ts:Date.now()},timestamp:Date.now()})}).catch(()=>{}); if(handleSendToExtension){handleSendToExtension();}else{fetch('http://127.0.0.1:7247/ingest/8a5eb014-b35b-4484-a78b-4d64b93cb08f',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'1d6f31'},body:JSON.stringify({sessionId:'1d6f31',runId:'pre-fix',hypothesisId:'C',location:'CertificatePrintPage.tsx:721',message:'BTN_SEND_CLICK_UNDEFINED',data:{ts:Date.now()},timestamp:Date.now()})}).catch(()=>{});} }}
-          className="flex-1 rounded bg-indigo-600 px-3 py-1.5 text-[12.5px] font-semibold text-white hover:bg-indigo-700 transition-colors">
+        <button type="button" onClick={() => handleSendToExtension?.()} className="flex-1 rounded bg-indigo-600 px-3 py-1.5 text-[12.5px] font-semibold text-white hover:bg-indigo-700 transition-colors">
           Gửi dữ liệu sang QR Portal Assistant
         </button>
-        <button type="button" onClick={() => { fetch('http://127.0.0.1:7247/ingest/8a5eb014-b35b-4484-a78b-4d64b93cb08f',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'1d6f31'},body:JSON.stringify({sessionId:'1d6f31',runId:'pre-fix',hypothesisId:'C',location:'CertificatePrintPage.tsx:727',message:'BTN_OPEN_CLICK',data:{handleOpenPortalQR:typeof handleOpenPortalQR,ts:Date.now()},timestamp:Date.now()})}).catch(()=>{}); if(handleOpenPortalQR){handleOpenPortalQR();}else{fetch('http://127.0.0.1:7247/ingest/8a5eb014-b35b-4484-a78b-4d64b93cb08f',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'1d6f31'},body:JSON.stringify({sessionId:'1d6f31',runId:'pre-fix',hypothesisId:'C',location:'CertificatePrintPage.tsx:727',message:'BTN_OPEN_CLICK_UNDEFINED',data:{ts:Date.now()},timestamp:Date.now()})}).catch(()=>{});} }}
-          className="rounded border border-indigo-300 bg-white px-3 py-1.5 text-[12.5px] font-semibold text-indigo-700 hover:bg-indigo-50 transition-colors">
+        <button type="button" onClick={() => handleOpenPortalQR?.()} className="rounded border border-indigo-300 bg-white px-3 py-1.5 text-[12.5px] font-semibold text-indigo-700 hover:bg-indigo-50 transition-colors">
           Mở QR Portal
         </button>
       </div>
