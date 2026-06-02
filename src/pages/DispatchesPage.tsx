@@ -281,7 +281,7 @@ function RenewalContractsTab({ onNavigate }: { onNavigate: () => void }) {
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         <div className="bg-white rounded-lg border border-zinc-200 p-4">
           <div className="text-2xl font-bold text-zinc-900">{stats.total}</div>
-          <div className="text-xs text-zinc-500 mt-1">Tổng cần xử lý</div>
+          <div className="text-xs text-zinc-500 mt-1">Tổng nguồn tái ký</div>
         </div>
         <div className="bg-white rounded-lg border border-zinc-200 p-4">
           <div className="text-2xl font-bold text-blue-600">{stats.notSent}</div>
