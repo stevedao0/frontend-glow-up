@@ -220,8 +220,8 @@ export function CertificatesPage({
     <Page>
       <PageHeader
         breadcrumb="/bg/contracts/certificates"
-        title="Quản lý giấy chứng nhận"
-        description="Danh sách giấy chứng nhận từ hợp đồng background. Chỉ đọc, không ghi."
+        title="Giấy chứng nhận"
+        description="Danh sách, lịch sử và quản lý giấy chứng nhận."
         actions={
           <>
             <Button
@@ -231,40 +231,24 @@ export function CertificatesPage({
               disabled={loading}>
               Làm mới
             </Button>
-            <Button variant="secondary" leftIcon={<FileSpreadsheetIcon className="h-4 w-4" />} disabled title="Đang phát triển">
-              Xuất Excel
-            </Button>
-            <Button variant="secondary" leftIcon={<PrinterIcon className="h-4 w-4" />} disabled title="Đang phát triển">
-              In hàng loạt
-            </Button>
             <Button
               variant="primary"
               leftIcon={<PlusIcon className="h-4 w-4" />}
               onClick={() => onNavigate('contracts.print')}>
-              Tạo GCN
+              Tạo GCN / In GCN
             </Button>
           </>
         } />
 
-      <SummaryHero
-        label="Operations Summary · Giấy chứng nhận"
-        title="Tình trạng cấp & in giấy chứng nhận"
-        description="Số liệu từ certificate_records, chỉ đọc, không ghi."
-        stats={[
-          { label: 'Tổng GCN', value: summary.total, tone: 'indigo' },
-          { label: 'Đã cấp số', value: summary.numbered, tone: 'cyan' },
-          { label: 'Chưa cấp số', value: summary.missing_number, tone: 'amber' },
-          { label: 'Đã in chính thức', value: summary.official_printed, tone: 'emerald' },
-        ]} />
-
       <MetricStrip
         items={[
-          { label: 'Tổng GCN', value: formatNumber(summary.total), tone: 'indigo', icon: <AwardIcon className="h-4 w-4" /> },
-          { label: 'Đã cấp số', value: formatNumber(summary.numbered), tone: 'cyan', icon: <HashIcon className="h-4 w-4" />, hint: 'Đã có certificate_no' },
-          { label: 'Chưa cấp số', value: formatNumber(summary.missing_number), tone: 'amber', icon: <AlertTriangleIcon className="h-4 w-4" />, hint: 'Chưa có certificate_no' },
-          { label: 'In chính thức', value: formatNumber(summary.final_printed), tone: 'emerald', icon: <CheckCircle2Icon className="h-4 w-4" />, hint: 'final_printed' },
-          { label: 'Đã in nhiều lần', value: formatNumber(summary.printed_multiple), tone: 'violet', icon: <PrinterIcon className="h-4 w-4" />, hint: 'print_count > 1' },
+          { label: 'Tổng GCN', value: formatNumber(summary.total ?? 0), tone: 'indigo', icon: <AwardIcon className="h-4 w-4" /> },
+          { label: 'Đã cấp số', value: formatNumber(summary.numbered ?? 0), tone: 'cyan', icon: <HashIcon className="h-4 w-4" /> },
+          { label: 'Chưa cấp số', value: formatNumber(summary.missing_number ?? 0), tone: 'amber', icon: <AlertTriangleIcon className="h-4 w-4" /> },
+          { label: 'Đã in chính thức', value: formatNumber(summary.final_printed ?? 0), tone: 'emerald', icon: <CheckCircle2Icon className="h-4 w-4" /> },
+          { label: 'Đã in nhiều lần', value: formatNumber(summary.printed_multiple ?? 0), tone: 'violet', icon: <PrinterIcon className="h-4 w-4" /> },
         ]} />
+
 
       <FilterBar
         hasActive={hasActiveFilter}
