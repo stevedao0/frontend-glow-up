@@ -71,11 +71,6 @@ type TabId = 'renewal' | 'new_sign' | 'created' | 'tracking' | 'settings';
 export function DispatchesPage({ onNavigate }: { onNavigate: (route: RouteKey) => void }) {
   const [activeTab, setActiveTab] = useState<TabId>('renewal');
 
-  // #region DEBUG bb0769
-  useEffect(() => { _pageLog('DISPATCH_PAGE_MOUNTED', {}); }, []);
-  useEffect(() => { _pageLog('ACTIVE_TAB_CHANGED', { tab: activeTab }); }, [activeTab]);
-  // #endregion
-
   return (
     <Page>
       <PageHeader
@@ -86,12 +81,7 @@ export function DispatchesPage({ onNavigate }: { onNavigate: (route: RouteKey) =
 
       <Tabs
         value={activeTab}
-        onChange={(v) => {
-          // #region DEBUG bb0769
-          _pageLog('TAB_CLICK', { newTab: v, currentTab: activeTab });
-          // #endregion
-          setActiveTab(v as TabId);
-        }}
+        onChange={(v) => setActiveTab(v as TabId)}
         tabs={[
           { value: 'renewal', label: 'Tái ký' },
           { value: 'new_sign', label: 'Ký mới' },
