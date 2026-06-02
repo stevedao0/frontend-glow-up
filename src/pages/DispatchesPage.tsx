@@ -48,10 +48,6 @@ import type { RouteKey } from '../data/routes';
 // Types
 // =============================================================================
 
-// #region DEBUG bb0769
-const _pageLog = (msg: string, data: Record<string, unknown>) => fetch('http://127.0.0.1:7247/ingest/8a5eb014-b35b-4484-a78b-4d64b93cb08f',{method:'POST',headers:{'Content-Type':'application/json','X-Debug-Session-Id':'bb0769'},body:JSON.stringify({sessionId:'bb0769',runId:'pre-fix',location:'DispatchesPage.tsx:MODULE',message:msg,data,timestamp:Date.now()})}).catch(()=>{});
-// #endregion
-
 const STATUS_LABELS: Record<string, string> = {
   draft: 'Nháp',
   processing: 'Đang theo dõi',
