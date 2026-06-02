@@ -141,7 +141,7 @@ const SIGNED_TABS = [
 
 const GCN_STATUS_LABEL: Record<string, string> = {
   draft: 'Bản nháp',
-  test_printed: 'In thử',
+  test_printed: 'Đã cấp số',
   final_printed: 'In chính thức',
   no_gcn: 'Chưa tạo GCN',
 };
@@ -649,7 +649,7 @@ export function ReportsPage({
     const total = stats.gcnDraft + stats.gcnTestPrinted + stats.gcnFinalPrinted;
     const items: DrilldownItem[] = [
       { label: 'Bản nháp', value: formatNumber(stats.gcnDraft), tone: 'warn', bar: (stats.gcnDraft / Math.max(1, total)) * 100 },
-      { label: 'In thử', value: formatNumber(stats.gcnTestPrinted), tone: 'default', bar: (stats.gcnTestPrinted / Math.max(1, total)) * 100 },
+      { label: 'Đã cấp số', value: formatNumber(stats.gcnTestPrinted), tone: 'default', bar: (stats.gcnTestPrinted / Math.max(1, total)) * 100 },
       { label: 'In chính thức', value: formatNumber(stats.gcnFinalPrinted), tone: 'positive', bar: (stats.gcnFinalPrinted / Math.max(1, total)) * 100 },
     ];
     setDrilldown({
@@ -1941,7 +1941,7 @@ export function ReportsPage({
               tone="amber"
             />
             <SummaryStat
-              label="In thử"
+              label="Đã cấp số"
               value={formatNumber(stats.gcnTestPrinted)}
               tone="cyan"
             />
