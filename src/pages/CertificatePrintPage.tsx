@@ -472,14 +472,47 @@ export function CertificatePrintPage({
     } catch (err: any) { showToast(String(err?.message || 'Lỗi khi lưu GCN'), 'error'); }
   };
 
+  // Derived status for printable readiness (UI hint only — does not block print logic)
+  const currentCertNo = mode === 'contract' ? (contractEditable?.certificate_no || '') : freeForm.certificate_no;
+  const hasCertNo = !!currentCertNo.trim();
+  const printDisabled = !previewData;
+  const printTitle = !previewData
+    ? 'Chọn hợp đồng hoặc điền thông tin trước khi in.'
+    : !hasCertNo
+      ? 'Chưa có Số GCN — in sẽ ra bản chưa cấp số.'
+      : 'In chính thức';
+  const saveDisabled = !contractEditable || !hasCertNo;
+  const saveTitle = !contractEditable
+    ? 'Chọn hợp đồng trước.'
+    : !hasCertNo
+      ? 'Cần nhập Số GCN trước khi lưu.'
+      : 'Lưu / cập nhật GCN';
+
+  const statusPill = (() => {
+    if (mode !== 'contract' || !selectedContract) return null;
+    if (!contractCtx && !contractCtxLoading) return null;
+    if (contractCtxLoading) return { label: 'Đang tải…', tone: 'bg-zinc-100 text-zinc-600' };
+    if (!hasCertNo) return { label: 'Chưa cấp số', tone: 'bg-zinc-100 text-zinc-700' };
+    if (savedCertId) return { label: 'Đã cấp số · Sẵn sàng in', tone: 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200' };
+    return { label: 'Đã có số GCN', tone: 'bg-amber-50 text-amber-700 ring-1 ring-amber-200' };
+  })();
+
   return (
     <div className="min-h-screen bg-zinc-50/50">
       <div className="bg-white border-b border-zinc-200 px-6 py-4">
         <div className="flex items-center gap-3">
-          <button type="button" onClick={() => onNavigate('contracts.gcn')} className="h-9 w-9 inline-flex items-center justify-center rounded-lg text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 transition-colors"><ArrowLeftIcon className="h-5 w-5" /></button>
-          <div className="flex-1"><h1 className="text-base font-semibold text-zinc-900">In giấy chứng nhận</h1><p className="text-sm text-zinc-500">Chọn hợp đồng hoặc điền thông tin tự do để in GCN</p></div>
-          {mode === 'contract' && <Button variant="secondary" size="sm" onClick={contractEditable ? handleSaveCertificate : undefined} disabled={!contractEditable} title={!contractEditable ? 'Chọn hợp đồng trước.' : undefined}>Lưu GCN</Button>}
-          <Button variant="primary" leftIcon={<PrinterIcon className="h-4 w-4" />} onClick={previewData ? handlePrint : undefined}>In GCN</Button>
+          <button type="button" onClick={() => onNavigate('contracts.gcn')} title="Quay lại danh sách GCN" className="h-9 w-9 inline-flex items-center justify-center rounded-lg text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 transition-colors"><ArrowLeftIcon className="h-5 w-5" /></button>
+          <div className="flex-1">
+            <div className="flex items-center gap-2">
+              <h1 className="text-base font-semibold text-zinc-900">In GCN</h1>
+              {statusPill && <span className={`text-[11px] font-medium px-2 py-0.5 rounded ${statusPill.tone}`}>{statusPill.label}</span>}
+            </div>
+            <p className="text-sm text-zinc-500">In Giấy chứng nhận chính thức từ hợp đồng đã có hoặc nhập tự do. Tọa độ in trên khổ A4 đã được khóa theo mẫu chuẩn.</p>
+          </div>
+          {mode === 'contract' && (
+            <Button variant="secondary" size="sm" onClick={!saveDisabled ? handleSaveCertificate : undefined} disabled={saveDisabled} title={saveTitle}>Lưu GCN</Button>
+          )}
+          <Button variant="primary" leftIcon={<PrinterIcon className="h-4 w-4" />} onClick={!printDisabled ? handlePrint : undefined} disabled={printDisabled} title={printTitle}>In chính thức</Button>
         </div>
       </div>
       <div className="bg-white border-b border-zinc-200 px-6">
@@ -489,6 +522,11 @@ export function CertificatePrintPage({
         </div>
       </div>
       {message && <div className={`mx-6 mt-4 rounded-lg px-4 py-3 text-sm ${messageType === 'success' ? 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200' : 'bg-rose-50 text-rose-700 ring-1 ring-rose-200'}`}>{message}</div>}
+      {mode === 'contract' && previewData && !hasCertNo && (
+        <div className="mx-6 mt-4 rounded-lg px-4 py-2.5 text-xs bg-amber-50 text-amber-800 ring-1 ring-amber-200">
+          ⚠️ Chưa có Số GCN. Bạn vẫn xem trước được, nhưng nên cấp số trước khi in chính thức.
+        </div>
+      )}
       <div className="flex flex-1 overflow-hidden">
         <div className="w-[560px] shrink-0 overflow-y-auto border-r border-zinc-200 p-6 bg-white">
           {mode === 'contract' ? (
@@ -498,8 +536,24 @@ export function CertificatePrintPage({
           )}
         </div>
         <div className="flex-1 overflow-y-auto bg-zinc-50 p-6">
-          <ContentCard title="Bản xem trước" description={<label className="flex items-center gap-2 text-sm text-zinc-500"><input type="checkbox" checked={showSafeArea} onChange={(e) => setShowSafeArea(e.target.checked)} className="h-4 w-4 rounded border-zinc-300" />Khung canh</label>}>
-            {previewData ? <CertificatePaperPreview certificate={previewData} showSafeArea={showSafeArea} /> : <div className="flex h-96 items-center justify-center text-sm text-zinc-400">Chọn hợp đồng hoặc điền thông tin để xem trước</div>}
+          <ContentCard
+            title="Bản xem trước (A4 — 209.6 × 296.6 mm)"
+            description={
+              <label className="flex items-center gap-2 text-sm text-zinc-500">
+                <input type="checkbox" checked={showSafeArea} onChange={(e) => setShowSafeArea(e.target.checked)} className="h-4 w-4 rounded border-zinc-300" />
+                Hiện khung canh
+              </label>
+            }
+          >
+            {previewData ? (
+              <CertificatePaperPreview certificate={previewData} showSafeArea={showSafeArea} />
+            ) : (
+              <div className="flex h-96 flex-col items-center justify-center gap-1 text-sm text-zinc-400">
+                <PrinterIcon className="h-8 w-8 text-zinc-300" />
+                <p>Chưa có dữ liệu xem trước</p>
+                <p className="text-xs">Chọn hợp đồng ở cột trái hoặc dùng tab “In tự do”.</p>
+              </div>
+            )}
           </ContentCard>
         </div>
       </div>
