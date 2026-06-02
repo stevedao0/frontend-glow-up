@@ -314,6 +314,16 @@ export function DashboardPage({
             hint: 'Đang quản lý',
           },
           {
+            label: 'GCN đã in',
+            value: loading ? '—' : formatNumber(stats?.gcnFinalPrinted ?? 0),
+            tone: 'emerald',
+            icon: <AwardIcon className="h-4 w-4" />,
+            hint:
+              stats && stats.gcnDraft > 0
+                ? `${formatNumber(stats.gcnDraft)} bản nháp chờ phát hành`
+                : 'Bản chính thức',
+          },
+          {
             label: 'Doanh thu 2026',
             value: loading
               ? '—'
@@ -331,6 +341,7 @@ export function DashboardPage({
                 : undefined,
             hint: revenueDeltaPct !== null ? 'So với 2025' : 'Chưa có dữ liệu năm trước',
           },
+
         ]}
       />
 
