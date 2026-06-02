@@ -2138,7 +2138,7 @@ export function CreateContractPage({
           {/* Domain-specific fields */}
           {/* =================================================================== */}
           <FormSection
-            title="7. Khu vực kinh doanh & Tiền bản quyền"
+            title="6. Khu vực kinh doanh & Tiền bản quyền"
             description="Thông tin tùy theo lĩnh vực đã chọn"
           >
             {isKaraokeDomain ? (
@@ -2284,6 +2284,9 @@ export function CreateContractPage({
             >
               Hủy
             </Button>
+            <Button variant="ghost" onClick={handleSaveDraft}>
+              Lưu nháp cục bộ
+            </Button>
             <div className="flex-1" />
             <Button
               variant="primary"
@@ -2293,9 +2296,6 @@ export function CreateContractPage({
               title="Tạo hợp đồng chính thức"
             >
               {isCreateLoading ? 'Đang tạo...' : 'Tạo hợp đồng'}
-            </Button>
-            <Button variant="secondary" onClick={handleSaveDraft}>
-              Lưu nháp cục bộ
             </Button>
           </div>
         </div>
@@ -2384,6 +2384,12 @@ export function CreateContractPage({
                     </span>
                   </div>
                 )}
+                {(draft.areaBased.musicUsageAreas?.length ?? 0) > 0 && (
+                  <div className="flex justify-between">
+                    <span className="text-zinc-600">Khu vực sử dụng</span>
+                    <span>{draft.areaBased.musicUsageAreas.length} khu vực</span>
+                  </div>
+                )}
                 <div className="flex justify-between">
                   <span className="text-zinc-600">Thời hạn</span>
                   <span>
@@ -2392,15 +2398,35 @@ export function CreateContractPage({
                       : '(chưa có)'}
                   </span>
                 </div>
-                {(draft.areaBased.royaltyAmountAfterVat ?? 0) > 0 && (
-                  <div className="pt-2 border-t border-zinc-200 flex justify-between">
-                    <span className="font-semibold text-zinc-900">
-                      Tổng tiền
-                    </span>
-                    <span className="font-mono font-bold text-emerald-700">
-                      {(draft.areaBased.royaltyAmountAfterVat ?? 0).toLocaleString('vi-VN')} đ
-                    </span>
-                  </div>
+                <div className="flex justify-between">
+                  <span className="text-zinc-600">Phụ trách</span>
+                  <span className="truncate max-w-[150px]">
+                    {draft.assignee?.name || '(chưa có)'}
+                  </span>
+                </div>
+                {(draft.areaBased.royaltyAmountBeforeVat ?? 0) > 0 && (
+                  <>
+                    <div className="pt-2 border-t border-zinc-200 flex justify-between">
+                      <span className="text-zinc-600">Trước VAT</span>
+                      <span className="font-mono tabular-nums">
+                        {(draft.areaBased.royaltyAmountBeforeVat ?? 0).toLocaleString('vi-VN')} đ
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="text-zinc-600">VAT ({draft.areaBased.vatRate ?? 0}%)</span>
+                      <span className="font-mono tabular-nums">
+                        {(draft.areaBased.vatAmount ?? 0).toLocaleString('vi-VN')} đ
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
+                      <span className="font-semibold text-zinc-900">
+                        Tổng tiền
+                      </span>
+                      <span className="font-mono font-bold text-emerald-700 tabular-nums">
+                        {(draft.areaBased.royaltyAmountAfterVat ?? 0).toLocaleString('vi-VN')} đ
+                      </span>
+                    </div>
+                  </>
                 )}
               </div>
             </div>
