@@ -596,25 +596,20 @@ export function ContractsListPage({
       </FilterBar>
 
       <ContentCard padded={false}>
-        <BulkActionBar
-          count={selected.size}
-          onClear={() => setSelected(new Set())}
-          actions={[
-          {
-            label: 'Xuất Excel',
-            icon: <FileSpreadsheetIcon className="h-3.5 w-3.5" />,
-            onClick: () => {},
-            disabled: true,
-            disabledReason: 'Chưa triển khai xuất Excel',
-          },
-          {
-            label: 'Tạo GCN hàng loạt',
-            icon: <AwardIcon className="h-3.5 w-3.5" />,
-            onClick: () => onNavigate('contracts.print'),
-            disabled: selected.size === 0,
-            disabledReason: selected.size === 0 ? 'Chọn ít nhất 1 hợp đồng Karaoke' : undefined,
-          }]
-          } />
+        {selected.size > 0 && (
+          <BulkActionBar
+            count={selected.size}
+            onClear={() => setSelected(new Set())}
+            actions={[
+            {
+              label: 'Tạo GCN hàng loạt',
+              icon: <AwardIcon className="h-3.5 w-3.5" />,
+              onClick: () => onNavigate('contracts.print'),
+              disabled: selected.size === 0,
+              disabledReason: selected.size === 0 ? 'Chọn ít nhất 1 hợp đồng Karaoke' : undefined,
+            }]
+            } />
+        )}
         
 
         {loading ?
