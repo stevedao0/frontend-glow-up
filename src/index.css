@@ -46,6 +46,21 @@
   --danger: #b8302b;
   --info: #2d6a8f;
 
+  /* === Brand premium tokens (additive, do not remove existing) === */
+  --brand-emerald: #0d7a5f;
+  --brand-emerald-soft: #e6f4ee;
+  --brand-copper: #9c6d3e;
+  --brand-copper-soft: #fbf1e0;
+  --brand-gold: #c89968;
+  --surface-glass: rgba(255, 252, 245, 0.72);
+  --border-warm: rgba(156, 109, 62, 0.18);
+  --shadow-premium:
+    0 1px 2px rgba(45, 31, 20, 0.05),
+    0 8px 24px -10px rgba(156, 109, 62, 0.22),
+    0 24px 48px -24px rgba(13, 122, 95, 0.10);
+  --ring-brand: 0 0 0 3px rgba(200, 153, 104, 0.28), 0 0 0 1px rgba(156, 109, 62, 0.55);
+
+
   /* Radius scale */
   --radius-xs: 4px;
   --radius-sm: 6px;
