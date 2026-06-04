@@ -116,7 +116,7 @@ export function Topbar({
           <button
             type="button"
             onClick={() => setPaletteOpen(true)}
-            className="w-full h-9 pl-9 pr-14 text-sm rounded-lg bg-surface-subtle ring-1 ring-zinc-200/80 hover:ring-[#c89968]/45 hover:bg-white focus:outline-none focus:ring-2 focus:ring-[#c89968]/40 transition-all text-left text-fg-muted">
+            className="w-full h-9 pl-9 pr-14 text-sm rounded-full bg-white/70 backdrop-blur-sm ring-1 ring-[color:var(--border-warm)] hover:ring-[#c89968]/55 hover:bg-white focus:outline-none focus:ring-2 focus:ring-[#c89968]/55 focus:shadow-[0_0_0_3px_rgba(200,153,104,0.18)] transition-all text-left text-fg-muted shadow-xs">
             <SearchIcon className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-fg-subtle group-hover:text-[#9c6d3e] transition-colors" />
             <span className="truncate">Tìm hợp đồng, GCN, đối tác... hoặc nhấn ⌘K</span>
             <kbd className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 px-1.5 h-5 inline-flex items-center text-[10px] font-semibold text-fg-muted bg-surface border border-zinc-200/80 rounded shadow-xs">
