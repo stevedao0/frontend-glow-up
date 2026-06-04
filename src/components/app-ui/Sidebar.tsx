@@ -163,29 +163,32 @@ export function Sidebar({
         key={it.key}
         type="button"
         onClick={() => onNavigate(it.key)}
-        className={`group relative w-full flex items-center gap-3 px-3 py-2 rounded-md text-[13px] font-medium transition-all duration-fast ease-out ${
+        className={`group relative w-full flex items-center gap-3 px-3 py-2 rounded-lg text-[13px] font-medium transition-all duration-fast ease-out ${
           active
-            ? 'text-[#2d1f14] bg-gradient-to-r from-[#c89968]/25 via-[#c89968]/10 to-transparent ring-1 ring-inset ring-[#c89968]/40'
-            : 'text-[#6b5641] hover:text-[#2d1f14] hover:bg-[#2d1f14]/[0.04]'
+            ? 'text-[#2d1f14] premium-sidebar-active'
+            : 'text-[#6b5641] hover:text-[#2d1f14] hover:bg-gradient-to-r hover:from-[#c89968]/12 hover:to-transparent'
         }`}>
         {active && (
-          <span className="absolute left-0 top-1.5 bottom-1.5 w-[2px] rounded-r bg-[#c89968] shadow-[0_0_8px_rgba(200,153,104,0.6)]" />
+          <span className="absolute left-0 top-1 bottom-1 w-[3px] rounded-r bg-gradient-to-b from-[#c89968] via-[#9c6d3e] to-[#0d7a5f] shadow-[0_0_10px_rgba(200,153,104,0.7)]" />
         )}
-        <span className={`shrink-0 ${active ? 'text-[#9c6d3e]' : 'text-[#8a7560] group-hover:text-[#5a4533]'}`}>
+        <span className={`shrink-0 h-7 w-7 inline-flex items-center justify-center rounded-md transition-all ${active ? 'premium-icon-tile text-[#7a4a22] ring-1 ring-[#c89968]/40' : 'text-[#8a7560] group-hover:text-[#5a4533] group-hover:bg-[#c89968]/10'}`}>
           {it.icon}
         </span>
         <span className="flex-1 text-left truncate">{it.label}</span>
         {it.badge &&
-        <span className="text-[9px] font-bold uppercase tracking-[0.1em] px-1.5 py-0.5 rounded bg-[#c89968]/15 text-[#7a4a22] ring-1 ring-inset ring-[#c89968]/30">
+        <span className="text-[9px] font-bold uppercase tracking-[0.1em] px-1.5 py-0.5 rounded bg-gradient-to-b from-[#0d7a5f] to-[#0a6b4f] text-white ring-1 ring-inset ring-emerald-900/30 shadow-sm">
             {it.badge}
           </span>
         }
       </button>);
+
   };
   const groupLabel = (label: string) =>
-  <p className="px-3 mt-5 mb-2 text-[10px] font-bold uppercase tracking-[0.18em] text-[#9c8569]">
-      {label}
-    </p>;
+  <div className="px-3 mt-5 mb-2 flex items-center gap-2">
+      <span className="h-px flex-1 bg-gradient-to-r from-transparent via-[#c89968]/40 to-transparent" />
+      <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#7a5a3a]">{label}</p>
+      <span className="h-px flex-1 bg-gradient-to-r from-[#c89968]/40 via-transparent to-transparent" />
+    </div>;
 
   const contractsActive = CONTRACT_KEYS.includes(current);
   return (

@@ -96,9 +96,10 @@ body {
   color: var(--fg-primary);
   background-color: var(--bg-app);
   background-image:
-    radial-gradient(1100px 620px at 12% -10%, rgba(200, 153, 104, 0.16), transparent 60%),
-    radial-gradient(900px 560px at 100% 0%, rgba(13, 122, 95, 0.10), transparent 65%),
-    radial-gradient(700px 460px at 50% 110%, rgba(156, 109, 62, 0.08), transparent 70%);
+    radial-gradient(1200px 700px at 8% -12%, rgba(200, 153, 104, 0.24), transparent 60%),
+    radial-gradient(1000px 620px at 100% -4%, rgba(13, 122, 95, 0.18), transparent 62%),
+    radial-gradient(900px 600px at 50% 115%, rgba(156, 109, 62, 0.14), transparent 70%),
+    linear-gradient(180deg, #f9f5ec 0%, #f3ecdd 100%);
   background-attachment: fixed;
 }
 
@@ -641,11 +642,11 @@ body {
   transition: background-color 160ms var(--ease-out), box-shadow 160ms var(--ease-out);
 }
 .row-hover-premium:hover {
-  background: linear-gradient(90deg, rgba(200,153,104,0.07), rgba(13,122,95,0.05));
-  box-shadow: inset 3px 0 0 0 rgba(200,153,104,0.55);
+  background: linear-gradient(90deg, rgba(200,153,104,0.10), rgba(13,122,95,0.06) 60%, transparent);
+  box-shadow: inset 3px 0 0 0 rgba(200,153,104,0.65);
 }
 .row-selected-premium {
-  background: linear-gradient(90deg, rgba(200,153,104,0.14), rgba(13,122,95,0.08)) !important;
+  background: linear-gradient(90deg, rgba(200,153,104,0.18), rgba(13,122,95,0.10) 70%, transparent) !important;
   box-shadow: inset 3px 0 0 0 #9c6d3e;
 }
 .card-premium {
@@ -657,3 +658,83 @@ body {
   outline: none;
   box-shadow: var(--ring-brand);
 }
+
+/* === Premium v2.1 — visible upgrades === */
+.premium-table-head {
+  background:
+    linear-gradient(180deg, #fbf2e2 0%, #f6ecd6 60%, #f1e6cb 100%);
+  border-bottom: 1px solid rgba(156,109,62,0.28);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.9),
+    0 1px 0 rgba(156,109,62,0.20);
+}
+.premium-table-head th {
+  color: #5a4533;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-size: 10.5px;
+}
+.premium-card {
+  background:
+    linear-gradient(180deg, #ffffff 0%, #fdfaf3 100%);
+  border: 1px solid rgba(156,109,62,0.18);
+  box-shadow:
+    0 1px 0 rgba(255,255,255,0.9) inset,
+    0 1px 2px rgba(45,31,20,0.05),
+    0 10px 28px -16px rgba(156,109,62,0.30),
+    0 24px 60px -28px rgba(13,122,95,0.14);
+}
+.premium-topbar {
+  background:
+    linear-gradient(180deg, rgba(255,252,245,0.92), rgba(251,243,228,0.78));
+  backdrop-filter: blur(18px) saturate(160%);
+  -webkit-backdrop-filter: blur(18px) saturate(160%);
+  border-bottom: 1px solid rgba(156,109,62,0.22);
+  box-shadow:
+    0 1px 0 rgba(255,255,255,0.7) inset,
+    0 6px 22px -14px rgba(156,109,62,0.30);
+}
+.premium-sidebar-active {
+  background:
+    linear-gradient(90deg, rgba(200,153,104,0.32) 0%, rgba(200,153,104,0.10) 55%, transparent 100%);
+  box-shadow:
+    inset 0 0 0 1px rgba(200,153,104,0.40),
+    0 6px 16px -10px rgba(156,109,62,0.45);
+}
+.premium-icon-tile {
+  background: linear-gradient(135deg, #fbf1e0 0%, #f0dcb8 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,0.9),
+    0 2px 6px -2px rgba(156,109,62,0.30);
+}
+.contract-no-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px 8px;
+  border-radius: 6px;
+  background: linear-gradient(180deg, #fbf1e0, #f3dfba);
+  border: 1px solid rgba(156,109,62,0.32);
+  color: #6e4621;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  box-shadow: 0 1px 0 rgba(255,255,255,0.7) inset;
+}
+.money-strong {
+  color: #0d5a44;
+  font-weight: 700;
+  letter-spacing: -0.005em;
+}
+.kpi-tone-emerald { background: linear-gradient(135deg,#e6f4ee,#c4e6d6); color:#0a6b4f; }
+.kpi-tone-copper  { background: linear-gradient(135deg,#fbf1e0,#f0d4a8); color:#7a4a22; }
+.kpi-tone-amber   { background: linear-gradient(135deg,#fff4d6,#f7dd9a); color:#8a6210; }
+.kpi-tone-rose    { background: linear-gradient(135deg,#fde7e7,#f5c4c4); color:#a02828; }
+.kpi-tone-sky     { background: linear-gradient(135deg,#e0eef7,#bcd9ee); color:#1f5878; }
+.kpi-tone-violet  { background: linear-gradient(135deg,#efe6f7,#d6c1ee); color:#5a3a8a; }
+.kpi-accent-emerald { background: linear-gradient(90deg, transparent, #0d7a5f 50%, transparent); }
+.kpi-accent-copper  { background: linear-gradient(90deg, transparent, #c89968 50%, transparent); }
+.kpi-accent-amber   { background: linear-gradient(90deg, transparent, #d4a017 50%, transparent); }
+.kpi-accent-rose    { background: linear-gradient(90deg, transparent, #b8302b 50%, transparent); }
+.kpi-accent-sky     { background: linear-gradient(90deg, transparent, #2d6a8f 50%, transparent); }
+.kpi-accent-violet  { background: linear-gradient(90deg, transparent, #7a4ab8 50%, transparent); }

@@ -41,31 +41,31 @@ function Sparkline({ data, tone }: { data: number[]; tone: 'up' | 'down' | 'flat
   );
 }
 const toneIconBg: Record<Tone, string> = {
-  indigo: 'bg-amber-50 text-amber-700 ring-amber-100',
-  violet: 'bg-amber-50 text-amber-700 ring-amber-100',
-  emerald: 'bg-emerald-50 text-emerald-600 ring-emerald-100',
-  amber: 'bg-amber-50 text-amber-600 ring-amber-100',
-  sky: 'bg-amber-50 text-amber-700 ring-amber-100',
-  rose: 'bg-rose-50 text-rose-600 ring-rose-100',
-  cyan: 'bg-amber-50 text-amber-700 ring-amber-100'
+  indigo: 'kpi-tone-copper ring-[#c89968]/35',
+  violet: 'kpi-tone-violet ring-violet-300/40',
+  emerald: 'kpi-tone-emerald ring-emerald-300/40',
+  amber: 'kpi-tone-amber ring-amber-300/40',
+  sky: 'kpi-tone-sky ring-sky-300/40',
+  rose: 'kpi-tone-rose ring-rose-300/40',
+  cyan: 'kpi-tone-sky ring-sky-300/40',
 };
 const toneIconGlow: Record<Tone, string> = {
-  indigo: 'group-hover:shadow-[0_0_18px_rgba(99,102,241,0.35)]',
-  violet: 'group-hover:shadow-[0_0_18px_rgba(139,92,246,0.35)]',
-  emerald: 'group-hover:shadow-[0_0_18px_rgba(16,185,129,0.32)]',
-  amber: 'group-hover:shadow-[0_0_18px_rgba(245,158,11,0.32)]',
-  sky: 'group-hover:shadow-[0_0_18px_rgba(14,165,233,0.32)]',
-  rose: 'group-hover:shadow-[0_0_18px_rgba(244,63,94,0.32)]',
-  cyan: 'group-hover:shadow-[0_0_18px_rgba(6,182,212,0.32)]'
+  indigo: 'group-hover:shadow-[0_0_22px_rgba(200,153,104,0.45)]',
+  violet: 'group-hover:shadow-[0_0_22px_rgba(139,92,246,0.40)]',
+  emerald: 'group-hover:shadow-[0_0_22px_rgba(13,122,95,0.45)]',
+  amber: 'group-hover:shadow-[0_0_22px_rgba(212,160,23,0.40)]',
+  sky: 'group-hover:shadow-[0_0_22px_rgba(45,106,143,0.40)]',
+  rose: 'group-hover:shadow-[0_0_22px_rgba(184,48,43,0.40)]',
+  cyan: 'group-hover:shadow-[0_0_22px_rgba(6,182,212,0.40)]',
 };
 const toneAccentFrom: Record<Tone, string> = {
-  indigo: 'from-amber-500/0 via-amber-600/60 to-amber-500/0',
-  violet: 'from-amber-500/0 via-amber-600/60 to-amber-500/0',
-  emerald: 'from-emerald-400/0 via-emerald-500/60 to-emerald-400/0',
-  amber: 'from-amber-400/0 via-amber-500/60 to-amber-400/0',
-  sky: 'from-amber-500/0 via-amber-600/60 to-amber-500/0',
-  rose: 'from-rose-400/0 via-rose-500/60 to-rose-400/0',
-  cyan: 'from-amber-500/0 via-amber-600/60 to-amber-500/0'
+  indigo: 'kpi-accent-copper',
+  violet: 'kpi-accent-violet',
+  emerald: 'kpi-accent-emerald',
+  amber: 'kpi-accent-amber',
+  sky: 'kpi-accent-sky',
+  rose: 'kpi-accent-rose',
+  cyan: 'kpi-accent-sky',
 };
 export function MetricCard({
   label,
@@ -84,15 +84,16 @@ export function MetricCard({
     <Tag
       onClick={onClick}
       type={interactive ? 'button' : undefined}
-      className={`group relative bg-white rounded-2xl ring-1 ring-zinc-900/[0.06] shadow-[0_1px_2px_rgba(15,15,25,0.04),0_2px_6px_rgba(15,15,25,0.03)] hover:shadow-[0_0_0_1px_rgba(200,153,104,0.5),0_0_0_4px_rgba(200,153,104,0.10),0_14px_30px_-10px_rgba(156,109,62,0.25)] hover:-translate-y-1 transition-all duration-200 ease-out p-5 overflow-hidden ${interactive ? 'cursor-pointer text-left w-full focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-600' : ''}`}>
-      <div
-        className={`absolute inset-x-0 top-0 h-px bg-gradient-to-r ${toneAccentFrom[tone]} opacity-50 group-hover:opacity-100 transition-opacity`} />
+      className={`group relative premium-card rounded-2xl hover:shadow-[0_0_0_1px_rgba(200,153,104,0.55),0_0_0_4px_rgba(200,153,104,0.10),0_18px_36px_-14px_rgba(156,109,62,0.30),0_30px_60px_-30px_rgba(13,122,95,0.20)] hover:-translate-y-1 transition-all duration-200 ease-out p-5 overflow-hidden ${interactive ? 'cursor-pointer text-left w-full focus:outline-none focus-visible:ring-2 focus-visible:ring-[#c89968]/60' : ''}`}>
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-2 top-px h-px bg-white/80" />
+        className={`pointer-events-none absolute inset-x-0 top-0 h-[2px] ${toneAccentFrom[tone]} opacity-80 group-hover:opacity-100 transition-opacity`} />
       <div
         aria-hidden
-        className="pointer-events-none absolute -top-10 -right-10 h-32 w-32 rounded-full bg-[#c89968]/0 group-hover:bg-[#c89968]/10 blur-2xl transition-colors duration-500" />
+        className="pointer-events-none absolute inset-x-2 top-[2px] h-px bg-white/90" />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -top-12 -right-12 h-40 w-40 rounded-full bg-[#c89968]/12 group-hover:bg-[#c89968]/22 blur-3xl transition-colors duration-500" />
 
       <div className="relative">
         <div className="flex items-start justify-between gap-2 mb-4">

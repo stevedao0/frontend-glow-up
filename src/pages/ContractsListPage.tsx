@@ -670,7 +670,7 @@ export function ContractsListPage({
           <div className="overflow-auto max-h-[72vh]">
             <table className="w-full text-sm">
               <thead className="sticky top-0 z-10">
-                <tr className="bg-gradient-to-b from-amber-50 via-zinc-50 to-zinc-50 border-b border-zinc-200 shadow-[0_1px_0_0_rgba(0,0,0,0.04)]">
+                <tr className="premium-table-head">
                   <th className={`w-10 ${firstCellPad}`}>
                     <Checkbox
                     checked={allSelected}
@@ -713,13 +713,13 @@ export function ContractsListPage({
                   <tr
                     key={r.id}
                     onClick={() => onOpenDetail(r.id)}
-                    className={`group/row relative border-b border-zinc-100 last:border-0 transition-all cursor-pointer ${isSelected ? 'bg-amber-50/60 hover:bg-amber-50/80' : 'hover:bg-amber-50/40'}`}>
+                    className={`group/row relative border-b border-[#e3d2b3]/50 last:border-0 cursor-pointer ${isSelected ? 'row-selected-premium' : 'row-hover-premium'}`}>
                     
                       {/* Selection cell + left bar */}
                       <td className={`relative ${firstCellPad} align-top`}>
                         <span
                         aria-hidden
-                        className={`absolute left-0 top-0 bottom-0 w-[3px] bg-amber-500 transition-opacity ${isSelected ? 'opacity-100' : 'opacity-0 group-hover/row:opacity-90'}`} />
+                        className={`absolute left-0 top-0 bottom-0 w-[3px] bg-gradient-to-b from-[#c89968] via-[#9c6d3e] to-[#0d7a5f] transition-opacity ${isSelected ? 'opacity-100' : 'opacity-0 group-hover/row:opacity-90'}`} />
                       
                         <Checkbox
                         checked={isSelected}
@@ -736,7 +736,7 @@ export function ContractsListPage({
                           e.stopPropagation();
                           onOpenDetail(r.id);
                         }}
-                        className="font-mono text-[13px] font-semibold text-amber-800 hover:text-amber-950 group-hover/row:underline underline-offset-[3px] decoration-amber-300/70 decoration-1 transition-colors tracking-tight">
+                        className="contract-no-chip text-[12.5px] hover:brightness-95 transition">
                         
                           {r.contract_no}
                         </button>
@@ -854,7 +854,7 @@ export function ContractsListPage({
                             Chưa tính
                           </span> :
 
-                      <span className="font-semibold text-zinc-900 text-[13px]">
+                      <span className="money-strong tabular-nums text-[13.5px]">
                             {formatCurrency(r.royalty_amount_before_vat)}
                           </span>
                       }
