@@ -41,31 +41,31 @@ function Sparkline({ data, tone }: { data: number[]; tone: 'up' | 'down' | 'flat
   );
 }
 const toneIconBg: Record<Tone, string> = {
-  indigo: 'bg-amber-50 text-amber-700 ring-amber-100',
-  violet: 'bg-amber-50 text-amber-700 ring-amber-100',
-  emerald: 'bg-emerald-50 text-emerald-600 ring-emerald-100',
-  amber: 'bg-amber-50 text-amber-600 ring-amber-100',
-  sky: 'bg-amber-50 text-amber-700 ring-amber-100',
-  rose: 'bg-rose-50 text-rose-600 ring-rose-100',
-  cyan: 'bg-amber-50 text-amber-700 ring-amber-100'
+  indigo: 'kpi-tone-copper ring-[#c89968]/35',
+  violet: 'kpi-tone-violet ring-violet-300/40',
+  emerald: 'kpi-tone-emerald ring-emerald-300/40',
+  amber: 'kpi-tone-amber ring-amber-300/40',
+  sky: 'kpi-tone-sky ring-sky-300/40',
+  rose: 'kpi-tone-rose ring-rose-300/40',
+  cyan: 'kpi-tone-sky ring-sky-300/40',
 };
 const toneIconGlow: Record<Tone, string> = {
-  indigo: 'group-hover:shadow-[0_0_18px_rgba(99,102,241,0.35)]',
-  violet: 'group-hover:shadow-[0_0_18px_rgba(139,92,246,0.35)]',
-  emerald: 'group-hover:shadow-[0_0_18px_rgba(16,185,129,0.32)]',
-  amber: 'group-hover:shadow-[0_0_18px_rgba(245,158,11,0.32)]',
-  sky: 'group-hover:shadow-[0_0_18px_rgba(14,165,233,0.32)]',
-  rose: 'group-hover:shadow-[0_0_18px_rgba(244,63,94,0.32)]',
-  cyan: 'group-hover:shadow-[0_0_18px_rgba(6,182,212,0.32)]'
+  indigo: 'group-hover:shadow-[0_0_22px_rgba(200,153,104,0.45)]',
+  violet: 'group-hover:shadow-[0_0_22px_rgba(139,92,246,0.40)]',
+  emerald: 'group-hover:shadow-[0_0_22px_rgba(13,122,95,0.45)]',
+  amber: 'group-hover:shadow-[0_0_22px_rgba(212,160,23,0.40)]',
+  sky: 'group-hover:shadow-[0_0_22px_rgba(45,106,143,0.40)]',
+  rose: 'group-hover:shadow-[0_0_22px_rgba(184,48,43,0.40)]',
+  cyan: 'group-hover:shadow-[0_0_22px_rgba(6,182,212,0.40)]',
 };
 const toneAccentFrom: Record<Tone, string> = {
-  indigo: 'from-amber-500/0 via-amber-600/60 to-amber-500/0',
-  violet: 'from-amber-500/0 via-amber-600/60 to-amber-500/0',
-  emerald: 'from-emerald-400/0 via-emerald-500/60 to-emerald-400/0',
-  amber: 'from-amber-400/0 via-amber-500/60 to-amber-400/0',
-  sky: 'from-amber-500/0 via-amber-600/60 to-amber-500/0',
-  rose: 'from-rose-400/0 via-rose-500/60 to-rose-400/0',
-  cyan: 'from-amber-500/0 via-amber-600/60 to-amber-500/0'
+  indigo: 'kpi-accent-copper',
+  violet: 'kpi-accent-violet',
+  emerald: 'kpi-accent-emerald',
+  amber: 'kpi-accent-amber',
+  sky: 'kpi-accent-sky',
+  rose: 'kpi-accent-rose',
+  cyan: 'kpi-accent-sky',
 };
 export function MetricCard({
   label,
