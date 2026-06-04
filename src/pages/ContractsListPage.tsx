@@ -719,7 +719,7 @@ export function ContractsListPage({
                       <td className={`relative ${firstCellPad} align-top`}>
                         <span
                         aria-hidden
-                        className={`absolute left-0 top-0 bottom-0 w-[3px] bg-amber-500 transition-opacity ${isSelected ? 'opacity-100' : 'opacity-0 group-hover/row:opacity-90'}`} />
+                        className={`absolute left-0 top-0 bottom-0 w-[3px] bg-gradient-to-b from-[#c89968] via-[#9c6d3e] to-[#0d7a5f] transition-opacity ${isSelected ? 'opacity-100' : 'opacity-0 group-hover/row:opacity-90'}`} />
                       
                         <Checkbox
                         checked={isSelected}
