@@ -96,9 +96,10 @@ body {
   color: var(--fg-primary);
   background-color: var(--bg-app);
   background-image:
-    radial-gradient(1100px 620px at 12% -10%, rgba(200, 153, 104, 0.16), transparent 60%),
-    radial-gradient(900px 560px at 100% 0%, rgba(13, 122, 95, 0.10), transparent 65%),
-    radial-gradient(700px 460px at 50% 110%, rgba(156, 109, 62, 0.08), transparent 70%);
+    radial-gradient(1200px 700px at 8% -12%, rgba(200, 153, 104, 0.24), transparent 60%),
+    radial-gradient(1000px 620px at 100% -4%, rgba(13, 122, 95, 0.18), transparent 62%),
+    radial-gradient(900px 600px at 50% 115%, rgba(156, 109, 62, 0.14), transparent 70%),
+    linear-gradient(180deg, #f9f5ec 0%, #f3ecdd 100%);
   background-attachment: fixed;
 }
 
