@@ -854,7 +854,7 @@ export function ContractsListPage({
                             Chưa tính
                           </span> :
 
-                      <span className="font-semibold text-zinc-900 text-[13px]">
+                      <span className="money-strong tabular-nums text-[13.5px]">
                             {formatCurrency(r.royalty_amount_before_vat)}
                           </span>
                       }
