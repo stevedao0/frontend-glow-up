@@ -25,7 +25,7 @@ export function SearchBox({
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className={`w-full ${h} ${text} pl-9 pr-${kbd ? 14 : 3} rounded-lg bg-white/70 text-zinc-900 placeholder:text-zinc-400 ring-1 ring-zinc-200 hover:ring-zinc-300 focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-600/40 transition-all`} />
+        className={`w-full ${h} ${text} pl-9 pr-${kbd ? 14 : 3} rounded-lg bg-white/75 backdrop-blur-sm text-zinc-900 placeholder:text-zinc-400 ring-1 ring-[color:var(--border-warm)] hover:ring-[#c89968]/45 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#c89968]/55 focus:shadow-[0_0_0_3px_rgba(200,153,104,0.18)] transition-all`} />
       
       {kbd &&
       <kbd className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 px-1.5 h-5 inline-flex items-center text-[10px] font-medium text-zinc-500 bg-zinc-100 border border-zinc-200 rounded">
