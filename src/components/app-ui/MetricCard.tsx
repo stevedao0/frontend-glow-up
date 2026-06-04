@@ -84,15 +84,16 @@ export function MetricCard({
     <Tag
       onClick={onClick}
       type={interactive ? 'button' : undefined}
-      className={`group relative bg-white rounded-2xl ring-1 ring-zinc-900/[0.06] shadow-[0_1px_2px_rgba(15,15,25,0.04),0_2px_6px_rgba(15,15,25,0.03)] hover:shadow-[0_0_0_1px_rgba(200,153,104,0.5),0_0_0_4px_rgba(200,153,104,0.10),0_14px_30px_-10px_rgba(156,109,62,0.25)] hover:-translate-y-1 transition-all duration-200 ease-out p-5 overflow-hidden ${interactive ? 'cursor-pointer text-left w-full focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-600' : ''}`}>
-      <div
-        className={`absolute inset-x-0 top-0 h-px bg-gradient-to-r ${toneAccentFrom[tone]} opacity-50 group-hover:opacity-100 transition-opacity`} />
+      className={`group relative premium-card rounded-2xl hover:shadow-[0_0_0_1px_rgba(200,153,104,0.55),0_0_0_4px_rgba(200,153,104,0.10),0_18px_36px_-14px_rgba(156,109,62,0.30),0_30px_60px_-30px_rgba(13,122,95,0.20)] hover:-translate-y-1 transition-all duration-200 ease-out p-5 overflow-hidden ${interactive ? 'cursor-pointer text-left w-full focus:outline-none focus-visible:ring-2 focus-visible:ring-[#c89968]/60' : ''}`}>
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-2 top-px h-px bg-white/80" />
+        className={`pointer-events-none absolute inset-x-0 top-0 h-[2px] ${toneAccentFrom[tone]} opacity-80 group-hover:opacity-100 transition-opacity`} />
       <div
         aria-hidden
-        className="pointer-events-none absolute -top-10 -right-10 h-32 w-32 rounded-full bg-[#c89968]/0 group-hover:bg-[#c89968]/10 blur-2xl transition-colors duration-500" />
+        className="pointer-events-none absolute inset-x-2 top-[2px] h-px bg-white/90" />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -top-12 -right-12 h-40 w-40 rounded-full bg-[#c89968]/12 group-hover:bg-[#c89968]/22 blur-3xl transition-colors duration-500" />
 
       <div className="relative">
         <div className="flex items-start justify-between gap-2 mb-4">
