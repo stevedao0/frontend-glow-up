@@ -18,23 +18,26 @@ export function ContentCard({
 }) {
   return (
     <section
-      className={`group/card relative bg-surface rounded-2xl ring-1 ring-zinc-900/[0.06] shadow-sm overflow-hidden ${className}`}
+      className={`group/card relative premium-card rounded-2xl overflow-hidden ${className}`}
     >
-      {/* Inner top highlight — gives the card depth */}
+      {/* Inner top highlight */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/90 to-transparent"
+        className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/95 to-transparent"
       />
 
-      {/* Subtle inner gradient wash */}
+      {/* Always-on subtle copper top accent (more visible when accent=true) */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 bg-gradient-to-b from-white via-white to-zinc-50/40"
+        className={`pointer-events-none absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-transparent via-[#c89968]/60 to-transparent ${accent ? 'opacity-100' : 'opacity-50'}`}
       />
 
-      {accent && (
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-transparent via-accent-primary/50 to-transparent" />
-      )}
+      {/* Subtle warm corner aura */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -top-12 -right-12 h-40 w-40 rounded-full bg-[#c89968]/10 blur-3xl"
+      />
+
 
       <div className="relative">
         {(title || actions) && (
