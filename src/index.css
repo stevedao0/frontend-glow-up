@@ -94,8 +94,14 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: var(--fg-primary);
-  background: var(--bg-app);
+  background-color: var(--bg-app);
+  background-image:
+    radial-gradient(1100px 620px at 12% -10%, rgba(200, 153, 104, 0.16), transparent 60%),
+    radial-gradient(900px 560px at 100% 0%, rgba(13, 122, 95, 0.10), transparent 65%),
+    radial-gradient(700px 460px at 50% 110%, rgba(156, 109, 62, 0.08), transparent 70%);
+  background-attachment: fixed;
 }
+
 .font-mono {
   font-family: var(--font-mono);
 }
