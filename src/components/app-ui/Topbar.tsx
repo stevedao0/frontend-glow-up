@@ -197,12 +197,12 @@ export function Topbar({
             onClick={() => setUserOpen((o) => !o)}
             className="h-9 pl-1 pr-1 sm:pr-2.5 inline-flex items-center gap-2 rounded-lg ring-1 ring-transparent hover:ring-zinc-200/80 hover:bg-surface transition-all">
             
-            <span className="relative h-7 w-7 rounded-full bg-gradient-to-br from-zinc-700 to-zinc-950 text-white text-[11px] font-semibold flex items-center justify-center shadow-xs">
+            <span className="relative h-7 w-7 rounded-full bg-gradient-to-br from-[#c89968] via-[#9c6d3e] to-[#5a4533] text-white text-[11px] font-semibold flex items-center justify-center shadow-md shadow-[#9c6d3e]/30 ring-1 ring-[#f0d4a8]/60">
               {currentUser?.avatarInitial || 'U'}
               <span
                 aria-hidden
-                className="absolute inset-0 rounded-full ring-1 ring-inset ring-white/10" />
-              
+                className="absolute inset-0 rounded-full ring-1 ring-inset ring-white/15" />
+
             </span>
             <span className="hidden md:inline text-sm text-fg-primary font-medium max-w-[180px] truncate">
               {userEmail}
