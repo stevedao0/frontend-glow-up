@@ -98,7 +98,7 @@ export function Topbar({
 
   return (
     <>
-      <header className="sticky top-0 z-20 h-16 px-4 sm:px-6 flex items-center gap-2 sm:gap-3 bg-surface/85 backdrop-blur-2xl backdrop-saturate-150 border-b border-zinc-200/70 shadow-xs">
+      <header className="sticky top-0 z-20 h-16 px-4 sm:px-6 flex items-center gap-2 sm:gap-3 premium-topbar">
         {/* Breadcrumb */}
         {currentMeta && (
           <nav className="hidden lg:flex items-center gap-1.5 text-[12.5px] mr-2 shrink-0">
