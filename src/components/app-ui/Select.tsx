@@ -35,7 +35,7 @@ export function Select({
           value={value}
           onChange={(e) => onChange(e.target.value)}
           disabled={disabled}
-          className={`appearance-none w-full ${h} pl-3 pr-8 text-sm rounded-lg bg-surface text-fg-primary ring-1 ring-zinc-200 hover:ring-zinc-300 focus:outline-none focus:ring-2 focus:ring-accent-primary/40 transition-shadow duration-fast shadow-xs ${disabled ? 'opacity-60 cursor-not-allowed bg-zinc-50' : ''}`}
+          className={`appearance-none w-full ${h} pl-3 pr-8 text-sm rounded-lg bg-surface text-fg-primary ring-1 ring-[color:var(--border-warm)] hover:ring-[#c89968]/45 focus:outline-none focus:ring-2 focus:ring-[#c89968]/55 focus:shadow-[0_0_0_3px_rgba(200,153,104,0.18)] transition-all duration-fast shadow-xs ${disabled ? 'opacity-60 cursor-not-allowed bg-zinc-50' : ''}`}
         >
           {placeholder && <option value="">{placeholder}</option>}
           {options.map((o) => (
