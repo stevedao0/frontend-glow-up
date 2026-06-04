@@ -713,7 +713,7 @@ export function ContractsListPage({
                   <tr
                     key={r.id}
                     onClick={() => onOpenDetail(r.id)}
-                    className={`group/row relative border-b border-zinc-100 last:border-0 transition-all cursor-pointer ${isSelected ? 'bg-amber-50/60 hover:bg-amber-50/80' : 'hover:bg-amber-50/40'}`}>
+                    className={`group/row relative border-b border-[#e3d2b3]/50 last:border-0 cursor-pointer ${isSelected ? 'row-selected-premium' : 'row-hover-premium'}`}>
                     
                       {/* Selection cell + left bar */}
                       <td className={`relative ${firstCellPad} align-top`}>
