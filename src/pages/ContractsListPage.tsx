@@ -670,7 +670,7 @@ export function ContractsListPage({
           <div className="overflow-auto max-h-[72vh]">
             <table className="w-full text-sm">
               <thead className="sticky top-0 z-10">
-                <tr className="bg-gradient-to-b from-amber-50 via-zinc-50 to-zinc-50 border-b border-zinc-200 shadow-[0_1px_0_0_rgba(0,0,0,0.04)]">
+                <tr className="premium-table-head">
                   <th className={`w-10 ${firstCellPad}`}>
                     <Checkbox
                     checked={allSelected}
