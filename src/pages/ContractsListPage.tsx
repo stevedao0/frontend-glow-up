@@ -736,7 +736,7 @@ export function ContractsListPage({
                           e.stopPropagation();
                           onOpenDetail(r.id);
                         }}
-                        className="font-mono text-[13px] font-semibold text-amber-800 hover:text-amber-950 group-hover/row:underline underline-offset-[3px] decoration-amber-300/70 decoration-1 transition-colors tracking-tight">
+                        className="contract-no-chip text-[12.5px] hover:brightness-95 transition">
                         
                           {r.contract_no}
                         </button>
