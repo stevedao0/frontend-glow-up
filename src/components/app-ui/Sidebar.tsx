@@ -184,9 +184,11 @@ export function Sidebar({
 
   };
   const groupLabel = (label: string) =>
-  <p className="px-3 mt-5 mb-2 text-[10px] font-bold uppercase tracking-[0.18em] text-[#9c8569]">
-      {label}
-    </p>;
+  <div className="px-3 mt-5 mb-2 flex items-center gap-2">
+      <span className="h-px flex-1 bg-gradient-to-r from-transparent via-[#c89968]/40 to-transparent" />
+      <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#7a5a3a]">{label}</p>
+      <span className="h-px flex-1 bg-gradient-to-r from-[#c89968]/40 via-transparent to-transparent" />
+    </div>;
 
   const contractsActive = CONTRACT_KEYS.includes(current);
   return (
