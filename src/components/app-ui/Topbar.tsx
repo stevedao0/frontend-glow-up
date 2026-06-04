@@ -131,7 +131,7 @@ export function Topbar({
           <button
             type="button"
             onClick={() => setWsOpen((o) => !o)}
-            className="h-9 px-3 inline-flex items-center gap-2 rounded-lg bg-surface ring-1 ring-zinc-200/80 hover:ring-[#c89968]/45 text-sm transition-all shadow-xs">
+            className="h-9 pl-2.5 pr-3 inline-flex items-center gap-2 rounded-full bg-gradient-to-b from-white to-[#fbf3e3] ring-1 ring-[#c89968]/35 hover:ring-[#c89968]/60 text-sm transition-all shadow-[0_1px_2px_rgba(45,31,20,0.06),0_4px_12px_-6px_rgba(156,109,62,0.25)]">
             
             <span className={`h-2 w-2 rounded-full ${wsDot} ${wsGlow}`} />
             <span className="font-semibold text-fg-primary hidden sm:inline">
