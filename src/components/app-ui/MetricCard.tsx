@@ -30,8 +30,8 @@ function Sparkline({ data, tone }: { data: number[]; tone: 'up' | 'down' | 'flat
   const pts = data.map((v, i) => `${(i * step).toFixed(1)},${(h - ((v - min) / range) * h).toFixed(1)}`);
   const d = `M${pts.join(' L')}`;
   const area = `M0,${h} L${pts.join(' L')} L${w},${h} Z`;
-  const stroke = tone === 'down' ? 'var(--accent-danger)' : tone === 'flat' ? 'var(--text-muted)' : 'var(--accent-primary)';
-  const fill = tone === 'down' ? 'color-mix(in srgb, var(--accent-danger) 10%, transparent)' : tone === 'flat' ? 'color-mix(in srgb, var(--text-muted) 10%, transparent)' : 'color-mix(in srgb, var(--accent-copper) 18%, transparent)';
+  const stroke = tone === 'down' ? '#b8302b' : tone === 'flat' ? '#9aa39d' : '#9c6d3e';
+  const fill = tone === 'down' ? 'rgba(184,48,43,0.10)' : tone === 'flat' ? 'rgba(154,163,157,0.10)' : 'rgba(200,153,104,0.18)';
   return (
     <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} className="opacity-90 group-hover:opacity-100 transition-opacity">
       <path d={area} fill={fill} />
@@ -41,24 +41,12 @@ function Sparkline({ data, tone }: { data: number[]; tone: 'up' | 'down' | 'flat
   );
 }
 
-const toneIconClass: Record<Tone, string> = {
-  indigo: 'ds-metric-icon',
-  violet: 'ds-metric-icon',
-  emerald: 'ds-metric-icon ds-metric-icon-tone-success',
-  amber: 'ds-metric-icon ds-metric-icon-tone-warning',
-  sky: 'ds-metric-icon',
-  rose: 'ds-metric-icon ds-metric-icon-tone-danger',
-  cyan: 'ds-metric-icon ds-metric-icon-tone-info'
-};
-const toneIconGlow: Record<Tone, string> = {
-  indigo: 'ds-metric-icon-glow',
-  violet: 'ds-metric-icon-glow',
-  emerald: 'ds-metric-icon-glow',
-  amber: 'ds-metric-icon-glow',
-  sky: 'ds-metric-icon-glow',
-  rose: 'ds-metric-icon-glow',
-  cyan: 'ds-metric-icon-glow'
-};
+function toneIconClass(tone: Tone): string {
+  if (tone === 'emerald') return 'ds-metric-icon-tone-success ds-metric-icon-glow';
+  if (tone === 'amber' || tone === 'indigo' || tone === 'violet' || tone === 'sky' || tone === 'cyan') return 'ds-metric-icon ds-metric-icon-glow';
+  if (tone === 'rose') return 'ds-metric-icon-tone-danger ds-metric-icon-glow';
+  return 'ds-metric-icon ds-metric-icon-glow';
+}
 
 export function MetricCard({
   label,
@@ -83,7 +71,7 @@ export function MetricCard({
         className="pointer-events-none absolute inset-x-2 top-px h-px bg-white/80" />
       <div
         aria-hidden
-        className="pointer-events-none absolute -top-10 -right-10 h-32 w-32 rounded-full ds-metric-orb group-hover:ds-metric-orb-hover blur-2xl transition-colors duration-500" />
+        className="pointer-events-none absolute -top-10 -right-10 h-32 w-32 rounded-full bg-[#c89968]/0 group-hover:bg-[#c89968]/10 blur-2xl transition-colors duration-500" />
 
       <div className="relative">
         <div className="flex items-start justify-between gap-2 mb-4">
@@ -92,7 +80,7 @@ export function MetricCard({
           </span>
           {icon &&
           <span
-            className={`h-9 w-9 flex items-center justify-center transition-all duration-200 group-hover:scale-105 group-hover:rotate-3 ${toneIconClass[tone]} ${toneIconGlow[tone]}`}>
+            className={`h-9 w-9 rounded-xl flex items-center justify-center transition-all duration-200 group-hover:scale-105 group-hover:rotate-3 ${toneIconClass(tone)}`}>
               {icon}
             </span>
           }
@@ -111,7 +99,8 @@ export function MetricCard({
               </span>
             )}
             {delta &&
-            <span className={`ds-delta ${delta.tone === 'up' ? 'ds-delta-up' : delta.tone === 'down' ? 'ds-delta-down' : 'ds-delta-flat'}`}>
+            <span
+              className={`ds-delta ${delta.tone === 'up' ? 'ds-delta-up' : delta.tone === 'down' ? 'ds-delta-down' : 'ds-delta-flat'}`}>
                 {delta.tone === 'up' ?
               <ArrowUpRightIcon className="h-3 w-3" strokeWidth={2.5} /> :
               delta.tone === 'down' ?
@@ -126,10 +115,10 @@ export function MetricCard({
           )}
         </div>
         {compare && (
-          <div className="mt-2 flex items-center gap-1.5 text-[11px] text-fg-muted">
-            <span className="inline-block h-1.5 w-3 rounded-sm ds-compare-dot" />
+          <div className="mt-2 flex items-center gap-1.5 text-[11px]" style={{ color: 'var(--text-muted)' }}>
+            <span className="ds-compare-dot h-1.5 w-3 rounded-sm" />
             <span className="font-medium">{compare.label ?? 'Kỳ trước'}:</span>
-            <span className="tabular-nums text-fg-secondary">{compare.value}</span>
+            <span className="tabular-nums" style={{ color: 'var(--text-secondary)' }}>{compare.value}</span>
           </div>
         )}
         {hint && <p className="text-xs text-fg-muted mt-2">{hint}</p>}

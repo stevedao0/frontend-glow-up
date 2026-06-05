@@ -21,33 +21,33 @@ export function StatusBadge({
 }) {
   const baseClass =
     tone === 'success'
-      ? 'ds-badge-tone-success'
+      ? 'bg-[color:var(--accent-emerald)] text-white'
       : tone === 'warning'
-        ? 'ds-badge-tone-warning'
+        ? 'bg-[color:var(--accent-warning)] text-white'
         : tone === 'danger'
-          ? 'ds-badge-tone-danger'
+          ? 'bg-[color:var(--accent-danger)] text-white'
           : tone === 'info'
-            ? 'ds-badge-tone-info'
+            ? 'bg-[color:var(--accent-info)] text-white'
             : tone === 'violet'
-              ? 'ds-badge-tone-violet'
+              ? 'bg-[color:var(--accent-primary)] text-white'
               : tone === 'orange'
-                ? 'ds-badge-tone-orange'
-                : 'ds-badge-tone-neutral';
+                ? 'bg-[color:var(--accent-warning)] text-white'
+                : 'bg-[color:var(--accent-neutral)] text-white';
 
   const dotClass =
     tone === 'success'
-      ? 'ds-badge-dot-success'
+      ? 'bg-[color:var(--accent-emerald-soft)]'
       : tone === 'warning'
-        ? 'ds-badge-dot-warning'
+        ? 'bg-[color:var(--accent-warning-soft)]'
         : tone === 'danger'
-          ? 'ds-badge-dot-danger'
+          ? 'bg-[color:var(--accent-danger-soft)]'
           : tone === 'info'
-            ? 'ds-badge-dot-info'
+            ? 'bg-[color:var(--accent-info-soft)]'
             : tone === 'violet'
-              ? 'ds-badge-dot-violet'
+              ? 'bg-[color:var(--accent-primary-soft)]'
               : tone === 'orange'
-                ? 'ds-badge-dot-orange'
-                : 'ds-badge-dot-neutral';
+                ? 'bg-[color:var(--accent-warning-soft)]'
+                : 'bg-[color:var(--accent-neutral-soft)]';
 
   return (
     <span className={`ds-badge ${baseClass} ${className ?? ''}`}>
