@@ -1,0 +1,257 @@
+/* ================================================
+   COMPONENTS — shared ds-* UI utility classes
+   ================================================ */
+
+/* Focus ring */
+.ds-focus-ring:focus-visible,
+.ds-button:focus-visible,
+.ds-input:focus-visible,
+.ds-select:focus-visible,
+.ds-textarea:focus-visible,
+.ds-row-action-trigger:focus-visible {
+  outline: none;
+  box-shadow: var(--shadow-focus);
+}
+
+/* Field */
+.ds-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.ds-label {
+  font-size: var(--text-label);
+  line-height: var(--line-height-normal);
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.ds-helper {
+  font-size: var(--text-helper);
+  color: var(--text-muted);
+}
+
+.ds-error {
+  font-size: var(--text-helper);
+  color: var(--accent-danger);
+}
+
+/* Input / Select / Textarea */
+.ds-input,
+.ds-select,
+.ds-textarea {
+  width: 100%;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-default);
+  background: var(--surface-elevated);
+  color: var(--text-primary);
+  transition: border-color var(--motion-fast) var(--ease-standard), box-shadow var(--motion-fast) var(--ease-standard), background-color var(--motion-fast) var(--ease-standard), color var(--motion-fast) var(--ease-standard);
+}
+
+.ds-input,
+.ds-select {
+  min-height: 2.5rem;
+  padding: 0 var(--space-3);
+  font-size: var(--text-body-sm);
+}
+
+.ds-textarea {
+  min-height: 5rem;
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--text-body-sm);
+  line-height: var(--line-height-normal);
+  resize: vertical;
+}
+
+.ds-input::placeholder,
+.ds-textarea::placeholder {
+  color: var(--text-muted);
+}
+
+.ds-input:hover,
+.ds-select:hover,
+.ds-textarea:hover {
+  border-color: var(--border-strong);
+}
+
+.ds-input:disabled,
+.ds-select:disabled,
+.ds-textarea:disabled {
+  background: var(--surface-muted);
+  color: var(--text-muted);
+  cursor: not-allowed;
+}
+
+/* Button */
+.ds-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  border-radius: var(--radius-md);
+  border: 1px solid transparent;
+  font-size: var(--text-body-sm);
+  font-weight: 600;
+  line-height: 1;
+  transition: background-color var(--motion-fast) var(--ease-standard), border-color var(--motion-fast) var(--ease-standard), color var(--motion-fast) var(--ease-standard), box-shadow var(--motion-fast) var(--ease-standard), transform var(--motion-fast) var(--ease-standard);
+}
+
+.ds-button:hover {
+  transform: translateY(-1px);
+}
+
+.ds-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.ds-button-primary {
+  background: linear-gradient(180deg, var(--accent-copper) 0%, var(--accent-primary) 100%);
+  color: #fff;
+  box-shadow: 0 10px 20px rgba(156, 109, 62, 0.18);
+}
+
+.ds-button-primary:hover {
+  background: linear-gradient(180deg, color-mix(in srgb, var(--accent-copper) 80%, white) 0%, var(--accent-primary-hover) 100%);
+}
+
+.ds-button-secondary {
+  background: var(--surface-elevated);
+  border-color: var(--border-default);
+  color: var(--text-secondary);
+}
+
+.ds-button-ghost {
+  background: transparent;
+  color: var(--text-secondary);
+}
+
+.ds-button-ghost:hover {
+  background: var(--surface-muted);
+  color: var(--text-primary);
+}
+
+.ds-button-danger {
+  background: var(--accent-danger);
+  color: #fff;
+}
+
+/* Badge / Chip */
+.ds-badge,
+.ds-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  border-radius: 999px;
+  font-size: var(--text-badge);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.ds-badge {
+  padding: 0.25rem 0.5rem;
+}
+
+.ds-chip {
+  padding: 0.3125rem 0.625rem;
+  border: 1px solid var(--border-default);
+  background: var(--surface);
+  color: var(--text-secondary);
+}
+
+/* Table */
+.ds-table-shell {
+  overflow: hidden;
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--border-subtle);
+  background: var(--surface-elevated);
+  box-shadow: var(--shadow-card);
+}
+
+.ds-table-head {
+  background: var(--surface-muted);
+  color: var(--text-secondary);
+  font-size: var(--text-table-header);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.ds-table-head-cell {
+  height: var(--table-header-height);
+  vertical-align: middle;
+  border-bottom: 1px solid var(--border-subtle);
+  background: inherit;
+}
+
+.ds-table-row {
+  min-height: var(--table-row-comfortable);
+  border-top: 1px solid var(--border-subtle);
+  transition: background-color var(--motion-fast) var(--ease-standard);
+}
+
+.ds-table-row-compact {
+  min-height: var(--table-row-compact);
+}
+
+.ds-table-row-comfortable {
+  min-height: var(--table-row-comfortable);
+}
+
+.ds-table-row-detailed {
+  min-height: var(--table-row-detailed);
+}
+
+.ds-table-row-alt {
+  background: color-mix(in srgb, var(--surface) 75%, transparent);
+}
+
+.ds-table-row-selected {
+  background: color-mix(in srgb, var(--accent-primary-soft) 90%, var(--surface-elevated));
+}
+
+.ds-table-row:hover {
+  background: color-mix(in srgb, var(--surface-muted) 70%, transparent);
+}
+
+.ds-table-cell {
+  color: var(--text-primary);
+  font-size: var(--text-table);
+  border-top: 1px solid var(--border-subtle);
+  vertical-align: middle;
+}
+
+/* Row action trigger */
+.ds-row-action-trigger {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--text-secondary);
+  transition: background-color var(--motion-fast) var(--ease-standard), color var(--motion-fast) var(--ease-standard), border-color var(--motion-fast) var(--ease-standard);
+}
+
+.ds-row-action-trigger:hover {
+  background: var(--surface-muted);
+  color: var(--text-primary);
+  border-color: var(--border-default);
+}
+
+/* Skeleton */
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--surface-muted) 94%, white) 0%, color-mix(in srgb, var(--surface-muted) 70%, white) 50%, color-mix(in srgb, var(--surface-muted) 94%, white) 100%);
+}
+
+.skeleton::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.55), transparent);
+  animation: shimmer 1.6s infinite;
+}
