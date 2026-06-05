@@ -1,17 +1,14 @@
-import type React from 'react';
+import React from 'react';
 import { Chip } from './Chip';
 
-export type CountChipProps = {
+export function CountChip({
+  value,
+  label,
+  className = '',
+}: {
   value: number | string;
   label?: string;
   className?: string;
-};
-
-export function CountChip({ value, label, className = '' }: CountChipProps) {
-  return (
-    <Chip className={className} tone="neutral">
-      <span className="font-semibold nums">{value}</span>
-      {label ? <span className="text-[color:var(--text-muted)]">{label}</span> : null}
-    </Chip>
-  );
+}) {
+  return <Chip className={`gap-1 tabular-nums ${className}`}>{label ? `${label}: ${value}` : value}</Chip>;
 }

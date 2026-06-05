@@ -1,7 +1,19 @@
-import { Chip, type ChipProps } from './Chip';
+import React from 'react';
+import { Chip } from './Chip';
 
-export type DomainChipProps = Omit<ChipProps, 'tone'>;
-
-export function DomainChip(props: DomainChipProps) {
-  return <Chip tone="primary" {...props} />;
+export function DomainChip({
+  children,
+  className = '',
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <Chip
+      tone="info"
+      className={`border border-[color:var(--border-subtle)] bg-[color:var(--surface-elevated)] ${className}`}
+    >
+      {children}
+    </Chip>
+  );
 }

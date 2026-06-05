@@ -1,18 +1,22 @@
-import type React from 'react';
+import React from 'react';
 import { ContentCard } from '../ContentCard';
 
-export type FilterPanelProps = {
+export function FilterPanel({
+  title,
+  description,
+  children,
+  actions,
+  className = '',
+}: {
   title?: string;
   description?: React.ReactNode;
-  actions?: React.ReactNode;
   children: React.ReactNode;
+  actions?: React.ReactNode;
   className?: string;
-};
-
-export function FilterPanel({ title = 'Bộ lọc', description, actions, children, className = '' }: FilterPanelProps) {
+}) {
   return (
     <ContentCard title={title} description={description} actions={actions} className={className}>
-      {children}
+      <div className="flex flex-col gap-4">{children}</div>
     </ContentCard>
   );
 }

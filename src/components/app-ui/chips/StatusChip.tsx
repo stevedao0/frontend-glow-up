@@ -1,21 +1,20 @@
 import React from 'react';
 import { StatusBadge } from '../StatusBadge';
 
-export function MoneyBadge({
-  value,
-  currency = '₫',
+export function StatusChip({
+  children,
   tone = 'neutral',
+  dot = false,
   className,
 }: {
-  value: string | number;
-  currency?: string;
+  children: React.ReactNode;
   tone?: 'success' | 'warning' | 'danger' | 'info' | 'neutral' | 'violet' | 'orange';
+  dot?: boolean;
   className?: string;
 }) {
   return (
-    <StatusBadge tone={tone} className={className}>
-      <span className="tabular-nums">{value}</span>
-      <span>{currency}</span>
+    <StatusBadge tone={tone} dot={dot} className={className}>
+      {children}
     </StatusBadge>
   );
 }

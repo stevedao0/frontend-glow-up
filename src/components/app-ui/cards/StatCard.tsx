@@ -1,3 +1,7 @@
-export { MetricCard as StatCard } from '../MetricCard';
-export type { MetricCardProps } from '../MetricCard';
-export type StatCardProps = import('../MetricCard').MetricCardProps;
+import React from 'react';
+import { MetricCard } from '../MetricCard';
+import type { MetricCardProps } from '../MetricCard';
+
+export function StatCard(props: MetricCardProps) {
+  return <MetricCard {...props} />;
+}
