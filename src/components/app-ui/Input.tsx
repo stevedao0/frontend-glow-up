@@ -23,7 +23,7 @@ export function Input({
       )}
       <input
         {...rest}
-        className={`h-9 px-3 text-sm rounded-lg bg-surface text-fg-primary ring-1 ring-[color:var(--border-warm)] hover:ring-[#c89968]/45 focus:outline-none focus:ring-2 focus:ring-[#c89968]/55 focus:shadow-[0_0_0_3px_rgba(200,153,104,0.18)] transition-all duration-fast shadow-xs placeholder:text-fg-subtle disabled:bg-surface-subtle disabled:text-fg-muted disabled:cursor-not-allowed ${error ? 'ring-rose-300 focus:ring-danger/50' : ''} ${className}`}
+        className={`h-9 px-3 text-sm rounded-lg bg-surface text-fg-primary ring-1 ring-zinc-200 hover:ring-zinc-300 focus:outline-none focus:ring-2 focus:ring-accent-primary/40 transition-shadow duration-fast shadow-xs placeholder:text-fg-subtle disabled:bg-surface-subtle disabled:text-fg-muted disabled:cursor-not-allowed ${error ? 'ring-rose-300 focus:ring-danger/40' : ''} ${className}`}
       />
       {error && <span className="text-xs text-danger">{error}</span>}
       {hint && !error && <span className="text-xs text-fg-muted">{hint}</span>}

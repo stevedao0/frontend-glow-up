@@ -98,7 +98,7 @@ export function Topbar({
 
   return (
     <>
-      <header className="sticky top-0 z-20 h-16 px-4 sm:px-6 flex items-center gap-2 sm:gap-3 premium-topbar">
+      <header className="sticky top-0 z-20 h-16 px-4 sm:px-6 flex items-center gap-2 sm:gap-3 bg-surface/85 backdrop-blur-2xl backdrop-saturate-150 border-b border-zinc-200/70 shadow-xs">
         {/* Breadcrumb */}
         {currentMeta && (
           <nav className="hidden lg:flex items-center gap-1.5 text-[12.5px] mr-2 shrink-0">
@@ -116,7 +116,7 @@ export function Topbar({
           <button
             type="button"
             onClick={() => setPaletteOpen(true)}
-            className="w-full h-9 pl-9 pr-14 text-sm rounded-full bg-white/70 backdrop-blur-sm ring-1 ring-[color:var(--border-warm)] hover:ring-[#c89968]/55 hover:bg-white focus:outline-none focus:ring-2 focus:ring-[#c89968]/55 focus:shadow-[0_0_0_3px_rgba(200,153,104,0.18)] transition-all text-left text-fg-muted shadow-xs">
+            className="w-full h-9 pl-9 pr-14 text-sm rounded-lg bg-surface-subtle ring-1 ring-zinc-200/80 hover:ring-[#c89968]/45 hover:bg-white focus:outline-none focus:ring-2 focus:ring-[#c89968]/40 transition-all text-left text-fg-muted">
             <SearchIcon className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-fg-subtle group-hover:text-[#9c6d3e] transition-colors" />
             <span className="truncate">Tìm hợp đồng, GCN, đối tác... hoặc nhấn ⌘K</span>
             <kbd className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 px-1.5 h-5 inline-flex items-center text-[10px] font-semibold text-fg-muted bg-surface border border-zinc-200/80 rounded shadow-xs">
@@ -131,7 +131,7 @@ export function Topbar({
           <button
             type="button"
             onClick={() => setWsOpen((o) => !o)}
-            className="h-9 pl-2.5 pr-3 inline-flex items-center gap-2 rounded-full bg-gradient-to-b from-white to-[#fbf3e3] ring-1 ring-[#c89968]/35 hover:ring-[#c89968]/60 text-sm transition-all shadow-[0_1px_2px_rgba(45,31,20,0.06),0_4px_12px_-6px_rgba(156,109,62,0.25)]">
+            className="h-9 px-3 inline-flex items-center gap-2 rounded-lg bg-surface ring-1 ring-zinc-200/80 hover:ring-[#c89968]/45 text-sm transition-all shadow-xs">
             
             <span className={`h-2 w-2 rounded-full ${wsDot} ${wsGlow}`} />
             <span className="font-semibold text-fg-primary hidden sm:inline">
@@ -197,12 +197,12 @@ export function Topbar({
             onClick={() => setUserOpen((o) => !o)}
             className="h-9 pl-1 pr-1 sm:pr-2.5 inline-flex items-center gap-2 rounded-lg ring-1 ring-transparent hover:ring-zinc-200/80 hover:bg-surface transition-all">
             
-            <span className="relative h-7 w-7 rounded-full bg-gradient-to-br from-[#c89968] via-[#9c6d3e] to-[#5a4533] text-white text-[11px] font-semibold flex items-center justify-center shadow-md shadow-[#9c6d3e]/30 ring-1 ring-[#f0d4a8]/60">
+            <span className="relative h-7 w-7 rounded-full bg-gradient-to-br from-zinc-700 to-zinc-950 text-white text-[11px] font-semibold flex items-center justify-center shadow-xs">
               {currentUser?.avatarInitial || 'U'}
               <span
                 aria-hidden
-                className="absolute inset-0 rounded-full ring-1 ring-inset ring-white/15" />
-
+                className="absolute inset-0 rounded-full ring-1 ring-inset ring-white/10" />
+              
             </span>
             <span className="hidden md:inline text-sm text-fg-primary font-medium max-w-[180px] truncate">
               {userEmail}

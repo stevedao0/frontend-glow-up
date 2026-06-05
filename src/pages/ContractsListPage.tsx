@@ -140,11 +140,12 @@ export function ContractsListPage({
   const [reloadTick, setReloadTick] = useState(0);
   // Density toggle (UI only, no API impact)
   const [density, setDensity] = useState<'compact' | 'mid' | 'detail'>('compact');
-  const cellPad = density === 'compact' ? 'px-3 py-1.5' : density === 'mid' ? 'px-4 py-2.5' : 'px-4 py-3.5';
-  const firstCellPad = density === 'compact' ? 'pl-4 pr-2 py-1.5' : density === 'mid' ? 'pl-5 pr-2 py-2.5' : 'pl-5 pr-2 py-3.5';
-  const unitClamp = density === 'compact' ? 'line-clamp-1' : 'line-clamp-2';
-  const addrClamp = density === 'compact' ? 'line-clamp-1' : 'line-clamp-2';
-  const areasShown = density === 'detail' ? 2 : 1;
+  const cellPad = density === 'compact' ? 'px-3 py-2' : density === 'mid' ? 'px-4 py-2.5' : 'px-4 py-3.5';
+  const firstCellPad = density === 'compact' ? 'pl-4 pr-2 py-2' : density === 'mid' ? 'pl-5 pr-2 py-2.5' : 'pl-5 pr-2 py-3.5';
+  const unitClamp = density === 'compact' ? 'line-clamp-2' : density === 'mid' ? 'line-clamp-2' : 'line-clamp-3';
+  const signClamp = density === 'compact' ? 'line-clamp-1' : density === 'mid' ? 'line-clamp-2' : 'line-clamp-2';
+  const addrClamp = density === 'compact' ? 'line-clamp-2' : density === 'mid' ? 'line-clamp-3' : 'line-clamp-4';
+  const areasShown = density === 'compact' ? 1 : 2;
 
   // Action modal state (Xuất Word / Xem dữ liệu GCN / Xóa)
   const [actionModal, setActionModal] = useState<{
@@ -743,27 +744,27 @@ export function ContractsListPage({
                       </td>
 
                       {/* Đơn vị + bảng hiệu */}
-                      <td className={`${cellPad} align-top max-w-[260px]`}>
+                      <td className={`${cellPad} align-top max-w-[280px]`}>
                         <p
-                        className={`text-[13px] font-semibold text-zinc-900 leading-snug ${unitClamp}`}
+                        className={`text-[13px] font-semibold text-zinc-900 leading-snug whitespace-normal break-words ${unitClamp}`}
                         title={r.don_vi_ten}>
                         
                           {r.don_vi_ten}
                         </p>
-                        {r.ten_bang_hieu && density !== 'compact' &&
+                        {r.ten_bang_hieu && (
                       <p
-                        className="mt-0.5 text-[12px] text-zinc-500 truncate"
+                        className={`mt-0.5 text-[12px] text-zinc-500 whitespace-normal break-words ${signClamp}`}
                         title={r.ten_bang_hieu}>
                         
                             {r.ten_bang_hieu}
                           </p>
-                      }
+                      )}
                       </td>
 
                       {/* Địa chỉ */}
-                      <td className={`${cellPad} align-top max-w-[240px]`}>
+                      <td className={`${cellPad} align-top max-w-[260px]`}>
                         <p
-                        className={`text-[12.5px] text-zinc-600 leading-snug ${addrClamp}`}
+                        className={`text-[12.5px] text-zinc-600 leading-snug whitespace-normal break-words ${addrClamp}`}
                         title={r.dia_chi_su_dung}>
                         
                           {r.dia_chi_su_dung}
@@ -771,13 +772,13 @@ export function ContractsListPage({
                       </td>
 
                       {/* Lĩnh vực — summarized */}
-                      <td className={`${cellPad} align-top max-w-[220px]`}>
+                      <td className={`${cellPad} align-top max-w-[260px]`}>
                         <div className="flex flex-col gap-1">
-                          <span className="text-zinc-700 text-[13px] font-medium">
+                          <span className="text-zinc-700 text-[13px] font-medium whitespace-normal break-words">
                             {r.linh_vuc_hien_thi}
                           </span>
                           {areas.length > 0 ? (
-                            <div className="flex flex-wrap items-center gap-1">
+                            <div className="flex flex-wrap items-start gap-1">
                               {areas.slice(0, areasShown).map((area, idx) => {
                                 const label =
                                   area.area_name ||
@@ -787,7 +788,7 @@ export function ContractsListPage({
                                 return (
                                   <span
                                     key={idx}
-                                    className="inline-flex items-center px-1.5 py-0.5 rounded text-[11px] text-zinc-600 bg-zinc-100 ring-1 ring-inset ring-zinc-900/5 max-w-[180px] truncate"
+                                    className="inline-flex items-center px-1.5 py-0.5 rounded text-[11px] text-zinc-600 bg-zinc-100 ring-1 ring-inset ring-zinc-900/5 max-w-[180px] whitespace-normal break-words leading-snug"
                                     title={`${area.area_name || ''}${area.scale_description ? ' — ' + area.scale_description : ''}${area.music_usage_type ? ' · ' + area.music_usage_type : ''}`}
                                   >
                                     {label}
@@ -796,7 +797,7 @@ export function ContractsListPage({
                               })}
                               {areas.length > areasShown && (
                                 <span
-                                  className="inline-flex items-center px-1.5 py-0.5 rounded text-[10.5px] font-medium bg-amber-50 text-amber-700 ring-1 ring-inset ring-amber-600/20 cursor-help"
+                                  className="inline-flex items-center px-1.5 py-0.5 rounded text-[10.5px] font-medium bg-amber-50 text-amber-700 ring-1 ring-inset ring-amber-600/20 cursor-help whitespace-nowrap"
                                   title={areaTooltip}
                                 >
                                   +{areas.length - areasShown} khu vực
@@ -805,14 +806,14 @@ export function ContractsListPage({
                               <button
                                 type="button"
                                 onClick={(e) => { e.stopPropagation(); onOpenDetail(r.id); }}
-                                className="text-[11px] text-amber-700 hover:text-amber-900 hover:underline"
+                                className="text-[11px] text-amber-700 hover:text-amber-900 hover:underline whitespace-nowrap"
                               >
                                 Xem chi tiết
                               </button>
                             </div>
                           ) : (
                             r.loai_hinh_karaoke && (
-                              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10.5px] font-medium bg-zinc-100 text-zinc-700 ring-1 ring-inset ring-zinc-900/5 self-start">
+                              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10.5px] font-medium bg-zinc-100 text-zinc-700 ring-1 ring-inset ring-zinc-900/5 self-start whitespace-nowrap">
                                 {r.loai_hinh_karaoke}
                                 {r.tong_so_phong != null && (
                                   <>
