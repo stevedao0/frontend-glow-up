@@ -15,11 +15,7 @@ export function FilterBar({
   error?: string;
 }) {
   return (
-    <div className="relative bg-white rounded-2xl ring-1 ring-zinc-900/[0.06] shadow-[0_1px_2px_rgba(15,15,25,0.04),0_2px_6px_rgba(15,15,25,0.03)] overflow-hidden">
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/90 to-transparent" />
-      
+    <div className="relative ds-toolbar-surface rounded-2xl ds-toolbar-panel overflow-hidden">
       <div className="p-3 sm:p-4 flex flex-wrap items-end gap-3">
         <div className="flex flex-wrap items-end gap-3 flex-1 min-w-0">
           {children}
@@ -29,23 +25,23 @@ export function FilterBar({
             type="button"
             onClick={onClear}
             disabled={!hasActive}
-            className="h-9 inline-flex items-center gap-1.5 px-3 text-sm font-medium rounded-lg text-zinc-600 hover:bg-zinc-100 hover:text-zinc-900 disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-zinc-600 transition-colors">
+            className="h-9 inline-flex items-center gap-1.5 px-3 text-sm font-medium rounded-lg text-fg-muted hover:bg-surface-muted hover:text-fg-primary disabled:opacity-40 disabled:hover:bg-transparent disabled:hover:text-fg-muted transition-colors">
             <XIcon className="h-3.5 w-3.5" />
             Xóa lọc
           </button>
         }
       </div>
       {(resultSummary || hasActive || error) &&
-        <div className="px-4 sm:px-5 py-2.5 border-t border-zinc-100/80 bg-zinc-50/40 flex items-center justify-between gap-3">
-          <div className="text-xs text-zinc-600 flex items-center gap-2">
+        <div className="px-4 sm:px-5 py-2.5 ds-toolbar-summary flex items-center justify-between gap-3">
+          <div className="text-xs text-fg-muted flex items-center gap-2">
             {hasActive &&
-              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[10px] font-semibold uppercase tracking-wider bg-amber-50 text-amber-800 ring-1 ring-inset ring-amber-700/15">
+              <span className="ds-filter-chip">
                 <FilterIcon className="h-2.5 w-2.5" />
                 Đang lọc
               </span>
             }
             {error ? (
-              <span className="inline-flex items-center gap-1 text-rose-600">
+              <span className="inline-flex items-center gap-1 text-accent-danger">
                 <AlertCircleIcon className="h-3 w-3" />
                 Lỗi tải dữ liệu
               </span>
@@ -68,7 +64,7 @@ export function FilterField({
 }) {
   return (
     <div className={`flex flex-col gap-1 ${width}`}>
-      <label className="text-[11px] font-semibold text-zinc-600 uppercase tracking-[0.06em]">
+      <label className="text-[11px] font-semibold text-fg-muted uppercase tracking-[0.06em]">
         {label}
       </label>
       {children}

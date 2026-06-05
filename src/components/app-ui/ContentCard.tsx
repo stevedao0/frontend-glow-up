@@ -18,7 +18,7 @@ export function ContentCard({
 }) {
   return (
     <section
-      className={`ds-card group/card relative rounded-2xl overflow-hidden ${className}`}
+      className={`ds-card group/card relative rounded-2xl overflow-hidden ${accent ? 'ds-card-accent' : ''} ${className}`}
     >
       {/* Inner top highlight — gives the card depth */}
       <div
@@ -29,16 +29,12 @@ export function ContentCard({
       {/* Subtle inner gradient wash */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 bg-gradient-to-b from-white via-white to-zinc-50/40"
+        className="pointer-events-none absolute inset-0 ds-card-panel"
       />
-
-      {accent && (
-        <div className="pointer-events-none absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-transparent via-accent-primary/50 to-transparent" />
-      )}
 
       <div className="relative">
         {(title || actions) && (
-          <header className="px-5 py-4 border-b border-zinc-100/80 flex items-center justify-between gap-3">
+          <header className="px-5 py-4 border-b border-[color:var(--border-subtle)] flex items-center justify-between gap-3">
             <div className="min-w-0">
               {title && (
                 <h2 className="text-sm font-semibold text-fg-primary tracking-tight">

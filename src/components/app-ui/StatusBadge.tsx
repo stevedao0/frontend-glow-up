@@ -21,33 +21,33 @@ export function StatusBadge({
 }) {
   const baseClass =
     tone === 'success'
-      ? 'bg-[color:var(--accent-emerald)] text-white'
+      ? 'ds-badge-tone-success'
       : tone === 'warning'
-        ? 'bg-[color:var(--accent-warning)] text-white'
+        ? 'ds-badge-tone-warning'
         : tone === 'danger'
-          ? 'bg-[color:var(--accent-danger)] text-white'
+          ? 'ds-badge-tone-danger'
           : tone === 'info'
-            ? 'bg-[color:var(--accent-info)] text-white'
+            ? 'ds-badge-tone-info'
             : tone === 'violet'
-              ? 'bg-[color:var(--accent-primary)] text-white'
+              ? 'ds-badge-tone-violet'
               : tone === 'orange'
-                ? 'bg-orange-600 text-white'
-                : 'bg-[color:var(--accent-neutral)] text-white';
+                ? 'ds-badge-tone-orange'
+                : 'ds-badge-tone-neutral';
 
   const dotClass =
     tone === 'success'
-      ? 'bg-emerald-200'
+      ? 'ds-badge-dot-success'
       : tone === 'warning'
-        ? 'bg-amber-100'
+        ? 'ds-badge-dot-warning'
         : tone === 'danger'
-          ? 'bg-rose-200'
+          ? 'ds-badge-dot-danger'
           : tone === 'info'
-            ? 'bg-teal-200'
+            ? 'ds-badge-dot-info'
             : tone === 'violet'
-              ? 'bg-amber-100'
+              ? 'ds-badge-dot-violet'
               : tone === 'orange'
-                ? 'bg-orange-200'
-                : 'bg-stone-300';
+                ? 'ds-badge-dot-orange'
+                : 'ds-badge-dot-neutral';
 
   return (
     <span className={`ds-badge ${baseClass} ${className ?? ''}`}>

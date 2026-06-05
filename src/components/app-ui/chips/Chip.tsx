@@ -13,14 +13,14 @@ export function Chip({
 }) {
   const toneClassName =
     tone === 'info'
-      ? 'bg-[color:var(--accent-info-soft)] text-[color:var(--accent-info)]'
+      ? 'ds-chip ds-chip-tone-info'
       : tone === 'success'
-        ? 'bg-[color:color-mix(in_srgb,var(--accent-emerald)_16%,white)] text-[color:var(--accent-emerald)]'
+        ? 'ds-chip ds-chip-tone-success'
         : tone === 'warning'
-          ? 'bg-[color:color-mix(in_srgb,var(--accent-warning)_14%,white)] text-[color:var(--accent-warning)]'
+          ? 'ds-chip ds-chip-tone-warning'
           : tone === 'danger'
-            ? 'bg-[color:color-mix(in_srgb,var(--accent-danger)_12%,white)] text-[color:var(--accent-danger)]'
-            : 'bg-[color:var(--surface-muted)] text-fg-secondary';
+            ? 'ds-chip ds-chip-tone-danger'
+            : 'ds-chip ds-chip-tone-neutral';
 
   const sizeClassName = size === 'sm' ? 'h-5 px-2 text-[11px]' : 'h-6 px-2.5 text-xs';
 

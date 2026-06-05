@@ -30,8 +30,8 @@ function Sparkline({ data, tone }: { data: number[]; tone: 'up' | 'down' | 'flat
   const pts = data.map((v, i) => `${(i * step).toFixed(1)},${(h - ((v - min) / range) * h).toFixed(1)}`);
   const d = `M${pts.join(' L')}`;
   const area = `M0,${h} L${pts.join(' L')} L${w},${h} Z`;
-  const stroke = tone === 'down' ? '#b8302b' : tone === 'flat' ? '#9aa39d' : '#9c6d3e';
-  const fill = tone === 'down' ? 'rgba(184,48,43,0.10)' : tone === 'flat' ? 'rgba(154,163,157,0.10)' : 'rgba(200,153,104,0.18)';
+  const stroke = tone === 'down' ? 'var(--accent-danger)' : tone === 'flat' ? 'var(--text-muted)' : 'var(--accent-primary)';
+  const fill = tone === 'down' ? 'color-mix(in srgb, var(--accent-danger) 10%, transparent)' : tone === 'flat' ? 'color-mix(in srgb, var(--text-muted) 10%, transparent)' : 'color-mix(in srgb, var(--accent-copper) 18%, transparent)';
   return (
     <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} className="opacity-90 group-hover:opacity-100 transition-opacity">
       <path d={area} fill={fill} />
@@ -40,33 +40,26 @@ function Sparkline({ data, tone }: { data: number[]; tone: 'up' | 'down' | 'flat
     </svg>
   );
 }
-const toneIconBg: Record<Tone, string> = {
-  indigo: 'bg-amber-50 text-amber-700 ring-amber-100',
-  violet: 'bg-amber-50 text-amber-700 ring-amber-100',
-  emerald: 'bg-emerald-50 text-emerald-600 ring-emerald-100',
-  amber: 'bg-amber-50 text-amber-600 ring-amber-100',
-  sky: 'bg-amber-50 text-amber-700 ring-amber-100',
-  rose: 'bg-rose-50 text-rose-600 ring-rose-100',
-  cyan: 'bg-amber-50 text-amber-700 ring-amber-100'
+
+const toneIconClass: Record<Tone, string> = {
+  indigo: 'ds-metric-icon',
+  violet: 'ds-metric-icon',
+  emerald: 'ds-metric-icon ds-metric-icon-tone-success',
+  amber: 'ds-metric-icon ds-metric-icon-tone-warning',
+  sky: 'ds-metric-icon',
+  rose: 'ds-metric-icon ds-metric-icon-tone-danger',
+  cyan: 'ds-metric-icon ds-metric-icon-tone-info'
 };
 const toneIconGlow: Record<Tone, string> = {
-  indigo: 'group-hover:shadow-[0_0_18px_rgba(99,102,241,0.35)]',
-  violet: 'group-hover:shadow-[0_0_18px_rgba(139,92,246,0.35)]',
-  emerald: 'group-hover:shadow-[0_0_18px_rgba(16,185,129,0.32)]',
-  amber: 'group-hover:shadow-[0_0_18px_rgba(245,158,11,0.32)]',
-  sky: 'group-hover:shadow-[0_0_18px_rgba(14,165,233,0.32)]',
-  rose: 'group-hover:shadow-[0_0_18px_rgba(244,63,94,0.32)]',
-  cyan: 'group-hover:shadow-[0_0_18px_rgba(6,182,212,0.32)]'
+  indigo: 'ds-metric-icon-glow',
+  violet: 'ds-metric-icon-glow',
+  emerald: 'ds-metric-icon-glow',
+  amber: 'ds-metric-icon-glow',
+  sky: 'ds-metric-icon-glow',
+  rose: 'ds-metric-icon-glow',
+  cyan: 'ds-metric-icon-glow'
 };
-const toneAccentFrom: Record<Tone, string> = {
-  indigo: 'from-amber-500/0 via-amber-600/60 to-amber-500/0',
-  violet: 'from-amber-500/0 via-amber-600/60 to-amber-500/0',
-  emerald: 'from-emerald-400/0 via-emerald-500/60 to-emerald-400/0',
-  amber: 'from-amber-400/0 via-amber-500/60 to-amber-400/0',
-  sky: 'from-amber-500/0 via-amber-600/60 to-amber-500/0',
-  rose: 'from-rose-400/0 via-rose-500/60 to-rose-400/0',
-  cyan: 'from-amber-500/0 via-amber-600/60 to-amber-500/0'
-};
+
 export function MetricCard({
   label,
   value,
@@ -86,13 +79,11 @@ export function MetricCard({
       type={interactive ? 'button' : undefined}
       className={`ds-card group relative rounded-2xl overflow-hidden p-[var(--card-padding)] ${interactive ? 'cursor-pointer text-left w-full ds-focus-ring' : ''}`}>
       <div
-        className={`absolute inset-x-0 top-0 h-px bg-gradient-to-r ${toneAccentFrom[tone]} opacity-60 group-hover:opacity-100 transition-opacity`} />
-      <div
         aria-hidden
         className="pointer-events-none absolute inset-x-2 top-px h-px bg-white/80" />
       <div
         aria-hidden
-        className="pointer-events-none absolute -top-10 -right-10 h-32 w-32 rounded-full bg-[#c89968]/0 group-hover:bg-[#c89968]/10 blur-2xl transition-colors duration-500" />
+        className="pointer-events-none absolute -top-10 -right-10 h-32 w-32 rounded-full ds-metric-orb group-hover:ds-metric-orb-hover blur-2xl transition-colors duration-500" />
 
       <div className="relative">
         <div className="flex items-start justify-between gap-2 mb-4">
@@ -101,7 +92,7 @@ export function MetricCard({
           </span>
           {icon &&
           <span
-            className={`h-9 w-9 rounded-xl ring-1 flex items-center justify-center transition-all duration-200 group-hover:scale-105 group-hover:rotate-3 ${toneIconBg[tone]} ${toneIconGlow[tone]}`}>
+            className={`h-9 w-9 flex items-center justify-center transition-all duration-200 group-hover:scale-105 group-hover:rotate-3 ${toneIconClass[tone]} ${toneIconGlow[tone]}`}>
               {icon}
             </span>
           }
@@ -115,13 +106,12 @@ export function MetricCard({
               {value}
             </span>
             {value === '—' && (
-              <span className="text-[10.5px] font-medium uppercase tracking-wider text-zinc-400 italic">
+              <span className="text-[10.5px] font-medium uppercase tracking-wider text-fg-muted italic">
                 Chưa có dữ liệu
               </span>
             )}
             {delta &&
-            <span
-              className={`inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[11px] font-bold tracking-tight ring-1 ring-inset ${delta.tone === 'up' ? 'bg-emerald-50 text-emerald-700 ring-emerald-600/20' : delta.tone === 'down' ? 'bg-rose-50 text-rose-700 ring-rose-600/20' : 'bg-zinc-100 text-zinc-600 ring-zinc-500/15'}`}>
+            <span className={`ds-delta ${delta.tone === 'up' ? 'ds-delta-up' : delta.tone === 'down' ? 'ds-delta-down' : 'ds-delta-flat'}`}>
                 {delta.tone === 'up' ?
               <ArrowUpRightIcon className="h-3 w-3" strokeWidth={2.5} /> :
               delta.tone === 'down' ?
@@ -136,20 +126,19 @@ export function MetricCard({
           )}
         </div>
         {compare && (
-          <div className="mt-2 flex items-center gap-1.5 text-[11px] text-zinc-500">
-            <span className="inline-block h-1.5 w-3 rounded-sm bg-zinc-300" />
+          <div className="mt-2 flex items-center gap-1.5 text-[11px] text-fg-muted">
+            <span className="inline-block h-1.5 w-3 rounded-sm ds-compare-dot" />
             <span className="font-medium">{compare.label ?? 'Kỳ trước'}:</span>
-            <span className="tabular-nums text-zinc-700">{compare.value}</span>
+            <span className="tabular-nums text-fg-secondary">{compare.value}</span>
           </div>
         )}
         {hint && <p className="text-xs text-fg-muted mt-2">{hint}</p>}
       </div>
     </Tag>);
-
 }
+
 export function MetricStrip({ items }: {items: MetricCardProps[];}) {
   const n = items.length;
-  // Chọn cột để KPI luôn cân đối — không bao giờ chừa ô trống
   const cols =
     n <= 2 ? 'grid-cols-1 sm:grid-cols-2'
     : n === 3 ? 'grid-cols-1 sm:grid-cols-3'
