@@ -63,6 +63,7 @@
   --table-row-compact: 2rem;
   --table-row-comfortable: 2.5rem;
   --table-row-detailed: 3rem;
+  --table-header-height: 2.75rem;
 
   --radius-sm: 0.5rem;
   --radius-md: 0.75rem;
@@ -374,10 +375,37 @@ h3 {
   letter-spacing: 0.06em;
 }
 
+.ds-table-head-cell {
+  height: var(--table-header-height);
+  vertical-align: middle;
+  border-bottom: 1px solid var(--border-subtle);
+  background: inherit;
+}
+
 .ds-table-row {
   min-height: var(--table-row-comfortable);
   border-top: 1px solid var(--border-subtle);
   transition: background-color var(--motion-fast) var(--ease-standard);
+}
+
+.ds-table-row-compact {
+  min-height: var(--table-row-compact);
+}
+
+.ds-table-row-comfortable {
+  min-height: var(--table-row-comfortable);
+}
+
+.ds-table-row-detailed {
+  min-height: var(--table-row-detailed);
+}
+
+.ds-table-row-alt {
+  background: color-mix(in srgb, var(--surface) 75%, transparent);
+}
+
+.ds-table-row-selected {
+  background: color-mix(in srgb, var(--accent-primary-soft) 90%, var(--surface-elevated));
 }
 
 .ds-table-row:hover {
@@ -387,6 +415,8 @@ h3 {
 .ds-table-cell {
   color: var(--text-primary);
   font-size: var(--text-table);
+  border-top: 1px solid var(--border-subtle);
+  vertical-align: middle;
 }
 
 .ds-row-action-trigger {
