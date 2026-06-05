@@ -84,9 +84,9 @@ export function MetricCard({
     <Tag
       onClick={onClick}
       type={interactive ? 'button' : undefined}
-      className={`group relative bg-white rounded-2xl ring-1 ring-zinc-900/[0.06] shadow-[0_1px_2px_rgba(15,15,25,0.04),0_2px_6px_rgba(15,15,25,0.03)] hover:shadow-[0_0_0_1px_rgba(200,153,104,0.5),0_0_0_4px_rgba(200,153,104,0.10),0_14px_30px_-10px_rgba(156,109,62,0.25)] hover:-translate-y-1 transition-all duration-200 ease-out p-5 overflow-hidden ${interactive ? 'cursor-pointer text-left w-full focus:outline-none focus-visible:ring-2 focus-visible:ring-amber-600' : ''}`}>
+      className={`ds-card group relative rounded-2xl overflow-hidden p-[var(--card-padding)] ${interactive ? 'cursor-pointer text-left w-full ds-focus-ring' : ''}`}>
       <div
-        className={`absolute inset-x-0 top-0 h-px bg-gradient-to-r ${toneAccentFrom[tone]} opacity-50 group-hover:opacity-100 transition-opacity`} />
+        className={`absolute inset-x-0 top-0 h-px bg-gradient-to-r ${toneAccentFrom[tone]} opacity-60 group-hover:opacity-100 transition-opacity`} />
       <div
         aria-hidden
         className="pointer-events-none absolute inset-x-2 top-px h-px bg-white/80" />
@@ -96,7 +96,7 @@ export function MetricCard({
 
       <div className="relative">
         <div className="flex items-start justify-between gap-2 mb-4">
-          <span className="text-[11px] font-semibold uppercase tracking-[0.1em] text-zinc-500">
+          <span className="text-[11px] font-semibold uppercase tracking-[0.1em] text-fg-muted">
             {label}
           </span>
           {icon &&
@@ -109,7 +109,7 @@ export function MetricCard({
         <div className="flex items-end justify-between gap-3 flex-wrap">
           <div className="flex items-baseline gap-2 flex-wrap min-w-0">
             <span
-              className={`text-[28px] leading-none font-semibold tracking-tight nums ${value === '—' ? 'text-zinc-400' : 'text-zinc-900'}`}
+              className={`text-[28px] leading-none font-semibold tracking-tight nums ${value === '—' ? 'text-fg-subtle' : 'text-fg-primary'}`}
               style={{ animation: 'countUp 420ms var(--ease-out) both' }}
               title={value === '—' ? 'Chưa có dữ liệu kỳ này' : undefined}>
               {value}
@@ -142,7 +142,7 @@ export function MetricCard({
             <span className="tabular-nums text-zinc-700">{compare.value}</span>
           </div>
         )}
-        {hint && <p className="text-xs text-zinc-500 mt-2">{hint}</p>}
+        {hint && <p className="text-xs text-fg-muted mt-2">{hint}</p>}
       </div>
     </Tag>);
 

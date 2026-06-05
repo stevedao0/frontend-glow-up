@@ -1,32 +1,13 @@
 import React from 'react';
 type Tone =
-'success' |
-'warning' |
-'danger' |
-'info' |
-'neutral' |
-'violet' |
-'orange';
-// Solid: dùng cho status chính (1 cái / dòng)
-const toneMap: Record<Tone, string> = {
-  success: 'bg-emerald-700 text-white shadow-sm shadow-emerald-900/20',
-  warning: 'bg-amber-500 text-white shadow-sm shadow-amber-600/20',
-  danger: 'bg-rose-700 text-white shadow-sm shadow-rose-900/20',
-  info: 'bg-teal-700 text-white shadow-sm shadow-teal-900/20',
-  // "Hợp đồng mới" — champagne gold thay cho violet để hợp tone emerald prestige
-  violet: 'bg-[#b8923a] text-white shadow-sm shadow-amber-900/20',
-  orange: 'bg-orange-600 text-white shadow-sm shadow-orange-900/20',
-  neutral: 'bg-stone-800 text-stone-100 shadow-sm shadow-stone-900/20',
-};
-const dotMap: Record<Tone, string> = {
-  success: 'bg-emerald-200',
-  warning: 'bg-amber-100',
-  danger: 'bg-rose-200',
-  info: 'bg-teal-200',
-  violet: 'bg-amber-100',
-  orange: 'bg-orange-200',
-  neutral: 'bg-stone-300',
-};
+  | 'success'
+  | 'warning'
+  | 'danger'
+  | 'info'
+  | 'neutral'
+  | 'violet'
+  | 'orange';
+
 export function StatusBadge({
   tone = 'neutral',
   children,
@@ -38,10 +19,39 @@ export function StatusBadge({
   dot?: boolean;
   className?: string;
 }) {
+  const baseClass =
+    tone === 'success'
+      ? 'bg-[color:var(--accent-emerald)] text-white'
+      : tone === 'warning'
+        ? 'bg-[color:var(--accent-warning)] text-white'
+        : tone === 'danger'
+          ? 'bg-[color:var(--accent-danger)] text-white'
+          : tone === 'info'
+            ? 'bg-[color:var(--accent-info)] text-white'
+            : tone === 'violet'
+              ? 'bg-[color:var(--accent-primary)] text-white'
+              : tone === 'orange'
+                ? 'bg-orange-600 text-white'
+                : 'bg-[color:var(--accent-neutral)] text-white';
+
+  const dotClass =
+    tone === 'success'
+      ? 'bg-emerald-200'
+      : tone === 'warning'
+        ? 'bg-amber-100'
+        : tone === 'danger'
+          ? 'bg-rose-200'
+          : tone === 'info'
+            ? 'bg-teal-200'
+            : tone === 'violet'
+              ? 'bg-amber-100'
+              : tone === 'orange'
+                ? 'bg-orange-200'
+                : 'bg-stone-300';
+
   return (
-    <span
-      className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-tight ${toneMap[tone]} ${className ?? ''}`}>
-      {dot && <span className={`h-1.5 w-1.5 rounded-full ${dotMap[tone]}`} />}
+    <span className={`ds-badge ${baseClass} ${className ?? ''}`}>
+      {dot && <span className={`h-1.5 w-1.5 rounded-full ${dotClass}`} />}
       {children}
     </span>
   );

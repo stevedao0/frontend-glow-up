@@ -26,16 +26,16 @@ export function Select({
 }) {
   const h = size === 'sm' ? 'h-8' : 'h-9';
   return (
-    <div className={`flex flex-col gap-1 ${className}`}>
+    <div className={`ds-field flex flex-col gap-1 ${className}`}>
       {label && (
-        <label className="text-[11px] font-medium text-fg-secondary">{label}</label>
+        <label className="ds-label text-[11px] font-medium text-fg-secondary">{label}</label>
       )}
       <div className="relative">
         <select
           value={value}
           onChange={(e) => onChange(e.target.value)}
           disabled={disabled}
-          className={`appearance-none w-full ${h} pl-3 pr-8 text-sm rounded-lg bg-surface text-fg-primary ring-1 ring-zinc-200 hover:ring-zinc-300 focus:outline-none focus:ring-2 focus:ring-accent-primary/40 transition-shadow duration-fast shadow-xs ${disabled ? 'opacity-60 cursor-not-allowed bg-zinc-50' : ''}`}
+          className={`ds-select ds-focus-ring appearance-none w-full ${h} pl-3 pr-8 text-sm shadow-xs ${disabled ? 'opacity-60 cursor-not-allowed' : ''}`}
         >
           {placeholder && <option value="">{placeholder}</option>}
           {options.map((o) => (

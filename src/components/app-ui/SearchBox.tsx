@@ -1,37 +1,40 @@
 import React from 'react';
 import { SearchIcon } from 'lucide-react';
+
 export function SearchBox({
   value,
   onChange,
   placeholder = 'Tìm kiếm...',
   size = 'md',
   kbd,
-  className = ''
-
-
-
-
-
-
-
-}: {value: string;onChange: (v: string) => void;placeholder?: string;size?: 'sm' | 'md' | 'lg';kbd?: string;className?: string;}) {
+  className = '',
+}: {
+  value: string;
+  onChange: (v: string) => void;
+  placeholder?: string;
+  size?: 'sm' | 'md' | 'lg';
+  kbd?: string;
+  className?: string;
+}) {
   const h = size === 'sm' ? 'h-8' : size === 'lg' ? 'h-11' : 'h-9';
   const text = size === 'lg' ? 'text-base' : 'text-sm';
+  const rightPadding = kbd ? 'pr-14' : 'pr-3';
+
   return (
     <div className={`relative ${className}`}>
-      <SearchIcon className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
+      <SearchIcon className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-fg-muted" />
       <input
         type="text"
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className={`w-full ${h} ${text} pl-9 pr-${kbd ? 14 : 3} rounded-lg bg-white/70 text-zinc-900 placeholder:text-zinc-400 ring-1 ring-zinc-200 hover:ring-zinc-300 focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-600/40 transition-all`} />
-      
-      {kbd &&
-      <kbd className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 px-1.5 h-5 inline-flex items-center text-[10px] font-medium text-zinc-500 bg-zinc-100 border border-zinc-200 rounded">
+        className={`ds-input ds-focus-ring w-full ${h} ${text} ${rightPadding} rounded-lg bg-[color:var(--surface)] pl-9 shadow-xs`}
+      />
+      {kbd && (
+        <kbd className="pointer-events-none absolute right-2 top-1/2 inline-flex h-5 -translate-y-1/2 items-center rounded border border-[color:var(--border-default)] bg-[color:var(--surface-muted)] px-1.5 text-[10px] font-medium text-fg-muted">
           {kbd}
         </kbd>
-      }
-    </div>);
-
+      )}
+    </div>
+  );
 }

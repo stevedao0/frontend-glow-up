@@ -18,7 +18,7 @@ export function ContentCard({
 }) {
   return (
     <section
-      className={`group/card relative bg-surface rounded-2xl ring-1 ring-zinc-900/[0.06] shadow-sm overflow-hidden ${className}`}
+      className={`ds-card group/card relative rounded-2xl overflow-hidden ${className}`}
     >
       {/* Inner top highlight — gives the card depth */}
       <div
@@ -54,7 +54,7 @@ export function ContentCard({
             )}
           </header>
         )}
-        <div className={padded ? 'p-5' : ''}>{children}</div>
+        <div className={padded ? 'p-[var(--card-padding)]' : ''}>{children}</div>
       </div>
     </section>
   );
