@@ -8,7 +8,7 @@ const sizes: Record<Size, string> = {
 };
 const variants: Record<Variant, string> = {
   primary:
-    'bg-gradient-to-b from-[#c89968] to-[#9c6d3e] text-white hover:from-[#d4a878] hover:to-[#a87a4a] active:from-[#b88858] active:to-[#8a5d33] ring-1 ring-inset ring-[#f0d4a8]/50 shadow-md shadow-[#9c6d3e]/30',
+    'btn-copper-glow bg-gradient-to-b from-[#d4a878] via-[#b9854f] to-[#8a5d33] text-white hover:from-[#dcb486] hover:via-[#c89968] hover:to-[#9c6d3e] active:from-[#b88858] active:to-[#7a4f2a] ring-1 ring-inset ring-[#f0d4a8]/55',
   secondary:
     'bg-white text-[#5a4533] ring-1 ring-[#e3d2b3] hover:bg-[#fcfaf5] hover:ring-[#c89968]/60 shadow-xs',
   ghost: 'text-[#5a4533] hover:bg-[#c89968]/10 hover:text-[#2d1f14]',

@@ -602,7 +602,7 @@ export function ContractsListPage({
         </FilterField>
       </FilterBar>
 
-      <ContentCard padded={false}>
+      <ContentCard padded={false} className="premium-table-card !border-[rgba(156,109,62,0.24)]">
         {selected.size > 0 && (
           <BulkActionBar
             count={selected.size}
