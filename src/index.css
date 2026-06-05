@@ -94,12 +94,13 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: var(--fg-primary);
-  background-color: var(--bg-app);
+  background-color: #efe7d3;
   background-image:
-    radial-gradient(1200px 700px at 8% -12%, rgba(200, 153, 104, 0.24), transparent 60%),
-    radial-gradient(1000px 620px at 100% -4%, rgba(13, 122, 95, 0.18), transparent 62%),
-    radial-gradient(900px 600px at 50% 115%, rgba(156, 109, 62, 0.14), transparent 70%),
-    linear-gradient(180deg, #f9f5ec 0%, #f3ecdd 100%);
+    radial-gradient(1400px 820px at -6% -14%, rgba(200, 153, 104, 0.45), transparent 58%),
+    radial-gradient(1100px 720px at 108% -8%, rgba(13, 122, 95, 0.36), transparent 60%),
+    radial-gradient(1000px 700px at 50% 118%, rgba(156, 109, 62, 0.26), transparent 70%),
+    radial-gradient(720px 520px at 92% 92%, rgba(13, 122, 95, 0.20), transparent 70%),
+    linear-gradient(180deg, #f6efdf 0%, #eadfc7 100%);
   background-attachment: fixed;
 }
 
