@@ -410,9 +410,9 @@ function RenewalContractsTab({ onNavigate }: { onNavigate: () => void }) {
       )}
 
       {/* Table */}
-      <ContentCard padded={false}>
+      <ContentCard padded={false} className="ds-page-table-shell">
         {/* Header row with selection info */}
-        <div className="p-4 border-b border-zinc-100 flex items-center gap-3 flex-wrap">
+        <div className="ds-page-table-toolbar">
           <label className="flex items-center gap-2 text-sm">
             <input
               type="checkbox"
@@ -424,6 +424,9 @@ function RenewalContractsTab({ onNavigate }: { onNavigate: () => void }) {
           </label>
           <span className="text-sm text-zinc-400">|</span>
           <span className="text-sm text-zinc-600">{selected.size} đã chọn</span>
+          <span className="ds-page-table-toolbar-summary ml-auto">
+            Hiển thị <strong>{((page - 1) * pageSize) + 1}–{Math.min(page * pageSize, total)}</strong> / <strong>{total}</strong>
+          </span>
         </div>
 
         {/* Table content */}
@@ -447,58 +450,63 @@ function RenewalContractsTab({ onNavigate }: { onNavigate: () => void }) {
             }
           />
         ) : (
-          <div className="overflow-x-auto">
-            <table className="w-full text-sm">
-              <thead>
-                <tr className="border-b border-zinc-100 bg-zinc-50/50">
-                  <th className="text-left px-3 py-2.5 w-8"></th>
-                  <th className="text-left px-3 py-2.5 font-medium text-zinc-500 text-xs">Số HĐ</th>
-                  <th className="text-left px-3 py-2.5 font-medium text-zinc-500 text-xs">Đơn vị</th>
-                  <th className="text-left px-3 py-2.5 font-medium text-zinc-500 text-xs">Bảng hiệu</th>
-                  <th className="text-left px-3 py-2.5 font-medium text-zinc-500 text-xs">Địa chỉ</th>
-                  <th className="text-left px-3 py-2.5 font-medium text-zinc-500 text-xs">Ngày ký</th>
-                  <th className="text-left px-3 py-2.5 font-medium text-zinc-500 text-xs">Ngày hết hạn</th>
-                  <th className="text-left px-3 py-2.5 font-medium text-zinc-500 text-xs">Còn/Hết hạn</th>
-                  <th className="text-center px-3 py-2.5 font-medium text-zinc-500 text-xs">Lần gửi</th>
-                  <th className="text-left px-3 py-2.5 font-medium text-zinc-500 text-xs">Số CV gần nhất</th>
-                  <th className="text-left px-3 py-2.5 font-medium text-zinc-500 text-xs">Ngày CV</th>
-                  <th className="text-center px-3 py-2.5 font-medium text-zinc-500 text-xs">Trạng thái</th>
+          <div className="ds-page-table-scroll">
+            <table className="ds-page-table">
+              <thead className="ds-page-table-header">
+                <tr className="ds-page-table-head-row">
+                  <th className="ds-page-table-head-cell text-left w-8"></th>
+                  <th className="ds-page-table-head-cell text-left">Số HĐ</th>
+                  <th className="ds-page-table-head-cell text-left">Đơn vị</th>
+                  <th className="ds-page-table-head-cell text-left">Bảng hiệu</th>
+                  <th className="ds-page-table-head-cell text-left">Địa chỉ</th>
+                  <th className="ds-page-table-head-cell text-left">Ngày ký</th>
+                  <th className="ds-page-table-head-cell text-left">Ngày hết hạn</th>
+                  <th className="ds-page-table-head-cell text-left">Còn/Hết hạn</th>
+                  <th className="ds-page-table-head-cell text-center">Lần gửi</th>
+                  <th className="ds-page-table-head-cell text-left">Số CV gần nhất</th>
+                  <th className="ds-page-table-head-cell text-left">Ngày CV</th>
+                  <th className="ds-page-table-head-cell text-center">Trạng thái</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-zinc-50">
+              <tbody className="ds-page-table-body ds-page-table-density-comfortable">
                   {filtered.map(c => {
                     const isExpired = c.days_expired > 0;
+                    const isSelected = selected.has(c.contract_id);
                     return (
-                  <tr key={c.contract_id} className="hover:bg-zinc-50/50 transition-colors">
-                    <td className="px-3 py-2">
+                  <tr key={c.contract_id} className={`ds-page-table-row ${isSelected ? 'ds-page-table-row-selected' : ''}`}>
+                    <td className="ds-page-table-cell">
                       <input
                         type="checkbox"
-                        checked={selected.has(c.contract_id)}
+                        checked={isSelected}
                         onChange={() => toggleOne(c.contract_id)}
                         className="rounded border-zinc-300"
                       />
                     </td>
-                    <td className="px-3 py-2 font-mono text-xs font-medium text-zinc-800 whitespace-nowrap">
+                    <td className="ds-page-table-cell font-mono text-xs font-medium text-zinc-800 whitespace-nowrap">
                       {c.contract_no || '-'}
                     </td>
-                    <td className="px-3 py-2 font-medium text-zinc-800 max-w-[160px] truncate" title={c.don_vi_ten || ''}>
-                      {c.don_vi_ten || '-'}
+                    <td className="ds-page-table-cell ds-page-table-cell-strong max-w-[160px]">
+                      <span className="ds-page-table-truncate block" title={c.don_vi_ten || ''}>
+                        {c.don_vi_ten || '-'}
+                      </span>
                     </td>
-                    <td className="px-3 py-2 text-zinc-600 text-xs max-w-[120px] truncate" title={c.ten_bang_hieu || ''}>
-                      {c.ten_bang_hieu || '-'}
+                    <td className="ds-page-table-cell ds-page-table-cell-muted text-xs max-w-[120px]">
+                      <span className="ds-page-table-truncate block" title={c.ten_bang_hieu || ''}>
+                        {c.ten_bang_hieu || '-'}
+                      </span>
                     </td>
-                    <td className="px-3 py-2 text-zinc-500 text-xs max-w-[180px]">
-                      <span className="line-clamp-2" title={c.recipient_address || ''}>
+                    <td className="ds-page-table-cell ds-page-table-cell-subtle text-xs max-w-[180px]">
+                      <span className="ds-page-table-clamp-2" title={c.recipient_address || ''}>
                         {c.recipient_address || '-'}
                       </span>
                     </td>
-                    <td className="px-3 py-2 text-zinc-500 text-xs whitespace-nowrap">
+                    <td className="ds-page-table-cell ds-page-table-cell-subtle text-xs whitespace-nowrap">
                       {c.ngay_ky_hop_dong || '-'}
                     </td>
-                    <td className="px-3 py-2 text-zinc-500 text-xs whitespace-nowrap">
+                    <td className="ds-page-table-cell ds-page-table-cell-subtle text-xs whitespace-nowrap">
                       {c.ngay_het_hieu_luc_hd || '-'}
                     </td>
-                    <td className="px-3 py-2 whitespace-nowrap">
+                    <td className="ds-page-table-cell whitespace-nowrap">
                       {isExpired ? (
                         <span className="inline-flex items-center gap-1 text-xs font-medium text-red-600">
                           <span className="w-1.5 h-1.5 rounded-full bg-red-500"></span>
@@ -511,7 +519,7 @@ function RenewalContractsTab({ onNavigate }: { onNavigate: () => void }) {
                         </span>
                       )}
                     </td>
-                    <td className="px-3 py-2 text-center">
+                    <td className="ds-page-table-cell text-center">
                       {c.cong_van_count > 0 ? (
                         <span className={`inline-flex items-center justify-center min-w-[22px] h-5 px-1.5 rounded-full text-xs font-medium ${
                           c.cong_van_count >= 3 ? 'bg-red-100 text-red-700' :
@@ -524,13 +532,13 @@ function RenewalContractsTab({ onNavigate }: { onNavigate: () => void }) {
                         <span className="text-zinc-300 text-xs">—</span>
                       )}
                     </td>
-                    <td className="px-3 py-2 font-mono text-xs text-zinc-700 whitespace-nowrap">
+                    <td className="ds-page-table-cell font-mono text-xs text-zinc-700 whitespace-nowrap">
                       {c.latest_dispatch_no || '-'}
                     </td>
-                    <td className="px-3 py-2 text-xs text-zinc-500 whitespace-nowrap">
+                    <td className="ds-page-table-cell text-xs text-zinc-500 whitespace-nowrap">
                       {c.latest_dispatch_date || '-'}
                     </td>
-                    <td className="px-3 py-2 text-center">
+                    <td className="ds-page-table-cell text-center">
                       {c.latest_dispatch_status ? (
                         getDispatchStatusBadge(c.latest_dispatch_status)
                       ) : (
@@ -550,7 +558,7 @@ function RenewalContractsTab({ onNavigate }: { onNavigate: () => void }) {
 
       {/* Pagination */}
       {totalPages > 0 && (
-        <div className="flex items-center justify-between px-2">
+        <div className="ds-page-table-footer">
           <div className="text-sm text-zinc-500">
             Đang xem {((page - 1) * pageSize) + 1}–{Math.min(page * pageSize, total)} / Tổng {total}
           </div>

@@ -627,7 +627,7 @@ export function ContractsListPage({
         </FilterField>
       </FilterBar>
 
-      <ContentCard padded={false}>
+      <ContentCard padded={false} className="ds-page-table-shell">
         {selected.size > 0 && (
           <BulkActionBar
             count={selected.size}
@@ -673,11 +673,11 @@ export function ContractsListPage({
 
 
         <>
-          <div className="shrink-0 flex items-center justify-between px-4 py-2 border-b border-zinc-100 bg-zinc-50/40">
-            <span className="text-[12px] text-zinc-500">
-              {formatNumber(totalRows)} dòng hiển thị · trang {page}/{Math.max(totalPages, 1)}
+          <div className="ds-page-table-toolbar">
+            <span className="ds-page-table-toolbar-summary">
+              Hiển thị <strong>{formatNumber(totalRows)}</strong> dòng · trang <strong>{page}/{Math.max(totalPages, 1)}</strong>
             </span>
-            <div className="inline-flex rounded-md ring-1 ring-zinc-200 bg-white overflow-hidden text-[12px]">
+            <div className="ml-auto inline-flex rounded-md ring-1 ring-zinc-200 bg-white overflow-hidden text-[12px]">
               {(['compact','mid','detail'] as const).map((d) => (
                 <button
                   key={d}
@@ -693,10 +693,10 @@ export function ContractsListPage({
           </div>
 
           <div className="flex-1 min-h-0 overflow-hidden flex flex-col">
-            <table className="w-full text-sm shrink-0">
-              <thead className="block">
-                <tr className="premium-table-head flex">
-                  <th className={`w-10 ${firstCellPad} shrink-0`}>
+            <table className="ds-page-table shrink-0">
+              <thead className="ds-page-table-header block">
+                <tr className="premium-table-head ds-page-table-head-row flex">
+                  <th className={`ds-page-table-head-cell w-10 ${firstCellPad} shrink-0`}>
                     <Checkbox
                     checked={allSelected}
                     indeterminate={someSelected}
@@ -711,13 +711,13 @@ export function ContractsListPage({
                   <Th> Hiệu lực</Th>
                   <Th align="right"> Giá trị chưa GTGT</Th>
                   <Th> Trạng thái</Th>
-                  <th className="w-10 pr-3 shrink-0" />
+                  <th className="ds-page-table-head-cell w-10 pr-3 shrink-0" />
                 </tr>
               </thead>
             </table>
-            <div className="flex-1 min-h-0 overflow-y-auto">
-              <table className="w-full text-sm">
-                <tbody>
+            <div className="ds-page-table-scroll-y">
+              <table className={`ds-page-table ${density === 'compact' ? 'ds-page-table-density-compact' : density === 'mid' ? 'ds-page-table-density-comfortable' : 'ds-page-table-density-detailed'}`}>
+                <tbody className="ds-page-table-body">
                 {contracts.map((r) => {
                 const isSelected = selected.has(r.id);
                 const exp = getExpiryStatus(r.ngay_ket_thuc);
@@ -740,10 +740,10 @@ export function ContractsListPage({
                   <tr
                     key={r.id}
                     onClick={() => onOpenDetail(r.id)}
-                    className={`group/row relative border-b border-[#e3d2b3]/50 last:border-0 cursor-pointer ${isSelected ? 'row-selected-premium' : 'row-hover-premium'}`}>
+                    className={`ds-page-table-row group/row relative cursor-pointer ${isSelected ? 'ds-page-table-row-selected row-selected-premium' : 'row-hover-premium'}`}>
                     
                       {/* Selection cell + left bar */}
-                      <td className={`relative ${firstCellPad} align-top`}>
+                      <td className={`ds-page-table-cell relative ${firstCellPad} align-top`}>
                         <span
                         aria-hidden
                         className={`absolute left-0 top-0 bottom-0 w-[3px] bg-gradient-to-b from-[#c89968] via-[#9c6d3e] to-[#0d7a5f] transition-opacity ${isSelected ? 'opacity-100' : 'opacity-0 group-hover/row:opacity-90'}`} />
@@ -756,7 +756,7 @@ export function ContractsListPage({
                       </td>
 
                       {/* Contract no — compact link style */}
-                      <td className={`${cellPad} align-top`}>
+                      <td className={`ds-page-table-cell ${cellPad} align-top`}>
                         <button
                         type="button"
                         onClick={(e) => {
@@ -784,7 +784,7 @@ export function ContractsListPage({
                       </td>
 
                       {/* Đơn vị + bảng hiệu */}
-                      <td className={`${cellPad} align-top max-w-[280px]`}>
+                      <td className={`ds-page-table-cell ${cellPad} align-top max-w-[280px]`}>
                         <p
                         className={`text-[13px] font-semibold text-zinc-900 leading-snug whitespace-normal break-words ${unitClamp}`}
                         title={r.don_vi_ten}>
@@ -802,7 +802,7 @@ export function ContractsListPage({
                       </td>
 
                       {/* Địa chỉ */}
-                      <td className={`${cellPad} align-top max-w-[260px]`}>
+                      <td className={`ds-page-table-cell ${cellPad} align-top max-w-[260px]`}>
                         <p
                         className={`text-[12.5px] text-zinc-600 leading-snug whitespace-normal break-words ${addrClamp}`}
                         title={r.dia_chi_su_dung}>
@@ -812,7 +812,7 @@ export function ContractsListPage({
                       </td>
 
                       {/* Lĩnh vực — summarized */}
-                      <td className={`${cellPad} align-top max-w-[260px]`}>
+                      <td className={`ds-page-table-cell ${cellPad} align-top max-w-[260px]`}>
                         <div className="flex flex-col gap-1">
                           <span className="text-zinc-700 text-[13px] font-medium whitespace-normal break-words">
                             {r.linh_vuc_hien_thi}
@@ -870,12 +870,12 @@ export function ContractsListPage({
                       </td>
 
                       {/* Ngày lập */}
-                      <td className={`${cellPad} align-top text-zinc-700 tabular-nums whitespace-nowrap text-[13px]`}>
+                      <td className={`ds-page-table-cell ${cellPad} align-top text-zinc-700 tabular-nums whitespace-nowrap text-[13px]`}>
                         {formatDate(r.ngay_lap_hop_dong)}
                       </td>
 
                       {/* Hiệu lực */}
-                      <td className={`${cellPad} align-top whitespace-nowrap`}>
+                      <td className={`ds-page-table-cell ${cellPad} align-top whitespace-nowrap`}>
                         <p className="text-zinc-700 tabular-nums text-[13px]">
                           {formatDate(r.ngay_bat_dau)}
                         </p>
@@ -885,7 +885,7 @@ export function ContractsListPage({
                       </td>
 
                       {/* Giá trị chưa GTGT */}
-                      <td className={`${cellPad} align-top text-right tabular-nums whitespace-nowrap`}>
+                      <td className={`ds-page-table-cell ${cellPad} align-top text-right tabular-nums whitespace-nowrap`}>
                         {r.royalty_amount_before_vat == null ?
                       <span className="text-zinc-400 italic text-xs">
                             Chưa có
@@ -902,7 +902,7 @@ export function ContractsListPage({
                       </td>
 
                       {/* Trạng thái — compact: single primary pill */}
-                      <td className={`${cellPad} align-top`}>
+                      <td className={`ds-page-table-cell ${cellPad} align-top`}>
                         {density === 'compact' ? (
                           <div className="flex items-center gap-1 flex-wrap" title={`${RENEWAL_LABEL[renewalKey]}${exp.status === 'expiring' ? ` · còn ${exp.daysLeft} ngày` : ''}`}>
                             {exp.status === 'active' && (
