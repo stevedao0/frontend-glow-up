@@ -63,6 +63,30 @@ import {
 import { useAuth } from '../lib/auth';
 import { TOKEN_KEY } from '../lib/authClient';
 
+/**
+ * Compact display formatter for contract numbers.
+ * Visual-only — does not mutate or truncate the original data.
+ *
+ * Example: "0824/2026/HĐQTGAN-PN/PR"
+ *   primary → "0824/2026"
+ *   suffix  → "PN/PR"
+ */
+function formatContractNoDisplay(contractNo: string): {
+  full: string;
+  primary: string;
+  suffix: string;
+} {
+  const value = String(contractNo || '').trim();
+  const parts = value.split('/');
+  // Primary = first two segments (e.g. 0824/2026)
+  const primary = parts.length >= 2 ? `${parts[0]}/${parts[1]}` : value;
+  // Suffix = everything after the year (e.g. HĐQTGAN-PN/PR → PN/PR)
+  const rawTail = parts.length >= 3 ? parts.slice(2).join('/') : '';
+  // Strip the domain prefix tag if present, show just the type+region suffix
+  const suffix = rawTail.replace(/^(HĐ[A-Z]+-?)/i, '');
+  return { full: value, primary, suffix };
+}
+
 function toContractRecord(item: ApiContractItem): ContractRecord {
   const contractYearFromNo = (() => {
     const parts = String(item.contract_no || '').split('/');
@@ -649,7 +673,7 @@ export function ContractsListPage({
 
 
         <>
-        <div className="flex items-center justify-between px-4 py-2 border-b border-zinc-100 bg-zinc-50/40">
+          <div className="shrink-0 flex items-center justify-between px-4 py-2 border-b border-zinc-100 bg-zinc-50/40">
             <span className="text-[12px] text-zinc-500">
               {formatNumber(totalRows)} dòng hiển thị · trang {page}/{Math.max(totalPages, 1)}
             </span>
@@ -668,30 +692,32 @@ export function ContractsListPage({
             </div>
           </div>
 
-          <div className="overflow-auto max-h-[72vh]">
-            <table className="w-full text-sm">
-              <thead className="sticky top-0 z-10">
-                <tr className="premium-table-head">
-                  <th className={`w-10 ${firstCellPad}`}>
+          <div className="flex-1 min-h-0 overflow-hidden flex flex-col">
+            <table className="w-full text-sm shrink-0">
+              <thead className="block">
+                <tr className="premium-table-head flex">
+                  <th className={`w-10 ${firstCellPad} shrink-0`}>
                     <Checkbox
                     checked={allSelected}
                     indeterminate={someSelected}
                     onChange={toggleAll}
                     ariaLabel="Chọn tất cả" />
-                  
                   </th>
-                  <Th>Số hợp đồng</Th>
-                  <Th>Đơn vị / Bảng hiệu</Th>
-                  <Th>Địa chỉ sử dụng</Th>
-                  <Th>Lĩnh vực</Th>
-                  <Th>Ngày lập</Th>
-                  <Th>Hiệu lực</Th>
-                  <Th align="right">Giá trị chưa GTGT</Th>
-                  <Th>Trạng thái</Th>
-                  <th className="w-10 pr-3" />
+                  <Th> Số hợp đồng</Th>
+                  <Th> Đơn vị / Bảng hiệu</Th>
+                  <Th> Địa chỉ sử dụng</Th>
+                  <Th> Lĩnh vực</Th>
+                  <Th> Ngày lập</Th>
+                  <Th> Hiệu lực</Th>
+                  <Th align="right"> Giá trị chưa GTGT</Th>
+                  <Th> Trạng thái</Th>
+                  <th className="w-10 pr-3 shrink-0" />
                 </tr>
               </thead>
-              <tbody>
+            </table>
+            <div className="flex-1 min-h-0 overflow-y-auto">
+              <table className="w-full text-sm">
+                <tbody>
                 {contracts.map((r) => {
                 const isSelected = selected.has(r.id);
                 const exp = getExpiryStatus(r.ngay_ket_thuc);
@@ -729,17 +755,31 @@ export function ContractsListPage({
                       
                       </td>
 
-                      {/* Contract no — link style */}
-                      <td className={`${cellPad} align-top whitespace-nowrap`}>
+                      {/* Contract no — compact link style */}
+                      <td className={`${cellPad} align-top`}>
                         <button
                         type="button"
                         onClick={(e) => {
                           e.stopPropagation();
                           onOpenDetail(r.id);
                         }}
-                        className="contract-no-chip text-[12.5px] hover:brightness-95 transition">
-                        
-                          {r.contract_no}
+                        title={r.contract_no}
+                        className="contract-no-chip block text-left">
+                          {(() => {
+                            const { primary, suffix, full } = formatContractNoDisplay(r.contract_no);
+                            return (
+                              <>
+                                <span className="block text-[12.5px] font-semibold tabular-nums leading-snug">
+                                  {primary}
+                                </span>
+                                {suffix && suffix !== full && (
+                                  <span className="contract-no-suffix mt-0.5">
+                                    {suffix}
+                                  </span>
+                                )}
+                              </>
+                            );
+                          })()}
                         </button>
                       </td>
 
@@ -788,7 +828,7 @@ export function ContractsListPage({
                                 return (
                                   <span
                                     key={idx}
-                                    className="inline-flex items-center px-1.5 py-0.5 rounded text-[11px] text-zinc-600 bg-zinc-100 ring-1 ring-inset ring-zinc-900/5 max-w-[180px] whitespace-normal break-words leading-snug"
+                                    className="usage-area-chip"
                                     title={`${area.area_name || ''}${area.scale_description ? ' — ' + area.scale_description : ''}${area.music_usage_type ? ' · ' + area.music_usage_type : ''}`}
                                   >
                                     {label}
@@ -797,28 +837,28 @@ export function ContractsListPage({
                               })}
                               {areas.length > areasShown && (
                                 <span
-                                  className="inline-flex items-center px-1.5 py-0.5 rounded text-[10.5px] font-medium bg-amber-50 text-amber-700 ring-1 ring-inset ring-amber-600/20 cursor-help whitespace-nowrap"
+                                  className="usage-extra-chip"
                                   title={areaTooltip}
                                 >
-                                  +{areas.length - areasShown} khu vực
+                                  +{areas.length - areasShown}
                                 </span>
                               )}
                               <button
                                 type="button"
                                 onClick={(e) => { e.stopPropagation(); onOpenDetail(r.id); }}
-                                className="text-[11px] text-amber-700 hover:text-amber-900 hover:underline whitespace-nowrap"
+                                className="usage-detail-link"
                               >
-                                Xem chi tiết
+                                Chi tiết
                               </button>
                             </div>
                           ) : (
                             r.loai_hinh_karaoke && (
-                              <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded text-[10.5px] font-medium bg-zinc-100 text-zinc-700 ring-1 ring-inset ring-zinc-900/5 self-start whitespace-nowrap">
+                              <span className="usage-area-chip">
                                 {r.loai_hinh_karaoke}
                                 {r.tong_so_phong != null && (
                                   <>
-                                    <span className="text-zinc-400">·</span>
-                                    <span className="tabular-nums font-semibold">
+                                    <span className="text-fg-subtle mx-0.5">·</span>
+                                    <span className="font-semibold tabular-nums">
                                       {r.tong_so_phong} phòng
                                     </span>
                                   </>
@@ -866,13 +906,13 @@ export function ContractsListPage({
                         {density === 'compact' ? (
                           <div className="flex items-center gap-1 flex-wrap" title={`${RENEWAL_LABEL[renewalKey]}${exp.status === 'expiring' ? ` · còn ${exp.daysLeft} ngày` : ''}`}>
                             {exp.status === 'active' && (
-                              <StatusBadge tone="success" dot>Hiệu lực</StatusBadge>
+                              <StatusBadge tone="success" dot compact>Hiệu lực</StatusBadge>
                             )}
                             {exp.status === 'expiring' && (
-                              <StatusBadge tone="warning" dot>Sắp hết · {exp.daysLeft}d</StatusBadge>
+                              <StatusBadge tone="warning" dot compact>Sắp hết · {exp.daysLeft}d</StatusBadge>
                             )}
                             {exp.status === 'expired' && (
-                              <StatusBadge tone="danger" dot>Hết hạn</StatusBadge>
+                              <StatusBadge tone="danger" dot compact>Hết hạn</StatusBadge>
                             )}
                           </div>
                         ) : (
@@ -952,6 +992,7 @@ export function ContractsListPage({
               })}
               </tbody>
             </table>
+            </div>
           </div>
         </>
         }
@@ -1333,15 +1374,10 @@ export function ContractsListPage({
 function Th({
   children,
   align = 'left'
-
-
-
 }: {children: React.ReactNode;align?: 'left' | 'right' | 'center';}) {
   return (
     <th
-      className={`px-4 py-3.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-zinc-700 ${align === 'right' ? 'text-right' : align === 'center' ? 'text-center' : 'text-left'}`}>
-      
+      className={`px-4 py-3.5 text-[11px] font-semibold uppercase tracking-[0.08em] text-zinc-700 shrink-0 text-left ${align === 'right' ? 'text-right pr-6' : align === 'center' ? 'text-center' : ''}`}>
       {children}
     </th>);
-
 }

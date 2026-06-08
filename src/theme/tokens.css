@@ -23,12 +23,12 @@
   --letter-spacing-header: -0.02em;
 
   --app-bg: #f6f3ee;
-  --surface: rgba(255, 255, 255, 0.92);
+  --surface: rgba(255, 255, 255, 0.97);
   --surface-elevated: #ffffff;
   --surface-muted: #efe8dd;
   --text-primary: #1f1b16;
   --text-secondary: #4c443b;
-  --text-muted: #7a7065;
+  --text-muted: #5f5349;
   --border-subtle: rgba(48, 38, 27, 0.08);
   --border-default: rgba(48, 38, 27, 0.14);
   --border-strong: rgba(48, 38, 27, 0.22);

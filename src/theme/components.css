@@ -155,6 +155,11 @@
   padding: 0.25rem 0.5rem;
 }
 
+/* Compact badge — for table rows */
+.ds-badge-compact {
+  padding: 0.125rem 0.375rem;
+}
+
 .ds-badge-tone-success {
   background: var(--accent-emerald);
   color: #fff;
@@ -267,16 +272,9 @@
   top: 0;
   height: 1px;
   pointer-events: none;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.9), transparent);
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.55), transparent);
 }
 
-.ds-card-panel::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: linear-gradient(180deg, color-mix(in srgb, var(--surface-elevated) 96%, white) 0%, color-mix(in srgb, var(--surface-elevated) 98%, white) 56%, color-mix(in srgb, var(--surface-muted) 36%, transparent) 100%);
-}
 
 .ds-card-accent::before {
   content: '';
@@ -290,8 +288,8 @@
 }
 
 .ds-toolbar-summary {
-  border-top: 1px solid color-mix(in srgb, var(--border-subtle) 88%, transparent);
-  background: color-mix(in srgb, var(--surface-muted) 35%, transparent);
+  border-top: 1px solid var(--border-subtle);
+  background: var(--surface-muted);
 }
 
 .ds-filter-chip {
@@ -304,9 +302,9 @@
   font-weight: 600;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  background: color-mix(in srgb, var(--accent-warning) 12%, white);
-  color: color-mix(in srgb, var(--accent-warning) 72%, var(--text-primary));
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent-warning) 16%, transparent);
+  background: color-mix(in srgb, var(--accent-warning) 18%, white);
+  color: color-mix(in srgb, var(--accent-warning) 82%, var(--text-primary));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent-warning) 28%, transparent);
 }
 
 .ds-metric-icon {
@@ -478,4 +476,130 @@
   inset: 0;
   background: linear-gradient(90deg, transparent, rgba(255,255,255,0.55), transparent);
   animation: shimmer 1.6s infinite;
+}
+
+/* ================================================
+   LEGACY PAGE CLASSES (pre-normalization pages)
+   These are used by ContractsListPage and other
+   pages that were not yet migrated to ds-* tokens.
+   ================================================ */
+
+/* Table header row */
+.premium-table-head {
+  background: var(--surface-muted);
+  color: var(--text-secondary);
+  font-size: var(--text-table-header);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  font-weight: 600;
+}
+
+/* Contract number link button */
+.contract-no-chip {
+  color: var(--accent-primary);
+  font-weight: 600;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-family: inherit;
+  border-radius: var(--radius-sm);
+  transition: color var(--motion-fast) var(--ease-standard), background-color var(--motion-fast) var(--ease-standard);
+}
+.contract-no-chip:hover {
+  color: var(--accent-primary-hover);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* Table row — selected state */
+.row-selected-premium {
+  background: color-mix(in srgb, var(--accent-primary-soft) 80%, var(--surface-elevated));
+}
+
+/* Table row — hover state */
+.row-hover-premium:hover {
+  background: color-mix(in srgb, var(--surface-muted) 70%, transparent);
+}
+
+/* Compact contract number chip */
+.contract-no-chip {
+  color: var(--accent-primary);
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-family: inherit;
+  border-radius: var(--radius-sm);
+  transition: color var(--motion-fast) var(--ease-standard);
+}
+.contract-no-chip:hover {
+  color: var(--accent-primary-hover);
+}
+
+/* Contract number suffix chip */
+.contract-no-suffix {
+  display: inline-block;
+  padding: 0.05rem 0.35rem;
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--accent-primary-soft) 60%, white);
+  color: var(--accent-primary);
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  vertical-align: middle;
+  line-height: 1.4;
+}
+
+/* Usage area chip */
+.usage-area-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.15rem 0.45rem;
+  border-radius: var(--radius-sm);
+  background: var(--surface-muted);
+  color: var(--text-secondary);
+  font-size: 0.65rem;
+  font-weight: 500;
+  border: 1px solid var(--border-subtle);
+}
+
+/* Extra-areas chip (overflow) */
+.usage-extra-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.15rem 0.45rem;
+  border-radius: var(--radius-sm);
+  background: color-mix(in srgb, var(--accent-warning-soft) 80%, white);
+  color: var(--accent-warning);
+  font-size: 0.65rem;
+  font-weight: 600;
+  border: 1px solid color-mix(in srgb, var(--accent-warning) 22%, transparent);
+}
+
+/* Detail link in usage area cell */
+.usage-detail-link {
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: var(--accent-primary);
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  padding: 0.1rem 0;
+  transition: color var(--motion-fast) var(--ease-standard);
+}
+.usage-detail-link:hover {
+  color: var(--accent-primary-hover);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+/* Table row action trigger — always visible enough */
+.row-action-trigger {
+  opacity: 0.45;
+  transition: opacity var(--motion-fast) var(--ease-standard);
+}
+tr:hover .row-action-trigger,
+tr:focus-within .row-action-trigger {
+  opacity: 1;
 }

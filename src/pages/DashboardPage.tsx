@@ -531,7 +531,6 @@ export function DashboardPage({
           {[
           { label: 'Tạo hợp đồng', icon: FilePlusIcon, route: 'contracts.create' as RouteKey },
             { label: 'Danh sách HĐ', icon: ListIcon, route: 'contracts.list' as RouteKey },
-            { label: 'Giấy chứng nhận', icon: AwardIcon, route: 'contracts.gcn' as RouteKey },
             { label: 'In GCN', icon: PrinterIcon, route: 'contracts.print' as RouteKey },
             { label: 'Công văn', icon: MailIcon, route: 'dispatch' as RouteKey },
             { label: 'Báo cáo', icon: BarChart3Icon, route: 'reports' as RouteKey },

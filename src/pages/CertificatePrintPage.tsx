@@ -471,7 +471,7 @@ export function CertificatePrintPage({
     <div className="min-h-screen bg-zinc-50/50">
       <div className="bg-white border-b border-zinc-200 px-6 py-4">
         <div className="flex items-center gap-3">
-          <button type="button" onClick={() => onNavigate('contracts.gcn')} title="Quay lại danh sách GCN" className="h-9 w-9 inline-flex items-center justify-center rounded-lg text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 transition-colors"><ArrowLeftIcon className="h-5 w-5" /></button>
+          <button type="button" onClick={() => onNavigate('contracts.list')} title="Quay lại danh sách hợp đồng" className="h-9 w-9 inline-flex items-center justify-center rounded-lg text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 transition-colors"><ArrowLeftIcon className="h-5 w-5" /></button>
           <div className="flex-1">
             <div className="flex items-center gap-2">
               <h1 className="text-base font-semibold text-zinc-900">In GCN</h1>

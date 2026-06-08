@@ -4,7 +4,6 @@ import {
   FileTextIcon,
   FilePlusIcon,
   ListIcon,
-  AwardIcon,
   PaperclipIcon,
   MailIcon,
   BarChart3Icon,
@@ -47,12 +46,6 @@ const CONTRACTS_CHILDREN: Item[] = [
   label: 'Tạo hợp đồng',
   icon: <FilePlusIcon className="h-[15px] w-[15px]" />,
   requiredPerm: 'contracts.create'
-},
-{
-  key: 'contracts.gcn',
-  label: 'Giấy chứng nhận',
-  icon: <AwardIcon className="h-[15px] w-[15px]" />,
-  requiredPerm: 'contracts.read'
 },
 {
   key: 'contracts.print',

@@ -12,11 +12,14 @@ export function StatusBadge({
   tone = 'neutral',
   children,
   dot,
+  compact,
   className,
 }: {
   tone?: Tone;
   children: React.ReactNode;
   dot?: boolean;
+  /** Smaller, tighter badge for compact table rows */
+  compact?: boolean;
   className?: string;
 }) {
   const baseClass =
@@ -50,9 +53,9 @@ export function StatusBadge({
                 : 'bg-[color:var(--accent-neutral-soft)]';
 
   return (
-    <span className={`ds-badge ${baseClass} ${className ?? ''}`}>
-      {dot && <span className={`h-1.5 w-1.5 rounded-full ${dotClass}`} />}
-      {children}
+    <span className={`ds-badge ${compact ? 'ds-badge-compact' : ''} ${baseClass} ${className ?? ''}`}>
+      {dot && <span className={`h-1.5 w-1.5 rounded-full shrink-0 ${dotClass}`} />}
+      <span className="leading-tight">{children}</span>
     </span>
   );
 }

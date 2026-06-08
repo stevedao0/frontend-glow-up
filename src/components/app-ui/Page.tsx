@@ -1,7 +1,7 @@
 import React from 'react';
 export function Page({ children }: {children: React.ReactNode;}) {
   return (
-    <div className="px-4 sm:px-6 lg:px-10 py-6 lg:py-10 max-w-[1440px] mx-auto flex flex-col gap-8">
+    <div className="px-4 sm:px-6 lg:px-10 py-6 lg:py-10 max-w-[1440px] mx-auto flex flex-col gap-8 min-h-0 overflow-hidden">
       {children}
     </div>);
 

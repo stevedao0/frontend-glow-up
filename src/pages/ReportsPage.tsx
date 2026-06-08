@@ -1928,7 +1928,7 @@ export function ReportsPage({
             variant="ghost"
             size="sm"
             leftIcon={<EyeIcon className="h-3.5 w-3.5" />}
-            onClick={() => onNavigate('contracts.gcn')}>
+            onClick={() => onNavigate('contracts.list')}>
             Xem tất cả GCN
           </Button>
         }>
@@ -1975,7 +1975,7 @@ export function ReportsPage({
                 <tr
                   key={c.id}
                   className="border-b border-zinc-100 last:border-0 hover:bg-amber-50/20 transition-colors cursor-pointer"
-                  onClick={() => onNavigate('contracts.gcn')}>
+                  onClick={() => onNavigate('contracts.list')}>
                   <td className="px-4 py-3.5 align-top whitespace-nowrap">
                     {c.certificate_no ? (
                       <span className="font-mono text-[13px] font-semibold text-amber-800">

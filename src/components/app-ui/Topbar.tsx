@@ -25,7 +25,6 @@ const ROUTE_LABELS: Partial<Record<RouteKey, { label: string; group?: string }>>
   'contracts.detail': { label: 'Chi tiết hợp đồng', group: 'Hợp đồng' },
   'contracts.edit': { label: 'Chỉnh sửa hợp đồng', group: 'Hợp đồng' },
   'contracts.create': { label: 'Tạo hợp đồng', group: 'Hợp đồng' },
-  'contracts.gcn': { label: 'Giấy chứng nhận', group: 'Hợp đồng' },
   'contracts.print': { label: 'In GCN', group: 'Hợp đồng' },
   annexes: { label: 'Phụ lục', group: 'Nghiệp vụ' },
   dispatch: { label: 'Công văn', group: 'Nghiệp vụ' },

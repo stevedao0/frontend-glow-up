@@ -4,7 +4,6 @@ export type RouteKey =
 'contracts.detail' |
 'contracts.edit' |
 'contracts.create' |
-'contracts.gcn' |
 'contracts.print' |
 'annexes' |
 'dispatch' |
@@ -21,7 +20,6 @@ export const ROUTE_PATHS: Record<RouteKey, string> = {
   'contracts.detail': '/bg/contracts/:id',
   'contracts.edit': '/bg/contracts/:id/edit',
   'contracts.create': '/bg/contracts/new',
-  'contracts.gcn': '/bg/contracts/certificates',
   'contracts.print': '/bg/contracts/certificates/print',
   annexes: '/bg/annexes',
   dispatch: '/bg/dispatches',

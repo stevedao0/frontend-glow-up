@@ -5,7 +5,6 @@ import { ContractsListPage } from './pages/ContractsListPage';
 import { ContractDetailPage } from './pages/ContractDetailPage';
 import { ContractEditPage } from './pages/ContractEditPage';
 import { CreateContractPage } from './pages/CreateContractPage';
-import { CertificatesPage } from './pages/CertificatesPage';
 import { CertificatePrintPage } from './pages/CertificatePrintPage';
 import { ReportsPage } from './pages/ReportsPage';
 import { PlaceholderPage } from './pages/PlaceholderPage';
@@ -237,7 +236,8 @@ function AppContent() {
       );
     }
     if (route === 'contracts.gcn') {
-      return <CertificatesPage onNavigate={setRoute} />;
+      setRoute('contracts.list');
+      return null;
     }
     if (route === 'contracts.print') {
       return <CertificatePrintPage onNavigate={setRoute} initialContractId={pendingPrintContractId} initialCertificateId={pendingPrintCertificateId} onPrinted={() => { setPendingPrintContractId(null); setPendingPrintCertificateId(null); }} />;

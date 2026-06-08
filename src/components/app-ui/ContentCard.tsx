@@ -18,7 +18,7 @@ export function ContentCard({
 }) {
   return (
     <section
-      className={`ds-card ds-card-panel group/card relative rounded-2xl overflow-hidden ${accent ? 'ds-card-accent ' : ''}${className}`}
+      className={`ds-card ds-card-panel group/card relative rounded-2xl overflow-hidden flex flex-col flex-1 min-h-0 ${accent ? 'ds-card-accent ' : ''}${className}`}
     >
       <div className="relative">
         {(title || actions) && (
@@ -38,7 +38,7 @@ export function ContentCard({
             )}
           </header>
         )}
-        <div className={padded ? 'p-[var(--card-padding)]' : ''}>{children}</div>
+        <div className={`relative flex flex-col min-h-0 flex-1 ${padded ? 'p-[var(--card-padding)]' : ''}`}>{children}</div>
       </div>
     </section>
   );
