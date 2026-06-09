@@ -97,17 +97,17 @@ export function Topbar({
 
   return (
     <>
-      <header className="vc-enterprise-topbar sticky top-0 z-20 h-16 px-4 sm:px-6 flex items-center gap-2 sm:gap-3">
+      <header className="vc-enterprise-topbar sticky top-0 z-20 h-14 px-4 sm:px-6 flex items-center gap-2 sm:gap-3">
         {/* Breadcrumb */}
         {currentMeta && (
           <nav className="hidden lg:flex items-center gap-1.5 text-[12.5px] mr-2 shrink-0">
             {currentMeta.group && (
               <>
-            <span className="text-white/45 font-medium">{currentMeta.group}</span>
-                <ChevronRightIcon className="h-3 w-3 text-white/28" />
+            <span className="text-stone-500 font-medium">{currentMeta.group}</span>
+                <ChevronRightIcon className="h-3 w-3 text-stone-300" />
               </>
             )}
-            <span className="text-white font-semibold tracking-tight">{currentMeta.label}</span>
+            <span className="text-stone-950 font-semibold tracking-tight">{currentMeta.label}</span>
           </nav>
         )}
 
@@ -116,9 +116,9 @@ export function Topbar({
             type="button"
             onClick={() => setPaletteOpen(true)}
             className="vc-enterprise-search w-full h-9 pl-9 pr-14 text-sm rounded-xl text-left transition-all">
-            <SearchIcon className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/36 group-hover:text-[var(--vc-enterprise-accent)] transition-colors" />
-            <span className="truncate text-white/55">Tìm hợp đồng, GCN, đối tác... hoặc nhấn ⌘K</span>
-            <kbd className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 px-1.5 h-5 inline-flex items-center text-[10px] font-semibold text-white/44 bg-black/20 border border-white/10 rounded shadow-xs">
+            <SearchIcon className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-stone-400 group-hover:text-[var(--vc-enterprise-accent)] transition-colors" />
+            <span className="truncate text-stone-500">Tìm hợp đồng, GCN, đối tác... hoặc nhấn ⌘K</span>
+            <kbd className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 px-1.5 h-5 inline-flex items-center text-[10px] font-semibold text-stone-400 bg-stone-100 border border-stone-200 rounded shadow-xs">
               ⌘K
             </kbd>
           </button>
@@ -133,14 +133,14 @@ export function Topbar({
             className="vc-enterprise-topbar-chip h-9 px-3 inline-flex items-center gap-2 rounded-xl text-sm transition-all shadow-xs">
             
             <span className={`h-2 w-2 rounded-full ${wsDot} ${wsGlow}`} />
-            <span className="font-semibold text-white hidden sm:inline">
+            <span className="font-semibold text-stone-900 hidden sm:inline">
               {activeWs.label}
             </span>
-            <ChevronDownIcon className="h-3.5 w-3.5 text-white/36" />
+            <ChevronDownIcon className="h-3.5 w-3.5 text-stone-400" />
           </button>
           {wsOpen &&
-          <div className="absolute right-0 top-11 w-56 rounded-2xl bg-[#0f1b18] ring-1 ring-white/10 shadow-2xl py-1.5 z-30 origin-top-right max-h-96 overflow-y-auto">
-              <p className="px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-white/42">
+          <div className="absolute right-0 top-11 w-56 rounded-2xl bg-white ring-1 ring-stone-200 shadow-2xl py-1.5 z-30 origin-top-right max-h-96 overflow-y-auto">
+              <p className="px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-stone-400">
                 Workspace
               </p>
               {allowedDomains.map((w) => {
@@ -155,7 +155,7 @@ export function Topbar({
                     onWorkspaceChange(w.id);
                     setWsOpen(false);
                   }}
-                  className={`w-full text-left px-3 py-2 text-sm hover:bg-white/[0.05] inline-flex items-center gap-2 transition-colors ${isActive ? 'text-white font-semibold' : 'text-white/72'}`}>
+                  className={`w-full text-left px-3 py-2 text-sm hover:bg-stone-50 inline-flex items-center gap-2 transition-colors ${isActive ? 'text-stone-950 font-semibold' : 'text-stone-600'}`}>
                   
                     <span className={`h-2 w-2 rounded-full ${dot}`} />
                     {w.label}
@@ -234,7 +234,7 @@ export function Topbar({
               
                 <KeyIcon className="h-4 w-4 text-fg-muted" /> Đổi mật khẩu
               </button>
-              <button className="w-full flex items-center gap-2 px-3 py-2 text-sm text-fg-secondary hover:bg-surface-subtle transition-colors">
+              <button className="w-full flex items-center gap-2 px-3 py-2 text-sm text-white/72 hover:bg-white/[0.05] transition-colors">
                 <SettingsIcon className="h-4 w-4 text-fg-muted" /> Cài đặt giao
                 diện
               </button>

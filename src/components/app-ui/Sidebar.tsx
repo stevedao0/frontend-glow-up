@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   LayoutDashboardIcon,
   FileTextIcon,
@@ -17,6 +17,7 @@ import {
   UploadIcon } from
 'lucide-react';
 import { RouteKey } from '../../data/routes';
+import { DOMAINS } from '../../data/authData';
 import { useAuth } from '../../lib/auth';
 import vcpmcLogo from '../../assets/vcpmc-logo-animated.webp';
 type Item = {
@@ -110,11 +111,12 @@ const SYSTEM: Item[] = [
 const CONTRACT_KEYS: RouteKey[] = [...CONTRACTS_CHILDREN.map((c) => c.key), 'contracts.detail'];
 export function Sidebar({
   current,
-  onNavigate
+  onNavigate,
+  workspace,
 
 
 
-}: {current: RouteKey;onNavigate: (k: RouteKey) => void;}) {
+}: {current: RouteKey;onNavigate: (k: RouteKey) => void;workspace?: string;}) {
   const { hasPermission, currentUser } = useAuth();
   const [contractsOpen, setContractsOpen] = useState(
     CONTRACT_KEYS.includes(current)
@@ -181,25 +183,76 @@ export function Sidebar({
     </p>;
 
   const contractsActive = CONTRACT_KEYS.includes(current);
+  const activeWorkspace = useMemo(() => DOMAINS.find((item) => item.id === workspace), [workspace]);
+  const primaryRailItems = [
+    TOP[0],
+    { key: 'contracts.list' as RouteKey, label: 'Hợp đồng', icon: <FileTextIcon className="h-[16px] w-[16px]" /> },
+    { key: 'dispatch' as RouteKey, label: 'Công văn', icon: <MailIcon className="h-[16px] w-[16px]" /> },
+    { key: 'reports' as RouteKey, label: 'Báo cáo', icon: <BarChart3Icon className="h-[16px] w-[16px]" /> },
+    { key: 'search' as RouteKey, label: 'Tìm kiếm', icon: <SearchIcon className="h-[16px] w-[16px]" /> },
+  ].filter((item) => {
+    const match = item.key === 'contracts.list'
+      ? hasPermission('contracts.read')
+      : item.key === 'dispatch'
+        ? hasPermission('annexes.read')
+        : item.key === 'reports'
+          ? hasPermission('reports.view')
+          : item.key === 'search'
+            ? hasPermission('works.read')
+            : hasPermission('portal.access');
+    return match;
+  });
+
+  const railActive = (key: RouteKey) => key === 'contracts.list' ? contractsActive : current === key;
+
   return (
-    <aside className="vc-enterprise-sidebar hidden md:flex w-[296px] shrink-0 flex-col h-screen sticky top-0 z-30 relative overflow-hidden">
-      {/* Subtle staff lines decoration — top of sidebar */}
+    <aside className="vc-enterprise-sidebar hidden md:flex h-screen shrink-0 sticky top-0 z-30 overflow-hidden">
+      <div className="vc-enterprise-icon-rail">
+        <div className="vc-enterprise-icon-rail__top">
+          <button type="button" className="vc-enterprise-rail-logo" onClick={() => onNavigate('dashboard')} aria-label="Go to dashboard">
+            <img src={vcpmcLogo} alt="VCPMC" className="h-8 w-8 rounded-xl object-cover" />
+          </button>
+          <div className="vc-enterprise-rail-stack">
+            {primaryRailItems.map((item) => {
+              const active = railActive(item.key);
+              return (
+                <button
+                  key={item.key}
+                  type="button"
+                  title={item.label}
+                  onClick={() => onNavigate(item.key)}
+                  className={`vc-enterprise-rail-button ${active ? 'is-active' : ''}`}
+                >
+                  {item.icon}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+        <div className="vc-enterprise-rail-bottom">
+          <div className="vc-enterprise-rail-status" title="Internal workspace online">
+            <UserCircle2Icon className="h-4 w-4" />
+          </div>
+        </div>
+      </div>
+
+      <div className="vc-enterprise-sidebar-panel w-64 flex flex-col relative overflow-hidden">
+      {/* Workspace panel accent lines */}
       <div
         aria-hidden
         className="pointer-events-none absolute inset-x-0 top-0 h-32 opacity-[0.18]"
         style={{
           backgroundImage:
-            'repeating-linear-gradient(to bottom, transparent 0, transparent 5px, #c89968 5px, #c89968 6px)',
+            'repeating-linear-gradient(to bottom, transparent 0, transparent 7px, rgba(45,212,191,0.24) 7px, rgba(45,212,191,0.24) 8px)',
           maskImage: 'linear-gradient(to bottom, black, transparent)',
           WebkitMaskImage: 'linear-gradient(to bottom, black, transparent)',
         }}
       />
 
-      {/* Brand — official VCPMC logo on white tile + rose-gold ring */}
       <div className="relative px-5 py-5 border-b border-white/8 flex items-center gap-3">
-        <div className="relative h-10 w-10 rounded-xl bg-white flex items-center justify-center shadow-md shadow-[#9c6d3e]/20 ring-1 ring-inset ring-[#c89968]/60 overflow-hidden">
+        <div className="relative h-10 w-10 rounded-xl bg-white/95 flex items-center justify-center shadow-sm ring-1 ring-inset ring-white/70 overflow-hidden">
           <img src={vcpmcLogo} alt="VCPMC" className="h-full w-full object-cover" />
-          <span className="absolute -bottom-0.5 -right-0.5 h-1.5 w-1.5 rounded-full bg-[#c89968] shadow-[0_0_6px_rgba(200,153,104,0.8)]" />
+          <span className="absolute -bottom-0.5 -right-0.5 h-1.5 w-1.5 rounded-full bg-[var(--vc-enterprise-accent)] shadow-[0_0_6px_rgba(45,212,191,0.8)]" />
         </div>
         <div className="flex flex-col leading-tight min-w-0">
           <span className="text-[12px] font-bold text-white tracking-tight uppercase">
@@ -216,9 +269,9 @@ export function Sidebar({
           <div className="flex items-center justify-between gap-3">
             <div>
               <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-white/40">Workspace</p>
-              <p className="mt-1 text-sm font-semibold text-white">Enterprise Command Center</p>
+              <p className="mt-1 text-sm font-semibold text-white">{activeWorkspace?.label ?? 'Background'}</p>
             </div>
-            <span className="vc-enterprise-badge vc-enterprise-tone-accent">Live</span>
+            <span className="vc-enterprise-badge vc-enterprise-tone-neutral">Background</span>
           </div>
           <p className="mt-2 text-xs leading-relaxed text-white/52">
             Điều hướng theo quyền truy cập thật, cùng một shell thống nhất cho dashboard và contracts.
@@ -272,6 +325,7 @@ export function Sidebar({
           <span className="h-1.5 w-1.5 rounded-full bg-emerald-600 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
           <span className="font-bold uppercase tracking-wider text-white/72">Online</span>
         </span>
+      </div>
       </div>
     </aside>);
 
