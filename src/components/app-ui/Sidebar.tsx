@@ -130,7 +130,7 @@ export function Sidebar({
       return (
         <div
           key={it.key}
-          className={`group relative w-full flex items-center gap-3 ${indent ? 'pl-9 pr-3' : 'px-3'} py-1.5 rounded-md text-[13px] font-medium text-[#8a7560] cursor-not-allowed`}
+          className={`group relative w-full flex items-center gap-3 ${indent ? 'pl-9 pr-3' : 'px-3'} py-1.5 rounded-xl text-[13px] font-medium text-white/35 cursor-not-allowed`}
           title="Không có quyền">
           <span className="shrink-0 opacity-50">{it.icon}</span>
           <span className="flex-1 text-left truncate opacity-50">{it.label}</span>
@@ -143,10 +143,10 @@ export function Sidebar({
           key={it.key}
           type="button"
           onClick={() => onNavigate(it.key)}
-          className={`group relative w-full flex items-center gap-3 pl-7 pr-3 py-1.5 text-[13px] transition-colors -ml-px border-l ${
+          className={`group relative w-full flex items-center gap-3 pl-7 pr-3 py-2 text-[13px] transition-colors -ml-px border-l ${
             active
-              ? 'text-[#2d1f14] border-[#c89968] font-medium'
-              : 'text-[#8a7560] hover:text-[#2d1f14] border-[#d9c9b3]'
+              ? 'text-white border-[var(--vc-enterprise-accent)] font-medium bg-white/6'
+              : 'text-white/62 hover:text-white border-white/10 hover:border-white/22'
           }`}>
           <span className="flex-1 text-left truncate">{it.label}</span>
         </button>);
@@ -156,33 +156,33 @@ export function Sidebar({
         key={it.key}
         type="button"
         onClick={() => onNavigate(it.key)}
-        className={`group relative w-full flex items-center gap-3 px-3 py-2 rounded-md text-[13px] font-medium transition-all duration-fast ease-out ${
+        className={`group relative w-full flex items-center gap-3 px-3 py-2.5 rounded-2xl text-[13px] font-medium transition-all duration-fast ease-out ${
           active
-            ? 'text-[#2d1f14] bg-gradient-to-r from-[#c89968]/25 via-[#c89968]/10 to-transparent ring-1 ring-inset ring-[#c89968]/40'
-            : 'text-[#6b5641] hover:text-[#2d1f14] hover:bg-[#2d1f14]/[0.04]'
+            ? 'text-white bg-white/8 ring-1 ring-inset ring-white/10 shadow-[0_10px_24px_-18px_rgba(56,184,153,0.8)]'
+            : 'text-white/68 hover:text-white hover:bg-white/[0.045]'
         }`}>
         {active && (
-          <span className="absolute left-0 top-1.5 bottom-1.5 w-[2px] rounded-r bg-[#c89968] shadow-[0_0_8px_rgba(200,153,104,0.6)]" />
+          <span className="absolute left-0 top-2 bottom-2 w-[3px] rounded-r bg-[var(--vc-enterprise-accent)] shadow-[0_0_12px_rgba(56,184,153,0.55)]" />
         )}
-        <span className={`shrink-0 ${active ? 'text-[#9c6d3e]' : 'text-[#8a7560] group-hover:text-[#5a4533]'}`}>
+        <span className={`shrink-0 ${active ? 'text-[var(--vc-enterprise-accent)]' : 'text-white/42 group-hover:text-white/78'}`}>
           {it.icon}
         </span>
         <span className="flex-1 text-left truncate">{it.label}</span>
         {it.badge &&
-        <span className="text-[9px] font-bold uppercase tracking-[0.1em] px-1.5 py-0.5 rounded bg-[#c89968]/15 text-[#7a4a22] ring-1 ring-inset ring-[#c89968]/30">
+        <span className="text-[9px] font-bold uppercase tracking-[0.1em] px-1.5 py-0.5 rounded-full bg-white/8 text-[var(--vc-enterprise-accent)] ring-1 ring-inset ring-white/10">
             {it.badge}
           </span>
         }
       </button>);
   };
   const groupLabel = (label: string) =>
-  <p className="px-3 mt-5 mb-2 text-[10px] font-bold uppercase tracking-[0.18em] text-[#9c8569]">
+  <p className="px-3 mt-5 mb-2 text-[10px] font-bold uppercase tracking-[0.18em] text-white/42">
       {label}
     </p>;
 
   const contractsActive = CONTRACT_KEYS.includes(current);
   return (
-    <aside className="hidden md:flex w-64 shrink-0 flex-col h-screen sticky top-0 z-30 bg-[#f5efe2] border-r border-[#d9c9b3] text-[#2d1f14] relative overflow-hidden">
+    <aside className="vc-enterprise-sidebar hidden md:flex w-[296px] shrink-0 flex-col h-screen sticky top-0 z-30 relative overflow-hidden">
       {/* Subtle staff lines decoration — top of sidebar */}
       <div
         aria-hidden
@@ -196,22 +196,37 @@ export function Sidebar({
       />
 
       {/* Brand — official VCPMC logo on white tile + rose-gold ring */}
-      <div className="relative px-5 py-4 border-b border-[#d9c9b3] flex items-center gap-3">
-        <div className="relative h-10 w-10 rounded-md bg-white flex items-center justify-center shadow-md shadow-[#9c6d3e]/20 ring-1 ring-inset ring-[#c89968]/60 overflow-hidden">
+      <div className="relative px-5 py-5 border-b border-white/8 flex items-center gap-3">
+        <div className="relative h-10 w-10 rounded-xl bg-white flex items-center justify-center shadow-md shadow-[#9c6d3e]/20 ring-1 ring-inset ring-[#c89968]/60 overflow-hidden">
           <img src={vcpmcLogo} alt="VCPMC" className="h-full w-full object-cover" />
           <span className="absolute -bottom-0.5 -right-0.5 h-1.5 w-1.5 rounded-full bg-[#c89968] shadow-[0_0_6px_rgba(200,153,104,0.8)]" />
         </div>
         <div className="flex flex-col leading-tight min-w-0">
-          <span className="text-[12px] font-bold text-[#2d1f14] tracking-tight uppercase">
+          <span className="text-[12px] font-bold text-white tracking-tight uppercase">
             VCPMC
           </span>
-          <span className="text-[9px] text-[#9c6d3e] uppercase tracking-[0.18em] font-semibold leading-tight">
+          <span className="text-[9px] text-[var(--vc-enterprise-accent)] uppercase tracking-[0.18em] font-semibold leading-tight">
             Quyền tác giả Âm nhạc · Hợp đồng
           </span>
         </div>
       </div>
 
-      <nav className="flex-1 overflow-y-auto scrollbar-thin px-3 pb-4">
+      <div className="px-4 pt-4 pb-2">
+        <div className="rounded-2xl border border-white/10 bg-white/[0.045] px-4 py-3">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <p className="text-[10px] font-bold uppercase tracking-[0.18em] text-white/40">Workspace</p>
+              <p className="mt-1 text-sm font-semibold text-white">Enterprise Command Center</p>
+            </div>
+            <span className="vc-enterprise-badge vc-enterprise-tone-accent">Live</span>
+          </div>
+          <p className="mt-2 text-xs leading-relaxed text-white/52">
+            Điều hướng theo quyền truy cập thật, cùng một shell thống nhất cho dashboard và contracts.
+          </p>
+        </div>
+      </div>
+
+      <nav className="flex-1 overflow-y-auto scrollbar-thin px-3 pb-4 pt-3">
         {groupLabel('Tổng quan')}
         <div className="flex flex-col gap-0.5">
           {TOP.map((it) => renderItem(it))}
@@ -224,20 +239,20 @@ export function Sidebar({
               <button
               type="button"
               onClick={() => setContractsOpen((o) => !o)}
-              className={`group w-full flex items-center gap-3 px-3 py-2 rounded-md text-[13px] font-medium transition-colors ${
+              className={`group w-full flex items-center gap-3 px-3 py-2.5 rounded-2xl text-[13px] font-medium transition-colors ${
                 contractsActive
-                  ? 'text-[#7a4a22] bg-[#c89968]/15 ring-1 ring-inset ring-[#c89968]/35'
-                  : 'text-[#6b5641] hover:text-[#2d1f14] hover:bg-[#2d1f14]/[0.04]'
+                  ? 'text-white bg-white/8 ring-1 ring-inset ring-white/10'
+                  : 'text-white/68 hover:text-white hover:bg-white/[0.045]'
               }`}>
-                <span className={`shrink-0 ${contractsActive ? 'text-[#9c6d3e]' : 'text-[#8a7560] group-hover:text-[#5a4533]'}`}>
+                <span className={`shrink-0 ${contractsActive ? 'text-[var(--vc-enterprise-accent)]' : 'text-white/42 group-hover:text-white/78'}`}>
                   <FileTextIcon className="h-[15px] w-[15px]" />
                 </span>
                 <span className="flex-1 text-left">Hợp đồng</span>
                 <ChevronDownIcon
-                className={`h-3 w-3 text-[#8a7560] transition-transform duration-fast ${contractsOpen ? 'rotate-0' : '-rotate-90'}`} />
+                className={`h-3 w-3 text-white/42 transition-transform duration-fast ${contractsOpen ? 'rotate-0' : '-rotate-90'}`} />
               </button>
               <div
-              className={`flex flex-col overflow-hidden transition-all duration-base ml-4 ${contractsOpen ? 'max-h-72 opacity-100 mt-1' : 'max-h-0 opacity-0'}`}>
+              className={`flex flex-col overflow-hidden transition-all duration-base ml-4 ${contractsOpen ? 'max-h-72 opacity-100 mt-2' : 'max-h-0 opacity-0'}`}>
                 {CONTRACTS_CHILDREN.map((c) => renderItem(c, true))}
               </div>
               {BUSINESS_REST.map((it) => renderItem(it))}
@@ -251,11 +266,11 @@ export function Sidebar({
         </div>
       </nav>
 
-      <div className="px-4 py-3 border-t border-[#d9c9b3] flex items-center justify-between text-[10px] text-[#8a7560]">
-        <span className="font-mono font-medium tracking-tight">v1.0 · INTERNAL</span>
+      <div className="mt-auto px-4 py-4 border-t border-white/10 flex items-center justify-between text-[10px] text-white/48">
+          <span className="font-mono font-medium tracking-tight text-white/56">v1.0 · INTERNAL</span>
         <span className="inline-flex items-center gap-1.5">
           <span className="h-1.5 w-1.5 rounded-full bg-emerald-600 shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
-          <span className="font-bold uppercase tracking-wider">Online</span>
+          <span className="font-bold uppercase tracking-wider text-white/72">Online</span>
         </span>
       </div>
     </aside>);

@@ -97,17 +97,17 @@ export function Topbar({
 
   return (
     <>
-      <header className="sticky top-0 z-20 h-16 px-4 sm:px-6 flex items-center gap-2 sm:gap-3 bg-surface/85 backdrop-blur-2xl backdrop-saturate-150 border-b border-zinc-200/70 shadow-xs">
+      <header className="vc-enterprise-topbar sticky top-0 z-20 h-16 px-4 sm:px-6 flex items-center gap-2 sm:gap-3">
         {/* Breadcrumb */}
         {currentMeta && (
           <nav className="hidden lg:flex items-center gap-1.5 text-[12.5px] mr-2 shrink-0">
             {currentMeta.group && (
               <>
-                <span className="text-fg-muted font-medium">{currentMeta.group}</span>
-                <ChevronRightIcon className="h-3 w-3 text-fg-subtle" />
+            <span className="text-white/45 font-medium">{currentMeta.group}</span>
+                <ChevronRightIcon className="h-3 w-3 text-white/28" />
               </>
             )}
-            <span className="text-fg-primary font-semibold tracking-tight">{currentMeta.label}</span>
+            <span className="text-white font-semibold tracking-tight">{currentMeta.label}</span>
           </nav>
         )}
 
@@ -115,10 +115,10 @@ export function Topbar({
           <button
             type="button"
             onClick={() => setPaletteOpen(true)}
-            className="w-full h-9 pl-9 pr-14 text-sm rounded-lg bg-surface-subtle ring-1 ring-zinc-200/80 hover:ring-[#c89968]/45 hover:bg-white focus:outline-none focus:ring-2 focus:ring-[#c89968]/40 transition-all text-left text-fg-muted">
-            <SearchIcon className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-fg-subtle group-hover:text-[#9c6d3e] transition-colors" />
-            <span className="truncate">Tìm hợp đồng, GCN, đối tác... hoặc nhấn ⌘K</span>
-            <kbd className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 px-1.5 h-5 inline-flex items-center text-[10px] font-semibold text-fg-muted bg-surface border border-zinc-200/80 rounded shadow-xs">
+            className="vc-enterprise-search w-full h-9 pl-9 pr-14 text-sm rounded-xl text-left transition-all">
+            <SearchIcon className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/36 group-hover:text-[var(--vc-enterprise-accent)] transition-colors" />
+            <span className="truncate text-white/55">Tìm hợp đồng, GCN, đối tác... hoặc nhấn ⌘K</span>
+            <kbd className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 px-1.5 h-5 inline-flex items-center text-[10px] font-semibold text-white/44 bg-black/20 border border-white/10 rounded shadow-xs">
               ⌘K
             </kbd>
           </button>
@@ -130,17 +130,17 @@ export function Topbar({
           <button
             type="button"
             onClick={() => setWsOpen((o) => !o)}
-            className="h-9 px-3 inline-flex items-center gap-2 rounded-lg bg-surface ring-1 ring-zinc-200/80 hover:ring-[#c89968]/45 text-sm transition-all shadow-xs">
+            className="vc-enterprise-topbar-chip h-9 px-3 inline-flex items-center gap-2 rounded-xl text-sm transition-all shadow-xs">
             
             <span className={`h-2 w-2 rounded-full ${wsDot} ${wsGlow}`} />
-            <span className="font-semibold text-fg-primary hidden sm:inline">
+            <span className="font-semibold text-white hidden sm:inline">
               {activeWs.label}
             </span>
-            <ChevronDownIcon className="h-3.5 w-3.5 text-fg-subtle" />
+            <ChevronDownIcon className="h-3.5 w-3.5 text-white/36" />
           </button>
           {wsOpen &&
-          <div className="absolute right-0 top-11 w-56 rounded-xl bg-surface ring-1 ring-zinc-900/5 shadow-xl py-1.5 z-30 origin-top-right max-h-96 overflow-y-auto">
-              <p className="px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-fg-muted">
+          <div className="absolute right-0 top-11 w-56 rounded-2xl bg-[#0f1b18] ring-1 ring-white/10 shadow-2xl py-1.5 z-30 origin-top-right max-h-96 overflow-y-auto">
+              <p className="px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.12em] text-white/42">
                 Workspace
               </p>
               {allowedDomains.map((w) => {
@@ -155,12 +155,12 @@ export function Topbar({
                     onWorkspaceChange(w.id);
                     setWsOpen(false);
                   }}
-                  className={`w-full text-left px-3 py-2 text-sm hover:bg-surface-subtle inline-flex items-center gap-2 transition-colors ${isActive ? 'text-fg-primary font-semibold' : 'text-fg-secondary'}`}>
+                  className={`w-full text-left px-3 py-2 text-sm hover:bg-white/[0.05] inline-flex items-center gap-2 transition-colors ${isActive ? 'text-white font-semibold' : 'text-white/72'}`}>
                   
                     <span className={`h-2 w-2 rounded-full ${dot}`} />
                     {w.label}
                     {isActive &&
-                  <span className="ml-auto text-[10px] font-bold tracking-wider uppercase text-accent-primary">
+                  <span className="ml-auto text-[10px] font-bold tracking-wider uppercase text-[var(--vc-enterprise-accent)]">
                         Active
                       </span>
                   }
@@ -178,13 +178,13 @@ export function Topbar({
             type="button"
             aria-label="Thông báo"
             onClick={() => setNotifOpen((o) => !o)}
-            className={`relative h-9 w-9 inline-flex items-center justify-center rounded-lg transition-colors ${
+            className={`relative h-9 w-9 inline-flex items-center justify-center rounded-xl transition-colors ${
               notifOpen
-                ? 'bg-[#fcf2e3] text-[#9c6d3e] ring-1 ring-[#c89968]/40'
-                : 'text-fg-secondary hover:bg-surface-subtle hover:text-fg-primary'
+                ? 'bg-white/8 text-[var(--vc-enterprise-accent)] ring-1 ring-white/10'
+                : 'text-white/68 hover:bg-white/[0.05] hover:text-white'
             }`}>
             <BellIcon className="h-[17px] w-[17px]" />
-            <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-danger ring-2 ring-surface" />
+            <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-danger ring-2 ring-[#0f1b18]" />
             <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-danger animate-ping opacity-60" />
           </button>
           {notifOpen && <NotificationsDropdown onClose={() => setNotifOpen(false)} />}
@@ -194,7 +194,7 @@ export function Topbar({
           <button
             type="button"
             onClick={() => setUserOpen((o) => !o)}
-            className="h-9 pl-1 pr-1 sm:pr-2.5 inline-flex items-center gap-2 rounded-lg ring-1 ring-transparent hover:ring-zinc-200/80 hover:bg-surface transition-all">
+            className="h-9 pl-1 pr-1 sm:pr-2.5 inline-flex items-center gap-2 rounded-xl ring-1 ring-transparent hover:ring-white/10 hover:bg-white/[0.04] transition-all">
             
             <span className="relative h-7 w-7 rounded-full bg-gradient-to-br from-zinc-700 to-zinc-950 text-white text-[11px] font-semibold flex items-center justify-center shadow-xs">
               {currentUser?.avatarInitial || 'U'}
@@ -203,25 +203,25 @@ export function Topbar({
                 className="absolute inset-0 rounded-full ring-1 ring-inset ring-white/10" />
               
             </span>
-            <span className="hidden md:inline text-sm text-fg-primary font-medium max-w-[180px] truncate">
+            <span className="hidden md:inline text-sm text-white font-medium max-w-[180px] truncate">
               {userEmail}
             </span>
-            <ChevronDownIcon className="hidden sm:inline h-3.5 w-3.5 text-fg-subtle" />
+            <ChevronDownIcon className="hidden sm:inline h-3.5 w-3.5 text-white/36" />
           </button>
           {userOpen &&
-          <div className="absolute right-0 top-11 w-64 rounded-xl bg-surface ring-1 ring-zinc-900/5 shadow-xl py-1.5 z-30">
-              <div className="px-3 py-2.5 border-b border-zinc-100">
-                <p className="text-sm font-semibold text-fg-primary truncate">
+          <div className="absolute right-0 top-11 w-64 rounded-2xl bg-[#0f1b18] ring-1 ring-white/10 shadow-2xl py-1.5 z-30">
+              <div className="px-3 py-2.5 border-b border-white/10">
+                <p className="text-sm font-semibold text-white truncate">
                   {currentUser?.name}
                 </p>
-                <p className="text-xs text-fg-muted mt-0.5">{roleName}</p>
+                <p className="text-xs text-white/48 mt-0.5">{roleName}</p>
               </div>
               <button
               onClick={() => {
                 setShowProfile(true);
                 setUserOpen(false);
               }}
-              className="w-full flex items-center gap-2 px-3 py-2 text-sm text-fg-secondary hover:bg-surface-subtle transition-colors">
+              className="w-full flex items-center gap-2 px-3 py-2 text-sm text-white/72 hover:bg-white/[0.05] transition-colors">
               
                 <UserIcon className="h-4 w-4 text-fg-muted" /> Hồ sơ cá nhân
               </button>
@@ -230,7 +230,7 @@ export function Topbar({
                 setShowPassword(true);
                 setUserOpen(false);
               }}
-              className="w-full flex items-center gap-2 px-3 py-2 text-sm text-fg-secondary hover:bg-surface-subtle transition-colors">
+              className="w-full flex items-center gap-2 px-3 py-2 text-sm text-white/72 hover:bg-white/[0.05] transition-colors">
               
                 <KeyIcon className="h-4 w-4 text-fg-muted" /> Đổi mật khẩu
               </button>
@@ -238,10 +238,10 @@ export function Topbar({
                 <SettingsIcon className="h-4 w-4 text-fg-muted" /> Cài đặt giao
                 diện
               </button>
-              <div className="my-1 border-t border-zinc-100" />
+              <div className="my-1 border-t border-white/10" />
               <button
               onClick={logout}
-              className="w-full flex items-center gap-2 px-3 py-2 text-sm text-danger hover:bg-rose-50 transition-colors">
+              className="w-full flex items-center gap-2 px-3 py-2 text-sm text-danger hover:bg-rose-500/10 transition-colors">
               
                 <LogOutIcon className="h-4 w-4" /> Đăng xuất
               </button>

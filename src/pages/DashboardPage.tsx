@@ -37,6 +37,7 @@ import { RouteKey } from '../data/routes';
 import { formatNumber } from '../lib/format';
 import { TOKEN_KEY } from '../lib/authClient';
 import { apiRequest } from '../lib/apiClient';
+import { EnterpriseBadge, EnterprisePage, EnterprisePanel, EnterpriseSectionHeader, EnterpriseSummaryStrip } from '../components/enterprise';
 
 
 const YEAR_OPTIONS = [
@@ -193,6 +194,7 @@ export function DashboardPage({
 
   return (
     <Page>
+      <EnterprisePage>
       <PageHeader
         title={
           <>
@@ -219,8 +221,8 @@ export function DashboardPage({
         }
       />
 
-      {/* Hero — KPIs from real API */}
-      <HeroPanel
+      <div className="vc-enterprise-hero">
+        <HeroPanel
         eyebrow="Tổng quan vận hành"
         title={
           loading ? (
@@ -275,31 +277,32 @@ export function DashboardPage({
             </Button>
           </>
         }
-      />
+        />
+      </div>
 
-      {/* KPIs — all from real API */}
-      <MetricStrip
+      <EnterpriseSummaryStrip
         items={[
           {
             label: 'Tổng hợp đồng',
             value: loading ? '—' : formatNumber(stats?.totalContracts ?? 0),
-            tone: 'indigo',
+            tone: 'accent',
             icon: <FileTextIcon className="h-4 w-4" />,
             hint: 'Workspace Background',
           },
           {
             label: 'Còn hiệu lực',
             value: loading ? '—' : formatNumber(stats?.active ?? 0),
-            tone: 'emerald',
+            tone: 'success',
             icon: <CheckCircle2Icon className="h-4 w-4" />,
-            hint: stats && stats.totalContracts > 0
-              ? `${((stats.active / stats.totalContracts) * 100).toFixed(1)}% tổng số`
-              : 'Tổng Background',
+            hint:
+              stats && stats.totalContracts > 0
+                ? `${((stats.active / stats.totalContracts) * 100).toFixed(1)}% tổng số`
+                : 'Tổng Background',
           },
           {
             label: 'Sắp hết 60 ngày',
             value: loading ? '—' : formatNumber(stats?.expiring60 ?? 0),
-            tone: 'amber',
+            tone: 'warning',
             icon: <AlertTriangleIcon className="h-4 w-4" />,
             hint:
               stats && stats.expiring30 > 0
@@ -316,7 +319,7 @@ export function DashboardPage({
           {
             label: 'GCN đã in',
             value: loading ? '—' : formatNumber(stats?.gcnFinalPrinted ?? 0),
-            tone: 'emerald',
+            tone: 'success',
             icon: <AwardIcon className="h-4 w-4" />,
             hint:
               stats && stats.gcnDraft > 0
@@ -325,28 +328,25 @@ export function DashboardPage({
           },
           {
             label: 'Doanh thu 2026',
-            value: loading
-              ? '—'
-              : revenue2026 > 0
-                ? `${(revenue2026 / 1_000_000_000).toFixed(2)} tỷ`
-                : 'Chưa có',
-            tone: 'cyan',
+            value:
+              loading
+                ? '—'
+                : revenue2026 > 0
+                  ? `${(revenue2026 / 1_000_000_000).toFixed(2)} tỷ`
+                  : 'Chưa có',
+            tone: 'teal',
             icon: <WalletIcon className="h-4 w-4" />,
             delta:
               revenueDeltaPct !== null
-                ? {
-                    value: `${revenueDeltaPct >= 0 ? '+' : ''}${revenueDeltaPct.toFixed(1)}%`,
-                    tone: revenueDeltaPct >= 0 ? ('up' as const) : ('down' as const),
-                  }
+                ? `${revenueDeltaPct >= 0 ? '+' : ''}${revenueDeltaPct.toFixed(1)}% so với 2025`
                 : undefined,
             hint: revenueDeltaPct !== null ? 'So với 2025' : 'Chưa có dữ liệu năm trước',
           },
-
         ]}
       />
 
-      {/* Year compare + Status breakdown */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="vc-enterprise-command-grid">
+        <div className="grid grid-cols-1 gap-6">
         <ContentCard
           title="Doanh thu theo năm"
           description="Đơn vị: tỷ VND · So sánh qua các năm (lũy kế đến nay)"
@@ -463,12 +463,16 @@ export function DashboardPage({
             </div>
           )}
         </ContentCard>
+        </div>
 
-        <ContentCard
-          title="Tỷ lệ trạng thái hợp đồng"
-          description="Phân bổ toàn bộ workspace Background"
-          accent
-        >
+        <div className="vc-enterprise-side-stack">
+          <EnterprisePanel>
+            <EnterpriseSectionHeader
+              eyebrow="Command status"
+              title="Tỷ lệ trạng thái hợp đồng"
+              description="Phân bổ toàn bộ workspace Background"
+              actions={stats ? <EnterpriseBadge tone="accent">{formatNumber(stats.totalContracts)} hợp đồng</EnterpriseBadge> : undefined}
+            />
           {statusBreakdown.length > 0 && stats ? (
             <ProgressStatusPanel
               items={statusBreakdown}
@@ -480,11 +484,10 @@ export function DashboardPage({
               {loading ? 'Đang tải...' : 'Chưa có dữ liệu'}
             </div>
           )}
-        </ContentCard>
+          </EnterprisePanel>
+        </div>
       </div>
-
-      {/* Lists */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="vc-enterprise-queue-list">
         <ContentCard
           title="Hợp đồng sắp hết hạn"
           description={
@@ -506,7 +509,7 @@ export function DashboardPage({
           }
         >
           {expiringItems.length > 0 ? (
-            <ExpiringList items={expiringItems} />
+            <ExpiringList items={expiringItems.slice(0, 8)} />
           ) : (
             <div className="py-12 text-center text-sm text-zinc-400">
               {loading ? 'Đang tải...' : 'Không có hợp đồng sắp hết trong 60 ngày tới'}
@@ -514,7 +517,7 @@ export function DashboardPage({
           )}
         </ContentCard>
 
-        <ContentCard title="Hoạt động gần đây" padded={false}>
+        <ContentCard title="Hoạt động gần đây" padded={false} className="vc-enterprise-panel">
           <div className="py-12 text-center text-sm text-zinc-400">
             Chưa có dữ liệu hoạt động
           </div>
@@ -526,6 +529,7 @@ export function DashboardPage({
         title="Thao tác nhanh"
         description="Đi tới các trang nghiệp vụ chính"
         accent
+        className="vc-enterprise-panel"
       >
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2">
           {[
@@ -547,6 +551,7 @@ export function DashboardPage({
           ))}
         </div>
       </ContentCard>
+      </EnterprisePage>
     </Page>
   );
 }

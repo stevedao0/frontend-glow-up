@@ -62,6 +62,19 @@ import {
 } from '../lib/contractsClient';
 import { useAuth } from '../lib/auth';
 import { TOKEN_KEY } from '../lib/authClient';
+import {
+  EnterpriseAmountCell,
+  EnterpriseBadge,
+  EnterpriseContractNoCell,
+  EnterpriseCustomerCell,
+  EnterpriseLocationCell,
+  EnterprisePage,
+  EnterpriseSectionHeader,
+  EnterpriseStatusPair,
+  EnterpriseSummaryStrip,
+  EnterpriseTableShell,
+  EnterpriseUsageChips,
+} from '../components/enterprise';
 
 /**
  * Compact display formatter for contract numbers.
@@ -477,6 +490,7 @@ export function ContractsListPage({
   }, [reloadTick]);
   return (
     <Page>
+      <EnterprisePage>
       <PageHeader
         breadcrumb="/bg/contracts"
         title="Hợp đồng"
@@ -503,32 +517,39 @@ export function ContractsListPage({
           </>
         } />
 
-      <MetricStrip
+      <EnterpriseSectionHeader
+        eyebrow="Contracts workspace"
+        title="Tổng quan hợp đồng đang vận hành"
+        description="Giữ nguyên dữ liệu thật, API thật, bộ lọc thật và hành động thật — chỉ nâng cấp lớp trình bày enterprise."
+        actions={!error ? <EnterpriseBadge tone="accent">{formatNumber(total)} hợp đồng</EnterpriseBadge> : undefined}
+      />
+
+      <EnterpriseSummaryStrip
         items={[
         {
           label: 'Tổng hợp đồng',
           value: statsLoading ? '—' : formatNumber(summaryStats?.totalContracts ?? 0),
-          tone: 'indigo',
+          tone: 'accent',
           icon: <FileTextIcon className="h-4 w-4" />,
           hint: 'Tất cả thời kỳ'
         },
         {
           label: 'Đang hiệu lực',
           value: statsLoading ? '—' : formatNumber(summaryStats?.active ?? 0),
-          tone: 'emerald',
+          tone: 'success',
           icon: <CheckCircle2Icon className="h-4 w-4" />,
         },
         {
           label: 'Sắp hết hạn',
           value: statsLoading ? '—' : formatNumber(summaryStats?.expiringIn30Days ?? 0),
-          tone: 'amber',
+          tone: 'warning',
           icon: <AlertTriangleIcon className="h-4 w-4" />,
           hint: '≤ 30 ngày'
         },
         {
           label: 'Đã hết hạn',
           value: statsLoading ? '—' : formatNumber(summaryStats?.expired ?? 0),
-          tone: 'rose',
+          tone: 'danger',
           icon: <XCircleIcon className="h-4 w-4" />,
         },
         {
@@ -544,7 +565,7 @@ export function ContractsListPage({
             : (summaryStats?.revenue2026 ?? 0) > 0
               ? `${(summaryStats!.revenue2026 / 1_000_000_000).toFixed(2)} tỷ`
               : '—',
-          tone: 'cyan',
+          tone: 'teal',
           icon: <WalletIcon className="h-4 w-4" />,
         }]
         } />
@@ -627,7 +648,11 @@ export function ContractsListPage({
         </FilterField>
       </FilterBar>
 
-      <ContentCard padded={false} className="ds-page-table-shell">
+      <EnterpriseTableShell
+        title="Contracts workspace"
+        description="Giữ nguyên bộ lọc, phân trang, quyền và thao tác nghiệp vụ — chỉ nâng cấp lớp hiển thị dense enterprise."
+        className="vc-enterprise-contracts-shell"
+      >
         {selected.size > 0 && (
           <BulkActionBar
             count={selected.size}
@@ -673,8 +698,8 @@ export function ContractsListPage({
 
 
         <>
-          <div className="ds-page-table-toolbar">
-            <span className="ds-page-table-toolbar-summary">
+          <div className="vc-enterprise-table-toolbar">
+            <span className="vc-enterprise-table-toolbar-summary">
               Hiển thị <strong>{formatNumber(totalRows)}</strong> dòng · trang <strong>{page}/{Math.max(totalPages, 1)}</strong>
             </span>
             <div className="ml-auto inline-flex rounded-md ring-1 ring-zinc-200 bg-white overflow-hidden text-[12px]">
@@ -692,7 +717,7 @@ export function ContractsListPage({
             </div>
           </div>
 
-          <div className="flex-1 min-h-0 overflow-hidden flex flex-col">
+            <div className="vc-enterprise-table-scroll flex-1 min-h-0 overflow-hidden flex flex-col">
             <table className="ds-page-table shrink-0">
               <thead className="ds-page-table-header block">
                 <tr className="premium-table-head ds-page-table-head-row flex">
@@ -768,16 +793,10 @@ export function ContractsListPage({
                           {(() => {
                             const { primary, suffix, full } = formatContractNoDisplay(r.contract_no);
                             return (
-                              <>
-                                <span className="block text-[12.5px] font-semibold tabular-nums leading-snug">
-                                  {primary}
-                                </span>
-                                {suffix && suffix !== full && (
-                                  <span className="contract-no-suffix mt-0.5">
-                                    {suffix}
-                                  </span>
-                                )}
-                              </>
+                              <EnterpriseContractNoCell
+                                primary={primary}
+                                secondary={suffix && suffix !== full ? suffix : undefined}
+                              />
                             );
                           })()}
                         </button>
@@ -785,30 +804,29 @@ export function ContractsListPage({
 
                       {/* Đơn vị + bảng hiệu */}
                       <td className={`ds-page-table-cell ${cellPad} align-top max-w-[280px]`}>
-                        <p
-                        className={`text-[13px] font-semibold text-zinc-900 leading-snug whitespace-normal break-words ${unitClamp}`}
-                        title={r.don_vi_ten}>
-                        
-                          {r.don_vi_ten}
-                        </p>
-                        {r.ten_bang_hieu && (
-                      <p
-                        className={`mt-0.5 text-[12px] text-zinc-500 whitespace-normal break-words ${signClamp}`}
-                        title={r.ten_bang_hieu}>
-                        
-                            {r.ten_bang_hieu}
-                          </p>
-                      )}
+                        <EnterpriseCustomerCell
+                          name={r.don_vi_ten}
+                          secondary={r.ten_bang_hieu ? (
+                            <span
+                              className={`whitespace-normal break-words ${signClamp}`}
+                              title={r.ten_bang_hieu}
+                            >
+                              {r.ten_bang_hieu}
+                            </span>
+                          ) : undefined}
+                        />
                       </td>
 
                       {/* Địa chỉ */}
                       <td className={`ds-page-table-cell ${cellPad} align-top max-w-[260px]`}>
-                        <p
-                        className={`text-[12.5px] text-zinc-600 leading-snug whitespace-normal break-words ${addrClamp}`}
-                        title={r.dia_chi_su_dung}>
-                        
-                          {r.dia_chi_su_dung}
-                        </p>
+                        <EnterpriseLocationCell>
+                          <p
+                            className={`whitespace-normal break-words ${addrClamp}`}
+                            title={r.dia_chi_su_dung}
+                          >
+                            {r.dia_chi_su_dung}
+                          </p>
+                        </EnterpriseLocationCell>
                       </td>
 
                       {/* Lĩnh vực — summarized */}
@@ -818,39 +836,19 @@ export function ContractsListPage({
                             {r.linh_vuc_hien_thi}
                           </span>
                           {areas.length > 0 ? (
-                            <div className="flex flex-wrap items-start gap-1">
-                              {areas.slice(0, areasShown).map((area, idx) => {
-                                const label =
-                                  area.area_name ||
-                                  area.scale_description ||
-                                  area.music_usage_type ||
-                                  '—';
-                                return (
-                                  <span
-                                    key={idx}
-                                    className="usage-area-chip"
-                                    title={`${area.area_name || ''}${area.scale_description ? ' — ' + area.scale_description : ''}${area.music_usage_type ? ' · ' + area.music_usage_type : ''}`}
-                                  >
-                                    {label}
-                                  </span>
-                                );
-                              })}
-                              {areas.length > areasShown && (
-                                <span
-                                  className="usage-extra-chip"
-                                  title={areaTooltip}
+                            <EnterpriseUsageChips
+                              items={areas.slice(0, areasShown).map((area) => area.area_name || area.scale_description || area.music_usage_type || '—')}
+                              extra={areas.length > areasShown ? <span title={areaTooltip}>{`+${areas.length - areasShown}`}</span> : undefined}
+                              detail={
+                                <button
+                                  type="button"
+                                  onClick={(e) => { e.stopPropagation(); onOpenDetail(r.id); }}
+                                  className="usage-detail-link"
                                 >
-                                  +{areas.length - areasShown}
-                                </span>
-                              )}
-                              <button
-                                type="button"
-                                onClick={(e) => { e.stopPropagation(); onOpenDetail(r.id); }}
-                                className="usage-detail-link"
-                              >
-                                Chi tiết
-                              </button>
-                            </div>
+                                  Chi tiết
+                                </button>
+                              }
+                            />
                           ) : (
                             r.loai_hinh_karaoke && (
                               <span className="usage-area-chip">
@@ -886,19 +884,7 @@ export function ContractsListPage({
 
                       {/* Giá trị chưa GTGT */}
                       <td className={`ds-page-table-cell ${cellPad} align-top text-right tabular-nums whitespace-nowrap`}>
-                        {r.royalty_amount_before_vat == null ?
-                      <span className="text-zinc-400 italic text-xs">
-                            Chưa có
-                          </span> :
-                      r.royalty_amount_before_vat === 0 ?
-                      <span className="text-zinc-500 text-xs">
-                            Chưa tính
-                          </span> :
-
-                      <span className="money-strong tabular-nums text-[13.5px]">
-                            {formatCurrency(r.royalty_amount_before_vat)}
-                          </span>
-                      }
+                        <EnterpriseAmountCell amount={r.royalty_amount_before_vat} />
                       </td>
 
                       {/* Trạng thái — compact: single primary pill */}
@@ -916,20 +902,22 @@ export function ContractsListPage({
                             )}
                           </div>
                         ) : (
-                          <div className="flex flex-col gap-1 items-start">
-                            {exp.status === 'active' && (
-                              <StatusBadge tone="success" dot>Còn hiệu lực</StatusBadge>
-                            )}
-                            {exp.status === 'expiring' && (
-                              <StatusBadge tone="warning" dot>Sắp hết · {exp.daysLeft}d</StatusBadge>
-                            )}
-                            {exp.status === 'expired' && (
-                              <StatusBadge tone="danger" dot>Hết hạn</StatusBadge>
-                            )}
-                            <StatusBadge tone={renewalTone}>
-                              {RENEWAL_LABEL[renewalKey]}
-                            </StatusBadge>
-                          </div>
+                          <EnterpriseStatusPair
+                            primary={
+                              exp.status === 'active' ? (
+                                <StatusBadge tone="success" dot>Còn hiệu lực</StatusBadge>
+                              ) : exp.status === 'expiring' ? (
+                                <StatusBadge tone="warning" dot>Sắp hết · {exp.daysLeft}d</StatusBadge>
+                              ) : (
+                                <StatusBadge tone="danger" dot>Hết hạn</StatusBadge>
+                              )
+                            }
+                            secondary={
+                              <StatusBadge tone={renewalTone}>
+                                {RENEWAL_LABEL[renewalKey]}
+                              </StatusBadge>
+                            }
+                          />
                         )}
                       </td>
 
@@ -1012,7 +1000,7 @@ export function ContractsListPage({
           rangeTo={rangeTo} />
 
         }
-      </ContentCard>
+      </EnterpriseTableShell>
 
       {/* ============================================================ */}
       {/* ACTION MODAL (Xuất Word / Xem dữ liệu GCN / Xóa) */}
@@ -1367,7 +1355,7 @@ export function ContractsListPage({
           </div>
         </Modal>
       )}
-
+      </EnterprisePage>
     </Page>);
 
 }
