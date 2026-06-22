@@ -1,6 +1,8 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { ROLE_DEFS } from "../data/authData";
 import { devLogin as apiDevLogin, getMe, login as apiLogin, logout as apiLogout, MeResponse, TOKEN_KEY } from "./authClient";
+import { DEMO_TOKEN, enableDemoMode, disableDemoMode, isDemoMode } from "./demoMode";
+
 
 type AppRole = "super_admin" | "manager" | "staff";
 
