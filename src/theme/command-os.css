@@ -730,3 +730,120 @@ button.bg-indigo-600 {
   min-height: 24px;
   display: block;
 }
+
+/* ─── Rail orb · clean ⌘K badge ──────────────────────────── */
+.vc-command-rail__orb::after {
+  content: "⌘K" !important;
+  position: absolute !important;
+  right: 2px !important;
+  bottom: 2px !important;
+  font-size: 7.5px !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.02em !important;
+  color: rgba(255,255,255,0.88) !important;
+  background: rgba(0,0,0,0.42) !important;
+  border: 1px solid rgba(255,255,255,0.18) !important;
+  padding: 1px 3px !important;
+  border-radius: 4px !important;
+  line-height: 1 !important;
+  backdrop-filter: blur(4px);
+}
+
+/* ─── Context flyout · indigo Command OS palette ─────────── */
+.vc-context-flyout {
+  width: var(--vc-flyout-w, 340px) !important;
+  background: linear-gradient(180deg, #0F1320 0%, #14171E 100%) !important;
+  border: 1px solid rgba(255,255,255,0.06) !important;
+  border-left: 1px solid rgba(99,102,241,0.18) !important;
+  border-radius: 14px !important;
+  box-shadow:
+    0 30px 80px -20px rgba(0,0,0,0.55),
+    0 0 0 1px rgba(99,102,241,0.05),
+    inset 0 1px 0 rgba(255,255,255,0.04) !important;
+  backdrop-filter: blur(20px) saturate(140%) !important;
+}
+
+.vc-context-flyout__header {
+  background: rgba(255,255,255,0.015) !important;
+  border-bottom: 1px solid rgba(255,255,255,0.05) !important;
+  padding: 14px 14px 12px !important;
+}
+.vc-context-flyout__header-icon {
+  background: linear-gradient(135deg, rgba(99,102,241,0.18) 0%, rgba(79,70,229,0.10) 100%) !important;
+  color: #A5B4FC !important;
+  border: 1px solid rgba(99,102,241,0.22) !important;
+}
+.vc-context-flyout__header-title { color: #FAFAF8 !important; font-size: 13.5px !important; }
+.vc-context-flyout__header-sub { color: rgba(255,255,255,0.45) !important; font-size: 11px !important; }
+
+.vc-context-flyout__search { padding: 9px 12px 8px !important; }
+.vc-context-flyout__search-input {
+  height: 34px !important;
+  background: rgba(255,255,255,0.04) !important;
+  border: 1px solid rgba(255,255,255,0.07) !important;
+  border-radius: 9px !important;
+  color: #FAFAF8 !important;
+}
+.vc-context-flyout__search-input:focus {
+  border-color: rgba(99,102,241,0.55) !important;
+  background: rgba(99,102,241,0.07) !important;
+  box-shadow: 0 0 0 3px rgba(99,102,241,0.10) !important;
+}
+
+.vc-context-flyout__list { padding: 6px 8px 4px !important; }
+.vc-context-flyout__item {
+  padding: 9px 10px !important;
+  border-radius: 9px !important;
+  color: rgba(255,255,255,0.84) !important;
+  gap: 11px !important;
+}
+.vc-context-flyout__item:hover,
+.vc-context-flyout__item:focus-visible {
+  background: rgba(99,102,241,0.10) !important;
+  border-color: rgba(99,102,241,0.18) !important;
+  color: #fff !important;
+}
+.vc-context-flyout__item-icon {
+  width: 30px !important; height: 30px !important;
+  background: rgba(255,255,255,0.04) !important;
+  color: rgba(255,255,255,0.62) !important;
+  border-radius: 8px !important;
+}
+.vc-context-flyout__item:hover .vc-context-flyout__item-icon {
+  background: rgba(99,102,241,0.20) !important;
+  color: #C7D2FE !important;
+}
+.vc-context-flyout__item-label { font-size: 12.5px !important; }
+.vc-context-flyout__item-desc { color: rgba(255,255,255,0.42) !important; font-size: 10.5px !important; }
+.vc-context-flyout__item-shortcut {
+  background: rgba(255,255,255,0.04) !important;
+  border: 1px solid rgba(255,255,255,0.08) !important;
+  color: rgba(255,255,255,0.55) !important;
+  padding: 2px 6px !important;
+}
+.vc-context-flyout__item-arrow { color: rgba(255,255,255,0.16) !important; }
+
+.vc-context-flyout__footer {
+  padding: 6px 8px 8px !important;
+  border-top: 1px solid rgba(255,255,255,0.04) !important;
+  background: rgba(0,0,0,0.20) !important;
+}
+.vc-context-flyout__item--launcher {
+  color: rgba(255,255,255,0.55) !important;
+  background: rgba(255,255,255,0.02) !important;
+}
+.vc-context-flyout__item--launcher:hover {
+  background: rgba(99,102,241,0.12) !important;
+  color: #fff !important;
+}
+
+/* ─── Rail · subtle alignment polish ─────────────────────── */
+.vc-command-rail { padding-top: 12px !important; }
+.vc-command-rail__btn.is-open {
+  background: rgba(99,102,241,0.16) !important;
+  color: #C7D2FE !important;
+}
+.vc-command-rail__btn.is-open::before {
+  opacity: 1 !important; transform: scaleY(1) !important;
+  background: var(--cos-accent) !important;
+}
