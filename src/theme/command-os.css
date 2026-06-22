@@ -1,0 +1,390 @@
+/* =============================================================
+   VCPMC Command OS — global visual overlay
+   Aggressive overrides applied AFTER enterprise.css so the whole
+   product reads like one cohesive Linear/Raycast/Arc-inspired tool.
+   ============================================================= */
+
+:root {
+  --cos-ink: #0B0D12;
+  --cos-ink-2: #14171E;
+  --cos-ink-3: #1E2230;
+  --cos-line: #E5E2D8;
+  --cos-line-2: #EFECE3;
+  --cos-paper: #F6F3EA;
+  --cos-paper-2: #FBF8F0;
+  --cos-surface: #FFFFFF;
+  --cos-text: #0F1115;
+  --cos-text-2: #4A4F5B;
+  --cos-text-3: #8A8E99;
+  --cos-accent: #4F46E5;            /* indigo primary */
+  --cos-accent-2: #6366F1;
+  --cos-accent-soft: rgba(79,70,229,0.08);
+  --cos-emerald: #10B981;
+  --cos-amber: #F59E0B;
+  --cos-rose: #E11D48;
+  --cos-radius: 10px;
+  --cos-radius-lg: 14px;
+  --cos-shadow-sm: 0 1px 0 rgba(15,17,21,0.04);
+  --cos-shadow-md: 0 1px 2px rgba(15,17,21,0.04), 0 8px 24px -12px rgba(15,17,21,0.10);
+}
+
+/* ---------- App canvas: ivory paper ----------------------- */
+body,
+.vc-adaptive-shell,
+.vc-workspace-canvas {
+  background: var(--cos-paper) !important;
+  color: var(--cos-text);
+}
+
+/* ---------- Command Rail (left dark spine) ---------------- */
+.vc-command-rail {
+  background: linear-gradient(180deg, #0A0C12 0%, #0F1320 100%) !important;
+  border-right: 1px solid rgba(255,255,255,0.04) !important;
+  padding-top: 10px !important;
+  gap: 6px;
+}
+.vc-command-rail__divider {
+  background: rgba(255,255,255,0.06) !important;
+  height: 1px;
+  margin: 6px 12px 8px !important;
+}
+.vc-command-rail__orb {
+  width: 44px !important;
+  height: 44px !important;
+  border-radius: 12px !important;
+  background: linear-gradient(135deg, #6366F1 0%, #4F46E5 100%) !important;
+  box-shadow: 0 6px 18px -6px rgba(99,102,241,0.55), inset 0 1px 0 rgba(255,255,255,0.20) !important;
+  position: relative;
+}
+.vc-command-rail__orb::after {
+  content: "⌘K";
+  position: absolute; right: -2px; bottom: -2px;
+  font-size: 8px; font-weight: 700; letter-spacing: 0.04em;
+  color: #fff; background: #14171E; border: 1px solid rgba(255,255,255,0.12);
+  padding: 1px 4px; border-radius: 4px; line-height: 1;
+}
+.vc-command-rail__orb-logo { width: 22px !important; height: 22px !important; filter: brightness(0) invert(1); opacity: 0.95; }
+
+.vc-command-rail__btn {
+  width: 44px !important; height: 44px !important;
+  border-radius: 11px !important;
+  color: #9AA0B0 !important;
+  position: relative;
+  transition: background 0.18s ease, color 0.18s ease, transform 0.18s ease;
+}
+.vc-command-rail__btn::before {
+  content: "";
+  position: absolute; left: -10px; top: 10px; bottom: 10px; width: 3px;
+  background: var(--cos-accent-2); border-radius: 0 3px 3px 0;
+  opacity: 0; transform: scaleY(0.4); transition: opacity .2s, transform .2s;
+}
+.vc-command-rail__btn:hover { background: rgba(255,255,255,0.05) !important; color: #fff !important; }
+.vc-command-rail__btn.is-active {
+  background: rgba(99,102,241,0.14) !important;
+  color: #fff !important;
+}
+.vc-command-rail__btn.is-active::before { opacity: 1; transform: scaleY(1); }
+.vc-command-rail__btn.is-open { background: rgba(255,255,255,0.10) !important; color: #fff !important; }
+.vc-command-rail__btn svg { width: 19px !important; height: 19px !important; stroke-width: 1.75; }
+
+.vc-command-rail__btn-tooltip {
+  background: #0B0D12 !important;
+  color: #fff !important;
+  border: 1px solid rgba(255,255,255,0.08) !important;
+  font-size: 11.5px !important;
+  font-weight: 500 !important;
+  padding: 5px 9px !important;
+  border-radius: 6px !important;
+  box-shadow: 0 8px 20px -8px rgba(0,0,0,0.45) !important;
+}
+
+/* ---------- Workspace surface ----------------------------- */
+.vc-workspace-canvas {
+  background: var(--cos-paper) !important;
+}
+
+/* ---------- Page header (Enterprise) --------------------- */
+.enterprise-page,
+.ds-page {
+  background: transparent !important;
+}
+
+/* ---------- Cards / surfaces ----------------------------- */
+.bg-white,
+.ds-card,
+.enterprise-card {
+  background: var(--cos-surface);
+}
+
+/* Kill the generic "rounded SaaS box" feel on dense workspaces */
+.vc-cos-workspace {
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  overflow: visible !important;
+}
+
+/* ---------- Tabs: convert chip-row into underline tabs ---- */
+[role="tablist"].inline-flex {
+  background: transparent !important;
+  padding: 0 !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  gap: 4px !important;
+  border-bottom: 1px solid var(--cos-line) !important;
+  border-radius: 0 !important;
+  height: 36px;
+  align-items: stretch !important;
+}
+[role="tablist"].inline-flex > button {
+  height: 36px !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  border: 0 !important;
+  ring: 0 !important;
+  --tw-ring-shadow: 0 0 #0000 !important;
+  position: relative;
+  padding: 0 12px !important;
+  font-size: 12.5px !important;
+  font-weight: 500 !important;
+  color: var(--cos-text-3) !important;
+  letter-spacing: 0.005em;
+}
+[role="tablist"].inline-flex > button:hover { color: var(--cos-text) !important; }
+[role="tablist"].inline-flex > button[aria-selected="true"] {
+  color: var(--cos-text) !important;
+  font-weight: 600 !important;
+  background: transparent !important;
+}
+[role="tablist"].inline-flex > button[aria-selected="true"]::after {
+  content: "";
+  position: absolute; left: 8px; right: 8px; bottom: -1px; height: 2px;
+  background: var(--cos-ink); border-radius: 2px 2px 0 0;
+}
+[role="tablist"].inline-flex > button > span:last-child {
+  background: var(--cos-paper-2) !important;
+  color: var(--cos-text-2) !important;
+  border: 1px solid var(--cos-line) !important;
+  font-weight: 600 !important;
+}
+[role="tablist"].inline-flex > button[aria-selected="true"] > span:last-child {
+  background: var(--cos-ink) !important;
+  color: #fff !important;
+  border-color: var(--cos-ink) !important;
+}
+
+/* ---------- Status badges: flatten, monochrome + dot ----- */
+.ds-badge {
+  background: var(--cos-paper-2) !important;
+  color: var(--cos-text) !important;
+  border: 1px solid var(--cos-line) !important;
+  font-size: 11px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.01em;
+  height: 22px !important;
+  padding: 0 8px !important;
+  border-radius: 6px !important;
+  box-shadow: none !important;
+  text-transform: none;
+}
+.ds-badge.ds-badge-compact { height: 18px !important; padding: 0 6px !important; font-size: 10.5px !important; }
+.ds-badge > span:first-child {
+  width: 6px !important; height: 6px !important;
+  box-shadow: 0 0 0 2px rgba(255,255,255,0.4);
+}
+/* Tonal dot colors */
+.ds-badge.bg-\[color\:var\(--accent-emerald\)\] { background: rgba(16,185,129,0.08) !important; color: #047857 !important; border-color: rgba(16,185,129,0.20) !important; }
+.ds-badge.bg-\[color\:var\(--accent-emerald\)\] > span:first-child { background: var(--cos-emerald) !important; }
+
+.ds-badge.bg-\[color\:var\(--accent-warning\)\] { background: rgba(245,158,11,0.08) !important; color: #B45309 !important; border-color: rgba(245,158,11,0.22) !important; }
+.ds-badge.bg-\[color\:var\(--accent-warning\)\] > span:first-child { background: var(--cos-amber) !important; }
+
+.ds-badge.bg-\[color\:var\(--accent-danger\)\] { background: rgba(225,29,72,0.08) !important; color: #BE123C !important; border-color: rgba(225,29,72,0.22) !important; }
+.ds-badge.bg-\[color\:var\(--accent-danger\)\] > span:first-child { background: var(--cos-rose) !important; }
+
+.ds-badge.bg-\[color\:var\(--accent-info\)\] { background: rgba(79,70,229,0.08) !important; color: #4338CA !important; border-color: rgba(79,70,229,0.20) !important; }
+.ds-badge.bg-\[color\:var\(--accent-info\)\] > span:first-child { background: var(--cos-accent) !important; }
+
+.ds-badge.bg-\[color\:var\(--accent-primary\)\] { background: rgba(79,70,229,0.08) !important; color: #4338CA !important; border-color: rgba(79,70,229,0.20) !important; }
+.ds-badge.bg-\[color\:var\(--accent-primary\)\] > span:first-child { background: var(--cos-accent) !important; }
+
+.ds-badge.bg-\[color\:var\(--accent-neutral\)\] { background: var(--cos-paper-2) !important; color: var(--cos-text-2) !important; border-color: var(--cos-line) !important; }
+.ds-badge.bg-\[color\:var\(--accent-neutral\)\] > span:first-child { background: #9AA0B0 !important; }
+
+/* ---------- Tables: dense, hairline, no card chrome ------ */
+.vc-contracts-table-scroll {
+  background: var(--cos-surface);
+  border: 1px solid var(--cos-line) !important;
+  border-radius: var(--cos-radius-lg);
+  overflow: hidden;
+  box-shadow: var(--cos-shadow-sm);
+}
+.vc-table-header-row,
+.vc-contracts-table-scroll thead tr {
+  background: var(--cos-paper-2) !important;
+  border-bottom: 1px solid var(--cos-line) !important;
+}
+.vc-contracts-table-scroll thead th {
+  font-size: 10.5px !important;
+  letter-spacing: 0.08em !important;
+  color: var(--cos-text-3) !important;
+  text-transform: uppercase;
+  border: 0 !important;
+}
+.vc-contracts-table-scroll tbody tr {
+  border-bottom: 1px solid var(--cos-line-2) !important;
+  transition: background 0.12s ease;
+}
+.vc-contracts-table-scroll tbody tr:hover {
+  background: rgba(99,102,241,0.035) !important;
+}
+.vc-row-selected {
+  background: rgba(99,102,241,0.06) !important;
+  box-shadow: inset 3px 0 0 var(--cos-accent);
+}
+
+/* Override the brassy 1px row accent and bulky density switch */
+.vc-contracts-density-active {
+  background: var(--cos-ink) !important;
+  color: #fff !important;
+}
+
+/* ---------- Buttons: refine primary ---------------------- */
+.ds-btn-primary,
+button.bg-indigo-600 {
+  background: var(--cos-ink) !important;
+  color: #fff !important;
+  border: 1px solid var(--cos-ink) !important;
+  box-shadow: 0 1px 0 rgba(255,255,255,0.05) inset, 0 1px 2px rgba(15,17,21,0.18) !important;
+}
+.ds-btn-primary:hover { background: #1A1E29 !important; }
+.ds-btn-secondary {
+  background: var(--cos-surface) !important;
+  color: var(--cos-text) !important;
+  border: 1px solid var(--cos-line) !important;
+}
+.ds-btn-secondary:hover { background: var(--cos-paper-2) !important; }
+.ds-btn-ghost {
+  background: transparent !important;
+  color: var(--cos-text-2) !important;
+}
+.ds-btn-ghost:hover { background: var(--cos-paper-2) !important; color: var(--cos-text) !important; }
+
+/* ---------- KPI / stat strip primitive ------------------- */
+.cos-statstrip {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 0;
+  background: var(--cos-surface);
+  border: 1px solid var(--cos-line);
+  border-radius: var(--cos-radius-lg);
+  overflow: hidden;
+  box-shadow: var(--cos-shadow-sm);
+}
+@media (max-width: 900px) { .cos-statstrip { grid-template-columns: repeat(2, 1fr); } }
+.cos-statstrip__cell {
+  padding: 14px 18px;
+  border-right: 1px solid var(--cos-line-2);
+  position: relative;
+  display: flex; flex-direction: column; gap: 4px;
+}
+.cos-statstrip__cell:last-child { border-right: 0; }
+.cos-statstrip__label {
+  font-size: 10.5px; font-weight: 600; letter-spacing: 0.08em;
+  text-transform: uppercase; color: var(--cos-text-3);
+  display: flex; align-items: center; gap: 6px;
+}
+.cos-statstrip__value {
+  font-family: 'Geist Mono', ui-monospace, monospace;
+  font-size: 22px; font-weight: 600; color: var(--cos-text);
+  letter-spacing: -0.01em; line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+.cos-statstrip__delta {
+  font-size: 11px; font-weight: 500; color: var(--cos-text-3);
+  display: flex; align-items: center; gap: 4px;
+}
+.cos-statstrip__delta.is-up { color: #047857; }
+.cos-statstrip__delta.is-down { color: #BE123C; }
+.cos-statstrip__spark {
+  position: absolute; right: 14px; top: 14px;
+  width: 36px; height: 18px;
+  background:
+    linear-gradient(90deg, transparent 0 8%, var(--cos-line) 8% 9%, transparent 9% 22%, var(--cos-line) 22% 23%, transparent 23% 38%, var(--cos-accent) 38% 39%, transparent 39% 54%, var(--cos-accent) 54% 55%, transparent 55% 72%, var(--cos-line) 72% 73%, transparent 73% 88%, var(--cos-accent) 88% 89%, transparent 89%);
+  opacity: 0.55;
+}
+
+/* ---------- Page header band (Command OS hero) ----------- */
+.cos-pageheader {
+  display: flex; align-items: flex-end; justify-content: space-between;
+  gap: 16px;
+  padding: 4px 0 14px;
+  border-bottom: 1px solid var(--cos-line);
+  margin-bottom: 14px;
+}
+.cos-pageheader__crumbs {
+  font-size: 11px; color: var(--cos-text-3);
+  letter-spacing: 0.06em; text-transform: uppercase;
+  font-weight: 600;
+  display: flex; align-items: center; gap: 6px;
+}
+.cos-pageheader__crumbs::before {
+  content: ""; width: 6px; height: 6px; border-radius: 999px;
+  background: var(--cos-accent); box-shadow: 0 0 0 3px var(--cos-accent-soft);
+}
+.cos-pageheader__title {
+  font-size: 26px; font-weight: 700; color: var(--cos-text);
+  letter-spacing: -0.02em; line-height: 1.1; margin-top: 6px;
+}
+.cos-pageheader__subtitle {
+  font-size: 13px; color: var(--cos-text-2);
+  margin-top: 4px;
+}
+.cos-pageheader__actions { display: flex; align-items: center; gap: 8px; }
+
+/* ---------- Toolbar (command bar) ------------------------ */
+.cos-toolbar {
+  display: flex; align-items: center; gap: 8px;
+  background: var(--cos-surface);
+  border: 1px solid var(--cos-line);
+  border-radius: var(--cos-radius);
+  padding: 6px 8px;
+  box-shadow: var(--cos-shadow-sm);
+}
+.cos-toolbar__sep { width: 1px; height: 20px; background: var(--cos-line); margin: 0 2px; }
+.cos-toolbar__hint {
+  margin-left: auto;
+  font-size: 11px; color: var(--cos-text-3);
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.cos-toolbar__hint kbd {
+  font-family: 'Geist Mono', ui-monospace, monospace;
+  font-size: 10px;
+  background: var(--cos-paper-2); border: 1px solid var(--cos-line);
+  padding: 1px 5px; border-radius: 4px; color: var(--cos-text-2);
+}
+
+/* ---------- Login / preview button glow ------------------ */
+.cos-demo-btn {
+  background: linear-gradient(180deg, #14171E 0%, #0B0D12 100%) !important;
+  color: #fff !important;
+  border: 1px solid #1E2230 !important;
+  box-shadow: 0 8px 22px -10px rgba(79,70,229,0.45) !important;
+}
+.cos-demo-btn:hover { background: linear-gradient(180deg, #1A1E29 0%, #14171E 100%) !important; }
+
+/* ---------- Empty state polish --------------------------- */
+.ds-empty-state {
+  background: var(--cos-surface);
+  border: 1px dashed var(--cos-line);
+  border-radius: var(--cos-radius-lg);
+}
+
+/* ---------- Make sticky table header read crisp ---------- */
+.vc-contracts-table-scroll thead.sticky,
+.vc-contracts-table-scroll thead tr {
+  position: sticky; top: 0; z-index: 5;
+  backdrop-filter: blur(6px);
+}

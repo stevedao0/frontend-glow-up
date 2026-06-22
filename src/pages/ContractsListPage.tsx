@@ -428,27 +428,28 @@ export function ContractsListPage({
   const footerMissingGcn = contracts.filter((r) => r.gcn_status && r.gcn_status !== 'no_gcn' && !r.gcn_certificate_no).length;
 
   return (
-    /* Full-width page wrapper for contracts — no max-w cap.
-       Uses the same padding/flow as <Page> but removes max-[1440px]
-       and overflow-hidden so the table can use all available width. */
-    <div className="px-4 sm:px-6 lg:px-8 xl:px-10 py-6 lg:py-8 mx-auto flex flex-col gap-6 min-h-0 w-full">
+    <div className="px-4 sm:px-6 lg:px-8 xl:px-10 py-6 lg:py-8 mx-auto flex flex-col gap-5 min-h-0 w-full">
       <EnterprisePage>
 
-        {/* ─── HEADER ─────────────────────────────────────────── */}
-        <div className="flex items-start justify-between gap-4 pb-3 border-b border-zinc-200">
-          {/* Left: title + subtitle */}
+        {/* ─── COMMAND OS HEADER ─────────────────────────────── */}
+        <div className="cos-pageheader">
           <div>
-            <h1 className="text-[17px] font-bold text-zinc-900 leading-tight">Quản lý Hợp đồng</h1>
-            <p className="text-[12px] text-zinc-400 mt-0.5">Background &amp; Karaoke</p>
+            <div className="cos-pageheader__crumbs">
+              <span>Hợp đồng</span>
+              <span style={{ opacity: 0.4 }}>/</span>
+              <span>Danh sách</span>
+            </div>
+            <h1 className="cos-pageheader__title">Quản lý hợp đồng</h1>
+            <p className="cos-pageheader__subtitle">
+              Background &amp; Karaoke · Phân quyền sử dụng tác phẩm âm nhạc
+            </p>
           </div>
-          {/* Right: actions */}
-          <div className="flex items-center gap-2 shrink-0 pt-0.5">
+          <div className="cos-pageheader__actions">
             <Button
               variant="ghost"
               size="sm"
               leftIcon={<RefreshCwIcon className="h-3.5 w-3.5" />}
               onClick={triggerRefresh}
-              className="text-zinc-500 hover:text-zinc-800 hover:bg-zinc-100"
             >
               Làm mới
             </Button>
@@ -457,12 +458,7 @@ export function ContractsListPage({
               size="sm"
               leftIcon={<FilePlusIcon className="h-3.5 w-3.5" />}
               onClick={() => {
-                // Open WorkflowSheet if the shell provides a sheet opener;
-                // otherwise fall back to direct navigation.
-                if (onOpenCreateContract) {
-                  onOpenCreateContract();
-                  return;
-                }
+                if (onOpenCreateContract) { onOpenCreateContract(); return; }
                 if (onCreateNew && contracts.length > 0) onCreateNew(contracts[0]);
                 onNavigate('contracts.create');
               }}
@@ -472,76 +468,96 @@ export function ContractsListPage({
           </div>
         </div>
 
-        {/* ─── UNIFIED TABLE WORKSPACE ───────────────────────────── */}
-        {/* No beige card. Tabs + toolbar + table + footer as one clean block */}
-        <div className="mt-3 border border-zinc-200 rounded-xl overflow-hidden bg-white shadow-sm">
+        {/* ─── KPI STAT STRIP ────────────────────────────────── */}
+        <div className="cos-statstrip">
+          <div className="cos-statstrip__cell">
+            <div className="cos-statstrip__label">Tổng hợp đồng</div>
+            <div className="cos-statstrip__value">{formatNumber(summaryStats?.totalContracts ?? total ?? 0)}</div>
+            <div className="cos-statstrip__delta">trên toàn hệ thống</div>
+            <span className="cos-statstrip__spark" aria-hidden />
+          </div>
+          <div className="cos-statstrip__cell">
+            <div className="cos-statstrip__label" style={{ color: '#047857' }}>Còn hiệu lực</div>
+            <div className="cos-statstrip__value">{formatNumber(summaryStats?.active ?? 0)}</div>
+            <div className="cos-statstrip__delta is-up">đang vận hành</div>
+          </div>
+          <div className="cos-statstrip__cell">
+            <div className="cos-statstrip__label" style={{ color: '#B45309' }}>Cần gia hạn ≤ 30 ngày</div>
+            <div className="cos-statstrip__value">{formatNumber(summaryStats?.expiringIn30Days ?? 0)}</div>
+            <div className="cos-statstrip__delta">cần xử lý sớm</div>
+          </div>
+          <div className="cos-statstrip__cell">
+            <div className="cos-statstrip__label" style={{ color: '#BE123C' }}>Hết hạn</div>
+            <div className="cos-statstrip__value">{formatNumber(summaryStats?.expired ?? 0)}</div>
+            <div className="cos-statstrip__delta is-down">ngưng hiệu lực</div>
+          </div>
+        </div>
 
-          {/* --- Status tabs --- */}
-          <div className="border-b border-zinc-200 bg-white px-4 pt-3 pb-0">
-            <Tabs
-              value={tabFilter}
-              onChange={(v) => {
-                setTabFilter(v as typeof tabFilter);
-                if (v === 'all') setStatus('');
-                else if (v === 'active') setStatus('active');
-                else if (v === 'expiring') setStatus('expiring');
-                else if (v === 'expired') setStatus('expired');
-                setPage(1);
-              }}
-              tabs={[
-                { value: 'all', label: 'Tất cả', count: summaryStats?.totalContracts ?? undefined },
-                { value: 'active', label: 'Còn hiệu lực', count: summaryStats?.active ?? undefined },
-                { value: 'expiring', label: 'Cần gia hạn', count: summaryStats?.expiringIn30Days ?? undefined },
-                { value: 'expired', label: 'Hết hạn', count: summaryStats?.expired ?? undefined },
-              ]}
+        {/* ─── TOOLBAR (command bar) ─────────────────────────── */}
+        <div className="cos-toolbar">
+          <div className="flex-1 min-w-[240px]">
+            <SearchBox
+              value={keyword}
+              onChange={(v) => { setKeyword(v); setPage(1); }}
+              placeholder="Tìm số HĐ, đơn vị, bảng hiệu…"
+              size="sm"
             />
           </div>
-
-          {/* --- Filter toolbar --- */}
-          <div className="px-4 py-2.5 border-b border-zinc-100 bg-white flex items-center gap-2 flex-wrap">
-            {/* Search — wider */}
-            <div className="flex-1 min-w-[240px]">
-              <SearchBox
-                value={keyword}
-                onChange={(v) => { setKeyword(v); setPage(1); }}
-                placeholder="Tìm số HĐ, đơn vị, bảng hiệu…"
-                size="sm"
-              />
-            </div>
-
-            {/* Filter selects */}
-            <Select size="sm" value={year} onChange={(v) => { setYear(v); setPage(1); }} options={CONTRACT_YEAR_OPTIONS} placeholder="Năm" />
-            <Select size="sm" value={linhVuc} onChange={(v) => { setLinhVuc(v); setPage(1); }} options={LINH_VUC_OPTIONS} placeholder="Lĩnh vực" />
-            <Select size="sm" value={fieldCode} onChange={(v) => { setFieldCode(v); setPage(1); }} options={FIELD_CODE_OPTIONS} placeholder="Mã quyền" />
-
-            {/* Clear filters */}
-            {hasActiveFilter && (
-              <Button variant="ghost" size="sm" leftIcon={<XIcon className="h-3.5 w-3.5" />} onClick={clearFilters} className="text-zinc-400 hover:text-zinc-700 hover:bg-zinc-50">
-                Xóa lọc
-              </Button>
-            )}
-
-            {/* Right-side: density toggle */}
-            <div className="ml-auto flex items-center">
-              <div className="inline-flex rounded-md ring-1 ring-zinc-200 overflow-hidden text-[11px] shrink-0">
-                {(['compact', 'mid', 'detail'] as Density[]).map((d) => (
-                  <button
-                    key={d}
-                    type="button"
-                    onClick={() => { setDensity(d); saveDensity(d); }}
-                    className={`px-2 py-1 transition-colors font-medium whitespace-nowrap ${
-                      density === d
-                        ? 'vc-contracts-density-active'
-                        : 'text-zinc-500 bg-white hover:bg-zinc-50 hover:text-zinc-700'
-                    }`}
-                    title={d === 'compact' ? 'Gọn: 1 dòng mỗi ô' : d === 'mid' ? 'Vừa: 2 dòng mỗi ô' : 'Chi tiết: 3 dòng mỗi ô'}
-                  >
-                    {d === 'compact' ? 'Gọn' : d === 'mid' ? 'Vừa' : 'Chi tiết'}
-                  </button>
-                ))}
-              </div>
-            </div>
+          <div className="cos-toolbar__sep" />
+          <Select size="sm" value={year} onChange={(v) => { setYear(v); setPage(1); }} options={CONTRACT_YEAR_OPTIONS} placeholder="Năm" />
+          <Select size="sm" value={linhVuc} onChange={(v) => { setLinhVuc(v); setPage(1); }} options={LINH_VUC_OPTIONS} placeholder="Lĩnh vực" />
+          <Select size="sm" value={fieldCode} onChange={(v) => { setFieldCode(v); setPage(1); }} options={FIELD_CODE_OPTIONS} placeholder="Mã quyền" />
+          {hasActiveFilter && (
+            <Button variant="ghost" size="sm" leftIcon={<XIcon className="h-3.5 w-3.5" />} onClick={clearFilters}>
+              Xóa lọc
+            </Button>
+          )}
+          <div className="cos-toolbar__sep" />
+          <div className="inline-flex rounded-md ring-1 ring-zinc-200 overflow-hidden text-[11px] shrink-0">
+            {(['compact', 'mid', 'detail'] as Density[]).map((d) => (
+              <button
+                key={d}
+                type="button"
+                onClick={() => { setDensity(d); saveDensity(d); }}
+                className={`px-2 py-1 transition-colors font-medium whitespace-nowrap ${
+                  density === d
+                    ? 'vc-contracts-density-active'
+                    : 'text-zinc-500 bg-white hover:bg-zinc-50 hover:text-zinc-700'
+                }`}
+                title={d === 'compact' ? 'Gọn' : d === 'mid' ? 'Vừa' : 'Chi tiết'}
+              >
+                {d === 'compact' ? 'Gọn' : d === 'mid' ? 'Vừa' : 'Chi tiết'}
+              </button>
+            ))}
           </div>
+          <span className="cos-toolbar__hint">
+            <kbd>⌘</kbd><kbd>K</kbd> Command
+          </span>
+        </div>
+
+        {/* ─── TAB STRIP (underline tabs) ────────────────────── */}
+        <div>
+          <Tabs
+            value={tabFilter}
+            onChange={(v) => {
+              setTabFilter(v as typeof tabFilter);
+              if (v === 'all') setStatus('');
+              else if (v === 'active') setStatus('active');
+              else if (v === 'expiring') setStatus('expiring');
+              else if (v === 'expired') setStatus('expired');
+              setPage(1);
+            }}
+            tabs={[
+              { value: 'all', label: 'Tất cả', count: summaryStats?.totalContracts ?? undefined },
+              { value: 'active', label: 'Còn hiệu lực', count: summaryStats?.active ?? undefined },
+              { value: 'expiring', label: 'Cần gia hạn', count: summaryStats?.expiringIn30Days ?? undefined },
+              { value: 'expired', label: 'Hết hạn', count: summaryStats?.expired ?? undefined },
+            ]}
+          />
+        </div>
+
+        {/* ─── TABLE WORKSPACE ───────────────────────────────── */}
+        <div className="vc-cos-workspace">
 
           {/* --- Bulk action bar --- */}
           {selected.size > 0 && (
