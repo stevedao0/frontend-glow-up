@@ -22,25 +22,26 @@
   --line-height-normal: 1.5;
   --letter-spacing-header: -0.02em;
 
-  --app-bg: #f6f3ee;
-  --surface: rgba(255, 255, 255, 0.97);
-  --surface-elevated: #ffffff;
-  --surface-muted: #efe8dd;
-  --text-primary: #1f1b16;
-  --text-secondary: #4c443b;
-  --text-muted: #5f5349;
-  --border-subtle: rgba(48, 38, 27, 0.08);
-  --border-default: rgba(48, 38, 27, 0.14);
-  --border-strong: rgba(48, 38, 27, 0.22);
-  --focus-ring: rgba(156, 109, 62, 0.32);
-  --accent-primary: #9c6d3e;
-  --accent-primary-hover: #86562e;
-  --accent-copper: #c89968;
-  --accent-emerald: #0f8a68;
-  --accent-warning: #d08b1d;
-  --accent-danger: #b8302b;
-  --accent-info: #2f6f90;
-  --accent-neutral: #6f6254;
+  /* VCPMC Command OS — ivory workspace, emerald accent */
+  --app-bg: #F7F3EA;
+  --surface: #FFFFFF;
+  --surface-elevated: #FFFFFF;
+  --surface-muted: #F1EBDD;
+  --text-primary: #101816;
+  --text-secondary: #53615C;
+  --text-muted: #7A8580;
+  --border-subtle: rgba(16, 24, 22, 0.06);
+  --border-default: #E6DED0;
+  --border-strong: rgba(16, 24, 22, 0.18);
+  --focus-ring: rgba(16, 185, 129, 0.32);
+  --accent-primary: #10B981;
+  --accent-primary-hover: #0E9E72;
+  --accent-copper: #10B981;
+  --accent-emerald: #10B981;
+  --accent-warning: #D97706;
+  --accent-danger: #DC2626;
+  --accent-info: #0EA5E9;
+  --accent-neutral: #53615C;
 
   --space-1: 0.25rem;
   --space-2: 0.5rem;
