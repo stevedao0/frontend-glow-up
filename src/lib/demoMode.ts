@@ -303,6 +303,24 @@ const DEMO_USERS = [
   { id: 9005, username: "mai.do",   display_name: "Đỗ Mai",        email: "mai.do@vcpmc.org",   role: "mod",  is_active: true,  last_seen_at: new Date(Date.now() - 86400_000).toISOString(), created_at: "2024-07-09T08:30:00Z", domains: ["karaoke"], permissions: DEMO_PERMISSIONS.filter((p) => !p.startsWith("admin.")) },
 ];
 
+const DEMO_DOMAINS = [
+  { id: 1, code: "background", name_vi: "Nhạc nền", workspace_group_code: "background" },
+  { id: 2, code: "karaoke", name_vi: "Karaoke", workspace_group_code: "karaoke" },
+  { id: 3, code: "kvc", name_vi: "KVC", workspace_group_code: "background" },
+];
+
+const DEMO_PERMISSION_MATRIX = {
+  available_permissions: DEMO_PERMISSIONS,
+  permission_labels: Object.fromEntries(DEMO_PERMISSIONS.map((p) => [p, p])),
+  available_roles: ["admin", "mod", "user"],
+  available_domains: DEMO_DOMAINS,
+  role_defaults: {
+    admin: DEMO_PERMISSIONS,
+    mod: DEMO_PERMISSIONS.filter((p) => !p.startsWith("admin.")),
+    user: ["portal.access", "contracts.read", "certificates.view", "reports.view", "works.read"],
+  },
+};
+
 // ---------------------------------------------------------------------------
 // Path dispatcher
 // ---------------------------------------------------------------------------
@@ -364,11 +382,7 @@ const ROUTES: Array<{ method: string | "*"; pattern: RegExp; handler: DemoHandle
       qr_generation_enabled: true,
     }) },
   { method: "GET",  pattern: /^\/users$/,         handler: () => DEMO_USERS },
-  { method: "GET",  pattern: /^\/roles\/permissions$/, handler: () => ({
-      admin: DEMO_ME.permissions,
-      mod: DEMO_ME.permissions.filter((p) => !p.startsWith("users.")),
-      user: ["contracts.view", "certificates.view", "reports.view"],
-    }) },
+  { method: "GET",  pattern: /^\/roles\/permissions$/, handler: () => DEMO_PERMISSION_MATRIX },
   { method: "GET",  pattern: /^\/audit/, handler: () => [] },
   { method: "GET",  pattern: /^\/reports\/employees/, handler: () => ({ items: [], total: 0 }) },
 ];
