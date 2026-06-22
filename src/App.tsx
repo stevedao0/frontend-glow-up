@@ -425,6 +425,15 @@ function AppContent() {
         />,
         document.body
       )}
+      {isDemoMode() && (
+        <div
+          className="fixed bottom-3 right-3 z-[120] flex items-center gap-1.5 rounded-full border border-indigo-400/40 bg-zinc-900/90 px-3 py-1.5 text-[11px] font-semibold tracking-wide text-indigo-200 shadow-lg backdrop-blur"
+          title="Đang chạy ở chế độ Demo (dữ liệu mô phỏng)"
+        >
+          <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+          PREVIEW · DEMO MODE
+        </div>
+      )}
     </>
   );
 }
