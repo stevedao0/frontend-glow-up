@@ -847,3 +847,201 @@ button.bg-indigo-600 {
   opacity: 1 !important; transform: scaleY(1) !important;
   background: var(--cos-accent) !important;
 }
+
+/* ════════════════════════════════════════════════════════════
+   PREMIUM TABLE LAYER — Linear/Vercel-grade
+   Applies to both .vc-contracts-table-scroll (legacy custom)
+   and .ds-table-* (DataTable primitive) so every list view in
+   the app shares the same high-end behaviour.
+   ════════════════════════════════════════════════════════════ */
+
+/* ── Shared root shell ─────────────────────────────────────── */
+.vc-contracts-table-scroll,
+.ds-table-shell {
+  background: var(--cos-surface) !important;
+  border: 1px solid var(--cos-line) !important;
+  border-radius: var(--cos-radius-lg) !important;
+  box-shadow:
+    0 1px 0 rgba(15,17,21,0.02),
+    0 1px 2px rgba(15,17,21,0.04),
+    0 8px 24px -16px rgba(15,17,21,0.10) !important;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+/* ── Sticky header with backdrop blur ──────────────────────── */
+.vc-contracts-table-scroll thead,
+.ds-table-shell .ds-table-head {
+  background: linear-gradient(180deg, #FAFAFB 0%, #F4F4F7 100%) !important;
+  backdrop-filter: saturate(140%) blur(6px);
+  -webkit-backdrop-filter: saturate(140%) blur(6px);
+  position: sticky; top: 0; z-index: 2;
+  box-shadow: inset 0 -1px 0 var(--cos-line) !important;
+}
+.vc-contracts-table-scroll thead th,
+.ds-table-head-cell {
+  font-size: 10.5px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.09em !important;
+  text-transform: uppercase !important;
+  color: var(--cos-text-3) !important;
+  border-bottom: 0 !important;
+  height: 38px;
+  user-select: none;
+  position: relative;
+}
+/* subtle vertical column separators in header */
+.vc-contracts-table-scroll thead th + th::before,
+.ds-table-head-cell + .ds-table-head-cell::before {
+  content: ''; position: absolute; left: 0; top: 22%; bottom: 22%;
+  width: 1px; background: var(--cos-line-2); opacity: 0.6;
+}
+
+/* ── Body rows ─────────────────────────────────────────────── */
+.vc-contracts-table-scroll tbody tr,
+.ds-table-shell .ds-table-row {
+  border-top: 1px solid var(--cos-line-2) !important;
+  border-bottom: 0 !important;
+  transition:
+    background-color 0.12s var(--ease-standard,ease),
+    box-shadow 0.16s var(--ease-standard,ease),
+    transform 0.16s var(--ease-standard,ease) !important;
+  position: relative;
+}
+.vc-contracts-table-scroll tbody tr:first-child,
+.ds-table-shell .ds-table-row:first-child {
+  border-top: 0 !important;
+}
+
+/* zebra: only every other row, ultra-subtle */
+.ds-table-shell .ds-table-row-alt {
+  background: rgba(15,17,21,0.012) !important;
+}
+
+/* hover: indigo wash + left rail accent */
+.vc-contracts-table-scroll tbody tr:hover,
+.ds-table-shell .ds-table-row:hover {
+  background: rgba(99,102,241,0.045) !important;
+  box-shadow: inset 2px 0 0 rgba(99,102,241,0.55) !important;
+}
+
+/* selected row: stronger indigo rail + tint */
+.vc-row-selected,
+.ds-table-shell .ds-table-row-selected {
+  background: rgba(99,102,241,0.075) !important;
+  box-shadow: inset 3px 0 0 var(--cos-accent) !important;
+}
+.vc-row-selected:hover,
+.ds-table-shell .ds-table-row-selected:hover {
+  background: rgba(99,102,241,0.10) !important;
+}
+
+/* keyboard focus */
+.ds-table-shell .ds-table-row:focus-visible,
+.vc-contracts-table-scroll tbody tr:focus-visible {
+  outline: none;
+  box-shadow: inset 2px 0 0 var(--cos-accent), 0 0 0 2px rgba(79,70,229,0.35) !important;
+}
+
+/* ── Cells ─────────────────────────────────────────────────── */
+.ds-table-cell {
+  border-top: 0 !important;
+  color: var(--cos-text) !important;
+  font-size: 13px !important;
+  line-height: 1.45 !important;
+}
+/* numeric / id / date / amount cells auto tabular */
+.ds-table-cell.text-right,
+.vc-contracts-table-scroll td.text-right,
+.vc-contracts-table-scroll td.tabular-nums {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1, 'lnum' 1;
+}
+
+/* ── Sticky action column shadow ───────────────────────────── */
+.vc-col-actions-sticky,
+.ds-table-shell td.sticky.right-0,
+.ds-table-shell th.sticky.right-0 {
+  box-shadow: -8px 0 12px -8px rgba(15,17,21,0.10);
+}
+
+/* ── Selection toolbar (bulk actions strip) ────────────────── */
+.cos-table-selectbar {
+  display: flex; align-items: center; gap: 12px;
+  padding: 8px 14px;
+  background: linear-gradient(180deg, #1A1E29 0%, #14171E 100%);
+  color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 8px 24px -10px rgba(15,17,21,0.30), 0 0 0 1px rgba(255,255,255,0.04) inset;
+  font-size: 12.5px;
+}
+.cos-table-selectbar__count {
+  font-weight: 600; letter-spacing: 0.02em;
+  background: rgba(99,102,241,0.22);
+  color: #C7D2FE;
+  padding: 2px 8px; border-radius: 999px;
+  font-variant-numeric: tabular-nums;
+}
+.cos-table-selectbar__btn {
+  background: transparent; border: 1px solid rgba(255,255,255,0.10);
+  color: rgba(255,255,255,0.88); padding: 4px 10px; border-radius: 8px;
+  font-size: 12px; cursor: pointer;
+  transition: all 0.12s ease;
+}
+.cos-table-selectbar__btn:hover {
+  background: rgba(255,255,255,0.06); border-color: rgba(255,255,255,0.18);
+}
+.cos-table-selectbar__btn--danger { color: #FCA5A5; }
+.cos-table-selectbar__btn--danger:hover { background: rgba(225,29,72,0.16); border-color: rgba(225,29,72,0.32); }
+
+/* ── Pagination polish ─────────────────────────────────────── */
+.ds-table-shell + div, /* fallback */
+.ds-table-shell ~ .ds-table-pagination,
+.ds-table-shell > div:last-child {
+  font-variant-numeric: tabular-nums;
+}
+/* active page chip → ink with indigo edge */
+.ds-table-shell button[class*="bg-[color:var(--text-primary)]"],
+.vc-contracts-pager-active {
+  background: var(--cos-ink) !important;
+  color: #fff !important;
+  box-shadow: 0 1px 0 rgba(255,255,255,0.08) inset, 0 1px 2px rgba(15,17,21,0.22), 0 0 0 1px rgba(99,102,241,0.40) !important;
+}
+
+/* ── Density toggle pill (legacy bulky) ────────────────────── */
+.vc-contracts-density-toggle {
+  border: 1px solid var(--cos-line) !important;
+  background: var(--cos-paper) !important;
+  border-radius: 8px !important;
+  padding: 2px !important;
+}
+.vc-contracts-density-toggle button {
+  padding: 4px 10px !important;
+  font-size: 11.5px !important;
+  border-radius: 6px !important;
+  color: var(--cos-text-2) !important;
+}
+.vc-contracts-density-toggle button.vc-contracts-density-active {
+  background: var(--cos-ink) !important;
+  color: #fff !important;
+  box-shadow: 0 1px 2px rgba(15,17,21,0.18) !important;
+}
+
+/* ── Empty / loading state polish ──────────────────────────── */
+.ds-table-shell [class*="empty"] svg,
+.ds-table-shell [class*="loading"] svg {
+  opacity: 0.55;
+}
+
+/* ── Toolbar inside DataTable ──────────────────────────────── */
+.ds-table-toolbar {
+  background: linear-gradient(180deg, var(--cos-paper) 0%, var(--cos-surface) 100%);
+  border-bottom: 1px solid var(--cos-line);
+  padding: 10px 14px;
+}
+
+/* ── Make ALL table cell ellipsis crisp on small widths ────── */
+.ds-table-cell .truncate,
+.vc-contracts-table-scroll td .truncate {
+  text-shadow: 0 0 0 transparent;
+}
