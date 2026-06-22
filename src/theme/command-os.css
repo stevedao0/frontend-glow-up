@@ -636,3 +636,37 @@ button.bg-indigo-600 {
   background: linear-gradient(135deg, #14171E 0%, #4F46E5 140%) !important;
   color: #fff !important;
 }
+
+/* ─── Global polish pass ──────────────────────────────────────── */
+
+/* Cohesive focus ring (indigo, accessible) */
+:where(button, a, input, select, textarea, [tabindex]):focus-visible {
+  outline: 2px solid rgba(79, 70, 229, 0.55);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* Custom scrollbars to match ink/ivory palette */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(20, 23, 30, 0.18) transparent;
+}
+*::-webkit-scrollbar { width: 10px; height: 10px; }
+*::-webkit-scrollbar-track { background: transparent; }
+*::-webkit-scrollbar-thumb {
+  background: rgba(20, 23, 30, 0.18);
+  border-radius: 8px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+*::-webkit-scrollbar-thumb:hover { background: rgba(20, 23, 30, 0.32); background-clip: padding-box; border: 2px solid transparent; }
+
+/* Text selection */
+::selection { background: rgba(79, 70, 229, 0.22); color: #14171E; }
+
+/* Smooth route transitions on the main canvas */
+.vc-workspace-canvas > * { animation: cosFadeIn .18s ease both; }
+@keyframes cosFadeIn {
+  from { opacity: 0; transform: translateY(2px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
