@@ -13,6 +13,45 @@
 
 export const DEMO_TOKEN = "demo-mode-token";
 export const DEMO_FLAG_KEY = "vcpmc_demo_mode";
+export const DEMO_EMAIL = "demo@vcpmc.local";
+export const DEMO_PASSWORD = "admin";
+
+export const DEMO_PERMISSIONS = [
+  "portal.access",
+  "dashboard.view",
+  "contracts.read",
+  "contracts.view",
+  "contracts.create",
+  "contracts.update",
+  "contracts.edit",
+  "contracts.delete",
+  "contracts.export",
+  "annexes.read",
+  "annexes.create",
+  "annexes.update",
+  "annexes.delete",
+  "certificates.view",
+  "certificates.create",
+  "certificates.print_test",
+  "certificates.print_final",
+  "reports.view",
+  "reports.export",
+  "works.read",
+  "works.import",
+  "search.view",
+  "admin.users.manage",
+  "admin.users.view",
+  "admin.users.create",
+  "admin.users.edit",
+  "admin.roles.view",
+  "admin.roles.edit",
+  "admin.system.manage",
+  "admin.ops.view",
+  "admin.data.manage",
+  "ai.view",
+  "settings.view",
+  "dispatch.view",
+];
 
 export function isDemoMode(): boolean {
   if (typeof window === "undefined") return false;
@@ -42,6 +81,15 @@ export function disableDemoMode(): void {
   }
 }
 
+export function isDemoCredential(username: string, password: string): boolean {
+  const normalized = (username || "").trim().toLowerCase();
+  return (normalized === DEMO_EMAIL || normalized === "demo") && password === DEMO_PASSWORD;
+}
+
+export function shouldUseDemoFetch(token?: string | null): boolean {
+  return token === DEMO_TOKEN || isDemoMode();
+}
+
 // ---------------------------------------------------------------------------
 // Demo identity
 // ---------------------------------------------------------------------------
@@ -49,25 +97,13 @@ export function disableDemoMode(): void {
 export const DEMO_ME = {
   user: {
     id: 9001,
-    username: "demo",
-    email: "demo@vcpmc.local",
+    username: DEMO_EMAIL,
+    email: DEMO_EMAIL,
     display_name: "Demo User",
     role: "admin",
     is_active: true,
   },
-  permissions: [
-    "contracts.view",
-    "contracts.create",
-    "contracts.edit",
-    "contracts.delete",
-    "certificates.view",
-    "certificates.print_test",
-    "certificates.print_final",
-    "users.view",
-    "users.manage",
-    "reports.view",
-    "dispatch.view",
-  ],
+  permissions: DEMO_PERMISSIONS,
   domains: [],
   active_domain_id: null,
   active_workspace_group_code: null,
