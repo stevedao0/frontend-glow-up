@@ -1113,19 +1113,20 @@ export function CertificatePrintPage({
         </Button>
       </div>
 
-      <div className="bg-white border-b border-zinc-200 px-6">
-        <div className="flex gap-1">
-          <button type="button" onClick={() => setSourceMode('contract')} className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${sourceMode === 'contract' ? 'border-amber-700 text-amber-700' : 'border-transparent text-zinc-500 hover:text-zinc-800'}`}>
-            <span className="flex items-center gap-2"><FileTextIcon className="h-4 w-4" />Từ hợp đồng</span>
+      <div className="bg-white border-b border-zinc-200 px-6 py-2.5">
+        <div className="gcn-source-tabs">
+          <button type="button" onClick={() => setSourceMode('contract')} className={sourceMode === 'contract' ? 'is-active' : ''}>
+            <FileTextIcon className="h-3.5 w-3.5" />Từ hợp đồng
           </button>
-          <button type="button" onClick={() => setSourceMode('manual')} className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${sourceMode === 'manual' ? 'border-amber-700 text-amber-700' : 'border-transparent text-zinc-500 hover:text-zinc-800'}`}>
-            <span className="flex items-center gap-2"><AwardIcon className="h-4 w-4" />Tự nhập</span>
+          <button type="button" onClick={() => setSourceMode('manual')} className={sourceMode === 'manual' ? 'is-active' : ''}>
+            <AwardIcon className="h-3.5 w-3.5" />Tự nhập
           </button>
-          <button type="button" onClick={() => setSourceMode('external')} className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${sourceMode === 'external' ? 'border-amber-700 text-amber-700' : 'border-transparent text-zinc-500 hover:text-zinc-800'}`}>
-            <span className="flex items-center gap-2"><FileTextIcon className="h-4 w-4" />Dán Excel</span>
+          <button type="button" onClick={() => setSourceMode('external')} className={sourceMode === 'external' ? 'is-active' : ''}>
+            <FileTextIcon className="h-3.5 w-3.5" />Dán Excel
           </button>
         </div>
       </div>
+
 
       {message && <div className={`mx-6 mt-4 rounded-lg px-4 py-3 text-sm ${messageType === 'success' ? 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200' : 'bg-rose-50 text-rose-700 ring-1 ring-rose-200'}`}>{message}</div>}
 
