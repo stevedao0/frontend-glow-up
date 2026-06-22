@@ -151,8 +151,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const demoLogin = async () => {
+    enableDemoMode();
+    try { localStorage.setItem(TOKEN_KEY, DEMO_TOKEN); } catch { /* noop */ }
+    setToken(DEMO_TOKEN);
+    const me = await getMe(DEMO_TOKEN);
+    setCurrentUser(toUser(me));
+  };
+
   const logout = () => {
     apiLogout();
+    disableDemoMode();
     localStorage.removeItem(TOKEN_KEY);
     setToken(null);
     setCurrentUser(null);
@@ -187,6 +196,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       currentUser,
       login,
       devLogin,
+      demoLogin,
       logout,
       hasPermission,
       hasDomain,
@@ -198,6 +208,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
+
 
 export function useAuth() {
   const ctx = useContext(AuthContext);
