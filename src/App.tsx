@@ -316,10 +316,6 @@ function AppContent() {
         />
       );
     }
-    if (route === 'contracts.gcn') {
-      setRoute('contracts.list');
-      return null;
-    }
     if (route === 'contracts.print') {
       return <CertificatePrintPage onNavigate={setRoute} initialContractId={pendingPrintContractId} initialCertificateId={pendingPrintCertificateId} onPrinted={() => { setPendingPrintContractId(null); setPendingPrintCertificateId(null); }} />;
     }
