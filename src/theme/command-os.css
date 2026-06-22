@@ -720,3 +720,13 @@ button.bg-indigo-600 {
   color: var(--cos-text-3) !important;
   letter-spacing: 0.08em !important;
 }
+
+/* Allow KPI labels to wrap to 2 lines instead of truncating ("SẮP HẾT 60 NG…") */
+.vc-enterprise-metric-card .vc-enterprise-label {
+  white-space: normal !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+  line-height: 1.2 !important;
+  min-height: 24px;
+  display: block;
+}
