@@ -1,6 +1,8 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { ROLE_DEFS } from "../data/authData";
 import { devLogin as apiDevLogin, getMe, login as apiLogin, logout as apiLogout, MeResponse, TOKEN_KEY } from "./authClient";
+import { DEMO_TOKEN, enableDemoMode, disableDemoMode, isDemoMode } from "./demoMode";
+
 
 type AppRole = "super_admin" | "manager" | "staff";
 
@@ -23,6 +25,7 @@ type AuthContextType = {
   currentUser: User | null;
   login: (username: string, pass: string) => Promise<void>;
   devLogin: () => Promise<void>;
+  demoLogin: () => Promise<void>;
   logout: () => void;
   hasPermission: (perm: string) => boolean;
   hasDomain: (domainId: string) => boolean;
@@ -31,6 +34,7 @@ type AuthContextType = {
 };
 
 const AuthContext = createContext<AuthContextType | null>(null);
+
 
 function mapBackendRoleToUiRole(role: string): AppRole {
   const normalized = (role || "").toLowerCase();
@@ -69,8 +73,19 @@ function toUser(payload: MeResponse): User {
 }
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
+  // If ?demo=1 is present on first paint, persist the flag so apiRequest can
+  // intercept all calls immediately (before any state has settled).
+  const initialDemo = isDemoMode();
+  if (initialDemo) enableDemoMode();
+
   const [currentUser, setCurrentUser] = useState<User | null>(null);
-  const [token, setToken] = useState<string | null>(() => localStorage.getItem(TOKEN_KEY));
+  const [token, setToken] = useState<string | null>(() => {
+    if (initialDemo) {
+      try { localStorage.setItem(TOKEN_KEY, DEMO_TOKEN); } catch { /* noop */ }
+      return DEMO_TOKEN;
+    }
+    return localStorage.getItem(TOKEN_KEY);
+  });
   const [rolePermissions, setRolePermissions] = useState<Record<string, string[]>>({
     super_admin: ROLE_DEFS.super_admin.permissions,
     manager: ROLE_DEFS.manager.permissions,
@@ -100,6 +115,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       cancelled = true;
     };
   }, [token]);
+
 
   const login = async (username: string, pass: string) => {
     const trimmed = (username || "").trim().toLowerCase();
@@ -135,8 +151,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
+  const demoLogin = async () => {
+    enableDemoMode();
+    try { localStorage.setItem(TOKEN_KEY, DEMO_TOKEN); } catch { /* noop */ }
+    setToken(DEMO_TOKEN);
+    const me = await getMe(DEMO_TOKEN);
+    setCurrentUser(toUser(me));
+  };
+
   const logout = () => {
     apiLogout();
+    disableDemoMode();
     localStorage.removeItem(TOKEN_KEY);
     setToken(null);
     setCurrentUser(null);
@@ -171,6 +196,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       currentUser,
       login,
       devLogin,
+      demoLogin,
       logout,
       hasPermission,
       hasDomain,
@@ -182,6 +208,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
+
 
 export function useAuth() {
   const ctx = useContext(AuthContext);

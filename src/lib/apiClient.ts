@@ -1,3 +1,5 @@
+import { isDemoMode, demoFetch } from "./demoMode";
+
 const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || "/api").replace(/\/$/, "");
 
 type RequestOptions = {
@@ -8,6 +10,14 @@ type RequestOptions = {
 };
 
 export async function apiRequest<T>(path: string, options: RequestOptions = {}): Promise<T> {
+  const method = options.method || "GET";
+
+  // Demo mode short-circuits real network calls so the frontend can be
+  // previewed without a backend. Mocks for the main endpoints live in demoMode.ts.
+  if (isDemoMode()) {
+    return demoFetch(path, method, options.body) as Promise<T>;
+  }
+
   const headers: Record<string, string> = {
     "Content-Type": "application/json"
   };
@@ -16,11 +26,12 @@ export async function apiRequest<T>(path: string, options: RequestOptions = {}):
   }
 
   const res = await fetch(`${API_BASE_URL}${path.startsWith("/") ? path : `/${path}`}`, {
-    method: options.method || "GET",
+    method,
     headers,
     body: options.body == null ? undefined : JSON.stringify(options.body),
     signal: options.signal ?? undefined,
   });
+
 
   if (!res.ok) {
     let message = `HTTP ${res.status}`;
