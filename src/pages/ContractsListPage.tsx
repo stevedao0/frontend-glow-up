@@ -490,7 +490,7 @@ export function ContractsListPage({
               }}
               tabs={[
                 { value: 'all', label: 'Tất cả', count: summaryStats?.totalContracts ?? undefined },
-                { value: 'active', label: 'Đang hiệu lực', count: summaryStats?.active ?? undefined },
+                { value: 'active', label: 'Còn hiệu lực', count: summaryStats?.active ?? undefined },
                 { value: 'expiring', label: 'Cần gia hạn', count: summaryStats?.expiringIn30Days ?? undefined },
                 { value: 'expired', label: 'Hết hạn', count: summaryStats?.expired ?? undefined },
               ]}
