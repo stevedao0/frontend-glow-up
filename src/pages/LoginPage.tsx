@@ -201,7 +201,7 @@ export function LoginPage() {
 
             <button
               type="submit"
-              disabled={loading || devLoading}
+              disabled={loading || devLoading || demoLoading}
               className="group w-full h-11 rounded-xl bg-gradient-to-r from-[#c89968] to-[#9c6d3e] hover:from-[#d4a878] hover:to-[#a87a4a] active:from-[#b88858] active:to-[#8a5d33] text-white font-semibold text-sm transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_10px_25px_-5px_rgba(200,153,104,0.5)] ring-1 ring-inset ring-[#f0d4a8]/50">
               {loading ?
               <Loader2Icon className="h-4 w-4 animate-spin" /> :
@@ -210,10 +210,25 @@ export function LoginPage() {
                 </>
               }
             </button>
+
+            <button
+              type="button"
+              disabled={loading || devLoading || demoLoading}
+              onClick={handleDemoLogin}
+              className="w-full h-10 rounded-lg bg-[#101816] hover:bg-[#0a1210] text-white font-medium text-sm transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed ring-1 ring-[#101816]/20 shadow-[0_8px_20px_-8px_rgba(16,24,22,0.5)]">
+              {demoLoading ?
+              <Loader2Icon className="h-4 w-4 animate-spin" /> :
+              <>
+                  <span className="inline-flex h-1.5 w-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(16,185,129,0.8)]" />
+                  Preview UI / Demo Mode
+                </>
+              }
+            </button>
+
             {showDevLogin &&
             <button
               type="button"
-              disabled={loading || devLoading}
+              disabled={loading || devLoading || demoLoading}
               onClick={handleDevLogin}
               className="w-full h-10 rounded-lg bg-white hover:bg-[#fcfaf5] text-[#9c6d3e] font-medium text-sm transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed ring-1 ring-[#e3d2b3] hover:ring-[#c89968]/60">
               {devLoading ?
@@ -224,6 +239,7 @@ export function LoginPage() {
               }
             </button>
             }
+
           </form>
         </div>
 
