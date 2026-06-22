@@ -101,6 +101,23 @@ const PLACEHOLDER_META: Partial<
     description: 'Trợ lý AI cho nghiệp vụ hợp đồng.'
   }
 };
+const ROUTE_TITLES: Record<RouteKey, string> = {
+  dashboard: 'Trung tâm điều hành',
+  'contracts.list': 'Danh sách hợp đồng',
+  'contracts.detail': 'Chi tiết hợp đồng',
+  'contracts.edit': 'Chỉnh sửa hợp đồng',
+  'contracts.create': 'Tạo hợp đồng',
+  'contracts.print': 'In giấy chứng nhận',
+  annexes: 'Phụ lục hợp đồng',
+  dispatch: 'Công văn',
+  reports: 'Báo cáo',
+  search: 'Tìm kiếm',
+  'admin.users': 'Quản trị người dùng',
+  'admin.permissions': 'Phân quyền',
+  'admin.import': 'Nhập dữ liệu',
+  assistant: 'AI Assistant',
+};
+
 function AppContent() {
   const { currentUser, hasPermission, hasDomain } = useAuth();
   // Restore route from sessionStorage to preserve state on F5
@@ -122,9 +139,21 @@ function AppContent() {
     return saved ? Number(saved) : null;
   });
 
-  // Persist route changes to sessionStorage
+  // Persist route + sync URL + document.title so pages feel deep-linkable
   useEffect(() => {
     sessionStorage.setItem('app_route', route);
+    const title = ROUTE_TITLES[route] || 'VCPMC Command OS';
+    document.title = `${title} · VCPMC Command OS`;
+    try {
+      const path = ROUTE_PATHS[route] || '/';
+      const search = window.location.search; // preserve ?demo=1 etc.
+      const next = `${path}${search}`;
+      if (window.location.pathname + window.location.search !== next) {
+        window.history.replaceState({ route }, '', next);
+      }
+    } catch {
+      /* ignore */
+    }
   }, [route]);
 
   useEffect(() => {
@@ -395,6 +424,15 @@ function AppContent() {
           routePath={workflowRoutePath(workflow)}
         />,
         document.body
+      )}
+      {isDemoMode() && (
+        <div
+          className="fixed bottom-3 right-3 z-[120] flex items-center gap-1.5 rounded-full border border-indigo-400/40 bg-zinc-900/90 px-3 py-1.5 text-[11px] font-semibold tracking-wide text-indigo-200 shadow-lg backdrop-blur"
+          title="Đang chạy ở chế độ Demo (dữ liệu mô phỏng)"
+        >
+          <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+          PREVIEW · DEMO MODE
+        </div>
       )}
     </>
   );
