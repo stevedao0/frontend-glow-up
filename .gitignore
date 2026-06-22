@@ -1,0 +1,16 @@
+node_modules
+dist
+.env
+.env.*
+.DS_Store
+*.log
+storage
+*.docx
+*.pdf
+screenshots
+**pycache**
+.pytest_cache
+.vscode
+.idea
+*.swp
+*.swo
