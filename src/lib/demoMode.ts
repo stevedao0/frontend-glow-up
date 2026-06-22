@@ -125,11 +125,15 @@ const REPORTS_SUMMARY = {
   total_contracts: 1284,
   active_count: 1097,
   expiring_30d_count: 38,
+  expiring_60d_count: 64,
   expired_count: 149,
   pending_renewal_count: 22,
+  new_count: 31,
+  unknown_status_count: 0,
   gcn_draft: 47,
   gcn_test_printed: 19,
   gcn_final_printed: 1031,
+  certificate_total: 1097,
   total_works: 412800,
   revenue_2026: 4812330000,
   revenue_2025: 4156870000,
@@ -148,6 +152,18 @@ const REPORTS_SUMMARY = {
     { id: "a2", actor: "Demo User", action: "tạo hợp đồng",  target: "HĐ-2026-0119 · Karaoke Vega", time: "32 phút trước", kind: "contract" },
     { id: "a3", actor: "Demo User", action: "in thử GCN",   target: "GCN-2026-0091",            time: "1 giờ trước",   kind: "certificate" },
     { id: "a4", actor: "Demo User", action: "gia hạn",      target: "HĐ-2024-0773",             time: "2 giờ trước",   kind: "contract" },
+  ],
+  field_breakdown: [
+    { key: "background", label: "Nhạc nền", count: 684 },
+    { key: "karaoke", label: "Karaoke", count: 356 },
+    { key: "kvc", label: "KVC", count: 244 },
+  ],
+  expiring_contracts: [
+    { id: 17, contract_no: "HĐ-2026-1017", partner: "Café Trần Quốc", field: "Nhạc nền", expire_date: `${CURRENT_YEAR}-07-04`, days_left: 6, value: 7245000 },
+    { id: 24, contract_no: "HĐ-2026-1024", partner: "Karaoke Vega", field: "Karaoke", expire_date: `${CURRENT_YEAR}-07-12`, days_left: 14, value: 15800000 },
+    { id: 31, contract_no: "HĐ-2026-1031", partner: "Beer Club Phố Cũ", field: "Nhạc nền", expire_date: `${CURRENT_YEAR}-07-21`, days_left: 23, value: 9350000 },
+    { id: 48, contract_no: "HĐ-2026-1048", partner: "Resort Hạ Long Pearl", field: "KVC", expire_date: `${CURRENT_YEAR}-08-03`, days_left: 36, value: 22300000 },
+    { id: 52, contract_no: "HĐ-2026-1052", partner: "Spa Lotus", field: "Nhạc nền", expire_date: `${CURRENT_YEAR}-08-14`, days_left: 47, value: 5120000 },
   ],
 };
 
@@ -280,11 +296,11 @@ function buildCertificatesList(query: URLSearchParams) {
 }
 
 const DEMO_USERS = [
-  { id: 9001, username: "demo",     display_name: "Demo User",     email: "demo@vcpmc.local", role: "admin", is_active: true,  last_seen_at: new Date().toISOString(), created_at: "2025-01-12T08:30:00Z", domains: ["__all__"] },
-  { id: 9002, username: "kha.tran", display_name: "Trần Khanh",    email: "kha.tran@vcpmc.org", role: "mod",  is_active: true,  last_seen_at: new Date(Date.now() - 36e5).toISOString(),  created_at: "2024-09-04T08:30:00Z", domains: ["background", "karaoke"] },
-  { id: 9003, username: "linh.ng",  display_name: "Nguyễn Linh",   email: "linh.ng@vcpmc.org",  role: "user", is_active: true,  last_seen_at: new Date(Date.now() - 7200_000).toISOString(), created_at: "2025-02-14T08:30:00Z", domains: ["background"] },
-  { id: 9004, username: "hung.le",  display_name: "Lê Quốc Hùng",  email: "hung.le@vcpmc.org",  role: "user", is_active: false, last_seen_at: null, created_at: "2024-11-22T08:30:00Z", domains: ["kvc"] },
-  { id: 9005, username: "mai.do",   display_name: "Đỗ Mai",        email: "mai.do@vcpmc.org",   role: "mod",  is_active: true,  last_seen_at: new Date(Date.now() - 86400_000).toISOString(), created_at: "2024-07-09T08:30:00Z", domains: ["karaoke"] },
+  { id: 9001, username: DEMO_EMAIL, display_name: "Demo User",     email: DEMO_EMAIL, role: "admin", is_active: true,  last_seen_at: new Date().toISOString(), created_at: "2025-01-12T08:30:00Z", domains: ["__all__"], permissions: DEMO_PERMISSIONS },
+  { id: 9002, username: "kha.tran", display_name: "Trần Khanh",    email: "kha.tran@vcpmc.org", role: "mod",  is_active: true,  last_seen_at: new Date(Date.now() - 36e5).toISOString(),  created_at: "2024-09-04T08:30:00Z", domains: ["background", "karaoke"], permissions: DEMO_PERMISSIONS.filter((p) => !p.startsWith("admin.")) },
+  { id: 9003, username: "linh.ng",  display_name: "Nguyễn Linh",   email: "linh.ng@vcpmc.org",  role: "user", is_active: true,  last_seen_at: new Date(Date.now() - 7200_000).toISOString(), created_at: "2025-02-14T08:30:00Z", domains: ["background"], permissions: ["portal.access", "contracts.read", "certificates.view", "reports.view"] },
+  { id: 9004, username: "hung.le",  display_name: "Lê Quốc Hùng",  email: "hung.le@vcpmc.org",  role: "user", is_active: false, last_seen_at: null, created_at: "2024-11-22T08:30:00Z", domains: ["kvc"], permissions: ["portal.access", "contracts.read"] },
+  { id: 9005, username: "mai.do",   display_name: "Đỗ Mai",        email: "mai.do@vcpmc.org",   role: "mod",  is_active: true,  last_seen_at: new Date(Date.now() - 86400_000).toISOString(), created_at: "2024-07-09T08:30:00Z", domains: ["karaoke"], permissions: DEMO_PERMISSIONS.filter((p) => !p.startsWith("admin.")) },
 ];
 
 // ---------------------------------------------------------------------------
