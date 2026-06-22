@@ -388,3 +388,251 @@ button.bg-indigo-600 {
   position: sticky; top: 0; z-index: 5;
   backdrop-filter: blur(6px);
 }
+
+/* =========================================================
+   ADDITIONS — Pass 2: Dashboard, Print GCN, Users, polish
+   ========================================================= */
+
+/* ---------- ContentCard chrome (used widely) ------------- */
+.ds-card,
+.ds-card-panel {
+  background: var(--cos-surface) !important;
+  border: 1px solid var(--cos-line) !important;
+  border-radius: var(--cos-radius-lg) !important;
+  box-shadow: var(--cos-shadow-sm) !important;
+}
+.ds-card > .relative > header {
+  background: var(--cos-paper-2) !important;
+  border-bottom: 1px solid var(--cos-line) !important;
+  padding: 12px 16px !important;
+}
+.ds-card h2 {
+  font-size: 12.5px !important;
+  font-weight: 600 !important;
+  color: var(--cos-text) !important;
+  letter-spacing: -0.005em;
+}
+.ds-card h2 + p,
+.ds-card header p {
+  font-size: 11.5px !important;
+  color: var(--cos-text-3) !important;
+}
+.ds-card-accent { box-shadow: var(--cos-shadow-md) !important; }
+
+/* ---------- EnterprisePanel (cockpit cards) -------------- */
+.enterprise-panel,
+.vc-enterprise-panel,
+.vc-cockpit__health-card,
+.vc-cockpit__queue-card,
+.vc-cockpit__attention-card,
+.vc-cockpit__chart-card {
+  background: var(--cos-surface) !important;
+  border: 1px solid var(--cos-line) !important;
+  border-radius: var(--cos-radius-lg) !important;
+  box-shadow: var(--cos-shadow-sm) !important;
+}
+
+/* ---------- Cockpit header (Dashboard) ------------------- */
+.vc-cockpit__header {
+  display: flex; align-items: flex-end; justify-content: space-between;
+  gap: 16px; padding-bottom: 16px;
+  border-bottom: 1px solid var(--cos-line);
+  margin-bottom: 18px;
+}
+.vc-cockpit__eyebrow {
+  font-size: 10.5px; letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--cos-text-3) !important;
+  font-weight: 700 !important;
+  display: inline-flex; align-items: center; gap: 8px;
+  background: transparent !important; border: 0 !important; padding: 0 !important;
+}
+.vc-cockpit__pulse {
+  width: 6px; height: 6px; border-radius: 999px;
+  background: var(--cos-accent) !important;
+  box-shadow: 0 0 0 3px var(--cos-accent-soft);
+  animation: cos-pulse 2.4s ease-in-out infinite;
+}
+@keyframes cos-pulse {
+  0%,100% { box-shadow: 0 0 0 3px var(--cos-accent-soft); }
+  50% { box-shadow: 0 0 0 6px rgba(79,70,229,0.04); }
+}
+.vc-cockpit__title {
+  font-size: 28px !important; font-weight: 700 !important;
+  color: var(--cos-text) !important; letter-spacing: -0.02em !important;
+  margin-top: 6px; line-height: 1.05;
+}
+.vc-cockpit__subtitle {
+  font-size: 13px !important; color: var(--cos-text-2) !important;
+  margin-top: 4px;
+}
+.vc-cockpit__actions { display: flex; align-items: center; gap: 8px; }
+.vc-cockpit__user {
+  display: inline-flex; align-items: center; gap: 8px;
+  background: var(--cos-surface) !important;
+  border: 1px solid var(--cos-line) !important;
+  border-radius: 999px;
+  padding: 4px 10px 4px 8px;
+  font-size: 11.5px;
+  color: var(--cos-text-2) !important;
+  box-shadow: var(--cos-shadow-sm);
+}
+.vc-cockpit__user-dot {
+  width: 6px; height: 6px; border-radius: 999px;
+  background: var(--cos-emerald);
+  box-shadow: 0 0 0 3px rgba(16,185,129,0.18);
+}
+
+/* ---------- KPI strip on Dashboard ---------------------- */
+.vc-cockpit__kpis,
+.vc-enterprise-summary-strip {
+  background: var(--cos-surface) !important;
+  border: 1px solid var(--cos-line) !important;
+  border-radius: var(--cos-radius-lg) !important;
+  box-shadow: var(--cos-shadow-sm) !important;
+  overflow: hidden;
+}
+.vc-enterprise-summary-strip__cell,
+.vc-enterprise-summary-strip__item {
+  border-right: 1px solid var(--cos-line-2) !important;
+  background: transparent !important;
+}
+.vc-enterprise-summary-strip__cell:last-child,
+.vc-enterprise-summary-strip__item:last-child { border-right: 0 !important; }
+.vc-enterprise-summary-strip__value,
+.vc-enterprise-summary-strip__label,
+.vc-enterprise-summary-strip__hint {
+  font-family: 'Geist', system-ui, sans-serif !important;
+}
+
+/* ---------- Attention/queue rows ------------------------- */
+.vc-cockpit__attention-row,
+.vc-cockpit__urgency-row,
+.vc-cockpit__signal {
+  background: transparent !important;
+  border-radius: 8px !important;
+  border: 1px solid var(--cos-line-2) !important;
+  transition: background .15s, border-color .15s;
+}
+.vc-cockpit__attention-row:hover,
+.vc-cockpit__urgency-row:hover {
+  background: rgba(79,70,229,0.03) !important;
+  border-color: var(--cos-line) !important;
+}
+.vc-cockpit__signal-bar { background: var(--cos-line) !important; }
+.vc-cockpit__signal--danger .vc-cockpit__signal-bar { background: var(--cos-rose) !important; }
+.vc-cockpit__signal--warning .vc-cockpit__signal-bar { background: var(--cos-amber) !important; }
+.vc-cockpit__signal--success .vc-cockpit__signal-bar { background: var(--cos-emerald) !important; }
+.vc-cockpit__attention-row--danger { box-shadow: inset 3px 0 0 var(--cos-rose); }
+.vc-cockpit__attention-row--warning { box-shadow: inset 3px 0 0 var(--cos-amber); }
+.vc-cockpit__attention-row--neutral { box-shadow: inset 3px 0 0 var(--cos-line); }
+.vc-cockpit__urgency-row--danger { box-shadow: inset 3px 0 0 var(--cos-rose); }
+.vc-cockpit__urgency-row--warning { box-shadow: inset 3px 0 0 var(--cos-amber); }
+
+.vc-cockpit__risk-callout {
+  background: var(--cos-paper-2) !important;
+  border: 1px solid var(--cos-line) !important;
+  border-radius: 10px !important;
+}
+.vc-cockpit__risk-icon {
+  background: rgba(225,29,72,0.08) !important;
+  color: #BE123C !important;
+  border-radius: 8px;
+}
+
+.vc-cockpit__hint {
+  background: var(--cos-paper-2) !important;
+  border: 1px solid var(--cos-line) !important;
+  border-radius: 8px !important;
+  color: var(--cos-text-3) !important;
+}
+.vc-cockpit__hint kbd {
+  background: var(--cos-surface);
+  border: 1px solid var(--cos-line);
+  font-family: 'Geist Mono', monospace;
+  font-size: 10px;
+  padding: 1px 5px; border-radius: 4px;
+  color: var(--cos-text-2);
+}
+
+/* Kill any amber/copper accent leftovers */
+[class*="ring-amber"],
+[class*="border-amber"]:not(.cos-toolbar):not(.cos-pageheader) { /* keep cos comps */ }
+.bg-amber-700, .bg-amber-600 { background: var(--cos-ink) !important; }
+.text-amber-700, .text-amber-800 { color: var(--cos-text) !important; }
+.border-amber-700 { border-color: var(--cos-ink) !important; }
+.ring-amber-700 { --tw-ring-color: var(--cos-ink) !important; }
+.bg-amber-50 { background: var(--cos-paper-2) !important; }
+.border-amber-300 { border-color: var(--cos-line) !important; }
+.text-amber-700, .text-amber-900 { color: var(--cos-text) !important; }
+
+/* ---------- Print GCN: two-pane shell -------------------- */
+.gcn-print-flex {
+  background: var(--cos-paper) !important;
+}
+.gcn-print-left {
+  background: var(--cos-surface) !important;
+  border-right: 1px solid var(--cos-line) !important;
+  width: 380px !important;
+}
+@media (min-width: 1280px) { .gcn-print-left { width: 420px !important; } }
+@media (min-width: 1536px) { .gcn-print-left { width: 460px !important; } }
+.gcn-print-flex-right {
+  background: var(--cos-paper) !important;
+}
+
+/* Polished source-mode tab strip (the underline tabs in Print) */
+.gcn-source-tabs {
+  display: inline-flex; gap: 2px;
+  background: var(--cos-paper-2);
+  border: 1px solid var(--cos-line);
+  border-radius: 10px;
+  padding: 3px;
+}
+.gcn-source-tabs button {
+  height: 30px; padding: 0 12px;
+  border-radius: 7px !important;
+  font-size: 12px; font-weight: 500;
+  color: var(--cos-text-2) !important;
+  background: transparent !important;
+  border: 0 !important;
+  display: inline-flex; align-items: center; gap: 6px;
+  transition: background .12s, color .12s;
+}
+.gcn-source-tabs button:hover { color: var(--cos-text) !important; background: rgba(255,255,255,0.6) !important; }
+.gcn-source-tabs button.is-active {
+  background: var(--cos-surface) !important;
+  color: var(--cos-text) !important;
+  font-weight: 600 !important;
+  box-shadow: var(--cos-shadow-sm), inset 0 0 0 1px var(--cos-line);
+}
+
+/* ---------- Users page table refinements ---------------- */
+.cos-users-table { width: 100%; border-collapse: collapse; }
+.cos-users-table thead tr {
+  background: var(--cos-paper-2);
+  border-bottom: 1px solid var(--cos-line);
+}
+.cos-users-table thead th {
+  text-align: left;
+  font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--cos-text-3); font-weight: 600;
+  padding: 10px 14px;
+}
+.cos-users-table tbody tr {
+  border-bottom: 1px solid var(--cos-line-2);
+  transition: background .12s;
+}
+.cos-users-table tbody tr:hover { background: rgba(79,70,229,0.035); }
+.cos-users-table tbody td { padding: 10px 14px; font-size: 12.5px; color: var(--cos-text); vertical-align: middle; }
+.cos-users-avatar {
+  width: 30px; height: 30px; border-radius: 8px;
+  background: linear-gradient(135deg, #14171E 0%, #4F46E5 140%);
+  color: #fff; font-weight: 600; font-size: 11.5px;
+  display: inline-flex; align-items: center; justify-content: center;
+}
+
+/* ---------- Generic gradient amber→ink chip kill --------- */
+.bg-gradient-to-br.from-amber-100.to-amber-100 {
+  background: linear-gradient(135deg, #14171E 0%, #4F46E5 140%) !important;
+  color: #fff !important;
+}
