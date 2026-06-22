@@ -118,10 +118,32 @@ const ROUTE_TITLES: Record<RouteKey, string> = {
   assistant: 'AI Assistant',
 };
 
+function routeFromPath(pathname: string): RouteKey | null {
+  // Exact match first
+  for (const [key, path] of Object.entries(ROUTE_PATHS) as [RouteKey, string][]) {
+    if (path === pathname) return key;
+  }
+  // Pattern match for parameterised routes (e.g. /bg/contracts/:id)
+  for (const [key, path] of Object.entries(ROUTE_PATHS) as [RouteKey, string][]) {
+    if (!path.includes(':')) continue;
+    const regex = new RegExp('^' + path.replace(/:[^/]+/g, '[^/]+') + '$');
+    if (regex.test(pathname)) return key;
+  }
+  // Prefix fallback (e.g. /bg/contracts/123 → contracts.detail family)
+  if (pathname.startsWith('/bg/contracts/certificates')) return 'contracts.print';
+  if (pathname.startsWith('/bg/contracts')) return 'contracts.list';
+  if (pathname.startsWith('/admin/users')) return 'admin.users';
+  return null;
+}
+
 function AppContent() {
   const { currentUser, hasPermission, hasDomain } = useAuth();
-  // Restore route from sessionStorage to preserve state on F5
+  // Initial route — URL wins over sessionStorage so demo links and reloads land where expected.
   const [route, setRoute] = useState<RouteKey>(() => {
+    if (typeof window !== 'undefined') {
+      const fromUrl = routeFromPath(window.location.pathname);
+      if (fromUrl) return fromUrl;
+    }
     const saved = sessionStorage.getItem('app_route');
     return (saved as RouteKey) || 'dashboard';
   });
@@ -149,16 +171,28 @@ function AppContent() {
       const search = window.location.search; // preserve ?demo=1 etc.
       const next = `${path}${search}`;
       if (window.location.pathname + window.location.search !== next) {
-        window.history.replaceState({ route }, '', next);
+        window.history.pushState({ route }, '', next);
       }
     } catch {
       /* ignore */
     }
   }, [route]);
 
+  // Browser back/forward → sync state to URL
   useEffect(() => {
+    const onPop = () => {
+      const fromUrl = routeFromPath(window.location.pathname);
+      if (fromUrl) setRoute(fromUrl);
+    };
+    window.addEventListener('popstate', onPop);
+    return () => window.removeEventListener('popstate', onPop);
+  }, []);
+
+  useEffect(() => {
+    // Only force dashboard on demo if the URL did NOT specify a route
     if (!currentUser || demoRouted || !isDemoMode()) return;
-    setRoute('dashboard');
+    const fromUrl = typeof window !== 'undefined' ? routeFromPath(window.location.pathname) : null;
+    if (!fromUrl) setRoute('dashboard');
     setDemoRouted(true);
   }, [currentUser, demoRouted]);
 

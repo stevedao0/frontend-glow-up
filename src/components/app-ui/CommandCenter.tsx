@@ -14,7 +14,7 @@ import vcpmcLogo from '../../assets/vcpmc-logo-animated.webp';
 // Mirror of the ROUTE_LABELS map in Topbar.tsx — kept local so this shell is
 // the single source of truth for the breadcrumb on the command-center topbar.
 const ROUTE_LABELS: Partial<Record<RouteKey, { label: string; group?: string }>> = {
-  dashboard: { label: 'Dashboard', group: 'Tổng quan' },
+  dashboard: { label: 'Trung tâm điều hành', group: 'Tổng quan' },
   'contracts.list': { label: 'Danh sách hợp đồng', group: 'Hợp đồng' },
   'contracts.detail': { label: 'Chi tiết hợp đồng', group: 'Hợp đồng' },
   'contracts.edit': { label: 'Chỉnh sửa hợp đồng', group: 'Hợp đồng' },
@@ -213,12 +213,7 @@ export function CommandCenter({
       {/* ─── Body: content only (no dock rail by default) ─── */}
       <div className="vc-command-body">
         <main className="vc-command-main" key={current}>
-          {showDevBadge && (
-            <div className="vc-command-dev-badge">
-              <span className="h-1.5 w-1.5 rounded-full bg-amber-500 animate-pulse" />
-              Development build
-            </div>
-          )}
+          {/* Dev badge removed — PREVIEW · DEMO MODE pill is the canonical indicator */}
           <div className="vc-command-content page-enter">{children}</div>
         </main>
       </div>

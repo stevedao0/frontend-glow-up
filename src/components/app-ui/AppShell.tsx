@@ -66,12 +66,7 @@ export function AppShell({
             layoutMode={layoutMode}
             onLayoutModeChange={setLayoutMode}
           />
-          {showDevBadge ? (
-            <div className="vc-enterprise-dev-badge px-6 py-1.5 text-[11px] font-medium flex items-center gap-2">
-              <span className="h-1.5 w-1.5 rounded-full bg-amber-500 animate-pulse" />
-              Development build
-            </div>
-          ) : null}
+          {/* Dev badge removed — PREVIEW · DEMO MODE pill is the canonical indicator */}
           <main key={current} className="vc-enterprise-content page-enter">
             {children}
           </main>

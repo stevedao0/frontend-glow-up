@@ -250,7 +250,7 @@ export function DashboardPage({
 
   return (
     <Page>
-      <div className="vc-cockpit mx-auto w-full max-w-[1640px] px-6 py-6 lg:px-8">
+      <div className="vc-cockpit mx-auto w-full max-w-[1640px] px-6 py-4 lg:px-8 lg:py-5">
         {/* ── Cockpit header ─────────────────────────────────────── */}
         <header className="vc-cockpit__header">
           <div className="vc-cockpit__title-block">
@@ -400,8 +400,8 @@ export function DashboardPage({
                         <stop offset="100%" stopColor="#0E9E72" stopOpacity={1} />
                       </linearGradient>
                       <linearGradient id="barFillPrev" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="#E6DED0" stopOpacity={1} />
-                        <stop offset="100%" stopColor="#CFC6B4" stopOpacity={1} />
+                        <stop offset="0%" stopColor="#3F3D56" stopOpacity={1} />
+                        <stop offset="100%" stopColor="#1F1E2E" stopOpacity={1} />
                       </linearGradient>
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" stroke="#EFE9DC" vertical={false} />
@@ -447,8 +447,8 @@ export function DashboardPage({
 
           <EnterprisePanel className="vc-cockpit__health-card">
             <EnterpriseSectionHeader
-              eyebrow="Risk profile"
-              title="Contract health"
+              eyebrow="Hồ sơ rủi ro"
+              title="Sức khỏe hợp đồng"
               description="Phân bổ trạng thái workspace"
               actions={stats ? <EnterpriseBadge tone="neutral">{formatNumber(stats.totalContracts)}</EnterpriseBadge> : undefined}
             />
@@ -469,7 +469,7 @@ export function DashboardPage({
                 <ShieldAlertIcon className="h-4 w-4" />
               </span>
               <div className="min-w-0">
-                <div className="vc-enterprise-label">Risk summary</div>
+                <div className="vc-enterprise-label">Tóm tắt rủi ro</div>
                 <p className="vc-cockpit__risk-text">
                   {loading
                     ? 'Đang tải tổng hợp rủi ro…'
@@ -545,7 +545,7 @@ export function DashboardPage({
 
           <EnterprisePanel className="vc-cockpit__queue-card">
             <EnterpriseSectionHeader
-              eyebrow="Operational queue"
+              eyebrow="Hàng đợi vận hành"
               title="Tín hiệu vận hành"
               description="Ưu tiên xử lý hôm nay"
             />
