@@ -4,6 +4,7 @@ import { AdaptiveWorkspaceShell } from './components/app-ui/AdaptiveWorkspaceShe
 import { AccessDenied } from './components/app-ui/AccessDenied';
 import { RouteKey, ROUTE_PATHS, WORKSPACES } from './data/routes';
 import { AuthProvider, useAuth } from './lib/auth';
+import { isDemoMode } from './lib/demoMode';
 import { DOMAINS } from './data/authData';
 import { Loader2Icon } from 'lucide-react';
 import { WorkflowSheet } from './components/app-ui/WorkflowSheet';
@@ -107,6 +108,7 @@ function AppContent() {
     const saved = sessionStorage.getItem('app_route');
     return (saved as RouteKey) || 'dashboard';
   });
+  const [demoRouted, setDemoRouted] = useState(false);
   const [activeContractId, setActiveContractId] = useState<number | null>(() => {
     const saved = sessionStorage.getItem('app_active_contract_id');
     return saved ? Number(saved) : null;
@@ -124,6 +126,12 @@ function AppContent() {
   useEffect(() => {
     sessionStorage.setItem('app_route', route);
   }, [route]);
+
+  useEffect(() => {
+    if (!currentUser || demoRouted || !isDemoMode()) return;
+    setRoute('dashboard');
+    setDemoRouted(true);
+  }, [currentUser, demoRouted]);
 
   // Persist active contract ID
   useEffect(() => {
@@ -315,10 +323,6 @@ function AppContent() {
           initialDraftFromContract={latestContractForCreate}
         />
       );
-    }
-    if (route === 'contracts.gcn') {
-      setRoute('contracts.list');
-      return null;
     }
     if (route === 'contracts.print') {
       return <CertificatePrintPage onNavigate={setRoute} initialContractId={pendingPrintContractId} initialCertificateId={pendingPrintCertificateId} onPrinted={() => { setPendingPrintContractId(null); setPendingPrintCertificateId(null); }} />;

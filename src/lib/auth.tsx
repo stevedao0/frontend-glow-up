@@ -1,7 +1,7 @@
 import React, { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { ROLE_DEFS } from "../data/authData";
 import { devLogin as apiDevLogin, getMe, login as apiLogin, logout as apiLogout, MeResponse, TOKEN_KEY } from "./authClient";
-import { DEMO_TOKEN, enableDemoMode, disableDemoMode, isDemoMode } from "./demoMode";
+import { DEMO_ME, DEMO_TOKEN, enableDemoMode, disableDemoMode, isDemoMode } from "./demoMode";
 
 
 type AppRole = "super_admin" | "manager" | "staff";
@@ -76,7 +76,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // If ?demo=1 is present on first paint, persist the flag so apiRequest can
   // intercept all calls immediately (before any state has settled).
   const initialDemo = isDemoMode();
-  if (initialDemo) enableDemoMode();
+  if (initialDemo) {
+    enableDemoMode();
+    try { sessionStorage.setItem('app_route', 'dashboard'); } catch { /* noop */ }
+  }
 
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(() => {
@@ -154,9 +157,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const demoLogin = async () => {
     enableDemoMode();
     try { localStorage.setItem(TOKEN_KEY, DEMO_TOKEN); } catch { /* noop */ }
+    try { sessionStorage.setItem('app_route', 'dashboard'); } catch { /* noop */ }
     setToken(DEMO_TOKEN);
-    const me = await getMe(DEMO_TOKEN);
-    setCurrentUser(toUser(me));
+    setCurrentUser(toUser(DEMO_ME as MeResponse));
   };
 
   const logout = () => {
