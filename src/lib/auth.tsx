@@ -73,8 +73,19 @@ function toUser(payload: MeResponse): User {
 }
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
+  // If ?demo=1 is present on first paint, persist the flag so apiRequest can
+  // intercept all calls immediately (before any state has settled).
+  const initialDemo = isDemoMode();
+  if (initialDemo) enableDemoMode();
+
   const [currentUser, setCurrentUser] = useState<User | null>(null);
-  const [token, setToken] = useState<string | null>(() => localStorage.getItem(TOKEN_KEY));
+  const [token, setToken] = useState<string | null>(() => {
+    if (initialDemo) {
+      try { localStorage.setItem(TOKEN_KEY, DEMO_TOKEN); } catch { /* noop */ }
+      return DEMO_TOKEN;
+    }
+    return localStorage.getItem(TOKEN_KEY);
+  });
   const [rolePermissions, setRolePermissions] = useState<Record<string, string[]>>({
     super_admin: ROLE_DEFS.super_admin.permissions,
     manager: ROLE_DEFS.manager.permissions,
@@ -104,6 +115,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       cancelled = true;
     };
   }, [token]);
+
 
   const login = async (username: string, pass: string) => {
     const trimmed = (username || "").trim().toLowerCase();
