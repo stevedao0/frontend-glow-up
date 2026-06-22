@@ -25,6 +25,7 @@ type AuthContextType = {
   currentUser: User | null;
   login: (username: string, pass: string) => Promise<void>;
   devLogin: () => Promise<void>;
+  demoLogin: () => Promise<void>;
   logout: () => void;
   hasPermission: (perm: string) => boolean;
   hasDomain: (domainId: string) => boolean;
@@ -33,6 +34,7 @@ type AuthContextType = {
 };
 
 const AuthContext = createContext<AuthContextType | null>(null);
+
 
 function mapBackendRoleToUiRole(role: string): AppRole {
   const normalized = (role || "").toLowerCase();
