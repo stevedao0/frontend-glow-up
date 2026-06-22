@@ -620,9 +620,15 @@ button.bg-indigo-600 {
 }
 .cos-users-table tbody tr {
   border-bottom: 1px solid var(--cos-line-2);
-  transition: background .12s;
+  transition: background .12s, box-shadow .16s;
 }
-.cos-users-table tbody tr:hover { background: rgba(79,70,229,0.035); }
+.cos-users-table tbody tr:hover {
+  background: rgba(79,70,229,0.035);
+  box-shadow:
+    inset 0 0 0 1px rgba(99,102,241,0.18),
+    inset 2px 0 0 rgba(99,102,241,0.50);
+  cursor: pointer;
+}
 .cos-users-table tbody td { padding: 10px 14px; font-size: 12.5px; color: var(--cos-text); vertical-align: middle; }
 .cos-users-avatar {
   width: 30px; height: 30px; border-radius: 8px;
@@ -918,22 +924,30 @@ button.bg-indigo-600 {
   background: rgba(15,17,21,0.012) !important;
 }
 
-/* hover: indigo wash + left rail accent */
+/* hover: light border wraps the row + soft indigo wash + left rail accent */
 .vc-contracts-table-scroll tbody tr:hover,
 .ds-table-shell .ds-table-row:hover {
   background: rgba(99,102,241,0.045) !important;
-  box-shadow: inset 2px 0 0 rgba(99,102,241,0.55) !important;
+  box-shadow:
+    inset 0 0 0 1px rgba(99,102,241,0.22),
+    inset 2px 0 0 rgba(99,102,241,0.55) !important;
+  outline: none;
 }
 
-/* selected row: stronger indigo rail + tint */
+/* selected row: stronger indigo rail + tint + full border */
 .vc-row-selected,
 .ds-table-shell .ds-table-row-selected {
   background: rgba(99,102,241,0.075) !important;
-  box-shadow: inset 3px 0 0 var(--cos-accent) !important;
+  box-shadow:
+    inset 0 0 0 1px rgba(99,102,241,0.28),
+    inset 3px 0 0 var(--cos-accent) !important;
 }
 .vc-row-selected:hover,
 .ds-table-shell .ds-table-row-selected:hover {
   background: rgba(99,102,241,0.10) !important;
+  box-shadow:
+    inset 0 0 0 1px rgba(99,102,241,0.35),
+    inset 3px 0 0 var(--cos-accent) !important;
 }
 
 /* keyboard focus */
