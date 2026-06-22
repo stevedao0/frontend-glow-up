@@ -620,9 +620,15 @@ button.bg-indigo-600 {
 }
 .cos-users-table tbody tr {
   border-bottom: 1px solid var(--cos-line-2);
-  transition: background .12s;
+  transition: background .12s, box-shadow .16s;
 }
-.cos-users-table tbody tr:hover { background: rgba(79,70,229,0.035); }
+.cos-users-table tbody tr:hover {
+  background: rgba(79,70,229,0.035);
+  box-shadow:
+    inset 0 0 0 1px rgba(99,102,241,0.18),
+    inset 2px 0 0 rgba(99,102,241,0.50);
+  cursor: pointer;
+}
 .cos-users-table tbody td { padding: 10px 14px; font-size: 12.5px; color: var(--cos-text); vertical-align: middle; }
 .cos-users-avatar {
   width: 30px; height: 30px; border-radius: 8px;
