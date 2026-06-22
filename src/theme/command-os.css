@@ -670,3 +670,53 @@ button.bg-indigo-600 {
   from { opacity: 0; transform: translateY(2px); }
   to   { opacity: 1; transform: translateY(0); }
 }
+
+/* ─── Polish v2 ───────────────────────────────────────────── */
+/* KPI label: shorter eyebrows, single-line preferred */
+.vc-enterprise-metric-card .vc-enterprise-label {
+  letter-spacing: 0.06em !important;
+  font-size: 10px !important;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+.vc-enterprise-metric-card { padding: 16px !important; }
+.vc-enterprise-metric-card .vc-enterprise-value {
+  font-size: 26px !important;
+  line-height: 1.05 !important;
+  font-weight: 700 !important;
+  letter-spacing: -0.015em !important;
+}
+
+/* Cockpit header chrome — tighter and aligned */
+.vc-cockpit { gap: 14px !important; }
+.vc-cockpit__header { padding-bottom: 14px !important; margin-bottom: 12px !important; }
+.vc-cockpit__title { margin-top: 4px !important; font-size: 26px !important; }
+
+/* Workspace frame header — kill faint backdrop, make crisper */
+.vc-workspace-frame__header {
+  background: #FAF8F1 !important;
+  border-bottom: 1px solid rgba(20,23,30,0.08) !important;
+  backdrop-filter: none !important;
+}
+.vc-workspace-frame__badge {
+  color: var(--cos-text-3) !important;
+  background: rgba(20,23,30,0.04) !important;
+  border-color: rgba(20,23,30,0.08) !important;
+  font-size: 9.5px !important;
+}
+
+/* Risk callout — give it warmth, drop the muddy ivory */
+.vc-cockpit__risk-callout {
+  background: linear-gradient(180deg, #FFF7F4 0%, #FEEFEA 100%) !important;
+  border-color: rgba(225,29,72,0.18) !important;
+  padding: 12px 14px !important;
+}
+
+/* Section eyebrow inside enterprise panels */
+.vc-cockpit__health-card .vc-enterprise-label,
+.vc-cockpit__queue-card .vc-enterprise-label {
+  color: var(--cos-text-3) !important;
+  letter-spacing: 0.08em !important;
+}
