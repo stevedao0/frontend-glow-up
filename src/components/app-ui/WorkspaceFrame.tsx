@@ -97,12 +97,8 @@ export function WorkspaceFrame({ current, children, showDevBadge = false }: Work
         {children}
       </div>
 
-      {showDevBadge && (
-        <div className="vc-workspace-frame__dev-badge">
-          <span className="h-1.5 w-1.5 rounded-full bg-amber-500 animate-pulse" />
-          Development build
-        </div>
-      )}
+      {/* Dev badge removed — DEMO MODE pill (bottom-right) is the canonical preview indicator */}
+      {false && showDevBadge && null}
     </div>
   );
 }

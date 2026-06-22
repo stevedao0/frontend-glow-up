@@ -250,7 +250,7 @@ export function DashboardPage({
 
   return (
     <Page>
-      <div className="vc-cockpit mx-auto w-full max-w-[1640px] px-6 py-6 lg:px-8">
+      <div className="vc-cockpit mx-auto w-full max-w-[1640px] px-6 py-4 lg:px-8 lg:py-5">
         {/* ── Cockpit header ─────────────────────────────────────── */}
         <header className="vc-cockpit__header">
           <div className="vc-cockpit__title-block">
