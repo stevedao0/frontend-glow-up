@@ -258,7 +258,7 @@ export function DashboardPage({
               <span className="vc-cockpit__pulse" aria-hidden />
               VCPMC · COMMAND OS
             </div>
-            <h1 className="vc-cockpit__title">Command Center</h1>
+            <h1 className="vc-cockpit__title">Trung tâm điều hành</h1>
             <p className="vc-cockpit__subtitle">
               {stats
                 ? `${formatNumber(stats.totalContracts)} hợp đồng đang vận hành · ${formatNumber(stats.expiring30 + stats.expiring60)} việc cần chú ý · ${formatNumber(stats.gcnDraft)} GCN chưa cấp số`
