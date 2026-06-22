@@ -513,23 +513,18 @@ export function ContractsListPage({
             </Button>
           )}
           <div className="cos-toolbar__sep" />
-          <div className="inline-flex rounded-md ring-1 ring-zinc-200 overflow-hidden text-[11px] shrink-0">
-            {(['compact', 'mid', 'detail'] as Density[]).map((d) => (
-              <button
-                key={d}
-                type="button"
-                onClick={() => { setDensity(d); saveDensity(d); }}
-                className={`px-2 py-1 transition-colors font-medium whitespace-nowrap ${
-                  density === d
-                    ? 'vc-contracts-density-active'
-                    : 'text-zinc-500 bg-white hover:bg-zinc-50 hover:text-zinc-700'
-                }`}
-                title={d === 'compact' ? 'Gọn' : d === 'mid' ? 'Vừa' : 'Chi tiết'}
-              >
-                {d === 'compact' ? 'Gọn' : d === 'mid' ? 'Vừa' : 'Chi tiết'}
-              </button>
-            ))}
-          </div>
+          <button
+            type="button"
+            onClick={() => {
+              const next: Density = density === 'compact' ? 'mid' : 'compact';
+              setDensity(next); saveDensity(next);
+            }}
+            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md ring-1 ring-zinc-200 bg-white hover:bg-zinc-50 text-[11px] font-medium text-zinc-600 hover:text-zinc-900 transition-colors shrink-0"
+            title={density === 'compact' ? 'Đang xem dạng gọn — nhấn để mở rộng' : 'Đang xem dạng đầy đủ — nhấn để thu gọn'}
+          >
+            <span className={`inline-block w-3 h-3 rounded-sm ${density === 'compact' ? 'bg-zinc-900' : 'bg-zinc-300'}`} />
+            {density === 'compact' ? 'Dòng gọn' : 'Dòng đầy đủ'}
+          </button>
           <span className="cos-toolbar__hint">
             <kbd>⌘</kbd><kbd>K</kbd> Command
           </span>
