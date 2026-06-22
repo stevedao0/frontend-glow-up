@@ -250,112 +250,115 @@ export function DashboardPage({
 
   return (
     <Page>
-      <div className="mx-auto max-w-[1600px] space-y-5 px-6 py-6 lg:px-8">
-        <PageHeader
-          title="Command Center"
-          description="Operational summary cho workspace Background Music với dữ liệu thật từ hệ thống."
-          actions={
-            <div className="flex items-center gap-2">
-              <Button
-                variant="secondary"
-                size="sm"
-                leftIcon={<RefreshCwIcon className="h-4 w-4" />}
-                onClick={triggerRefresh}
-                disabled={loading}
-              />
-              <Select
-                value={year}
-                onChange={setYear}
-                options={YEAR_OPTIONS}
-                className="w-32"
-              />
+      <div className="vc-cockpit mx-auto w-full max-w-[1640px] px-6 py-6 lg:px-8">
+        {/* ── Cockpit header ─────────────────────────────────────── */}
+        <header className="vc-cockpit__header">
+          <div className="vc-cockpit__title-block">
+            <div className="vc-cockpit__eyebrow">
+              <span className="vc-cockpit__pulse" aria-hidden />
+              VCPMC · COMMAND OS
             </div>
-          }
-        />
+            <h1 className="vc-cockpit__title">Command Center</h1>
+            <p className="vc-cockpit__subtitle">
+              {stats
+                ? `${formatNumber(stats.totalContracts)} hợp đồng đang vận hành · ${formatNumber(stats.expiring30 + stats.expiring60)} việc cần chú ý · ${formatNumber(stats.gcnDraft)} GCN chưa cấp số`
+                : error
+                  ? error
+                  : 'Đang tải dữ liệu vận hành…'}
+            </p>
+          </div>
+          <div className="vc-cockpit__actions">
+            <div className="vc-cockpit__user" title={userEmail}>
+              <span className="vc-cockpit__user-dot" />
+              <span className="vc-cockpit__user-mail">{userEmail || '—'}</span>
+            </div>
+            <Select value={year} onChange={setYear} options={YEAR_OPTIONS} className="w-28" />
+            <Button
+              variant="secondary"
+              size="sm"
+              leftIcon={<RefreshCwIcon className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />}
+              onClick={triggerRefresh}
+              disabled={loading}
+            >
+              Làm mới
+            </Button>
+          </div>
+        </header>
 
-        {/* Greeting / context strip — calm, no decorative badge. */}
-        <div className="vc-dashboard-greeting">
-          <p className="text-[13.5px] leading-relaxed text-zinc-600">
-            Xin chào, <span className="font-semibold text-zinc-900">{userEmail || '—'}</span>.
-            {stats
-              ? ` Đang theo dõi ${formatNumber(stats.totalContracts)} hợp đồng, ${formatNumber(stats.expiring30 + stats.expiring60)} việc cần chú ý và ${formatNumber(stats.gcnDraft)} GCN chưa cấp số.`
-              : error
-                ? ` ${error}`
-                : ' Đang tải dữ liệu vận hành...'}
-          </p>
+        {/* ── KPI strip ──────────────────────────────────────────── */}
+        <div className="vc-cockpit__kpis">
+          <EnterpriseSummaryStrip
+            items={[
+              {
+                label: 'Tổng hợp đồng',
+                value: loading ? '—' : formatNumber(stats?.totalContracts ?? 0),
+                tone: 'accent',
+                icon: <FileTextIcon className="h-4 w-4" />,
+                hint: 'Workspace Background',
+              },
+              {
+                label: 'Còn hiệu lực',
+                value: loading ? '—' : formatNumber(stats?.active ?? 0),
+                tone: 'success',
+                icon: <CheckCircle2Icon className="h-4 w-4" />,
+                hint:
+                  stats && stats.totalContracts > 0
+                    ? `${((stats.active / stats.totalContracts) * 100).toFixed(1)}% tổng số`
+                    : 'Tổng Background',
+              },
+              {
+                label: 'Sắp hết 60 ngày',
+                value: loading ? '—' : formatNumber(stats?.expiring60 ?? 0),
+                tone: 'warning',
+                icon: <AlertTriangleIcon className="h-4 w-4" />,
+                hint:
+                  stats && stats.expiring30 > 0
+                    ? `${stats.expiring30} hết trong 30 ngày`
+                    : 'Cần xử lý sớm',
+              },
+              {
+                label: 'Tác phẩm',
+                value: loading ? '—' : formatNumber(stats?.totalWorks ?? 0),
+                tone: 'neutral',
+                icon: <Music2Icon className="h-4 w-4" />,
+                hint: 'Đang quản lý',
+              },
+              {
+                label: 'GCN đã in',
+                value: loading ? '—' : formatNumber(stats?.gcnFinalPrinted ?? 0),
+                tone: 'success',
+                icon: <AwardIcon className="h-4 w-4" />,
+                hint:
+                  stats && stats.gcnDraft > 0
+                    ? `${formatNumber(stats.gcnDraft)} nháp chờ phát hành`
+                    : 'Bản chính thức',
+              },
+              {
+                label: `Doanh thu ${currentYear}`,
+                value:
+                  loading
+                    ? '—'
+                    : revenueCurrent > 0
+                      ? `${(revenueCurrent / 1_000_000_000).toFixed(2)} tỷ`
+                      : 'Chưa có',
+                tone: 'teal',
+                icon: <WalletIcon className="h-4 w-4" />,
+                delta:
+                  revenueDeltaPct !== null
+                    ? `${revenueDeltaPct >= 0 ? '+' : ''}${revenueDeltaPct.toFixed(1)}% vs ${prevYear}`
+                    : undefined,
+                hint: revenueDeltaPct !== null ? `So với ${prevYear}` : 'Chưa có năm trước',
+              },
+            ]}
+          />
         </div>
 
-        <EnterpriseSummaryStrip
-          items={[
-            {
-              label: 'Tổng hợp đồng',
-              value: loading ? '—' : formatNumber(stats?.totalContracts ?? 0),
-              tone: 'accent',
-              icon: <FileTextIcon className="h-4 w-4" />,
-              hint: 'Workspace Background',
-            },
-            {
-              label: 'Còn hiệu lực',
-              value: loading ? '—' : formatNumber(stats?.active ?? 0),
-              tone: 'success',
-              icon: <CheckCircle2Icon className="h-4 w-4" />,
-              hint:
-                stats && stats.totalContracts > 0
-                  ? `${((stats.active / stats.totalContracts) * 100).toFixed(1)}% tổng số`
-                  : 'Tổng Background',
-            },
-            {
-              label: 'Sắp hết 60 ngày',
-              value: loading ? '—' : formatNumber(stats?.expiring60 ?? 0),
-              tone: 'warning',
-              icon: <AlertTriangleIcon className="h-4 w-4" />,
-              hint:
-                stats && stats.expiring30 > 0
-                  ? `Trong đó ${stats.expiring30} hết trong 30 ngày`
-                  : 'Cần xử lý sớm',
-            },
-            {
-              label: 'Tác phẩm',
-              value: loading ? '—' : formatNumber(stats?.totalWorks ?? 0),
-              tone: 'neutral',
-              icon: <Music2Icon className="h-4 w-4" />,
-              hint: 'Đang quản lý',
-            },
-            {
-              label: 'GCN đã in',
-              value: loading ? '—' : formatNumber(stats?.gcnFinalPrinted ?? 0),
-              tone: 'success',
-              icon: <AwardIcon className="h-4 w-4" />,
-              hint:
-                stats && stats.gcnDraft > 0
-                  ? `${formatNumber(stats.gcnDraft)} bản nháp chờ phát hành`
-                  : 'Bản chính thức',
-            },
-            {
-              label: `Doanh thu ${currentYear}`,
-              value:
-                loading
-                  ? '—'
-                  : revenueCurrent > 0
-                    ? `${(revenueCurrent / 1_000_000_000).toFixed(2)} tỷ`
-                    : 'Chưa có',
-              tone: 'teal',
-              icon: <WalletIcon className="h-4 w-4" />,
-              delta:
-                revenueDeltaPct !== null
-                  ? `${revenueDeltaPct >= 0 ? '+' : ''}${revenueDeltaPct.toFixed(1)}% so với ${prevYear}`
-                  : undefined,
-              hint: revenueDeltaPct !== null ? `So với ${prevYear}` : 'Chưa có dữ liệu năm trước',
-            },
-          ]}
-        />
-
-        {/* Row 1: chart + contract health. Equal-height row. */}
-        <div className="grid grid-cols-1 gap-4 xl:grid-cols-12">
+        {/* ── Row 1: Chart + Contract health (equal-height) ─────── */}
+        <div className="vc-cockpit__grid vc-cockpit__grid--primary">
           <ContentCard
             title="Doanh thu theo năm"
-            description="Đơn vị: tỷ VND · So sánh qua các năm (lũy kế đến nay)"
-            className="vc-dashboard-equal-card xl:col-span-8"
+            description="tỷ VND · so sánh qua các năm (lũy kế đến nay)"
+            className="vc-cockpit__chart-card"
             accent
             actions={
               <div className="flex flex-wrap items-center gap-3 text-[11px]">
@@ -364,8 +367,8 @@ export function DashboardPage({
                     <span
                       className={`h-2 w-2 rounded-full ${
                         i === chartData.length - 1
-                          ? 'bg-gradient-to-br from-emerald-600 to-teal-600'
-                          : 'bg-zinc-400'
+                          ? 'bg-emerald-500 ring-2 ring-emerald-100'
+                          : 'bg-zinc-300'
                       }`}
                     />
                     {d.year}
@@ -384,68 +387,45 @@ export function DashboardPage({
                   <BarChart
                     data={chartData}
                     margin={{ top: 8, right: 12, left: -14, bottom: 0 }}
-                    barCategoryGap="32%"
+                    barCategoryGap="36%"
                     onMouseLeave={() => setHoverIdx(null)}
                   >
                     <defs>
                       <linearGradient id="barFill" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="#0f8f72" stopOpacity={1} />
-                        <stop offset="100%" stopColor="#0b6d58" stopOpacity={0.88} />
+                        <stop offset="0%" stopColor="#10B981" stopOpacity={1} />
+                        <stop offset="100%" stopColor="#0E9E72" stopOpacity={0.9} />
                       </linearGradient>
                       <linearGradient id="barFillHover" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="#2dd4bf" stopOpacity={1} />
-                        <stop offset="100%" stopColor="#0f766e" stopOpacity={1} />
+                        <stop offset="0%" stopColor="#34D399" stopOpacity={1} />
+                        <stop offset="100%" stopColor="#0E9E72" stopOpacity={1} />
                       </linearGradient>
                       <linearGradient id="barFillPrev" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%" stopColor="#d6d3d1" stopOpacity={1} />
-                        <stop offset="100%" stopColor="#a8a29e" stopOpacity={1} />
+                        <stop offset="0%" stopColor="#E6DED0" stopOpacity={1} />
+                        <stop offset="100%" stopColor="#CFC6B4" stopOpacity={1} />
                       </linearGradient>
                     </defs>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#e7e5e4" vertical={false} />
-                    <XAxis
-                      dataKey="year"
-                      stroke="#a8a29e"
-                      fontSize={12}
-                      tickLine={false}
-                      axisLine={false}
-                      dy={4}
-                    />
-                    <YAxis
-                      stroke="#a8a29e"
-                      fontSize={11}
-                      tickLine={false}
-                      axisLine={false}
-                      dx={-4}
-                      tickFormatter={(v) => `${v}`}
-                    />
+                    <CartesianGrid strokeDasharray="3 3" stroke="#EFE9DC" vertical={false} />
+                    <XAxis dataKey="year" stroke="#7A8580" fontSize={12} tickLine={false} axisLine={false} dy={4} />
+                    <YAxis stroke="#7A8580" fontSize={11} tickLine={false} axisLine={false} dx={-4} tickFormatter={(v) => `${v}`} />
                     <Tooltip
-                      cursor={{ fill: 'rgba(15,143,114,0.06)' }}
+                      cursor={{ fill: 'rgba(16,185,129,0.06)' }}
                       contentStyle={{
                         border: 'none',
                         borderRadius: 10,
-                        background: 'rgba(15, 23, 42, 0.94)',
+                        background: '#071411',
                         color: '#fff',
                         fontSize: 12,
                         padding: '8px 12px',
-                        boxShadow: '0 10px 30px rgba(15,23,42,0.25)',
+                        boxShadow: '0 10px 30px rgba(7,20,17,0.35)',
                       }}
-                      labelStyle={{
-                        color: '#99f6e4',
-                        fontWeight: 600,
-                        marginBottom: 2,
-                      }}
+                      labelStyle={{ color: '#6EE7B7', fontWeight: 600, marginBottom: 2 }}
                       itemStyle={{ color: '#fff' }}
                       formatter={(v: number) => [
                         `${v.toLocaleString('vi-VN', { maximumFractionDigits: 2 })} tỷ`,
                         'Doanh thu',
                       ]}
                     />
-                    <Bar
-                      dataKey="revenueBn"
-                      radius={[6, 6, 0, 0]}
-                      maxBarSize={48}
-                      onMouseEnter={(_, idx) => setHoverIdx(idx)}
-                    >
+                    <Bar dataKey="revenueBn" radius={[6, 6, 0, 0]} maxBarSize={48} onMouseEnter={(_, idx) => setHoverIdx(idx)}>
                       {chartData.map((_, i) => (
                         <Cell
                           key={i}
@@ -465,200 +445,184 @@ export function DashboardPage({
             )}
           </ContentCard>
 
-          <EnterprisePanel className="vc-dashboard-equal-card xl:col-span-4">
+          <EnterprisePanel className="vc-cockpit__health-card">
             <EnterpriseSectionHeader
-              eyebrow="Command status"
+              eyebrow="Risk profile"
               title="Contract health"
-              description="Phân bổ toàn bộ workspace Background"
-              actions={stats ? <EnterpriseBadge tone="neutral">{formatNumber(stats.totalContracts)} hợp đồng</EnterpriseBadge> : undefined}
+              description="Phân bổ trạng thái workspace"
+              actions={stats ? <EnterpriseBadge tone="neutral">{formatNumber(stats.totalContracts)}</EnterpriseBadge> : undefined}
             />
             {statusBreakdown.length > 0 && stats ? (
               <ProgressStatusPanel
                 items={statusBreakdown}
                 mode="relative"
-                helper={`Tổng ${formatNumber(stats.totalContracts)} hợp đồng. Số "Còn hiệu lực" đã bao gồm ${stats.expiring60} đang sắp hết 60 ngày.`}
+                helper={`Tổng ${formatNumber(stats.totalContracts)} HĐ. "Còn hiệu lực" bao gồm ${stats.expiring60} đang sắp hết 60 ngày.`}
               />
             ) : (
               <div className="py-8 text-center text-sm text-zinc-400">
                 {loading ? 'Đang tải...' : 'Chưa có dữ liệu'}
               </div>
             )}
+
+            <div className="vc-cockpit__risk-callout">
+              <span className="vc-cockpit__risk-icon">
+                <ShieldAlertIcon className="h-4 w-4" />
+              </span>
+              <div className="min-w-0">
+                <div className="vc-enterprise-label">Risk summary</div>
+                <p className="vc-cockpit__risk-text">
+                  {loading
+                    ? 'Đang tải tổng hợp rủi ro…'
+                    : `${formatNumber(stats?.expired ?? 0)} hết hạn · ${formatNumber(stats?.gcnDraft ?? 0)} GCN chưa cấp số · ${formatNumber(expiringItems.length)} trong vùng theo dõi.`}
+                </p>
+              </div>
+            </div>
           </EnterprisePanel>
         </div>
 
-        {/* Row 2: full-width attention table (the single source of truth for
-            "Sắp hết hạn" / "Hợp đồng cần chú ý"). The earlier compact queue
-            was removed because it duplicated this same data. */}
-        <ContentCard
-          title="Hợp đồng cần chú ý"
-          description={
-            expiringItems.length > 0
-              ? `${expiringItems.length} hợp đồng sắp hết · hiển thị tối đa 8 dòng đầu tiên`
-              : 'Trong 60 ngày tới'
-          }
-          padded={false}
-          actions={
-            <div className="flex items-center gap-2">
-              <EnterpriseBadge tone="warning">{formatNumber(expiringItems.length)}</EnterpriseBadge>
-              <Button
-                variant="ghost"
-                size="sm"
-                rightIcon={<ArrowRightIcon className="h-3.5 w-3.5" />}
-                onClick={() => onNavigate('contracts.list')}
-              >
-                Xem tất cả
-              </Button>
-            </div>
-          }
-        >
-          {tableQueue.length > 0 ? (
-            <div className="overflow-hidden">
-              <div className="divide-y divide-stone-200">
-                <div className="grid grid-cols-[minmax(0,1.15fr)_minmax(0,1.7fr)_116px_140px] gap-3 px-4 py-3 text-[11px] font-semibold uppercase tracking-[0.12em] text-stone-500">
-                  <span>Hợp đồng</span>
-                  <span>Đơn vị</span>
-                  <span>Deadline</span>
-                  <span className="text-right">Giá trị</span>
-                </div>
-                {tableQueue.map((item) => (
-                  <div
-                    key={item.id}
-                    className="grid grid-cols-[minmax(0,1.15fr)_minmax(0,1.7fr)_116px_140px] gap-3 px-4 py-3 text-sm text-zinc-800 transition hover:bg-stone-50/80"
-                  >
-                    <div className="min-w-0">
-                      <div className="truncate font-mono text-[12px] font-semibold text-zinc-900">{item.contractNo || '—'}</div>
-                      <div className="mt-1 text-xs text-stone-500">{item.expireDate || '—'}</div>
-                    </div>
-                    <div className="min-w-0">
-                      <div className="line-clamp-2 text-sm font-medium leading-5 text-zinc-800">{item.partner || '—'}</div>
-                    </div>
-                    <div>
-                      <EnterpriseBadge tone={daysTone(item.daysLeft)}>
-                        {item.daysLeft <= 0 ? 'Hôm nay' : `${item.daysLeft} ngày`}
-                      </EnterpriseBadge>
-                    </div>
-                    <div className="truncate text-right font-medium tabular-nums text-zinc-700">
-                      {item.value != null && item.value > 0 ? formatCurrency(item.value) : '—'}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          ) : (
-            <div className="py-10 text-center text-sm text-zinc-400">
-              {loading ? 'Đang tải...' : 'Không có hợp đồng sắp hết trong 60 ngày tới'}
-            </div>
-          )}
-        </ContentCard>
-
-        {/* Right rail: operational signals + risk summary. The drawer
-            already covers navigation actions (topbar + Tạo mới + drawer
-            quick actions), so the previous "Suggested actions" block
-            (5 nav buttons) and the empty "Activity feed" block were
-            removed to eliminate navigation duplication. */}
-        <div className="grid grid-cols-1 gap-4 xl:grid-cols-12">
-          <div className="xl:col-span-9" />
-          <div className="space-y-4 xl:col-span-3">
-            <EnterprisePanel>
-              <EnterpriseSectionHeader
-                eyebrow="Intelligence"
-                title="Operational signals"
-                description="Tín hiệu ưu tiên được tổng hợp từ dữ liệu dashboard đang có."
-                actions={stats ? <EnterpriseBadge tone="neutral">Real data only</EnterpriseBadge> : undefined}
-              />
-
-              <div className="mt-4 grid gap-2.5">
-                {signalItems.map((s) => (
-                  <div key={s.key} className="vc-enterprise-queue-item vc-dashboard-signal">
-                    <div className="min-w-0 flex-1">
-                      <div className="truncate text-sm font-medium text-zinc-900">
-                        {s.label}
-                      </div>
-                      <div className="mt-0.5 truncate text-xs text-zinc-500">{s.sub}</div>
-                    </div>
-                    <div className="flex flex-col items-end gap-1.5">
-                      <span className="text-base font-semibold tabular-nums text-zinc-900">
-                        {loading ? '—' : s.value}
-                      </span>
-                      <EnterpriseBadge tone={s.tone}>
-                        {s.tone === 'danger' ? 'Risk' : s.tone === 'warning' ? 'Soon' : 'Watch'}
-                      </EnterpriseBadge>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              <div className="mt-4 rounded-2xl border border-[rgba(18,45,37,0.08)] bg-[rgba(15,143,114,0.04)] px-4 py-4">
-                <div className="flex items-start gap-3">
-                  <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-white text-[var(--vc-enterprise-accent-strong)] shadow-sm">
-                    <ShieldAlertIcon className="h-4 w-4" />
-                  </span>
-                  <div>
-                    <div className="vc-enterprise-label">Risk summary</div>
-                    <div className="mt-1 text-sm text-zinc-700">
-                      {loading
-                        ? 'Đang tải tổng hợp rủi ro...'
-                        : `${formatNumber(stats?.expired ?? 0)} hồ sơ hết hạn, ${formatNumber(stats?.gcnDraft ?? 0)} GCN chưa cấp số và ${formatNumber(expiringItems.length)} hợp đồng nằm trong vùng theo dõi.`}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </EnterprisePanel>
-
-            {/* Compact "Sắp hết hạn" rail queue — distinct from the
-                full attention table because it lives in the side rail and
-                shows only the top 4 most-urgent rows as a glance summary. */}
-            <EnterprisePanel>
-              <EnterpriseSectionHeader
-                eyebrow="Queue"
-                title="Sắp hết hạn"
-                description={`Top ${railQueue.length} ưu tiên`}
-                actions={<EnterpriseBadge tone="warning">{formatNumber(railQueue.length)}</EnterpriseBadge>}
-              />
-              <div className="mt-3 grid gap-2">
-                {railQueue.length > 0 ? railQueue.map((item) => (
-                  <div
-                    key={item.id}
-                    className="vc-enterprise-queue-item vc-dashboard-queue-row"
-                    title={`${item.contractNo || '—'} — ${item.partner || '—'}`}
-                  >
-                    <div className="min-w-0 flex-1">
-                      <div className="truncate text-sm font-semibold text-zinc-900">
-                        {item.partner || '—'}
-                      </div>
-                      <div className="mt-0.5 truncate font-mono text-[11px] tracking-wider text-zinc-500">
-                        {item.contractNo || '—'}
-                      </div>
-                    </div>
-                    <EnterpriseBadge tone={daysTone(item.daysLeft)}>
-                      {item.daysLeft <= 0 ? 'Hôm nay' : `${item.daysLeft}d`}
-                    </EnterpriseBadge>
-                  </div>
-                )) : (
-                  <div className="py-6 text-center text-sm text-zinc-400">
-                    {loading ? 'Đang tải...' : 'Không có hàng đợi ưu tiên'}
-                  </div>
-                )}
-              </div>
-              <div className="mt-3">
+        {/* ── Row 2: Attention table + GCN/operational queue ─────── */}
+        <div className="vc-cockpit__grid vc-cockpit__grid--secondary">
+          <ContentCard
+            title="Hợp đồng cần chú ý"
+            description={
+              expiringItems.length > 0
+                ? `${expiringItems.length} hợp đồng sắp hết · top 8 ưu tiên`
+                : 'Trong 60 ngày tới'
+            }
+            padded={false}
+            className="vc-cockpit__attention-card"
+            actions={
+              <div className="flex items-center gap-2">
+                <EnterpriseBadge tone="warning">{formatNumber(expiringItems.length)}</EnterpriseBadge>
                 <Button
                   variant="ghost"
                   size="sm"
                   rightIcon={<ArrowRightIcon className="h-3.5 w-3.5" />}
                   onClick={() => onNavigate('contracts.list')}
                 >
-                  Xem danh sách đầy đủ
+                  Tất cả
                 </Button>
               </div>
-            </EnterprisePanel>
+            }
+          >
+            {tableQueue.length > 0 ? (
+              <div className="vc-cockpit__attention">
+                <div className="vc-cockpit__attention-head">
+                  <span>Hợp đồng</span>
+                  <span>Đơn vị</span>
+                  <span>Deadline</span>
+                  <span className="text-right">Giá trị</span>
+                </div>
+                {tableQueue.map((item) => {
+                  const tone = daysTone(item.daysLeft);
+                  return (
+                    <div key={item.id} className={`vc-cockpit__attention-row vc-cockpit__attention-row--${tone}`}>
+                      <div className="min-w-0">
+                        <div className="truncate font-mono text-[12.5px] font-semibold text-[var(--text-primary)]">{item.contractNo || '—'}</div>
+                        <div className="mt-0.5 text-[11.5px] text-[var(--text-muted)]">{item.expireDate || '—'}</div>
+                      </div>
+                      <div className="min-w-0">
+                        <div className="line-clamp-2 text-[13px] font-medium leading-5 text-[var(--text-primary)]">{item.partner || '—'}</div>
+                      </div>
+                      <div>
+                        <EnterpriseBadge tone={tone}>
+                          {item.daysLeft <= 0 ? 'Hôm nay' : `${item.daysLeft} ngày`}
+                        </EnterpriseBadge>
+                      </div>
+                      <div className="truncate text-right font-medium tabular-nums text-[var(--text-primary)]">
+                        {item.value != null && item.value > 0 ? formatCurrency(item.value) : '—'}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="py-10 text-center text-sm text-[var(--text-muted)]">
+                {loading ? 'Đang tải...' : 'Không có hợp đồng sắp hết trong 60 ngày tới'}
+              </div>
+            )}
+          </ContentCard>
 
-            <div className="vc-dashboard-drawer-hint">
-              <LayoutGridIcon className="h-3.5 w-3.5" />
-              <span>Mở Command Drawer (phím <kbd>Esc</kbd> / click Orb) để truy cập nhanh các module khác.</span>
+          <EnterprisePanel className="vc-cockpit__queue-card">
+            <EnterpriseSectionHeader
+              eyebrow="Operational queue"
+              title="Tín hiệu vận hành"
+              description="Ưu tiên xử lý hôm nay"
+            />
+            <div className="vc-cockpit__signals">
+              {signalItems.map((s) => (
+                <div key={s.key} className={`vc-cockpit__signal vc-cockpit__signal--${s.tone}`}>
+                  <div className="vc-cockpit__signal-bar" aria-hidden />
+                  <div className="min-w-0 flex-1">
+                    <div className="truncate text-[13px] font-semibold text-[var(--text-primary)]">{s.label}</div>
+                    <div className="truncate text-[11.5px] text-[var(--text-muted)]">{s.sub}</div>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-[18px] font-semibold tabular-nums leading-none text-[var(--text-primary)]">
+                      {loading ? '—' : s.value}
+                    </div>
+                    <div className="mt-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-[var(--text-muted)]">
+                      {s.tone === 'danger' ? 'Risk' : s.tone === 'warning' ? 'Soon' : 'Watch'}
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
-          </div>
+
+            <div className="vc-cockpit__queue-divider" />
+
+            <EnterpriseSectionHeader
+              eyebrow="Top urgency"
+              title="Sắp hết hạn"
+              description={`Top ${railQueue.length} ưu tiên`}
+              actions={<EnterpriseBadge tone="warning">{formatNumber(railQueue.length)}</EnterpriseBadge>}
+            />
+            <div className="vc-cockpit__urgency">
+              {railQueue.length > 0 ? railQueue.map((item) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => onNavigate('contracts.list')}
+                  className={`vc-cockpit__urgency-row vc-cockpit__urgency-row--${daysTone(item.daysLeft)}`}
+                  title={`${item.contractNo || '—'} — ${item.partner || '—'}`}
+                >
+                  <div className="min-w-0 flex-1 text-left">
+                    <div className="truncate text-[13px] font-semibold text-[var(--text-primary)]">{item.partner || '—'}</div>
+                    <div className="truncate font-mono text-[11px] tracking-wider text-[var(--text-muted)]">{item.contractNo || '—'}</div>
+                  </div>
+                  <EnterpriseBadge tone={daysTone(item.daysLeft)}>
+                    {item.daysLeft <= 0 ? 'Hôm nay' : `${item.daysLeft}d`}
+                  </EnterpriseBadge>
+                </button>
+              )) : (
+                <div className="py-4 text-center text-sm text-[var(--text-muted)]">
+                  {loading ? 'Đang tải...' : 'Không có hàng đợi ưu tiên'}
+                </div>
+              )}
+            </div>
+            <div className="mt-2">
+              <Button
+                variant="ghost"
+                size="sm"
+                rightIcon={<ArrowRightIcon className="h-3.5 w-3.5" />}
+                onClick={() => onNavigate('contracts.list')}
+              >
+                Xem danh sách đầy đủ
+              </Button>
+            </div>
+          </EnterprisePanel>
+        </div>
+
+        <div className="vc-cockpit__hint">
+          <LayoutGridIcon className="h-3.5 w-3.5" />
+          <span>Mở Command Center bằng <kbd>⌘</kbd>+<kbd>K</kbd> để truy cập nhanh mọi module.</span>
         </div>
       </div>
     </Page>
   );
 }
+
+// Hide the legacy PageHeader; the cockpit owns the header now.
+// (Imports remain to avoid touching unrelated files.)
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const _PageHeaderRef = PageHeader;
