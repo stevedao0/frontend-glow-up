@@ -40,6 +40,8 @@ export function LoginPage() {
   };
   const handleDemoLogin = async () => {
     setError('');
+    setUsername('demo@vcpmc.local');
+    setPassword('admin');
     setDemoLoading(true);
     try {
       await demoLogin();
