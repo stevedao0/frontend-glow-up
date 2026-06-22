@@ -1,4 +1,4 @@
-import { isDemoMode, demoFetch } from "./demoMode";
+import { shouldUseDemoFetch, demoFetch } from "./demoMode";
 
 const API_BASE_URL = (import.meta.env.VITE_API_BASE_URL || "/api").replace(/\/$/, "");
 
@@ -14,7 +14,7 @@ export async function apiRequest<T>(path: string, options: RequestOptions = {}):
 
   // Demo mode short-circuits real network calls so the frontend can be
   // previewed without a backend. Mocks for the main endpoints live in demoMode.ts.
-  if (isDemoMode()) {
+  if (shouldUseDemoFetch(options.token)) {
     return demoFetch(path, method, options.body) as Promise<T>;
   }
 
