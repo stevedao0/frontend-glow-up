@@ -7,12 +7,13 @@ import { Button } from '../components/app-ui/Button';
 import { Input } from '../components/app-ui/Input';
 import { Checkbox } from '../components/app-ui/Checkbox';
 export function LoginPage() {
-  const { devLogin, login } = useAuth();
+  const { devLogin, login, demoLogin } = useAuth();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [remember, setRemember] = useState(false);
   const [loading, setLoading] = useState(false);
   const [devLoading, setDevLoading] = useState(false);
+  const [demoLoading, setDemoLoading] = useState(false);
   const [error, setError] = useState('');
   const [showForgot, setShowForgot] = useState(false);
   const showDevLogin = import.meta.env.VITE_DEV_AUTH_ENABLED === 'true';
@@ -37,6 +38,17 @@ export function LoginPage() {
       setDevLoading(false);
     }
   };
+  const handleDemoLogin = async () => {
+    setError('');
+    setDemoLoading(true);
+    try {
+      await demoLogin();
+    } catch (err: any) {
+      setError(err.message);
+      setDemoLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen w-full flex items-center justify-center relative overflow-hidden bg-gradient-to-br from-[#faf6ee] via-[#fcfaf5] to-[#f2ecd9]">
       {/* Soft rose-gold ambient glows */}
