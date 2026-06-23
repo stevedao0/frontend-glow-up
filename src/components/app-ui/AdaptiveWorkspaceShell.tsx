@@ -192,8 +192,8 @@ export function AdaptiveWorkspaceShell({
         onOpenWorkflow={handleOpenWorkflow}
       />
 
-      {/* Royalty Calculator FAB — global, hidden on its own dedicated page */}
-      {current !== 'tools.royalty' && <RoyaltyCalculatorFab />}
+      {/* Royalty Calculator FAB — global, hiển thị ở mọi trang */}
+      <RoyaltyCalculatorFab />
     </div>
   );
 }
