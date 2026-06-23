@@ -251,7 +251,7 @@ export async function exportRoyaltyQuoteDocx(data: ExportData): Promise<void> {
   childrenAll.push(p([], { spacing: 200 }));
   childrenAll.push(p([txt('GHI CHÚ', { bold: true, color: COLOR.accent })], { spacing: 60 }));
   childrenAll.push(p([txt('• Báo giá lập theo Nghị định 17/2023/NĐ-CP ngày 26/4/2023 — Phụ lục biểu mức tiền bản quyền.', { size: 20, color: COLOR.mute })]));
-  childrenAll.push(p([txt('• Tỷ lệ áp dụng theo phân loại đô thị: HN/TP.HCM 100%; đô thị loại I 80%; II 60%; III 40%; IV 20%; V 10%.', { size: 20, color: COLOR.mute })]));
+  childrenAll.push(p([txt('• Tỷ lệ áp dụng theo phân loại đô thị (NĐ 134/2026/NĐ-CP): HN/TP.HCM 100%; loại I 80%; loại II 50%; loại III 20% (vùng sâu, vùng xa, vùng ĐB khó khăn 10%).', { size: 20, color: COLOR.mute })]));
   childrenAll.push(p([txt('• Báo giá có hiệu lực 30 ngày kể từ ngày phát hành.', { size: 20, color: COLOR.mute })]));
   childrenAll.push(p([txt('• Mức lương cơ sở thay đổi theo quy định của Chính phủ tại từng thời điểm.', { size: 20, color: COLOR.mute })]));
 
