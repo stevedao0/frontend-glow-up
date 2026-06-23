@@ -52,13 +52,28 @@ export function RoyaltyCalculatorPage() {
   const [exporting, setExporting] = useState(false);
   const [expandedField, setExpandedField] = useState<string | null>(null);
 
+  // Smart filter: chỉ render lĩnh vực đã được chọn (hoặc đã có input)
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [pickerOpen, setPickerOpen] = useState(false);
+  const [pickerQuery, setPickerQuery] = useState('');
+
   const urbanFactor = URBAN_OPTIONS.find((u) => u.id === urban)!.factor;
   const urbanLabel = URBAN_OPTIONS.find((u) => u.id === urban)!.label;
 
   const setFieldInput = (fid: string, key: string, value: number) => {
     setInputs((prev) => ({ ...prev, [fid]: { ...(prev[fid] || {}), [key]: value } }));
+    setSelectedIds((prev) => prev.has(fid) ? prev : new Set(prev).add(fid));
   };
-  const resetAll = () => { setInputs({}); setExpandedField(null); };
+  const addField = (fid: string) => {
+    setSelectedIds((prev) => new Set(prev).add(fid));
+    setPickerOpen(false);
+    setPickerQuery('');
+  };
+  const removeField = (fid: string) => {
+    setSelectedIds((prev) => { const n = new Set(prev); n.delete(fid); return n; });
+    setInputs((prev) => { const n = { ...prev }; delete n[fid]; return n; });
+  };
+  const resetAll = () => { setInputs({}); setSelectedIds(new Set()); setExpandedField(null); };
 
   // Compute per-field results
   const perField = useMemo(() => {
