@@ -117,6 +117,7 @@ const ROUTE_TITLES: Record<RouteKey, string> = {
   'admin.permissions': 'Phân quyền',
   'admin.import': 'Nhập dữ liệu',
   assistant: 'AI Assistant',
+  'tools.royalty': 'Tính tiền bản quyền (NĐ 17/2023)',
 };
 
 function routeFromPath(pathname: string): RouteKey | null {
