@@ -77,7 +77,6 @@ import {
   listReportsCertificates,
   listPendingContracts,
   listSignedContracts,
-  type ReportsSummary,
   type ExpiringContractItem,
   type CertificateListItem,
   type SignedContractItem,
