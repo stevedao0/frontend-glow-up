@@ -2330,7 +2330,11 @@ export function CreateContractPage({
             >
               Hủy
             </Button>
-            <Button variant="ghost" onClick={handleSaveDraft}>
+            <Button
+              variant="secondary"
+              leftIcon={<SaveIcon className="h-4 w-4" />}
+              onClick={handleSaveDraft}
+            >
               Lưu nháp cục bộ
             </Button>
             <div className="flex-1" />
