@@ -77,6 +77,8 @@ export function AppShell({
         </div>
       </div>
 
+      {current !== 'tools.royalty' && <RoyaltyCalculatorFab />}
+
       <style>{`
         @keyframes fadein {
           from { opacity: 0; transform: translateY(4px); }
