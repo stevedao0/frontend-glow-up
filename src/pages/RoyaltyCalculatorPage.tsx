@@ -13,6 +13,7 @@ import * as Lucide from 'lucide-react';
 import {
   CalculatorIcon, InfoIcon, RotateCcwIcon, FileDownIcon, ChevronDownIcon,
   CheckCircle2Icon, AlertTriangleIcon, Building2Icon as B2Icon,
+  PlusIcon, XIcon, SearchIcon,
 } from 'lucide-react';
 import {
   FIELDS, FieldDef, FieldResult, computeQuoteTotals, formatVND, formatCoef,
