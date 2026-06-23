@@ -13,6 +13,7 @@ import * as Lucide from 'lucide-react';
 import {
   CalculatorIcon, InfoIcon, RotateCcwIcon, FileDownIcon, ChevronDownIcon,
   CheckCircle2Icon, AlertTriangleIcon, Building2Icon as B2Icon,
+  PlusIcon, XIcon, SearchIcon,
 } from 'lucide-react';
 import {
   FIELDS, FieldDef, FieldResult, computeQuoteTotals, formatVND, formatCoef,
@@ -51,15 +52,30 @@ export function RoyaltyCalculatorPage() {
   const [exporting, setExporting] = useState(false);
   const [expandedField, setExpandedField] = useState<string | null>(null);
 
+  // Smart filter: chỉ render lĩnh vực đã được chọn (hoặc đã có input)
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
+  const [pickerOpen, setPickerOpen] = useState(false);
+  const [pickerQuery, setPickerQuery] = useState('');
+
   const urbanFactor = URBAN_OPTIONS.find((u) => u.id === urban)!.factor;
   const urbanLabel = URBAN_OPTIONS.find((u) => u.id === urban)!.label;
 
   const setFieldInput = (fid: string, key: string, value: number) => {
     setInputs((prev) => ({ ...prev, [fid]: { ...(prev[fid] || {}), [key]: value } }));
+    setSelectedIds((prev) => prev.has(fid) ? prev : new Set(prev).add(fid));
   };
-  const resetAll = () => { setInputs({}); setExpandedField(null); };
+  const addField = (fid: string) => {
+    setSelectedIds((prev) => new Set(prev).add(fid));
+    setPickerOpen(false);
+    setPickerQuery('');
+  };
+  const removeField = (fid: string) => {
+    setSelectedIds((prev) => { const n = new Set(prev); n.delete(fid); return n; });
+    setInputs((prev) => { const n = { ...prev }; delete n[fid]; return n; });
+  };
+  const resetAll = () => { setInputs({}); setSelectedIds(new Set()); setExpandedField(null); };
 
-  // Compute per-field results
+  // Compute per-field results (toàn bộ 17 lĩnh vực, để dùng cho picker & tổng)
   const perField = useMemo(() => {
     return FIELDS.map((f) => {
       const vals = inputs[f.id] || {};
@@ -68,7 +84,13 @@ export function RoyaltyCalculatorPage() {
     });
   }, [inputs, baseSalary]);
 
+  // Chỉ hiển thị card cho lĩnh vực đã chọn HOẶC đã có input
+  const visibleFields = perField.filter((p) => selectedIds.has(p.field.id) || p.result.hasInput);
   const activeFields = perField.filter((p) => p.result.hasInput);
+  const availableToAdd = FIELDS.filter((f) =>
+    !selectedIds.has(f.id) &&
+    (pickerQuery.trim() === '' || f.name.toLowerCase().includes(pickerQuery.toLowerCase()))
+  );
   const totals = useMemo(() => computeQuoteTotals({
     perField: perField.map((p) => p.result),
     urbanFactor, supportPct, vatPct,
@@ -221,32 +243,92 @@ export function RoyaltyCalculatorPage() {
           </div>
         </details>
 
-        {/* ── FORMULA BANNER ────────────────────────────────────────────── */}
-        <div className="flex items-start gap-2.5 rounded-xl border border-indigo-400/20 bg-gradient-to-r from-indigo-500/10 to-fuchsia-500/5 px-4 py-3 text-xs text-indigo-100/90">
-          <InfoIcon className="mt-0.5 h-4 w-4 shrink-0 text-indigo-300" />
-          <div className="leading-relaxed">
-            <span className="font-bold text-white">Công thức báo giá:</span>{' '}
-            <code className="rounded bg-black/40 px-1.5 py-0.5 font-mono text-[11px] text-cyan-300">
-              Σ(MLCS × Hệ số × Số lượng) → Áp trần → × Đô thị → − Hỗ trợ → + VAT
-            </code>
+        {/* ── FORMULA + PICKER BAR ──────────────────────────────────────── */}
+        <div className="flex flex-col gap-3 rounded-xl border border-indigo-400/20 bg-gradient-to-r from-indigo-500/10 to-fuchsia-500/5 px-4 py-3 md:flex-row md:items-center md:justify-between">
+          <div className="flex items-start gap-2.5 text-xs text-indigo-100/90">
+            <InfoIcon className="mt-0.5 h-4 w-4 shrink-0 text-indigo-300" />
+            <div className="leading-relaxed">
+              <span className="font-bold text-white">Công thức:</span>{' '}
+              <code className="rounded bg-black/40 px-1.5 py-0.5 font-mono text-[11px] text-cyan-300">
+                Σ(MLCS × Hệ số × SL) → Trần → × Đô thị → − Hỗ trợ → + VAT
+              </code>
+            </div>
+          </div>
+          <div className="relative shrink-0">
+            <button
+              onClick={() => setPickerOpen((v) => !v)}
+              className="flex w-full items-center justify-center gap-1.5 rounded-lg border border-indigo-400/40 bg-indigo-500/15 px-3.5 py-2 text-xs font-bold text-indigo-100 transition hover:bg-indigo-500/25 md:w-auto"
+            >
+              <PlusIcon className="h-3.5 w-3.5" /> Thêm lĩnh vực kinh doanh
+              <span className="ml-1 rounded bg-black/40 px-1.5 py-0.5 font-mono text-[10px] text-indigo-300">
+                {visibleFields.length}/{FIELDS.length}
+              </span>
+            </button>
+            {pickerOpen && (
+              <>
+                <div className="fixed inset-0 z-30" onClick={() => setPickerOpen(false)} />
+                <div className="absolute right-0 z-40 mt-2 w-[22rem] max-w-[90vw] overflow-hidden rounded-xl border border-white/10 bg-zinc-950/95 shadow-2xl shadow-black/60 backdrop-blur-xl">
+                  <div className="flex items-center gap-2 border-b border-white/5 px-3 py-2">
+                    <SearchIcon className="h-3.5 w-3.5 text-zinc-500" />
+                    <input
+                      autoFocus
+                      value={pickerQuery}
+                      onChange={(e) => setPickerQuery(e.target.value)}
+                      placeholder="Tìm lĩnh vực…"
+                      className="w-full bg-transparent text-sm text-white placeholder:text-zinc-600 outline-none"
+                    />
+                  </div>
+                  <div className="max-h-72 overflow-y-auto py-1">
+                    {availableToAdd.length === 0 ? (
+                      <div className="px-3 py-6 text-center text-xs text-zinc-500">
+                        {selectedIds.size >= FIELDS.length ? 'Đã thêm tất cả 17 lĩnh vực' : 'Không tìm thấy lĩnh vực phù hợp'}
+                      </div>
+                    ) : availableToAdd.map((f) => (
+                      <button
+                        key={f.id}
+                        onClick={() => addField(f.id)}
+                        className="flex w-full items-center gap-2 px-3 py-2 text-left text-xs text-zinc-200 hover:bg-indigo-500/15"
+                      >
+                        <span className="w-6 shrink-0 font-mono text-[10px] text-zinc-500">{f.no}.</span>
+                        <span className="flex-1 truncate">{f.name}</span>
+                        <PlusIcon className="h-3 w-3 text-indigo-300" />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </>
+            )}
           </div>
         </div>
 
         {/* ── FIELD CARDS ───────────────────────────────────────────────── */}
-        <section className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-          {perField.map(({ field, vals, result }) => (
-            <FieldCard
-              key={field.id}
-              field={field}
-              vals={vals}
-              result={result}
-              expanded={expandedField === field.id}
-              onToggleExpand={() => setExpandedField(expandedField === field.id ? null : field.id)}
-              onChange={(k, v) => setFieldInput(field.id, k, v)}
-              baseSalary={baseSalary}
-            />
-          ))}
-        </section>
+        {visibleFields.length === 0 ? (
+          <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-white/10 bg-black/20 px-6 py-16 text-center">
+            <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-500/15 ring-1 ring-indigo-400/30">
+              <PlusIcon className="h-5 w-5 text-indigo-300" />
+            </div>
+            <div className="text-sm font-semibold text-white">Chưa có lĩnh vực nào</div>
+            <p className="mt-1 max-w-xs text-xs text-zinc-500">
+              Bấm <span className="text-indigo-300">“Thêm lĩnh vực kinh doanh”</span> ở trên để chọn các mục khách hàng đang sử dụng âm nhạc.
+            </p>
+          </div>
+        ) : (
+          <section className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
+            {visibleFields.map(({ field, vals, result }) => (
+              <FieldCard
+                key={field.id}
+                field={field}
+                vals={vals}
+                result={result}
+                expanded={expandedField === field.id}
+                onToggleExpand={() => setExpandedField(expandedField === field.id ? null : field.id)}
+                onChange={(k, v) => setFieldInput(field.id, k, v)}
+                onRemove={() => removeField(field.id)}
+                baseSalary={baseSalary}
+              />
+            ))}
+          </section>
+        )}
 
         {/* ── QUOTE SUMMARY ─────────────────────────────────────────────── */}
         {activeFields.length > 0 && (
@@ -261,10 +343,27 @@ export function RoyaltyCalculatorPage() {
           />
         )}
 
-        <footer className="border-t border-white/5 pt-6 text-center text-[11px] text-zinc-500">
+        <footer className="border-t border-white/5 pb-24 pt-6 text-center text-[11px] text-zinc-500">
           Căn cứ Phụ lục biểu mức tiền bản quyền — Nghị định 17/2023/NĐ-CP ngày 26/4/2023 · Áp dụng tương tự cho chủ sở hữu quyền liên quan đối với bản ghi âm, ghi hình.
         </footer>
       </div>
+
+      {/* ── STICKY BOTTOM TOTAL BAR ─────────────────────────────────────── */}
+      {activeFields.length > 0 && (
+        <div className="sticky bottom-3 z-20 mt-4 flex items-center justify-between gap-3 rounded-xl border border-emerald-400/40 bg-zinc-950/90 px-4 py-2.5 shadow-2xl shadow-emerald-500/20 backdrop-blur-xl">
+          <div className="flex items-center gap-2 text-[11px] text-zinc-400">
+            <CheckCircle2Icon className="h-4 w-4 text-emerald-300" />
+            <span className="font-semibold text-white">{activeFields.length}</span> lĩnh vực · MLCS{' '}
+            <span className="font-mono text-zinc-200">{formatVND(baseSalary, false)}</span> · {urbanLabel}
+          </div>
+          <div className="flex items-center gap-3">
+            <div className="text-right">
+              <div className="text-[9.5px] font-bold uppercase tracking-wider text-emerald-300">Tổng (đã VAT)</div>
+              <div className="font-mono text-base font-extrabold text-emerald-300 leading-tight">{formatVND(totals.grandTotal)}</div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -279,19 +378,24 @@ function SettingTile({
   label: string; value: string; accent: 'indigo' | 'fuchsia' | 'amber' | 'cyan' | 'emerald';
   children?: React.ReactNode;
 }) {
-  const ring = {
-    indigo: 'border-indigo-400/30 from-indigo-500/15',
-    fuchsia: 'border-fuchsia-400/30 from-fuchsia-500/15',
-    amber: 'border-amber-400/30 from-amber-500/15',
-    cyan: 'border-cyan-400/30 from-cyan-500/15',
-    emerald: 'border-emerald-400/30 from-emerald-500/15',
+  const accentBar = {
+    indigo: 'bg-indigo-400', fuchsia: 'bg-fuchsia-400', amber: 'bg-amber-400',
+    cyan: 'bg-cyan-400', emerald: 'bg-emerald-400',
+  }[accent];
+  const accentFocus = {
+    indigo: 'focus-within:border-indigo-400/60 focus-within:shadow-indigo-500/20',
+    fuchsia: 'focus-within:border-fuchsia-400/60 focus-within:shadow-fuchsia-500/20',
+    amber: 'focus-within:border-amber-400/60 focus-within:shadow-amber-500/20',
+    cyan: 'focus-within:border-cyan-400/60 focus-within:shadow-cyan-500/20',
+    emerald: 'focus-within:border-emerald-400/60 focus-within:shadow-emerald-500/20',
   }[accent];
   const text = {
     indigo: 'text-indigo-300', fuchsia: 'text-fuchsia-300', amber: 'text-amber-300',
     cyan: 'text-cyan-300', emerald: 'text-emerald-300',
   }[accent];
   return (
-    <div className={`relative overflow-hidden rounded-xl border bg-gradient-to-br to-transparent backdrop-blur-xl ${ring}`}>
+    <div className={`relative overflow-hidden rounded-xl border border-white/10 bg-zinc-950/80 backdrop-blur-xl transition focus-within:shadow-lg ${accentFocus}`}>
+      <div className={`absolute left-0 top-0 h-full w-0.5 ${accentBar}`} />
       <div className="relative p-3">
         <div className={`text-[10px] font-bold uppercase tracking-wider ${text}`}>{label}</div>
         <div className="mt-0.5 truncate font-mono text-sm font-bold text-white">{value}</div>
@@ -307,14 +411,14 @@ function CustField({ label, value, onChange, placeholder }: { label: string; val
       <label className="mb-1 block text-[11px] font-medium text-zinc-400">{label}</label>
       <input
         type="text" value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder}
-        className="w-full rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-sm text-white placeholder:text-zinc-600 outline-none focus:border-indigo-400/60"
+        className="w-full rounded-lg border border-white/15 bg-black/50 px-3 py-2 text-sm font-medium text-white placeholder:text-zinc-500 outline-none transition focus:border-indigo-400/60 focus:bg-black/70"
       />
     </div>
   );
 }
 
 function FieldCard({
-  field, vals, result, expanded, onToggleExpand, onChange, baseSalary,
+  field, vals, result, expanded, onToggleExpand, onChange, onRemove, baseSalary,
 }: {
   field: FieldDef;
   vals: Record<string, number>;
@@ -322,6 +426,7 @@ function FieldCard({
   expanded: boolean;
   onToggleExpand: () => void;
   onChange: (key: string, v: number) => void;
+  onRemove: () => void;
   baseSalary: number;
 }) {
   const Icon = (Lucide as unknown as Record<string, React.ComponentType<{ className?: string }>>)[field.icon] || CalculatorIcon;
@@ -352,6 +457,13 @@ function FieldCard({
               <CheckCircle2Icon className="h-3.5 w-3.5 text-emerald-300" />
             </div>
           )}
+          <button
+            onClick={onRemove}
+            title="Bỏ lĩnh vực này"
+            className="rounded-md bg-black/40 p-1 text-zinc-400 ring-1 ring-white/10 transition hover:bg-red-500/20 hover:text-red-300 hover:ring-red-400/40"
+          >
+            <XIcon className="h-3.5 w-3.5" />
+          </button>
         </div>
       </div>
 
@@ -359,14 +471,14 @@ function FieldCard({
       <div className="space-y-2.5 p-4">
         {field.inputs.map((inp) => (
           <div key={inp.key}>
-            <label className="mb-1 block text-[11px] font-medium text-zinc-400">{inp.label}</label>
+            <label className="mb-1 block text-[11px] font-medium text-zinc-300">{inp.label}</label>
             <div className="relative">
               <input
                 type="number" step="any"
                 value={vals[inp.key] || ''}
                 onChange={(e) => onChange(inp.key, Number(e.target.value) || 0)}
                 placeholder={inp.placeholder || '0'}
-                className="w-full rounded-lg border border-white/10 bg-black/40 px-3 py-2 pr-14 text-sm font-mono text-white outline-none transition focus:border-indigo-400/60 focus:ring-2 focus:ring-indigo-500/20"
+                className="w-full rounded-lg border border-white/15 bg-black/50 px-3 py-2 pr-14 text-sm font-mono font-semibold text-white placeholder:text-zinc-500 outline-none transition focus:border-indigo-400/60 focus:bg-black/70 focus:ring-2 focus:ring-indigo-500/20"
               />
               {inp.suffix && (
                 <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-semibold text-zinc-500">
