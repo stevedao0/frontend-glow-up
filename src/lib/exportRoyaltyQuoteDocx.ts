@@ -187,6 +187,10 @@ function formatNumber(v: number): string {
 
 // ── Main export ────────────────────────────────────────────────────────────
 
+export function buildRoyaltyQuoteDoc(data: ExportData): Document {
+  return buildDoc(data);
+}
+
 export async function exportRoyaltyQuoteDocx(data: ExportData): Promise<void> {
   const childrenAll: (Paragraph | Table)[] = [];
 
