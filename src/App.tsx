@@ -27,12 +27,6 @@ const PlaceholderPage = lazy(() => import('./pages/PlaceholderPage').then(m => (
 const LoginPage = lazy(() => import('./pages/LoginPage').then(m => ({ default: m.LoginPage })));
 const RoyaltyCalculatorPage = lazy(() => import('./pages/RoyaltyCalculatorPage').then(m => ({ default: m.RoyaltyCalculatorPage })));
 
-// Standalone route — runs OUTSIDE AuthProvider/AppShell. Truly isolated tool.
-const STANDALONE_PATHS = ['/tinh-tien-ban-quyen', '/royalty-calculator'];
-function isStandalonePath(pathname: string): boolean {
-  return STANDALONE_PATHS.some(p => pathname === p || pathname.startsWith(p + '/'));
-}
-
 // ErrorBoundary: isolates a page crash so the AppShell + sidebar remain usable
 class PageErrorBoundary extends React.Component<
   { routeKey: RouteKey; children: React.ReactNode },
