@@ -418,6 +418,9 @@ function AppContent() {
     if (route === 'dispatch') {
       return <DispatchesPage onNavigate={setRoute} />;
     }
+    if (route === 'tools.royalty') {
+      return <RoyaltyCalculatorPage />;
+    }
     const meta = PLACEHOLDER_META[route];
     if (!meta) return null;
     return (
