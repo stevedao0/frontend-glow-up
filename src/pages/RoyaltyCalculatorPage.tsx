@@ -8,7 +8,7 @@
  *    × MLCS × Hệ số = thành tiền, có cộng, áp trần, hỗ trợ, VAT, bằng chữ
  *  - Xuất file Word báo giá với thông tin VCPMC (vcpmc.org)
  */
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useRef, useEffect } from 'react';
 import * as Lucide from 'lucide-react';
 import {
   CalculatorIcon, InfoIcon, RotateCcwIcon, FileDownIcon, ChevronDownIcon,
