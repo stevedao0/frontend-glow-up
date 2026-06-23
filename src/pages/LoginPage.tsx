@@ -137,7 +137,7 @@ export function LoginPage() {
                 required
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                className="w-full h-10 px-3 rounded-lg bg-zinc-950/60 text-white ring-1 ring-white/10 hover:ring-indigo-400/40 focus:outline-none focus:ring-2 focus:ring-indigo-400/60 transition-shadow placeholder:text-zinc-500 text-sm"
+                className="w-full h-10 px-3 rounded-lg bg-zinc-950/60 text-white ring-1 ring-white/10 hover:ring-indigo-400/40 focus:outline-none focus:ring-2 focus:ring-indigo-400/60 transition-shadow placeholder:text-zinc-400 text-sm"
                 placeholder="admin@vcpmc.org" />
             </div>
 
@@ -158,7 +158,7 @@ export function LoginPage() {
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full h-10 px-3 rounded-lg bg-zinc-950/60 text-white ring-1 ring-white/10 hover:ring-indigo-400/40 focus:outline-none focus:ring-2 focus:ring-indigo-400/60 transition-shadow placeholder:text-zinc-500 text-sm"
+                className="w-full h-10 px-3 rounded-lg bg-zinc-950/60 text-white ring-1 ring-white/10 hover:ring-indigo-400/40 focus:outline-none focus:ring-2 focus:ring-indigo-400/60 transition-shadow placeholder:text-zinc-400 text-sm"
                 placeholder="••••••••" />
             </div>
 
@@ -217,7 +217,7 @@ export function LoginPage() {
           </form>
         </div>
 
-        <div className="mt-8 text-center text-xs text-zinc-500">
+        <div className="mt-8 text-center text-xs text-zinc-400">
           <p>Đăng nhập bằng tài khoản hiện có trong hệ thống.</p>
         </div>
       </div>
