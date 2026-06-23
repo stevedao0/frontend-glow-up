@@ -4,6 +4,7 @@ import { CompactCommandRail, type RailGroupKey } from './CompactCommandRail';
 import { ContextFlyout } from './ContextFlyout';
 import { WorkspaceCanvas } from './WorkspaceCanvas';
 import { CommandLauncher } from './CommandLauncher';
+import { RoyaltyCalculatorFab } from './RoyaltyCalculatorFab';
 import { useAuth } from '../../lib/auth';
 import vcpmcLogo from '../../assets/vcpmc-logo-animated.webp';
 import type { WorkflowKind } from './WorkflowSheet';
