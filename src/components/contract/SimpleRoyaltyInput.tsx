@@ -165,15 +165,20 @@ export function SimpleRoyaltyInput({
       {/* Royalty Amount Input */}
       <div>
         <label className="block text-sm font-medium text-zinc-700 mb-1">
-          Tiền bản quyền trước thuế (VND) *
+          Tiền bản quyền trước thuế <span className="text-zinc-400 font-normal">(VND)</span> *
         </label>
-        <input
-          type="text"
-          value={formatVnd(royaltyAmount)}
-          onChange={(e) => handleAmountChange(e.target.value)}
-          placeholder="0"
-          className="w-full px-3 py-2 border border-zinc-300 rounded-md text-right font-mono text-lg"
-        />
+        <div className="relative">
+          <input
+            type="text"
+            value={formatVnd(royaltyAmount)}
+            onChange={(e) => handleAmountChange(e.target.value)}
+            placeholder="0"
+            className="w-full pl-3 pr-10 py-2 border border-zinc-300 rounded-md text-right font-mono text-lg"
+          />
+          <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-zinc-500 font-medium">
+            ₫
+          </span>
+        </div>
         <p className="text-xs text-zinc-500 mt-1">
           Nhập số tiền bản quyền chưa có thuế GTGT
         </p>
@@ -183,30 +188,40 @@ export function SimpleRoyaltyInput({
       <div className="grid grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium text-zinc-700 mb-1">
-            Thuế suất GTGT (%)
+            Thuế suất GTGT
           </label>
-          <select
-            value={vatRate}
-            onChange={(e) => handleVatRateChange(Number(e.target.value))}
-            className="w-full px-3 py-2 border border-zinc-300 rounded-md"
-          >
-            {vatRateOptions.map((opt) => (
-              <option key={opt.value} value={opt.value}>
-                {opt.label}
-              </option>
-            ))}
-          </select>
+          <div className="relative">
+            <select
+              value={vatRate}
+              onChange={(e) => handleVatRateChange(Number(e.target.value))}
+              className="w-full pl-3 pr-8 py-2 border border-zinc-300 rounded-md appearance-none bg-white"
+            >
+              {vatRateOptions.map((opt) => (
+                <option key={opt.value} value={opt.value}>
+                  {opt.label}
+                </option>
+              ))}
+            </select>
+            <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-zinc-400">
+              ▾
+            </span>
+          </div>
         </div>
         <div>
           <label className="block text-sm font-medium text-zinc-700 mb-1">
-            Tiền thuế GTGT (VND)
+            Tiền thuế GTGT
           </label>
-          <input
-            type="text"
-            value={formatVnd(vatAmount)}
-            readOnly
-            className="w-full px-3 py-2 border border-zinc-200 rounded-md text-right font-mono bg-zinc-50 text-zinc-600"
-          />
+          <div className="relative">
+            <input
+              type="text"
+              value={formatVnd(vatAmount)}
+              readOnly
+              className="w-full pl-3 pr-10 py-2 border border-zinc-200 rounded-md text-right font-mono bg-zinc-50 text-zinc-600"
+            />
+            <span className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-zinc-400 font-medium">
+              ₫
+            </span>
+          </div>
         </div>
       </div>
 
