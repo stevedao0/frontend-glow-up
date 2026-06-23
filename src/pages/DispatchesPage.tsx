@@ -18,7 +18,6 @@ import {
   Edit2Icon,
   RotateCcwIcon,
   EyeIcon,
-  Trash2Icon,
   FileDownIcon,
   Crosshair,
 } from 'lucide-react';
