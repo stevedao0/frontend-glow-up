@@ -75,7 +75,7 @@ export function RoyaltyCalculatorPage() {
   };
   const resetAll = () => { setInputs({}); setSelectedIds(new Set()); setExpandedField(null); };
 
-  // Compute per-field results
+  // Compute per-field results (toàn bộ 17 lĩnh vực, để dùng cho picker & tổng)
   const perField = useMemo(() => {
     return FIELDS.map((f) => {
       const vals = inputs[f.id] || {};
@@ -84,7 +84,13 @@ export function RoyaltyCalculatorPage() {
     });
   }, [inputs, baseSalary]);
 
+  // Chỉ hiển thị card cho lĩnh vực đã chọn HOẶC đã có input
+  const visibleFields = perField.filter((p) => selectedIds.has(p.field.id) || p.result.hasInput);
   const activeFields = perField.filter((p) => p.result.hasInput);
+  const availableToAdd = FIELDS.filter((f) =>
+    !selectedIds.has(f.id) &&
+    (pickerQuery.trim() === '' || f.name.toLowerCase().includes(pickerQuery.toLowerCase()))
+  );
   const totals = useMemo(() => computeQuoteTotals({
     perField: perField.map((p) => p.result),
     urbanFactor, supportPct, vatPct,
