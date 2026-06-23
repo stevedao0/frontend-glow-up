@@ -8,7 +8,7 @@
  *    × MLCS × Hệ số = thành tiền, có cộng, áp trần, hỗ trợ, VAT, bằng chữ
  *  - Xuất file Word báo giá với thông tin VCPMC (vcpmc.org)
  */
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useRef, useEffect } from 'react';
 import * as Lucide from 'lucide-react';
 import {
   CalculatorIcon, InfoIcon, RotateCcwIcon, FileDownIcon, ChevronDownIcon,
@@ -178,16 +178,9 @@ export function RoyaltyCalculatorPage() {
           </SettingTile>
 
           <SettingTile label="Phân loại đô thị" value={`${urbanLabel} · ${(urbanFactor * 100).toFixed(0)}%`} accent="fuchsia">
-            <select
-              value={urban}
-              onChange={(e) => setUrban(e.target.value as UrbanId)}
-              className="mt-1 w-full rounded-md border border-white/10 bg-black/40 px-2 py-1.5 text-xs font-semibold text-white outline-none focus:border-fuchsia-400/60"
-            >
-              {URBAN_OPTIONS.map((u) => (
-                <option key={u.id} value={u.id} className="bg-zinc-900">{u.label} ({(u.factor * 100).toFixed(0)}%)</option>
-              ))}
-            </select>
+            <UrbanSelect value={urban} onChange={setUrban} />
           </SettingTile>
+
 
           <SettingTile label="Hỗ trợ trước VAT" value={`${(supportPct * 100).toFixed(0)}%`} accent="amber">
             <div className="relative mt-1">
@@ -680,3 +673,97 @@ function TotalRow({ label, amount, accent }: { label: string; amount: number; ac
     </div>
   );
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Custom Urban Dropdown — bo cong, mượt, accent fuchsia, click-outside-close
+// ─────────────────────────────────────────────────────────────────────────────
+function UrbanSelect({ value, onChange }: { value: UrbanId; onChange: (v: UrbanId) => void }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  const current = URBAN_OPTIONS.find((u) => u.id === value)!;
+
+  useEffect(() => {
+    if (!open) return;
+    const onDocClick = (e: MouseEvent) => {
+      if (!ref.current?.contains(e.target as Node)) setOpen(false);
+    };
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setOpen(false); };
+    document.addEventListener('mousedown', onDocClick);
+    document.addEventListener('keydown', onKey);
+    return () => {
+      document.removeEventListener('mousedown', onDocClick);
+      document.removeEventListener('keydown', onKey);
+    };
+  }, [open]);
+
+  return (
+    <div ref={ref} className="relative mt-1">
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        className={[
+          'flex w-full items-center justify-between gap-2 rounded-xl border bg-black/50 px-3 py-2 text-left text-xs font-semibold text-white outline-none transition-all',
+          open
+            ? 'border-fuchsia-400/70 shadow-[0_0_0_3px_rgba(232,121,249,0.15)]'
+            : 'border-white/10 hover:border-fuchsia-400/40',
+        ].join(' ')}
+      >
+        <span className="flex items-center gap-2 truncate">
+          <span className="inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-fuchsia-400 shadow-[0_0_6px_rgba(232,121,249,0.8)]" />
+          <span className="truncate">{current.label}</span>
+          <span className="ml-1 rounded-md bg-fuchsia-500/15 px-1.5 py-0.5 text-[10px] font-mono text-fuchsia-300">
+            {(current.factor * 100).toFixed(0)}%
+          </span>
+        </span>
+        <ChevronDownIcon
+          className={`h-3.5 w-3.5 shrink-0 text-zinc-500 transition-transform duration-200 ${open ? 'rotate-180 text-fuchsia-300' : ''}`}
+        />
+      </button>
+
+      {open && (
+        <div
+          className="absolute left-0 right-0 top-[calc(100%+6px)] z-50 overflow-hidden rounded-xl border border-white/10 bg-zinc-950/95 p-1 shadow-[0_20px_60px_-12px_rgba(0,0,0,0.7),0_0_0_1px_rgba(232,121,249,0.15)] backdrop-blur-xl"
+          style={{ animation: 'urbanDropIn 160ms cubic-bezier(0.32,0.72,0,1)' }}
+        >
+          {URBAN_OPTIONS.map((u) => {
+            const active = u.id === value;
+            return (
+              <button
+                key={u.id}
+                type="button"
+                onClick={() => { onChange(u.id); setOpen(false); }}
+                className={[
+                  'flex w-full items-center justify-between gap-3 rounded-lg px-3 py-2 text-left text-xs font-medium transition-colors',
+                  active
+                    ? 'bg-fuchsia-500/15 text-white'
+                    : 'text-zinc-300 hover:bg-white/5 hover:text-white',
+                ].join(' ')}
+              >
+                <span className="flex items-center gap-2 truncate">
+                  <span
+                    className={[
+                      'inline-block h-1.5 w-1.5 shrink-0 rounded-full',
+                      active ? 'bg-fuchsia-400 shadow-[0_0_6px_rgba(232,121,249,0.9)]' : 'bg-zinc-700',
+                    ].join(' ')}
+                  />
+                  <span className="truncate">{u.label}</span>
+                </span>
+                <span className={`rounded-md px-1.5 py-0.5 font-mono text-[10px] ${active ? 'bg-fuchsia-500/25 text-fuchsia-200' : 'bg-white/5 text-zinc-400'}`}>
+                  {(u.factor * 100).toFixed(0)}%
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      )}
+
+      <style>{`
+        @keyframes urbanDropIn {
+          from { opacity: 0; transform: translateY(-4px) scale(0.98); }
+          to   { opacity: 1; transform: translateY(0)    scale(1); }
+        }
+      `}</style>
+    </div>
+  );
+}
+
