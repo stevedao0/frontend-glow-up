@@ -13,6 +13,7 @@ import {
   PrinterIcon,
   UploadIcon,
   AwardIcon,
+  CalculatorIcon,
 } from 'lucide-react';
 import { RouteKey } from '../../data/routes';
 
