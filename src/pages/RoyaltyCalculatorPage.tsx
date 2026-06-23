@@ -20,7 +20,6 @@ import {
   ShoppingCartIcon,
   PlaneIcon,
   InfoIcon,
-  ArrowLeftIcon,
   RotateCcwIcon,
   CheckCircle2Icon,
 } from 'lucide-react';
