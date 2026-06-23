@@ -171,6 +171,12 @@ export const DRAWER_GROUPS: DrawerGroup[] = [
     ],
   },
   {
+    label: 'Công cụ',
+    items: [
+      { key: 'tools.royalty', label: 'Tính tiền bản quyền (NĐ 17/2023)', icon: <CalculatorIcon className="h-[14px] w-[14px]" />, requiredPerm: 'portal.access' },
+    ],
+  },
+  {
     label: 'Hệ thống',
     system: true,
     items: [
