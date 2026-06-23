@@ -35,20 +35,23 @@ export function AppShell({
   // -- Command Center (default for internal pilot) --
   if (layoutMode === 'command-center') {
     return (
-      <CommandCenter
-        current={current}
-        onNavigate={onNavigate}
-        workspace={workspace}
-        onWorkspaceChange={onWorkspaceChange}
-        userEmail={userEmail}
-        layoutMode={layoutMode}
-        onLayoutModeChange={setLayoutMode}
-        workflow={workflow}
-        onOpenWorkflow={onOpenWorkflow}
-        onCloseWorkflow={onCloseWorkflow}
-      >
-        {children}
-      </CommandCenter>
+      <>
+        <CommandCenter
+          current={current}
+          onNavigate={onNavigate}
+          workspace={workspace}
+          onWorkspaceChange={onWorkspaceChange}
+          userEmail={userEmail}
+          layoutMode={layoutMode}
+          onLayoutModeChange={setLayoutMode}
+          workflow={workflow}
+          onOpenWorkflow={onOpenWorkflow}
+          onCloseWorkflow={onCloseWorkflow}
+        >
+          {children}
+        </CommandCenter>
+        {current !== 'tools.royalty' && <RoyaltyCalculatorFab />}
+      </>
     );
   }
 
