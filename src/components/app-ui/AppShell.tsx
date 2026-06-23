@@ -3,6 +3,7 @@ import { Sidebar } from './Sidebar';
 import { Topbar } from './Topbar';
 import { CommandCenter } from './CommandCenter';
 import { useLayoutMode } from './useLayoutMode';
+import { RoyaltyCalculatorFab } from './RoyaltyCalculatorFab';
 
 import { RouteKey } from '../../data/routes';
 import type { WorkflowKind } from './WorkflowSheet';
