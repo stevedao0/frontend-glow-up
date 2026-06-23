@@ -107,10 +107,10 @@ export function LoginPage() {
               Quyền tác giả Âm nhạc Việt Nam
             </span>
           </div>
-          <h1 className="mt-4 text-3xl font-extrabold tracking-tight" style={{ color: '#ffffff' }}>
-            Hệ thống quản lý{' '}
-            <span className="bg-clip-text text-transparent bg-gradient-to-r from-indigo-300 via-white to-emerald-300">
-              Quyền tác giả
+          <h1 className="mt-4 text-3xl font-extrabold tracking-tight leading-tight" style={{ color: '#ffffff' }}>
+            <span className="block">Hệ thống quản lý</span>
+            <span className="block bg-clip-text text-transparent bg-gradient-to-r from-indigo-300 via-white to-emerald-300">
+              VCPMC
             </span>
           </h1>
           <p className="mt-2 text-zinc-400 text-sm">
