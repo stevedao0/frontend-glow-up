@@ -9,6 +9,7 @@
  *  - Xuất file Word báo giá với thông tin VCPMC (vcpmc.org)
  */
 import React, { useMemo, useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import * as Lucide from 'lucide-react';
 import {
   CalculatorIcon, InfoIcon, RotateCcwIcon, FileDownIcon, ChevronDownIcon,
