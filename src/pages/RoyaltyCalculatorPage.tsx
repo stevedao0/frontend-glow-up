@@ -418,7 +418,7 @@ function CustField({ label, value, onChange, placeholder }: { label: string; val
 }
 
 function FieldCard({
-  field, vals, result, expanded, onToggleExpand, onChange, baseSalary,
+  field, vals, result, expanded, onToggleExpand, onChange, onRemove, baseSalary,
 }: {
   field: FieldDef;
   vals: Record<string, number>;
@@ -426,6 +426,7 @@ function FieldCard({
   expanded: boolean;
   onToggleExpand: () => void;
   onChange: (key: string, v: number) => void;
+  onRemove: () => void;
   baseSalary: number;
 }) {
   const Icon = (Lucide as unknown as Record<string, React.ComponentType<{ className?: string }>>)[field.icon] || CalculatorIcon;
@@ -456,6 +457,13 @@ function FieldCard({
               <CheckCircle2Icon className="h-3.5 w-3.5 text-emerald-300" />
             </div>
           )}
+          <button
+            onClick={onRemove}
+            title="Bỏ lĩnh vực này"
+            className="rounded-md bg-black/40 p-1 text-zinc-400 ring-1 ring-white/10 transition hover:bg-red-500/20 hover:text-red-300 hover:ring-red-400/40"
+          >
+            <XIcon className="h-3.5 w-3.5" />
+          </button>
         </div>
       </div>
 
@@ -463,14 +471,14 @@ function FieldCard({
       <div className="space-y-2.5 p-4">
         {field.inputs.map((inp) => (
           <div key={inp.key}>
-            <label className="mb-1 block text-[11px] font-medium text-zinc-400">{inp.label}</label>
+            <label className="mb-1 block text-[11px] font-medium text-zinc-300">{inp.label}</label>
             <div className="relative">
               <input
                 type="number" step="any"
                 value={vals[inp.key] || ''}
                 onChange={(e) => onChange(inp.key, Number(e.target.value) || 0)}
                 placeholder={inp.placeholder || '0'}
-                className="w-full rounded-lg border border-white/10 bg-black/40 px-3 py-2 pr-14 text-sm font-mono text-white outline-none transition focus:border-indigo-400/60 focus:ring-2 focus:ring-indigo-500/20"
+                className="w-full rounded-lg border border-white/15 bg-black/50 px-3 py-2 pr-14 text-sm font-mono font-semibold text-white placeholder:text-zinc-500 outline-none transition focus:border-indigo-400/60 focus:bg-black/70 focus:ring-2 focus:ring-indigo-500/20"
               />
               {inp.suffix && (
                 <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-semibold text-zinc-500">
