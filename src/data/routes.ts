@@ -12,7 +12,8 @@ export type RouteKey =
 'admin.users' |
 'admin.permissions' |
 'admin.import' |
-'assistant';
+'assistant' |
+'tools.royalty';
 
 export const ROUTE_PATHS: Record<RouteKey, string> = {
   dashboard: '/bg',
@@ -28,7 +29,8 @@ export const ROUTE_PATHS: Record<RouteKey, string> = {
   'admin.users': '/admin/users',
   'admin.permissions': '/admin/permissions',
   'admin.import': '/admin/import',
-  assistant: '/assistant'
+  assistant: '/assistant',
+  'tools.royalty': '/tools/royalty-calculator'
 };
 
 export const WORKSPACES = [
