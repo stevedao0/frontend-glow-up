@@ -288,27 +288,29 @@ export async function exportRoyaltyQuoteDocx(data: ExportData): Promise<void> {
   childrenAll.push(sigTable);
 
   // ── Build doc ────────────────────────────────────────────────────────────
-  const doc = new Document({
+  const doc = buildDoc(data);
+  const blob = await Packer.toBlob(doc);
+  const filename = `BaoGia-VCPMC-${(data.customer.name || 'KhachHang').replace(/\s+/g, '_')}-${new Date().toISOString().slice(0, 10)}.docx`;
+  saveAs(blob, filename);
+}
+
+function buildDoc(data: ExportData): Document {
+  const childrenAll: (Paragraph | Table)[] = collectContent(data);
+  return new Document({
     creator: 'VCPMC',
     title: 'Báo giá tiền bản quyền âm nhạc',
     description: 'Báo giá theo Nghị định 17/2023/NĐ-CP',
-    styles: {
-      default: { document: { run: { font: FONT, size: 22 } } },
-    },
+    styles: { default: { document: { run: { font: FONT, size: 22 } } } },
     sections: [{
       properties: {
         page: {
-          size: { width: 11906, height: 16838 }, // A4
+          size: { width: 11906, height: 16838 },
           margin: { top: 720, right: 720, bottom: 720, left: 720 },
         },
       },
       children: childrenAll,
     }],
   });
-
-  const blob = await Packer.toBlob(doc);
-  const filename = `BaoGia-VCPMC-${(data.customer.name || 'KhachHang').replace(/\s+/g, '_')}-${new Date().toISOString().slice(0, 10)}.docx`;
-  saveAs(blob, filename);
 }
 
 function summaryRow(label: string, amount: number, isGrand = false): TableRow {
