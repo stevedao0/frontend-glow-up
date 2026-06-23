@@ -178,16 +178,9 @@ export function RoyaltyCalculatorPage() {
           </SettingTile>
 
           <SettingTile label="Phân loại đô thị" value={`${urbanLabel} · ${(urbanFactor * 100).toFixed(0)}%`} accent="fuchsia">
-            <select
-              value={urban}
-              onChange={(e) => setUrban(e.target.value as UrbanId)}
-              className="mt-1 w-full rounded-md border border-white/10 bg-black/40 px-2 py-1.5 text-xs font-semibold text-white outline-none focus:border-fuchsia-400/60"
-            >
-              {URBAN_OPTIONS.map((u) => (
-                <option key={u.id} value={u.id} className="bg-zinc-900">{u.label} ({(u.factor * 100).toFixed(0)}%)</option>
-              ))}
-            </select>
+            <UrbanSelect value={urban} onChange={setUrban} />
           </SettingTile>
+
 
           <SettingTile label="Hỗ trợ trước VAT" value={`${(supportPct * 100).toFixed(0)}%`} accent="amber">
             <div className="relative mt-1">
