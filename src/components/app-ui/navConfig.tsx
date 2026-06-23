@@ -277,6 +277,7 @@ export const SIDEBAR_BUSINESS_REST: NavItem[] = [
   { key: 'dispatch', label: 'Công văn', icon: <MailIcon className="h-[15px] w-[15px]" />, requiredPerm: 'annexes.read' },
   { key: 'reports', label: 'Báo cáo', icon: <BarChart3Icon className="h-[15px] w-[15px]" />, requiredPerm: 'reports.view' },
   { key: 'search', label: 'Tìm kiếm', icon: <SearchIcon className="h-[15px] w-[15px]" />, requiredPerm: 'works.read' },
+  { key: 'tools.royalty', label: 'Tính tiền bản quyền', icon: <CalculatorIcon className="h-[15px] w-[15px]" />, requiredPerm: 'portal.access' },
 ];
 
 export const SIDEBAR_SYSTEM: NavItem[] = [
