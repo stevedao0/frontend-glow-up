@@ -273,6 +273,10 @@ export function MusicUsageAreaSection({
           background: #d9d9d9;
           font-weight: 700;
           text-align: center;
+          position: sticky;
+          top: 0;
+          z-index: 1;
+          box-shadow: inset 0 -1px 0 #000;
         }
 
         .music-usage-table td {
