@@ -24,13 +24,13 @@ import { exportRoyaltyQuoteDocx } from '../lib/exportRoyaltyQuoteDocx';
 // ─────────────────────────────────────────────────────────────────────────────
 // Settings
 // ─────────────────────────────────────────────────────────────────────────────
+// Phân loại đô thị theo NĐ 134/2026/NĐ-CP (Điều 33 — sửa đổi Phụ lục II của NĐ 17/2023)
 const URBAN_OPTIONS = [
   { id: 'special', label: 'Hà Nội / TP. HCM', factor: 1.0 },
   { id: 'I', label: 'Đô thị loại I', factor: 0.8 },
-  { id: 'II', label: 'Đô thị loại II', factor: 0.6 },
-  { id: 'III', label: 'Đô thị loại III', factor: 0.4 },
-  { id: 'IV', label: 'Đô thị loại IV', factor: 0.2 },
-  { id: 'V', label: 'Đô thị loại V', factor: 0.1 },
+  { id: 'II', label: 'Đô thị loại II', factor: 0.5 },
+  { id: 'III', label: 'Đô thị loại III', factor: 0.2 },
+  { id: 'III_remote', label: 'Loại III · vùng sâu/xa/ĐB khó khăn', factor: 0.1 },
 ] as const;
 type UrbanId = (typeof URBAN_OPTIONS)[number]['id'];
 const DEFAULT_MLCS = 2_340_000;
