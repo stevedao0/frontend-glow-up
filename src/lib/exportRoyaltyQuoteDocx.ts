@@ -192,6 +192,13 @@ export function buildRoyaltyQuoteDoc(data: ExportData): Document {
 }
 
 export async function exportRoyaltyQuoteDocx(data: ExportData): Promise<void> {
+  const doc = buildDoc(data);
+  const blob = await Packer.toBlob(doc);
+  const filename = `BaoGia-VCPMC-${(data.customer.name || 'KhachHang').replace(/\s+/g, '_')}-${new Date().toISOString().slice(0, 10)}.docx`;
+  saveAs(blob, filename);
+}
+
+function collectContent(data: ExportData): (Paragraph | Table)[] {
   const childrenAll: (Paragraph | Table)[] = [];
 
   // ── Header: VCPMC info ───────────────────────────────────────────────────
@@ -287,11 +294,7 @@ export async function exportRoyaltyQuoteDocx(data: ExportData): Promise<void> {
   });
   childrenAll.push(sigTable);
 
-  // ── Build doc ────────────────────────────────────────────────────────────
-  const doc = buildDoc(data);
-  const blob = await Packer.toBlob(doc);
-  const filename = `BaoGia-VCPMC-${(data.customer.name || 'KhachHang').replace(/\s+/g, '_')}-${new Date().toISOString().slice(0, 10)}.docx`;
-  saveAs(blob, filename);
+  return childrenAll;
 }
 
 function buildDoc(data: ExportData): Document {
