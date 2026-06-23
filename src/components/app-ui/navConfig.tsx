@@ -13,6 +13,7 @@ import {
   PrinterIcon,
   UploadIcon,
   AwardIcon,
+  CalculatorIcon,
 } from 'lucide-react';
 import { RouteKey } from '../../data/routes';
 
@@ -170,6 +171,12 @@ export const DRAWER_GROUPS: DrawerGroup[] = [
     ],
   },
   {
+    label: 'Công cụ',
+    items: [
+      { key: 'tools.royalty', label: 'Tính tiền bản quyền (NĐ 17/2023)', icon: <CalculatorIcon className="h-[14px] w-[14px]" />, requiredPerm: 'portal.access' },
+    ],
+  },
+  {
     label: 'Hệ thống',
     system: true,
     items: [
@@ -270,6 +277,7 @@ export const SIDEBAR_BUSINESS_REST: NavItem[] = [
   { key: 'dispatch', label: 'Công văn', icon: <MailIcon className="h-[15px] w-[15px]" />, requiredPerm: 'annexes.read' },
   { key: 'reports', label: 'Báo cáo', icon: <BarChart3Icon className="h-[15px] w-[15px]" />, requiredPerm: 'reports.view' },
   { key: 'search', label: 'Tìm kiếm', icon: <SearchIcon className="h-[15px] w-[15px]" />, requiredPerm: 'works.read' },
+  { key: 'tools.royalty', label: 'Tính tiền bản quyền', icon: <CalculatorIcon className="h-[15px] w-[15px]" />, requiredPerm: 'portal.access' },
 ];
 
 export const SIDEBAR_SYSTEM: NavItem[] = [

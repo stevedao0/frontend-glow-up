@@ -20,7 +20,6 @@ import {
   ShoppingCartIcon,
   PlaneIcon,
   InfoIcon,
-  ArrowLeftIcon,
   RotateCcwIcon,
   CheckCircle2Icon,
 } from 'lucide-react';
@@ -402,49 +401,43 @@ export function RoyaltyCalculatorPage() {
   const activeCount = results.filter((r) => r.hasInput).length;
 
   return (
-    <div className="min-h-screen bg-[#0a0a0f] text-zinc-100 antialiased">
-      {/* Aurora background */}
-      <div className="pointer-events-none fixed inset-0 overflow-hidden">
-        <div className="absolute -top-40 -left-40 h-[40rem] w-[40rem] rounded-full bg-indigo-500/20 blur-[120px]" />
-        <div className="absolute top-1/3 -right-40 h-[40rem] w-[40rem] rounded-full bg-fuchsia-500/15 blur-[120px]" />
+    <div className="relative text-zinc-100 antialiased">
+      {/* Aurora background — scoped to this page, behind content */}
+      <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden rounded-2xl">
+        <div className="absolute -top-40 -left-40 h-[40rem] w-[40rem] rounded-full bg-indigo-500/15 blur-[120px]" />
+        <div className="absolute top-1/3 -right-40 h-[40rem] w-[40rem] rounded-full bg-fuchsia-500/10 blur-[120px]" />
         <div className="absolute bottom-0 left-1/3 h-[30rem] w-[30rem] rounded-full bg-emerald-500/10 blur-[120px]" />
       </div>
 
       <div className="relative">
-        {/* Header */}
-        <header className="border-b border-white/5 bg-zinc-950/60 backdrop-blur-xl">
-          <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-6 py-5">
-            <div className="flex items-center gap-3">
-              <button
-                onClick={() => (window.location.href = '/')}
-                className="flex h-9 w-9 items-center justify-center rounded-lg border border-white/10 bg-white/5 text-zinc-400 transition hover:bg-white/10 hover:text-white"
-                title="Quay lại trang chính"
-              >
-                <ArrowLeftIcon className="h-4 w-4" />
-              </button>
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-fuchsia-500 shadow-lg shadow-indigo-500/30">
-                <CalculatorIcon className="h-5 w-5 text-white" />
-              </div>
-              <div>
-                <div className="text-[10px] font-semibold uppercase tracking-[0.18em] text-indigo-300">
-                  ● Công cụ độc lập · Nghị định 17/2023/NĐ-CP
-                </div>
-                <h1 className="text-lg font-bold tracking-tight text-white">
-                  Tính tiền bản quyền âm nhạc theo Phụ lục
-                </h1>
-              </div>
+        {/* Hero — embedded inside AppShell */}
+        <header className="mb-6 flex flex-wrap items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 to-fuchsia-500 shadow-lg shadow-indigo-500/30">
+              <CalculatorIcon className="h-5 w-5 text-white" />
             </div>
-            <button
-              onClick={resetAll}
-              className="flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs font-medium text-zinc-300 transition hover:bg-white/10 hover:text-white"
-            >
-              <RotateCcwIcon className="h-3.5 w-3.5" />
-              Xóa toàn bộ
-            </button>
+            <div>
+              <div className="text-[10px] font-semibold uppercase tracking-[0.18em] text-indigo-300">
+                ● CÔNG CỤ / TÍNH TIỀN BẢN QUYỀN
+              </div>
+              <h1 className="text-xl font-bold tracking-tight text-white">
+                Tính tiền bản quyền theo Nghị định 17/2023/NĐ-CP
+              </h1>
+              <p className="mt-0.5 text-xs text-zinc-400">
+                Tự động tính toàn bộ 11 lĩnh vực khi nhập số liệu · Phụ lục biểu mức tiền bản quyền (26/4/2023)
+              </p>
+            </div>
           </div>
+          <button
+            onClick={resetAll}
+            className="flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs font-medium text-zinc-300 transition hover:bg-white/10 hover:text-white"
+          >
+            <RotateCcwIcon className="h-3.5 w-3.5" />
+            Xóa toàn bộ
+          </button>
         </header>
 
-        <div className="mx-auto max-w-7xl px-6 py-8">
+        <div>
           {/* Global settings */}
           <section className="mb-6 grid grid-cols-1 gap-4 lg:grid-cols-3">
             <SettingCard
@@ -473,6 +466,7 @@ export function RoyaltyCalculatorPage() {
               hint="Áp dụng cho mục 1–10 (mục 11 không phụ thuộc)"
             >
               <div className="grid grid-cols-3 gap-1.5">
+
                 {URBAN_OPTIONS.map((u) => (
                   <button
                     key={u.id}

@@ -27,12 +27,6 @@ const PlaceholderPage = lazy(() => import('./pages/PlaceholderPage').then(m => (
 const LoginPage = lazy(() => import('./pages/LoginPage').then(m => ({ default: m.LoginPage })));
 const RoyaltyCalculatorPage = lazy(() => import('./pages/RoyaltyCalculatorPage').then(m => ({ default: m.RoyaltyCalculatorPage })));
 
-// Standalone route — runs OUTSIDE AuthProvider/AppShell. Truly isolated tool.
-const STANDALONE_PATHS = ['/tinh-tien-ban-quyen', '/royalty-calculator'];
-function isStandalonePath(pathname: string): boolean {
-  return STANDALONE_PATHS.some(p => pathname === p || pathname.startsWith(p + '/'));
-}
-
 // ErrorBoundary: isolates a page crash so the AppShell + sidebar remain usable
 class PageErrorBoundary extends React.Component<
   { routeKey: RouteKey; children: React.ReactNode },
@@ -123,6 +117,7 @@ const ROUTE_TITLES: Record<RouteKey, string> = {
   'admin.permissions': 'Phân quyền',
   'admin.import': 'Nhập dữ liệu',
   assistant: 'AI Assistant',
+  'tools.royalty': 'Tính tiền bản quyền (NĐ 17/2023)',
 };
 
 function routeFromPath(pathname: string): RouteKey | null {
@@ -423,6 +418,9 @@ function AppContent() {
     if (route === 'dispatch') {
       return <DispatchesPage onNavigate={setRoute} />;
     }
+    if (route === 'tools.royalty') {
+      return <RoyaltyCalculatorPage />;
+    }
     const meta = PLACEHOLDER_META[route];
     if (!meta) return null;
     return (
@@ -506,17 +504,10 @@ function workflowRoutePath(kind: WorkflowKind): string {
   }
 }
 export function App() {
-  // Standalone tools (e.g. /tinh-tien-ban-quyen) render WITHOUT AuthProvider/AppShell.
-  if (typeof window !== 'undefined' && isStandalonePath(window.location.pathname)) {
-    return (
-      <Suspense fallback={<PageLoader />}>
-        <RoyaltyCalculatorPage />
-      </Suspense>
-    );
-  }
   return (
     <AuthProvider>
       <AppContent />
     </AuthProvider>);
+
 
 }
