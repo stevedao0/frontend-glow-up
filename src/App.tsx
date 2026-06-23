@@ -500,17 +500,10 @@ function workflowRoutePath(kind: WorkflowKind): string {
   }
 }
 export function App() {
-  // Standalone tools (e.g. /tinh-tien-ban-quyen) render WITHOUT AuthProvider/AppShell.
-  if (typeof window !== 'undefined' && isStandalonePath(window.location.pathname)) {
-    return (
-      <Suspense fallback={<PageLoader />}>
-        <RoyaltyCalculatorPage />
-      </Suspense>
-    );
-  }
   return (
     <AuthProvider>
       <AppContent />
     </AuthProvider>);
+
 
 }
