@@ -378,19 +378,24 @@ function SettingTile({
   label: string; value: string; accent: 'indigo' | 'fuchsia' | 'amber' | 'cyan' | 'emerald';
   children?: React.ReactNode;
 }) {
-  const ring = {
-    indigo: 'border-indigo-400/30 from-indigo-500/15',
-    fuchsia: 'border-fuchsia-400/30 from-fuchsia-500/15',
-    amber: 'border-amber-400/30 from-amber-500/15',
-    cyan: 'border-cyan-400/30 from-cyan-500/15',
-    emerald: 'border-emerald-400/30 from-emerald-500/15',
+  const accentBar = {
+    indigo: 'bg-indigo-400', fuchsia: 'bg-fuchsia-400', amber: 'bg-amber-400',
+    cyan: 'bg-cyan-400', emerald: 'bg-emerald-400',
+  }[accent];
+  const accentFocus = {
+    indigo: 'focus-within:border-indigo-400/60 focus-within:shadow-indigo-500/20',
+    fuchsia: 'focus-within:border-fuchsia-400/60 focus-within:shadow-fuchsia-500/20',
+    amber: 'focus-within:border-amber-400/60 focus-within:shadow-amber-500/20',
+    cyan: 'focus-within:border-cyan-400/60 focus-within:shadow-cyan-500/20',
+    emerald: 'focus-within:border-emerald-400/60 focus-within:shadow-emerald-500/20',
   }[accent];
   const text = {
     indigo: 'text-indigo-300', fuchsia: 'text-fuchsia-300', amber: 'text-amber-300',
     cyan: 'text-cyan-300', emerald: 'text-emerald-300',
   }[accent];
   return (
-    <div className={`relative overflow-hidden rounded-xl border bg-gradient-to-br to-transparent backdrop-blur-xl ${ring}`}>
+    <div className={`relative overflow-hidden rounded-xl border border-white/10 bg-zinc-950/80 backdrop-blur-xl transition focus-within:shadow-lg ${accentFocus}`}>
+      <div className={`absolute left-0 top-0 h-full w-0.5 ${accentBar}`} />
       <div className="relative p-3">
         <div className={`text-[10px] font-bold uppercase tracking-wider ${text}`}>{label}</div>
         <div className="mt-0.5 truncate font-mono text-sm font-bold text-white">{value}</div>
