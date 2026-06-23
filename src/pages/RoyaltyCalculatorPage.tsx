@@ -679,26 +679,43 @@ function TotalRow({ label, amount, accent }: { label: string; amount: number; ac
 // ─────────────────────────────────────────────────────────────────────────────
 function UrbanSelect({ value, onChange }: { value: UrbanId; onChange: (v: UrbanId) => void }) {
   const [open, setOpen] = useState(false);
-  const ref = useRef<HTMLDivElement>(null);
+  const [rect, setRect] = useState<{ left: number; top: number; width: number } | null>(null);
+  const btnRef = useRef<HTMLButtonElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
   const current = URBAN_OPTIONS.find((u) => u.id === value)!;
+
+  const updateRect = () => {
+    const r = btnRef.current?.getBoundingClientRect();
+    if (r) setRect({ left: r.left, top: r.bottom + 6, width: r.width });
+  };
 
   useEffect(() => {
     if (!open) return;
-    const onDocClick = (e: MouseEvent) => {
-      if (!ref.current?.contains(e.target as Node)) setOpen(false);
+    updateRect();
+    const onDocPointer = (e: MouseEvent) => {
+      const t = e.target as Node;
+      if (btnRef.current?.contains(t)) return;
+      if (menuRef.current?.contains(t)) return;
+      setOpen(false);
     };
     const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setOpen(false); };
-    document.addEventListener('mousedown', onDocClick);
+    const onScroll = () => updateRect();
+    document.addEventListener('mousedown', onDocPointer);
     document.addEventListener('keydown', onKey);
+    window.addEventListener('resize', onScroll);
+    window.addEventListener('scroll', onScroll, true);
     return () => {
-      document.removeEventListener('mousedown', onDocClick);
+      document.removeEventListener('mousedown', onDocPointer);
       document.removeEventListener('keydown', onKey);
+      window.removeEventListener('resize', onScroll);
+      window.removeEventListener('scroll', onScroll, true);
     };
   }, [open]);
 
   return (
-    <div ref={ref} className="relative mt-1">
+    <div className="relative mt-1">
       <button
+        ref={btnRef}
         type="button"
         onClick={() => setOpen((o) => !o)}
         className={[
@@ -720,10 +737,18 @@ function UrbanSelect({ value, onChange }: { value: UrbanId; onChange: (v: UrbanI
         />
       </button>
 
-      {open && (
+      {open && rect && createPortal(
         <div
-          className="absolute left-0 right-0 top-[calc(100%+6px)] z-50 overflow-hidden rounded-xl border border-white/10 bg-zinc-950/95 p-1 shadow-[0_20px_60px_-12px_rgba(0,0,0,0.7),0_0_0_1px_rgba(232,121,249,0.15)] backdrop-blur-xl"
-          style={{ animation: 'urbanDropIn 160ms cubic-bezier(0.32,0.72,0,1)' }}
+          ref={menuRef}
+          style={{
+            position: 'fixed',
+            left: rect.left,
+            top: rect.top,
+            width: rect.width,
+            zIndex: 9999,
+            animation: 'urbanDropIn 160ms cubic-bezier(0.32,0.72,0,1)',
+          }}
+          className="overflow-hidden rounded-xl border border-white/10 bg-zinc-950/95 p-1 shadow-[0_20px_60px_-12px_rgba(0,0,0,0.7),0_0_0_1px_rgba(232,121,249,0.15)] backdrop-blur-xl"
         >
           {URBAN_OPTIONS.map((u) => {
             const active = u.id === value;
@@ -734,18 +759,11 @@ function UrbanSelect({ value, onChange }: { value: UrbanId; onChange: (v: UrbanI
                 onClick={() => { onChange(u.id); setOpen(false); }}
                 className={[
                   'flex w-full items-center justify-between gap-3 rounded-lg px-3 py-2 text-left text-xs font-medium transition-colors',
-                  active
-                    ? 'bg-fuchsia-500/15 text-white'
-                    : 'text-zinc-300 hover:bg-white/5 hover:text-white',
+                  active ? 'bg-fuchsia-500/15 text-white' : 'text-zinc-300 hover:bg-white/5 hover:text-white',
                 ].join(' ')}
               >
                 <span className="flex items-center gap-2 truncate">
-                  <span
-                    className={[
-                      'inline-block h-1.5 w-1.5 shrink-0 rounded-full',
-                      active ? 'bg-fuchsia-400 shadow-[0_0_6px_rgba(232,121,249,0.9)]' : 'bg-zinc-700',
-                    ].join(' ')}
-                  />
+                  <span className={`inline-block h-1.5 w-1.5 shrink-0 rounded-full ${active ? 'bg-fuchsia-400 shadow-[0_0_6px_rgba(232,121,249,0.9)]' : 'bg-zinc-700'}`} />
                   <span className="truncate">{u.label}</span>
                 </span>
                 <span className={`rounded-md px-1.5 py-0.5 font-mono text-[10px] ${active ? 'bg-fuchsia-500/25 text-fuchsia-200' : 'bg-white/5 text-zinc-400'}`}>
@@ -754,16 +772,17 @@ function UrbanSelect({ value, onChange }: { value: UrbanId; onChange: (v: UrbanI
               </button>
             );
           })}
-        </div>
+          <style>{`
+            @keyframes urbanDropIn {
+              from { opacity: 0; transform: translateY(-4px) scale(0.98); }
+              to   { opacity: 1; transform: translateY(0)    scale(1); }
+            }
+          `}</style>
+        </div>,
+        document.body
       )}
-
-      <style>{`
-        @keyframes urbanDropIn {
-          from { opacity: 0; transform: translateY(-4px) scale(0.98); }
-          to   { opacity: 1; transform: translateY(0)    scale(1); }
-        }
-      `}</style>
     </div>
   );
 }
+
 
