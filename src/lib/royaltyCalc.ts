@@ -410,9 +410,11 @@ export const FIELDS: FieldDef[] = [
     hint: '0,0016 – 0,0021/100 lượt khách/năm',
     inputs: [{ key: 'pax', label: 'Số lượt khách/năm', suffix: 'lượt' }],
     compute: ({ pax }, mlcs) => paxPer100(pax || 0, 0.0021, mlcs, 'đường sắt'),
+  },
   // ── Mục 5.4 — Biểu diễn theo hình thức hát với nhau, tiệc cưới, liên hoan sinh nhật...
   // Phí trọn gói VND/năm, không nhân hệ số đô thị.
   {
+
     id: 'sing-restaurant', no: 18,
     name: 'Hát với nhau – Nhà hàng / quán cà phê / CLB khiêu vũ',
     icon: 'MicVocalIcon',
