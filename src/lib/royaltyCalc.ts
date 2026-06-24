@@ -31,7 +31,10 @@ export type FieldResult = {
   capMultiplier?: number;
   /** Có dữ liệu nhập hay không */
   hasInput: boolean;
+  /** Phí trọn gói (VND), không áp hệ số đô thị (NĐ 17 mục 5.4) */
+  urbanExempt?: boolean;
 };
+
 
 export type FieldDef = {
   id: string;
@@ -51,7 +54,10 @@ export type FieldDef = {
   inputs: FieldInput[];
   /** Hàm tính breakdown */
   compute: (vals: Record<string, number>, baseSalary: number) => FieldResult;
+  /** Phí trọn gói VND — bỏ qua hệ số đô thị (mục 5.4 NĐ 17) */
+  urbanExempt?: boolean;
 };
+
 
 export type FieldInput = {
   key: string;
@@ -405,7 +411,66 @@ export const FIELDS: FieldDef[] = [
     inputs: [{ key: 'pax', label: 'Số lượt khách/năm', suffix: 'lượt' }],
     compute: ({ pax }, mlcs) => paxPer100(pax || 0, 0.0021, mlcs, 'đường sắt'),
   },
+  // ── Mục 5.4 — Biểu diễn theo hình thức hát với nhau, tiệc cưới, liên hoan sinh nhật...
+  // Phí trọn gói VND/năm, không nhân hệ số đô thị.
+  {
+
+    id: 'sing-restaurant', no: 18,
+    name: 'Hát với nhau – Nhà hàng / quán cà phê / CLB khiêu vũ',
+    icon: 'MicVocalIcon',
+    accent: 'from-violet-500/20 to-indigo-500/10',
+    unit: 'chỗ', urbanExempt: true,
+    hint: '<30 chỗ: 2.000.000 đ/năm trọn gói · ≥30 chỗ: 60.000 đ/chỗ/năm',
+    inputs: [{ key: 'seats', label: 'Sức chứa (số chỗ)', suffix: 'chỗ' }],
+    compute: ({ seats }, mlcs) => flatSeats(seats || 0, 2_000_000, 60_000, mlcs),
+  },
+  {
+    id: 'sing-bar', no: 19,
+    name: 'Hát với nhau – Vũ trường / bar / lounge / bistro / CLB đêm',
+    icon: 'MartiniIcon',
+    accent: 'from-fuchsia-500/20 to-rose-500/10',
+    unit: 'chỗ', urbanExempt: true,
+    hint: '<30 chỗ: 2.500.000 đ/năm trọn gói · ≥30 chỗ: 60.000 đ/chỗ/năm',
+    inputs: [{ key: 'seats', label: 'Sức chứa (số chỗ)', suffix: 'chỗ' }],
+    compute: ({ seats }, mlcs) => flatSeats(seats || 0, 2_500_000, 60_000, mlcs),
+  },
+  {
+    id: 'wedding-hall', no: 20,
+    name: 'Sảnh / khu vực tổ chức tiệc cưới',
+    icon: 'HeartIcon',
+    accent: 'from-pink-500/20 to-rose-500/10',
+    unit: 'chỗ', urbanExempt: true,
+    hint: 'Áp dụng 25% mức "Nhà hàng/quán cà phê" — <30 chỗ: 500.000 đ/năm · ≥30 chỗ: 15.000 đ/chỗ/năm',
+    inputs: [{ key: 'seats', label: 'Sức chứa (số chỗ)', suffix: 'chỗ' }],
+    compute: ({ seats }, mlcs) => flatSeats(seats || 0, 500_000, 15_000, mlcs),
+  },
 ];
+
+/** Phí trọn gói VND theo sức chứa — mục 5.4 NĐ 17/2023 */
+function flatSeats(seats: number, flatUnder30: number, perSeatFrom30: number, mlcs: number): FieldResult {
+  if (seats <= 0) return emptyResult();
+  const amount = seats < 30 ? flatUnder30 : perSeatFrom30 * seats;
+  const label = seats < 30
+    ? `Sức chứa ${seats} chỗ (<30) — trọn gói`
+    : `Sức chứa ${seats} chỗ (≥30) — ${formatVND(perSeatFrom30, false)}/chỗ`;
+  const row: BreakdownRow = {
+    label,
+    coefText: seats < 30 ? 'trọn gói/năm' : `${formatVND(perSeatFrom30, false)}/chỗ/năm`,
+    qty: seats < 30 ? 1 : seats,
+    coef: amount / Math.max(mlcs, 1),
+    mode: 'flat',
+    amount,
+  };
+  return {
+    rows: [row],
+    totalCoef: amount / Math.max(mlcs, 1),
+    subTotal: amount,
+    capped: false,
+    hasInput: true,
+    urbanExempt: true,
+  };
+}
+
 
 function karaokeBand(rooms: number, rates: [number, number, number], mlcs: number, sizeLabel: string): FieldResult {
   if (rooms <= 0) return emptyResult();
@@ -474,9 +539,12 @@ export function computeQuoteTotals(params: {
   vatPct: number;     // 0..1
 }): QuoteTotals {
   const raw = params.perField.reduce((s, r) => s + r.subTotal, 0);
-  const afterUrban = raw * params.urbanFactor;
+  const exempt = params.perField.reduce((s, r) => s + (r.urbanExempt ? r.subTotal : 0), 0);
+  const urbanScaled = raw - exempt;
+  const afterUrban = urbanScaled * params.urbanFactor + exempt;
   const afterSupport = afterUrban * (1 - params.supportPct);
   const vat = afterSupport * params.vatPct;
+
   return {
     rawSubTotal: raw,
     afterUrban,
