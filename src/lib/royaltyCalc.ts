@@ -54,7 +54,10 @@ export type FieldDef = {
   inputs: FieldInput[];
   /** Hàm tính breakdown */
   compute: (vals: Record<string, number>, baseSalary: number) => FieldResult;
+  /** Phí trọn gói VND — bỏ qua hệ số đô thị (mục 5.4 NĐ 17) */
+  urbanExempt?: boolean;
 };
+
 
 export type FieldInput = {
   key: string;
