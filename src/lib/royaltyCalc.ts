@@ -539,9 +539,12 @@ export function computeQuoteTotals(params: {
   vatPct: number;     // 0..1
 }): QuoteTotals {
   const raw = params.perField.reduce((s, r) => s + r.subTotal, 0);
-  const afterUrban = raw * params.urbanFactor;
+  const exempt = params.perField.reduce((s, r) => s + (r.urbanExempt ? r.subTotal : 0), 0);
+  const urbanScaled = raw - exempt;
+  const afterUrban = urbanScaled * params.urbanFactor + exempt;
   const afterSupport = afterUrban * (1 - params.supportPct);
   const vat = afterSupport * params.vatPct;
+
   return {
     rawSubTotal: raw,
     afterUrban,
