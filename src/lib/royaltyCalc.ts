@@ -31,7 +31,10 @@ export type FieldResult = {
   capMultiplier?: number;
   /** Có dữ liệu nhập hay không */
   hasInput: boolean;
+  /** Phí trọn gói (VND), không áp hệ số đô thị (NĐ 17 mục 5.4) */
+  urbanExempt?: boolean;
 };
+
 
 export type FieldDef = {
   id: string;
