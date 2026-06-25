@@ -1,12 +1,12 @@
 /**
  * Tính tiền bản quyền âm nhạc theo Nghị định 17/2023/NĐ-CP
  *
- * Ngôn ngữ thiết kế:
- *  - Nền đen sâu, accent neon (indigo / fuchsia / lime) — "cool, ngầu"
- *  - Mono numbers, tương phản cao, dải tô để dễ đọc
- *  - Mỗi lĩnh vực có khối "diễn giải báo khách": từng dòng bậc thang
- *    × MLCS × Hệ số = thành tiền, có cộng, áp trần, hỗ trợ, VAT, bằng chữ
- *  - Xuất file Word báo giá với thông tin VCPMC (vcpmc.org)
+ * Ngôn ngữ thiết kế "Cream & Marine":
+ *  - Nền kem #F9F7F2, thẻ trắng, viền #E5E1D8
+ *  - Accent navy #00384D (chữ + nút primary + waterfall panel)
+ *  - Heading: Playfair Display (serif editorial), thân: Inter
+ *  - Số liệu tabular monospace, vi-VN
+ *  - Bố cục: trái = engine (settings + field cards), phải = sidebar tổng
  */
 import React, { useMemo, useState, useRef, useEffect } from 'react';
 import { createPortal } from 'react-dom';
@@ -22,10 +22,24 @@ import {
 import { numberToVietnameseWords } from '../lib/numberToVietnameseWords';
 import { exportRoyaltyQuoteDocx } from '../lib/exportRoyaltyQuoteDocx';
 
-// ─────────────────────────────────────────────────────────────────────────────
-// Settings
-// ─────────────────────────────────────────────────────────────────────────────
-// Phân loại đô thị theo NĐ 134/2026/NĐ-CP (Điều 33 — sửa đổi Phụ lục II của NĐ 17/2023)
+// Palette tokens (kept inline so the popup is self-contained)
+const C = {
+  cream: '#F9F7F2',
+  paper: '#FFFFFF',
+  subtle: '#FAF9F6',
+  line: '#E5E1D8',
+  lineStrong: '#D9D3C7',
+  ink: '#1A1A1A',
+  muted: '#6B665F',
+  mute2: '#8C877E',
+  navy: '#00384D',
+  navy600: '#0A4C66',
+  ember: '#B45309',
+};
+
+const SERIF: React.CSSProperties = { fontFamily: '"Playfair Display", Georgia, "Times New Roman", serif' };
+
+// Phân loại đô thị (NĐ 134/2026 sửa đổi Phụ lục II NĐ 17/2023)
 const URBAN_OPTIONS = [
   { id: 'special', label: 'Hà Nội / TP. HCM', factor: 1.0 },
   { id: 'I', label: 'Đô thị loại I', factor: 0.8 },
@@ -48,12 +62,10 @@ export function RoyaltyCalculatorPage() {
   const [contractMonths, setContractMonths] = useState<number>(12);
   const [inputs, setInputs] = useState<Record<string, Record<string, number>>>({});
 
-  // customer
   const [customer, setCustomer] = useState({ name: '', address: '', representative: '' });
   const [exporting, setExporting] = useState(false);
   const [expandedField, setExpandedField] = useState<string | null>(null);
 
-  // Smart filter: chỉ render lĩnh vực đã được chọn (hoặc đã có input)
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [pickerOpen, setPickerOpen] = useState(false);
   const [pickerQuery, setPickerQuery] = useState('');
@@ -67,8 +79,7 @@ export function RoyaltyCalculatorPage() {
   };
   const addField = (fid: string) => {
     setSelectedIds((prev) => new Set(prev).add(fid));
-    setPickerOpen(false);
-    setPickerQuery('');
+    setPickerOpen(false); setPickerQuery('');
   };
   const removeField = (fid: string) => {
     setSelectedIds((prev) => { const n = new Set(prev); n.delete(fid); return n; });
@@ -76,16 +87,11 @@ export function RoyaltyCalculatorPage() {
   };
   const resetAll = () => { setInputs({}); setSelectedIds(new Set()); setExpandedField(null); };
 
-  // Compute per-field results (toàn bộ 17 lĩnh vực, để dùng cho picker & tổng)
-  const perField = useMemo(() => {
-    return FIELDS.map((f) => {
-      const vals = inputs[f.id] || {};
-      const result = f.compute(vals, baseSalary);
-      return { field: f, vals, result };
-    });
-  }, [inputs, baseSalary]);
+  const perField = useMemo(() => FIELDS.map((f) => {
+    const vals = inputs[f.id] || {};
+    return { field: f, vals, result: f.compute(vals, baseSalary) };
+  }), [inputs, baseSalary]);
 
-  // Chỉ hiển thị card cho lĩnh vực đã chọn HOẶC đã có input
   const visibleFields = perField.filter((p) => selectedIds.has(p.field.id) || p.result.hasInput);
   const activeFields = perField.filter((p) => p.result.hasInput);
   const availableToAdd = FIELDS.filter((f) =>
@@ -102,316 +108,363 @@ export function RoyaltyCalculatorPage() {
     setExporting(true);
     try {
       await exportRoyaltyQuoteDocx({
-        customer,
-        contractMonths,
-        baseSalary,
-        urbanLabel,
-        urbanFactor,
-        supportPct,
-        vatPct,
-        perField: activeFields.map(({ field, vals, result }) => ({
-          fieldId: field.id, vals, result,
-        })),
-        totals,
-        quoteDate: new Date().toLocaleDateString('vi-VN'),
+        customer, contractMonths, baseSalary, urbanLabel, urbanFactor,
+        supportPct, vatPct,
+        perField: activeFields.map(({ field, vals, result }) => ({ fieldId: field.id, vals, result })),
+        totals, quoteDate: new Date().toLocaleDateString('vi-VN'),
       });
-    } finally {
-      setExporting(false);
-    }
+    } finally { setExporting(false); }
   };
 
   return (
-    <div className="relative text-zinc-100 antialiased">
-      {/* Aurora background */}
-      <div className="pointer-events-none absolute inset-0 -z-10 overflow-hidden rounded-2xl">
-        <div className="absolute -top-40 -left-40 h-[40rem] w-[40rem] rounded-full bg-indigo-500/15 blur-[120px]" />
-        <div className="absolute top-1/3 -right-40 h-[40rem] w-[40rem] rounded-full bg-fuchsia-500/10 blur-[120px]" />
-        <div className="absolute bottom-0 left-1/3 h-[30rem] w-[30rem] rounded-full bg-emerald-500/10 blur-[120px]" />
-      </div>
-
-      <div className="relative space-y-6">
-        {/* ── HERO ───────────────────────────────────────────────────────── */}
-        <header className="flex flex-wrap items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="relative flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-indigo-500 via-fuchsia-500 to-cyan-400 shadow-lg shadow-fuchsia-500/30">
-              <CalculatorIcon className="h-6 w-6 text-white" />
-              <div className="absolute -inset-px rounded-xl ring-1 ring-white/20" />
-            </div>
+    <div
+      className="rc-light text-[15px] antialiased"
+      style={{ background: C.cream, color: C.ink, fontFamily: '"Inter", system-ui, sans-serif' }}
+    >
+      <div className="grid grid-cols-1 lg:grid-cols-[1fr_360px]">
+        {/* ═══════════════════════════════════════════════════════════════════
+            LEFT — ENGINE
+            ═══════════════════════════════════════════════════════════════════ */}
+        <div className="p-6 lg:p-8 space-y-6 lg:border-r" style={{ borderColor: C.line }}>
+          {/* Hero */}
+          <header className="flex flex-wrap items-start justify-between gap-4 pb-5 border-b" style={{ borderColor: C.line }}>
             <div>
-              <div className="text-[10px] font-bold uppercase tracking-[0.2em] text-indigo-300">
-                ● VCPMC · CÔNG CỤ BÁO GIÁ
+              <div className="text-[11px] font-bold tracking-[0.18em] uppercase mb-1.5" style={{ color: C.navy }}>
+                VCPMC · CÔNG CỤ BÁO GIÁ
               </div>
-              <h1 className="text-xl font-bold tracking-tight text-white">
-                Tính tiền bản quyền âm nhạc — <span className="text-fuchsia-300">NĐ 17/2023/NĐ-CP</span>
+              <h1 className="text-[28px] leading-tight font-bold" style={{ ...SERIF, color: C.navy }}>
+                Tính toán Tiền bản quyền
               </h1>
-              <p className="mt-0.5 text-xs text-zinc-400">
-                17 lĩnh vực · diễn giải bậc thang chi tiết · xuất file Word báo giá
+              <p className="text-xs italic tracking-wider uppercase mt-1" style={{ color: C.muted }}>
+                Căn cứ Nghị định số 17/2023/NĐ-CP · 17 lĩnh vực
               </p>
             </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={resetAll}
-              className="flex items-center gap-1.5 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs font-medium text-zinc-300 transition hover:bg-white/10 hover:text-white"
-            >
-              <RotateCcwIcon className="h-3.5 w-3.5" /> Xóa số liệu
-            </button>
-            <button
-              onClick={handleExport}
-              disabled={activeFields.length === 0 || exporting}
-              className="group relative flex items-center gap-2 overflow-hidden rounded-lg border border-emerald-400/30 bg-gradient-to-r from-emerald-500 to-teal-500 px-4 py-2 text-xs font-bold text-white shadow-lg shadow-emerald-500/30 transition hover:shadow-emerald-500/50 disabled:cursor-not-allowed disabled:from-zinc-700 disabled:to-zinc-700 disabled:opacity-50 disabled:shadow-none"
-            >
-              <FileDownIcon className="h-4 w-4" />
-              {exporting ? 'Đang tạo...' : 'Xuất báo giá Word'}
-            </button>
-          </div>
-        </header>
-
-        {/* ── TOP STATS ──────────────────────────────────────────────────── */}
-        <section className="grid grid-cols-1 gap-3 md:grid-cols-3 xl:grid-cols-5">
-          <SettingTile label="Mức lương cơ sở" value={formatVND(baseSalary)} accent="indigo">
-            <input
-              type="number"
-              value={baseSalary || ''}
-              onChange={(e) => setBaseSalary(Number(e.target.value) || 0)}
-              className="mt-1 w-full rounded-md border border-white/10 bg-black/40 px-2 py-1.5 text-sm font-mono font-bold text-white outline-none focus:border-indigo-400/60"
-            />
-          </SettingTile>
-
-          <SettingTile label="Phân loại đô thị" value={`${urbanLabel} · ${(urbanFactor * 100).toFixed(0)}%`} accent="fuchsia">
-            <UrbanSelect value={urban} onChange={setUrban} />
-          </SettingTile>
-
-
-          <SettingTile label="Hỗ trợ trước VAT" value={`${(supportPct * 100).toFixed(0)}%`} accent="amber">
-            <div className="relative mt-1">
-              <input
-                type="number" step="1" min="0" max="100"
-                value={Math.round(supportPct * 100)}
-                onChange={(e) => setSupportPct(Math.max(0, Math.min(100, Number(e.target.value) || 0)) / 100)}
-                className="w-full rounded-md border border-white/10 bg-black/40 px-2 py-1.5 pr-7 text-sm font-mono font-bold text-white outline-none focus:border-amber-400/60"
-              />
-              <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[11px] text-zinc-500">%</span>
+            <div className="text-right">
+              <div className="text-[10px] uppercase font-semibold tracking-widest" style={{ color: C.mute2 }}>Mức lương cơ sở</div>
+              <div className="font-mono text-xl font-bold tabular-nums" style={{ color: C.navy }}>{formatVND(baseSalary)}</div>
             </div>
-          </SettingTile>
+          </header>
 
-          <SettingTile label="Thuế GTGT" value={`${(vatPct * 100).toFixed(0)}%`} accent="cyan">
-            <div className="relative mt-1">
-              <input
-                type="number" step="1" min="0" max="100"
-                value={Math.round(vatPct * 100)}
-                onChange={(e) => setVatPct(Math.max(0, Math.min(100, Number(e.target.value) || 0)) / 100)}
-                className="w-full rounded-md border border-white/10 bg-black/40 px-2 py-1.5 pr-7 text-sm font-mono font-bold text-white outline-none focus:border-cyan-400/60"
-              />
-              <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[11px] text-zinc-500">%</span>
+          {/* Customer + Global settings panel */}
+          <section
+            className="rounded-lg border p-5 lg:p-6 grid grid-cols-1 md:grid-cols-3 gap-5"
+            style={{ background: C.subtle, borderColor: C.line }}
+          >
+            <div className="md:col-span-2 space-y-4">
+              <Field label="Đơn vị sử dụng">
+                <input
+                  type="text"
+                  value={customer.name}
+                  onChange={(e) => setCustomer({ ...customer, name: e.target.value })}
+                  placeholder="Công ty TNHH Giải trí ABC"
+                  className="w-full bg-transparent border-b py-1.5 text-sm outline-none transition-colors"
+                  style={{ borderColor: C.lineStrong }}
+                  onFocus={(e) => (e.currentTarget.style.borderColor = C.navy)}
+                  onBlur={(e) => (e.currentTarget.style.borderColor = C.lineStrong)}
+                />
+              </Field>
+              <Field label="Địa chỉ">
+                <input
+                  type="text"
+                  value={customer.address}
+                  onChange={(e) => setCustomer({ ...customer, address: e.target.value })}
+                  placeholder="123 Nguyễn Huệ, Q.1, TP.HCM"
+                  className="w-full bg-transparent border-b py-1.5 text-sm outline-none"
+                  style={{ borderColor: C.lineStrong }}
+                  onFocus={(e) => (e.currentTarget.style.borderColor = C.navy)}
+                  onBlur={(e) => (e.currentTarget.style.borderColor = C.lineStrong)}
+                />
+              </Field>
+              <div className="grid grid-cols-2 gap-4">
+                <Field label="Thời hạn hợp đồng">
+                  <div className="relative">
+                    <input
+                      type="number" min={1} value={contractMonths || ''}
+                      onChange={(e) => setContractMonths(Number(e.target.value) || 1)}
+                      className="w-full bg-transparent border-b py-1.5 pr-12 text-sm font-mono font-semibold outline-none tabular-nums"
+                      style={{ borderColor: C.lineStrong, color: C.ink }}
+                      onFocus={(e) => (e.currentTarget.style.borderColor = C.navy)}
+                      onBlur={(e) => (e.currentTarget.style.borderColor = C.lineStrong)}
+                    />
+                    <span className="absolute right-0 top-1/2 -translate-y-1/2 text-[11px]" style={{ color: C.mute2 }}>tháng</span>
+                  </div>
+                </Field>
+                <Field label="Phân loại đô thị">
+                  <UrbanSelect value={urban} onChange={setUrban} />
+                </Field>
+              </div>
+              <Field label="Mức lương cơ sở (MLCS)">
+                <div className="relative">
+                  <input
+                    type="number" value={baseSalary || ''} onChange={(e) => setBaseSalary(Number(e.target.value) || 0)}
+                    className="w-full bg-transparent border-b py-1.5 pr-8 text-sm font-mono font-semibold outline-none tabular-nums"
+                    style={{ borderColor: C.lineStrong }}
+                    onFocus={(e) => (e.currentTarget.style.borderColor = C.navy)}
+                    onBlur={(e) => (e.currentTarget.style.borderColor = C.lineStrong)}
+                  />
+                  <span className="absolute right-0 top-1/2 -translate-y-1/2 text-[11px]" style={{ color: C.mute2 }}>đ</span>
+                </div>
+              </Field>
             </div>
-          </SettingTile>
 
-          <SettingTile label="Thời hạn HĐ" value={`${contractMonths} tháng`} accent="emerald">
-            <div className="relative mt-1">
-              <input
-                type="number" step="1" min="1"
-                value={contractMonths || ''}
-                onChange={(e) => setContractMonths(Number(e.target.value) || 1)}
-                className="w-full rounded-md border border-white/10 bg-black/40 px-2 py-1.5 pr-12 text-sm font-mono font-bold text-white outline-none focus:border-emerald-400/60"
-              />
-              <span className="absolute right-2 top-1/2 -translate-y-1/2 text-[11px] text-zinc-500">tháng</span>
+            <div className="grid grid-cols-1 gap-3">
+              <div className="rounded-md border p-4 flex flex-col" style={{ background: C.paper, borderColor: C.lineStrong }}>
+                <label className="text-[10px] uppercase font-bold tracking-widest mb-2" style={{ color: C.mute2 }}>
+                  Ưu đãi / Hỗ trợ (%)
+                </label>
+                <div className="flex items-baseline gap-1">
+                  <input
+                    type="number" min={0} max={100}
+                    value={Math.round(supportPct * 100)}
+                    onChange={(e) => setSupportPct(Math.max(0, Math.min(100, Number(e.target.value) || 0)) / 100)}
+                    className="w-full text-3xl font-bold outline-none tabular-nums bg-transparent"
+                    style={{ color: C.navy }}
+                  />
+                  <span className="text-2xl font-bold" style={{ color: C.navy }}>%</span>
+                </div>
+                <p className="text-[10px] italic mt-1" style={{ color: C.mute2 }}>Áp dụng trước VAT</p>
+              </div>
+              <div className="rounded-md border p-4" style={{ background: C.paper, borderColor: C.lineStrong }}>
+                <label className="text-[10px] uppercase font-bold tracking-widest mb-1.5 block" style={{ color: C.mute2 }}>
+                  Thuế GTGT
+                </label>
+                <div className="flex items-baseline gap-1">
+                  <input
+                    type="number" min={0} max={100}
+                    value={Math.round(vatPct * 100)}
+                    onChange={(e) => setVatPct(Math.max(0, Math.min(100, Number(e.target.value) || 0)) / 100)}
+                    className="w-20 text-2xl font-bold outline-none tabular-nums bg-transparent"
+                    style={{ color: C.ink }}
+                  />
+                  <span className="text-xl font-bold" style={{ color: C.ink }}>%</span>
+                </div>
+              </div>
             </div>
-          </SettingTile>
-        </section>
+          </section>
 
-        {/* ── CUSTOMER (collapsible) ────────────────────────────────────── */}
-        <details className="group rounded-xl border border-white/10 bg-zinc-950/60 backdrop-blur-xl" open={activeFields.length > 0}>
-          <summary className="flex cursor-pointer list-none items-center justify-between px-5 py-3.5 hover:bg-white/5">
+          {/* Person rep + formula + picker bar */}
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="flex items-center gap-2 text-xs" style={{ color: C.muted }}>
+              <B2Icon className="h-3.5 w-3.5" />
+              <span>Người đại diện:</span>
+              <input
+                type="text"
+                value={customer.representative}
+                onChange={(e) => setCustomer({ ...customer, representative: e.target.value })}
+                placeholder="Ông/Bà Nguyễn Văn A"
+                className="bg-transparent border-b text-sm py-0.5 outline-none w-48"
+                style={{ borderColor: C.lineStrong, color: C.ink }}
+                onFocus={(e) => (e.currentTarget.style.borderColor = C.navy)}
+                onBlur={(e) => (e.currentTarget.style.borderColor = C.lineStrong)}
+              />
+            </div>
             <div className="flex items-center gap-2">
-              <B2Icon className="h-4 w-4 text-indigo-300" />
-              <span className="text-sm font-semibold text-white">Thông tin khách hàng</span>
-              <span className="text-[11px] text-zinc-500">(điền cho file Word báo giá)</span>
+              <button
+                onClick={resetAll}
+                className="flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-semibold border transition-colors"
+                style={{ borderColor: C.lineStrong, color: C.muted, background: C.paper }}
+              >
+                <RotateCcwIcon className="h-3.5 w-3.5" /> Xóa số liệu
+              </button>
+              <FieldPicker
+                count={visibleFields.length}
+                total={FIELDS.length}
+                open={pickerOpen}
+                setOpen={setPickerOpen}
+                query={pickerQuery}
+                setQuery={setPickerQuery}
+                items={availableToAdd}
+                onPick={addField}
+                allFull={selectedIds.size >= FIELDS.length}
+              />
             </div>
-            <ChevronDownIcon className="h-4 w-4 text-zinc-500 transition group-open:rotate-180" />
-          </summary>
-          <div className="grid grid-cols-1 gap-3 border-t border-white/5 px-5 py-4 md:grid-cols-3">
-            <CustField label="Tên đơn vị / khách hàng" value={customer.name} onChange={(v) => setCustomer({ ...customer, name: v })} placeholder="Công ty TNHH ABC" />
-            <CustField label="Địa chỉ" value={customer.address} onChange={(v) => setCustomer({ ...customer, address: v })} placeholder="123 Nguyễn Huệ, Q.1, TP.HCM" />
-            <CustField label="Người đại diện" value={customer.representative} onChange={(v) => setCustomer({ ...customer, representative: v })} placeholder="Ông Nguyễn Văn A" />
           </div>
-        </details>
 
-        {/* ── FORMULA + PICKER BAR ──────────────────────────────────────── */}
-        <div className="flex flex-col gap-3 rounded-xl border border-indigo-400/20 bg-gradient-to-r from-indigo-500/10 to-fuchsia-500/5 px-4 py-3 md:flex-row md:items-center md:justify-between">
-          <div className="flex items-start gap-2.5 text-xs text-indigo-100/90">
-            <InfoIcon className="mt-0.5 h-4 w-4 shrink-0 text-indigo-300" />
+          {/* Formula bar */}
+          <div
+            className="flex items-start gap-2.5 rounded-md border px-4 py-2.5 text-xs"
+            style={{ background: C.subtle, borderColor: C.line, color: C.muted }}
+          >
+            <InfoIcon className="h-4 w-4 mt-0.5 shrink-0" style={{ color: C.navy }} />
             <div className="leading-relaxed">
-              <span className="font-bold text-white">Công thức:</span>{' '}
-              <code className="rounded bg-black/40 px-1.5 py-0.5 font-mono text-[11px] text-cyan-300">
+              <span className="font-bold" style={{ color: C.navy }}>Công thức: </span>
+              <code className="font-mono text-[11px] rounded px-1.5 py-0.5" style={{ background: C.paper, color: C.ink, border: `1px solid ${C.line}` }}>
                 Σ(MLCS × Hệ số × SL) → Trần → × Đô thị → − Hỗ trợ → + VAT
               </code>
             </div>
           </div>
-          <div className="relative shrink-0">
-            <button
-              onClick={() => setPickerOpen((v) => !v)}
-              className="flex w-full items-center justify-center gap-1.5 rounded-lg border border-indigo-400/40 bg-indigo-500/15 px-3.5 py-2 text-xs font-bold text-indigo-100 transition hover:bg-indigo-500/25 md:w-auto"
+
+          {/* Field list */}
+          {visibleFields.length === 0 ? (
+            <div
+              className="flex flex-col items-center justify-center rounded-lg border-2 border-dashed py-16 px-6 text-center"
+              style={{ borderColor: C.lineStrong, background: C.subtle }}
             >
-              <PlusIcon className="h-3.5 w-3.5" /> Thêm lĩnh vực kinh doanh
-              <span className="ml-1 rounded bg-black/40 px-1.5 py-0.5 font-mono text-[10px] text-indigo-300">
-                {visibleFields.length}/{FIELDS.length}
-              </span>
-            </button>
-            {pickerOpen && (
+              <div className="h-12 w-12 rounded-full flex items-center justify-center mb-3" style={{ background: C.paper, border: `1px solid ${C.lineStrong}` }}>
+                <PlusIcon className="h-5 w-5" style={{ color: C.navy }} />
+              </div>
+              <div className="text-sm font-semibold" style={{ color: C.ink }}>Chưa có lĩnh vực nào</div>
+              <p className="text-xs mt-1 max-w-xs" style={{ color: C.muted }}>
+                Bấm <span className="font-semibold" style={{ color: C.navy }}>"Thêm hạng mục sử dụng"</span> ở trên để chọn lĩnh vực kinh doanh có sử dụng âm nhạc.
+              </p>
+            </div>
+          ) : (
+            <section className="space-y-6">
+              {visibleFields.map(({ field, vals, result }) => (
+                <FieldBlock
+                  key={field.id}
+                  field={field}
+                  vals={vals}
+                  result={result}
+                  expanded={expandedField === field.id}
+                  onToggleExpand={() => setExpandedField(expandedField === field.id ? null : field.id)}
+                  onChange={(k, v) => setFieldInput(field.id, k, v)}
+                  onRemove={() => removeField(field.id)}
+                  baseSalary={baseSalary}
+                />
+              ))}
+            </section>
+          )}
+
+          <footer className="pt-6 pb-4 text-center text-[11px] italic" style={{ color: C.mute2 }}>
+            Căn cứ Phụ lục biểu mức tiền bản quyền — Nghị định 17/2023/NĐ-CP ngày 26/4/2023. Áp dụng tương tự cho chủ sở hữu quyền liên quan đối với bản ghi âm, ghi hình.
+          </footer>
+        </div>
+
+        {/* ═══════════════════════════════════════════════════════════════════
+            RIGHT — TOTALS SIDEBAR (navy)
+            ═══════════════════════════════════════════════════════════════════ */}
+        <aside
+          className="lg:sticky lg:top-0 lg:self-start lg:h-screen flex flex-col text-white"
+          style={{ background: C.navy }}
+        >
+          <div className="flex-1 overflow-y-auto p-7">
+            <h2
+              className="text-xl italic font-bold pb-3 border-b border-white/15"
+              style={SERIF}
+            >
+              Tóm tắt thanh toán
+            </h2>
+
+            {activeFields.length === 0 ? (
+              <div className="mt-8 text-sm text-white/60 leading-relaxed">
+                Chưa có lĩnh vực nào được nhập. Sau khi điền dữ liệu, bảng tổng hợp và mức tiền bản quyền sẽ hiển thị ở đây.
+              </div>
+            ) : (
               <>
-                <div className="fixed inset-0 z-30" onClick={() => setPickerOpen(false)} />
-                <div className="absolute right-0 z-40 mt-2 w-[22rem] max-w-[90vw] overflow-hidden rounded-xl border border-white/10 bg-zinc-950/95 shadow-2xl shadow-black/60 backdrop-blur-xl">
-                  <div className="flex items-center gap-2 border-b border-white/5 px-3 py-2">
-                    <SearchIcon className="h-3.5 w-3.5 text-zinc-500" />
-                    <input
-                      autoFocus
-                      value={pickerQuery}
-                      onChange={(e) => setPickerQuery(e.target.value)}
-                      placeholder="Tìm lĩnh vực…"
-                      className="w-full bg-transparent text-sm text-white placeholder:text-zinc-600 outline-none"
-                    />
-                  </div>
-                  <div className="max-h-72 overflow-y-auto py-1">
-                    {availableToAdd.length === 0 ? (
-                      <div className="px-3 py-6 text-center text-xs text-zinc-500">
-                        {selectedIds.size >= FIELDS.length ? 'Đã thêm tất cả 17 lĩnh vực' : 'Không tìm thấy lĩnh vực phù hợp'}
+                {/* Per-field list */}
+                <div className="mt-5 space-y-2">
+                  {activeFields.map(({ field, result }) => (
+                    <div key={field.id} className="flex items-start justify-between gap-3 text-[12px] py-1 border-b border-white/5">
+                      <div className="min-w-0 flex-1">
+                        <div className="text-white/85 leading-snug">
+                          <span className="font-mono text-white/50 mr-1">{String(field.no).padStart(2, '0')}.</span>
+                          {field.name}
+                        </div>
+                        {result.capped && (
+                          <span className="inline-block mt-0.5 text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-200 ring-1 ring-amber-300/30">
+                            Đã áp trần
+                          </span>
+                        )}
                       </div>
-                    ) : availableToAdd.map((f) => (
-                      <button
-                        key={f.id}
-                        onClick={() => addField(f.id)}
-                        className="flex w-full items-center gap-2 px-3 py-2 text-left text-xs text-zinc-200 hover:bg-indigo-500/15"
-                      >
-                        <span className="w-6 shrink-0 font-mono text-[10px] text-zinc-500">{f.no}.</span>
-                        <span className="flex-1 truncate">{f.name}</span>
-                        <PlusIcon className="h-3 w-3 text-indigo-300" />
-                      </button>
-                    ))}
+                      <div className="font-mono font-semibold tabular-nums text-right shrink-0">
+                        {formatVND(result.subTotal, false)} đ
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Waterfall */}
+                <div className="mt-7 space-y-3 text-sm">
+                  <WRow label="Tổng cộng định mức" value={formatVND(totals.rawSubTotal)} />
+                  <WRow label={`Hệ số đô thị (×${urbanFactor.toFixed(1)})`} value={formatVND(totals.afterUrban)} />
+                  {supportPct > 0 && (
+                    <WRow
+                      label={`Hỗ trợ (-${(supportPct * 100).toFixed(0)}%)`}
+                      value={`- ${formatVND(totals.afterUrban - totals.afterSupport)}`}
+                      tone="positive"
+                    />
+                  )}
+                  <div className="pt-3 border-t border-white/15">
+                    <WRow label={`Thuế VAT (${(vatPct * 100).toFixed(0)}%)`} value={`+ ${formatVND(totals.vat)}`} />
                   </div>
                 </div>
+
+                {/* Grand total */}
+                <div className="mt-10">
+                  <label className="text-[10px] font-bold uppercase tracking-widest text-white/45 block mb-2">
+                    Tổng giá trị hợp đồng
+                  </label>
+                  <div className="text-[34px] font-bold leading-none tabular-nums" style={SERIF}>
+                    {new Intl.NumberFormat('vi-VN').format(Math.round(totals.grandTotal))}
+                    <span className="text-xl ml-1">đ</span>
+                  </div>
+                  <p className="text-[11px] text-white/65 mt-3 leading-relaxed italic">
+                    Bằng chữ: {numberToVietnameseWords(totals.grandTotal)}./.
+                  </p>
+                </div>
+
+                {activeFields.some((a) => a.result.capped) && (
+                  <div className="mt-7 p-3.5 rounded border border-amber-300/30 bg-amber-400/10 text-[11px] text-amber-100 flex gap-2">
+                    <AlertTriangleIcon className="h-4 w-4 shrink-0 text-amber-300" />
+                    <span>Đã áp dụng mức trần tối đa cho một số lĩnh vực theo quy định của Nghị định 17/2023.</span>
+                  </div>
+                )}
               </>
             )}
           </div>
-        </div>
 
-        {/* ── FIELD CARDS ───────────────────────────────────────────────── */}
-        {visibleFields.length === 0 ? (
-          <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-white/10 bg-black/20 px-6 py-16 text-center">
-            <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-xl bg-indigo-500/15 ring-1 ring-indigo-400/30">
-              <PlusIcon className="h-5 w-5 text-indigo-300" />
-            </div>
-            <div className="text-sm font-semibold text-white">Chưa có lĩnh vực nào</div>
-            <p className="mt-1 max-w-xs text-xs text-zinc-500">
-              Bấm <span className="text-indigo-300">“Thêm lĩnh vực kinh doanh”</span> ở trên để chọn các mục khách hàng đang sử dụng âm nhạc.
-            </p>
-          </div>
-        ) : (
-          <section className="grid grid-cols-1 gap-4 md:grid-cols-2 xl:grid-cols-3">
-            {visibleFields.map(({ field, vals, result }) => (
-              <FieldCard
-                key={field.id}
-                field={field}
-                vals={vals}
-                result={result}
-                expanded={expandedField === field.id}
-                onToggleExpand={() => setExpandedField(expandedField === field.id ? null : field.id)}
-                onChange={(k, v) => setFieldInput(field.id, k, v)}
-                onRemove={() => removeField(field.id)}
-                baseSalary={baseSalary}
-              />
-            ))}
-          </section>
-        )}
-
-        {/* ── QUOTE SUMMARY ─────────────────────────────────────────────── */}
-        {activeFields.length > 0 && (
-          <QuoteSummary
-            activeFields={activeFields}
-            urbanLabel={urbanLabel}
-            urbanFactor={urbanFactor}
-            supportPct={supportPct}
-            vatPct={vatPct}
-            totals={totals}
-            baseSalary={baseSalary}
-          />
-        )}
-
-        <footer className="border-t border-white/5 pb-24 pt-6 text-center text-[11px] text-zinc-500">
-          Căn cứ Phụ lục biểu mức tiền bản quyền — Nghị định 17/2023/NĐ-CP ngày 26/4/2023 · Áp dụng tương tự cho chủ sở hữu quyền liên quan đối với bản ghi âm, ghi hình.
-        </footer>
-      </div>
-
-      {/* ── STICKY BOTTOM TOTAL BAR ─────────────────────────────────────── */}
-      {activeFields.length > 0 && (
-        <div className="sticky bottom-3 z-20 mt-4 flex items-center justify-between gap-3 rounded-xl border border-emerald-400/40 bg-zinc-950/90 px-4 py-2.5 shadow-2xl shadow-emerald-500/20 backdrop-blur-xl">
-          <div className="flex items-center gap-2 text-[11px] text-zinc-400">
-            <CheckCircle2Icon className="h-4 w-4 text-emerald-300" />
-            <span className="font-semibold text-white">{activeFields.length}</span> lĩnh vực · MLCS{' '}
-            <span className="font-mono text-zinc-200">{formatVND(baseSalary, false)}</span> · {urbanLabel}
-          </div>
-          <div className="flex items-center gap-3">
-            <div className="text-right">
-              <div className="text-[9.5px] font-bold uppercase tracking-wider text-emerald-300">Tổng (đã VAT)</div>
-              <div className="font-mono text-base font-extrabold text-emerald-300 leading-tight">{formatVND(totals.grandTotal)}</div>
+          {/* Footer actions */}
+          <div className="border-t border-white/10 p-5 space-y-2.5" style={{ background: C.navy600 }}>
+            <button
+              onClick={handleExport}
+              disabled={activeFields.length === 0 || exporting}
+              className="w-full bg-white py-3.5 rounded font-bold uppercase tracking-wider text-[12px] flex items-center justify-center gap-2 transition-colors hover:bg-[#F9F7F2] disabled:opacity-40 disabled:cursor-not-allowed"
+              style={{ color: C.navy }}
+            >
+              <FileDownIcon className="h-4 w-4" />
+              {exporting ? 'Đang tạo file…' : 'Xuất báo giá Word'}
+            </button>
+            <div className="text-center text-[10px] uppercase tracking-widest text-white/50">
+              {activeFields.length} / {FIELDS.length} lĩnh vực
             </div>
           </div>
-        </div>
-      )}
-    </div>
-  );
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-// Sub-components
-// ─────────────────────────────────────────────────────────────────────────────
-
-function SettingTile({
-  label, value, accent, children,
-}: {
-  label: string; value: string; accent: 'indigo' | 'fuchsia' | 'amber' | 'cyan' | 'emerald';
-  children?: React.ReactNode;
-}) {
-  const accentBar = {
-    indigo: 'bg-indigo-400', fuchsia: 'bg-fuchsia-400', amber: 'bg-amber-400',
-    cyan: 'bg-cyan-400', emerald: 'bg-emerald-400',
-  }[accent];
-  const accentFocus = {
-    indigo: 'focus-within:border-indigo-400/60 focus-within:shadow-indigo-500/20',
-    fuchsia: 'focus-within:border-fuchsia-400/60 focus-within:shadow-fuchsia-500/20',
-    amber: 'focus-within:border-amber-400/60 focus-within:shadow-amber-500/20',
-    cyan: 'focus-within:border-cyan-400/60 focus-within:shadow-cyan-500/20',
-    emerald: 'focus-within:border-emerald-400/60 focus-within:shadow-emerald-500/20',
-  }[accent];
-  const text = {
-    indigo: 'text-indigo-300', fuchsia: 'text-fuchsia-300', amber: 'text-amber-300',
-    cyan: 'text-cyan-300', emerald: 'text-emerald-300',
-  }[accent];
-  return (
-    <div className={`relative overflow-hidden rounded-xl border border-white/10 bg-zinc-950/80 backdrop-blur-xl transition focus-within:shadow-lg ${accentFocus}`}>
-      <div className={`absolute left-0 top-0 h-full w-0.5 ${accentBar}`} />
-      <div className="relative p-3">
-        <div className={`text-[10px] font-bold uppercase tracking-wider ${text}`}>{label}</div>
-        <div className="mt-0.5 truncate font-mono text-sm font-bold text-white">{value}</div>
-        {children}
+        </aside>
       </div>
     </div>
   );
 }
 
-function CustField({ label, value, onChange, placeholder }: { label: string; value: string; onChange: (v: string) => void; placeholder?: string }) {
+// ─────────────────────────────────────────────────────────────────────────────
+// Small UI primitives
+// ─────────────────────────────────────────────────────────────────────────────
+
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
     <div>
-      <label className="mb-1 block text-[11px] font-medium text-zinc-400">{label}</label>
-      <input
-        type="text" value={value} onChange={(e) => onChange(e.target.value)} placeholder={placeholder}
-        className="w-full rounded-lg border border-white/15 bg-black/50 px-3 py-2 text-sm font-medium text-white placeholder:text-zinc-500 outline-none transition focus:border-indigo-400/60 focus:bg-black/70"
-      />
+      <label className="block text-[10px] font-bold uppercase tracking-widest mb-0.5" style={{ color: C.mute2 }}>
+        {label}
+      </label>
+      {children}
     </div>
   );
 }
 
-function FieldCard({
+function WRow({ label, value, tone }: { label: string; value: string; tone?: 'positive' }) {
+  return (
+    <div className="flex justify-between items-baseline gap-3">
+      <span className="text-white/65">{label}</span>
+      <span className={`font-mono tabular-nums font-semibold ${tone === 'positive' ? 'text-emerald-300' : 'text-white'}`}>
+        {value}
+      </span>
+    </div>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Field block — light editorial card
+// ─────────────────────────────────────────────────────────────────────────────
+function FieldBlock({
   field, vals, result, expanded, onToggleExpand, onChange, onRemove, baseSalary,
 }: {
   field: FieldDef;
@@ -426,56 +479,76 @@ function FieldCard({
   const Icon = (Lucide as unknown as Record<string, React.ComponentType<{ className?: string }>>)[field.icon] || CalculatorIcon;
   const hasInput = result.hasInput;
   return (
-    <div
-      className={`group relative overflow-hidden rounded-2xl border bg-zinc-950/70 backdrop-blur-xl transition ${
-        hasInput
-          ? 'border-emerald-400/40 shadow-lg shadow-emerald-500/10'
-          : 'border-white/10 hover:border-white/20'
-      }`}
+    <article
+      className="pl-5 border-l-[3px] transition-colors"
+      style={{ borderColor: hasInput ? C.navy : C.lineStrong }}
     >
-      {/* Accent header */}
-      <div className={`relative overflow-hidden border-b border-white/5 bg-gradient-to-br ${field.accent} px-4 py-3`}>
-        <div className="absolute inset-0 bg-gradient-to-br from-black/60 to-transparent" />
-        <div className="relative flex items-start gap-3">
-          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-black/40 ring-1 ring-white/20 backdrop-blur">
-            <Icon className="h-4 w-4 text-white" />
-          </div>
-          <div className="min-w-0 flex-1">
-            <div className="text-[10px] font-bold uppercase tracking-wider text-white/80">
-              Mục {field.no}
+      {/* Header row */}
+      <div className="flex items-end justify-between gap-3 mb-3">
+        <div className="flex items-center gap-2.5 min-w-0">
+          <span
+            className="h-7 w-7 shrink-0 rounded flex items-center justify-center"
+            style={{ background: hasInput ? C.navy : C.subtle, color: hasInput ? '#fff' : C.muted, border: `1px solid ${hasInput ? C.navy : C.lineStrong}` }}
+          >
+            <Icon className="h-3.5 w-3.5" />
+          </span>
+          <div className="min-w-0">
+            <div className="text-[10px] font-mono uppercase tracking-widest" style={{ color: C.mute2 }}>
+              Mục {String(field.no).padStart(2, '0')}
             </div>
-            <div className="truncate text-sm font-bold text-white">{field.name}</div>
+            <h3 className="text-[15px] font-bold leading-tight truncate" style={{ color: hasInput ? C.navy : C.ink }}>
+              {field.name}
+            </h3>
           </div>
+        </div>
+        <div className="flex items-center gap-3 shrink-0">
+          {hasInput && result.capped && (
+            <span className="text-[10px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded" style={{ background: '#FEF3C7', color: '#92400E' }}>
+              TRẦN
+            </span>
+          )}
           {hasInput && (
-            <div className="rounded-md bg-emerald-500/20 px-1.5 py-0.5 ring-1 ring-emerald-400/40">
-              <CheckCircle2Icon className="h-3.5 w-3.5 text-emerald-300" />
-            </div>
+            <button
+              onClick={onToggleExpand}
+              className="text-[11px] font-bold uppercase tracking-wider hover:underline"
+              style={{ color: C.navy }}
+            >
+              {expanded ? 'Ẩn diễn giải' : 'Xem diễn giải'}
+            </button>
           )}
           <button
             onClick={onRemove}
-            title="Bỏ lĩnh vực này"
-            className="rounded-md bg-black/40 p-1 text-zinc-400 ring-1 ring-white/10 transition hover:bg-red-500/20 hover:text-red-300 hover:ring-red-400/40"
+            title="Gỡ lĩnh vực này"
+            className="h-6 w-6 rounded flex items-center justify-center transition-colors"
+            style={{ color: C.mute2 }}
+            onMouseEnter={(e) => { e.currentTarget.style.background = '#FEE2E2'; e.currentTarget.style.color = '#B91C1C'; }}
+            onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = C.mute2; }}
           >
             <XIcon className="h-3.5 w-3.5" />
           </button>
         </div>
       </div>
 
-      {/* Inputs */}
-      <div className="space-y-2.5 p-4">
+      {/* Inputs row */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-3">
         {field.inputs.map((inp) => (
           <div key={inp.key}>
-            <label className="mb-1 block text-[11px] font-medium text-zinc-300">{inp.label}</label>
+            <label className="block text-[10px] font-bold uppercase tracking-widest mb-1" style={{ color: C.mute2 }}>
+              {inp.label}
+            </label>
             <div className="relative">
               <input
                 type="number" step="any"
                 value={vals[inp.key] || ''}
                 onChange={(e) => onChange(inp.key, Number(e.target.value) || 0)}
                 placeholder={inp.placeholder || '0'}
-                className="w-full rounded-lg border border-white/15 bg-black/50 px-3 py-2 pr-14 text-sm font-mono font-semibold text-white placeholder:text-zinc-500 outline-none transition focus:border-indigo-400/60 focus:bg-black/70 focus:ring-2 focus:ring-indigo-500/20"
+                className="w-full bg-white border rounded-md py-2 px-3 pr-12 text-base font-mono font-semibold tabular-nums outline-none transition-all"
+                style={{ borderColor: C.lineStrong, color: C.ink }}
+                onFocus={(e) => { e.currentTarget.style.borderColor = C.navy; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(0,56,77,0.08)'; }}
+                onBlur={(e) => { e.currentTarget.style.borderColor = C.lineStrong; e.currentTarget.style.boxShadow = 'none'; }}
               />
               {inp.suffix && (
-                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-semibold text-zinc-500">
+                <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[11px] font-semibold" style={{ color: C.mute2 }}>
                   {inp.suffix}
                 </span>
               )}
@@ -485,198 +558,161 @@ function FieldCard({
       </div>
 
       {/* Hint */}
-      <div className="border-t border-white/5 px-4 py-2 text-[10.5px] leading-snug text-zinc-500">
-        <InfoIcon className="mr-1 inline h-3 w-3 -translate-y-px" />
-        {field.hint}
-      </div>
+      <p className="text-[11px] leading-snug mb-3 flex items-start gap-1.5" style={{ color: C.muted }}>
+        <InfoIcon className="h-3 w-3 mt-[3px] shrink-0" />
+        <span>{field.hint}</span>
+      </p>
 
-      {/* Quick result */}
-      <div className="border-t border-white/5 bg-black/30 px-4 py-3">
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <div className="text-[10px] uppercase tracking-wider text-zinc-500">Hệ số gộp</div>
-            <div className="font-mono text-sm font-bold text-zinc-200">
-              {formatCoef(result.totalCoef)}
-              {result.capped && (
-                <span className="ml-1 text-[9px] font-bold uppercase text-amber-400">
-                  · trần
-                </span>
-              )}
-            </div>
+      {/* Result strip */}
+      {hasInput && (
+        <div
+          className="flex items-center justify-between rounded border px-4 py-2.5"
+          style={{ background: C.subtle, borderColor: C.line }}
+        >
+          <div className="text-[11px]" style={{ color: C.muted }}>
+            Hệ số gộp: <span className="font-mono font-bold tabular-nums" style={{ color: C.ink }}>{formatCoef(result.totalCoef)}</span>
+            {result.capMultiplier !== undefined && (
+              <span className="ml-2 italic">
+                · trần {result.capMultiplier}×MLCS
+              </span>
+            )}
           </div>
           <div className="text-right">
-            <div className="text-[10px] uppercase tracking-wider text-zinc-500">Thành tiền</div>
-            <div className="font-mono text-base font-extrabold text-emerald-300">
+            <div className="text-[9px] uppercase tracking-widest font-bold" style={{ color: C.mute2 }}>Thành tiền</div>
+            <div className="font-mono font-bold text-base tabular-nums" style={{ color: C.navy }}>
               {formatVND(result.subTotal)}
             </div>
           </div>
         </div>
-        {hasInput && (
-          <button
-            onClick={onToggleExpand}
-            className="mt-2 flex w-full items-center justify-center gap-1 rounded-md border border-white/10 bg-white/5 py-1 text-[10.5px] font-semibold text-zinc-300 transition hover:bg-white/10 hover:text-white"
-          >
-            <ChevronDownIcon className={`h-3 w-3 transition ${expanded ? 'rotate-180' : ''}`} />
-            {expanded ? 'Ẩn diễn giải' : 'Xem diễn giải báo khách'}
-          </button>
-        )}
-      </div>
+      )}
 
       {/* Breakdown */}
       {expanded && hasInput && (
-        <div className="border-t border-emerald-400/20 bg-gradient-to-br from-black/60 to-zinc-950/80 p-4">
-          <div className="mb-2 flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-wider text-emerald-300">
-            <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-400" />
+        <div className="mt-3 rounded border overflow-hidden" style={{ borderColor: C.line, background: C.paper }}>
+          <div className="px-4 py-2 border-b text-[10px] font-bold uppercase tracking-widest flex items-center gap-1.5" style={{ borderColor: C.line, background: C.subtle, color: C.navy }}>
+            <span className="inline-block h-1.5 w-1.5 rounded-full" style={{ background: C.navy }} />
             Diễn giải báo khách
           </div>
-          <div className="overflow-hidden rounded-lg border border-white/10">
-            <table className="w-full text-[11px]">
-              <thead className="bg-white/5">
-                <tr className="text-[9.5px] uppercase tracking-wider text-zinc-400">
-                  <th className="px-2 py-1.5 text-left font-bold">Bậc</th>
-                  <th className="px-2 py-1.5 text-center font-bold">MLCS</th>
-                  <th className="px-2 py-1.5 text-center font-bold">Hệ số</th>
-                  <th className="px-2 py-1.5 text-center font-bold">SL</th>
-                  <th className="px-2 py-1.5 text-right font-bold">Thành tiền</th>
+          <table className="w-full text-[12px]">
+            <thead style={{ background: C.subtle, color: C.mute2 }}>
+              <tr className="text-[10px] uppercase tracking-wider">
+                <th className="px-3 py-2 text-left font-bold">Bậc</th>
+                <th className="px-3 py-2 text-right font-bold">MLCS</th>
+                <th className="px-3 py-2 text-right font-bold">Hệ số</th>
+                <th className="px-3 py-2 text-right font-bold">Số lượng</th>
+                <th className="px-3 py-2 text-right font-bold">Thành tiền</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y" style={{ borderColor: C.line }}>
+              {result.rows.map((r, i) => (
+                <tr key={i} className="font-mono tabular-nums" style={{ background: i % 2 ? C.subtle : 'transparent' }}>
+                  <td className="px-3 py-2 font-sans" style={{ color: C.ink }}>{r.label}</td>
+                  <td className="px-3 py-2 text-right" style={{ color: C.muted }}>{formatVND(baseSalary, false)}</td>
+                  <td className="px-3 py-2 text-right" style={{ color: C.navy }}>{r.coefText}</td>
+                  <td className="px-3 py-2 text-right" style={{ color: C.ink }}>{formatCoef(r.qty, 2)}</td>
+                  <td className="px-3 py-2 text-right font-bold" style={{ color: C.ink }}>{formatVND(r.amount)}</td>
                 </tr>
-              </thead>
-              <tbody className="divide-y divide-white/5">
-                {result.rows.map((r, i) => (
-                  <tr key={i} className="font-mono">
-                    <td className="px-2 py-1.5 text-zinc-200">{r.label}</td>
-                    <td className="px-2 py-1.5 text-center text-zinc-400">{formatVND(baseSalary, false)}</td>
-                    <td className="px-2 py-1.5 text-center text-indigo-300">{r.coefText}</td>
-                    <td className="px-2 py-1.5 text-center text-zinc-300">{formatCoef(r.qty, 2)}</td>
-                    <td className="px-2 py-1.5 text-right font-bold text-emerald-300">{formatVND(r.amount)}</td>
-                  </tr>
-                ))}
-                <tr className="bg-indigo-500/10 font-mono">
-                  <td className="px-2 py-1.5 font-bold text-white" colSpan={4}>Cộng</td>
-                  <td className="px-2 py-1.5 text-right font-extrabold text-emerald-300">{formatVND(result.subTotal)}</td>
+              ))}
+              <tr className="font-mono tabular-nums" style={{ background: '#EEF4F6' }}>
+                <td className="px-3 py-2 font-sans font-bold" colSpan={4} style={{ color: C.navy }}>Cộng</td>
+                <td className="px-3 py-2 text-right font-extrabold" style={{ color: C.navy }}>{formatVND(result.subTotal)}</td>
+              </tr>
+              {result.capMultiplier !== undefined && (
+                <tr className="font-mono" style={{ background: result.capped ? '#FEF3C7' : 'transparent' }}>
+                  <td className="px-3 py-2 text-[10px] italic font-sans" colSpan={4} style={{ color: result.capped ? '#92400E' : C.mute2 }}>
+                    {result.capped ? (
+                      <span className="inline-flex items-center gap-1 font-bold uppercase">
+                        <AlertTriangleIcon className="h-3 w-3" />
+                        Đã áp trần tối đa {result.capMultiplier}×MLCS
+                      </span>
+                    ) : (
+                      <>Mức trần: {result.capMultiplier}×MLCS</>
+                    )}
+                  </td>
+                  <td className="px-3 py-2 text-right tabular-nums font-bold" style={{ color: result.capped ? '#92400E' : C.mute2 }}>
+                    {formatVND(result.capAmount || 0)}
+                  </td>
                 </tr>
-                {result.capMultiplier !== undefined && (
-                  <tr className={`font-mono ${result.capped ? 'bg-amber-500/10' : ''}`}>
-                    <td className={`px-2 py-1.5 text-[10px] italic ${result.capped ? 'text-amber-300' : 'text-zinc-500'}`} colSpan={4}>
-                      {result.capped ? (
-                        <span className="inline-flex items-center gap-1 font-bold uppercase">
-                          <AlertTriangleIcon className="h-3 w-3" />
-                          Đã áp trần {result.capMultiplier}×MLCS
-                        </span>
-                      ) : (
-                        <>Mức trần: {result.capMultiplier}×MLCS</>
-                      )}
-                    </td>
-                    <td className={`px-2 py-1.5 text-right ${result.capped ? 'text-amber-300 font-bold' : 'text-zinc-500'}`}>
-                      {formatVND(result.capAmount || 0)}
-                    </td>
-                  </tr>
-                )}
-              </tbody>
-            </table>
-          </div>
+              )}
+            </tbody>
+          </table>
         </div>
+      )}
+    </article>
+  );
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Field picker dropdown (light)
+// ─────────────────────────────────────────────────────────────────────────────
+function FieldPicker({
+  count, total, open, setOpen, query, setQuery, items, onPick, allFull,
+}: {
+  count: number; total: number;
+  open: boolean; setOpen: (v: boolean) => void;
+  query: string; setQuery: (v: string) => void;
+  items: FieldDef[]; onPick: (id: string) => void;
+  allFull: boolean;
+}) {
+  return (
+    <div className="relative">
+      <button
+        onClick={() => setOpen(!open)}
+        className="flex items-center gap-1.5 rounded-md px-3.5 py-2 text-xs font-bold transition-colors"
+        style={{ background: C.navy, color: '#fff' }}
+        onMouseEnter={(e) => (e.currentTarget.style.background = C.navy600)}
+        onMouseLeave={(e) => (e.currentTarget.style.background = C.navy)}
+      >
+        <PlusIcon className="h-3.5 w-3.5" /> Thêm hạng mục sử dụng
+        <span className="ml-1 rounded px-1.5 py-0.5 font-mono text-[10px]" style={{ background: 'rgba(255,255,255,0.18)' }}>
+          {count}/{total}
+        </span>
+      </button>
+      {open && (
+        <>
+          <div className="fixed inset-0 z-30" onClick={() => setOpen(false)} />
+          <div
+            className="absolute right-0 z-40 mt-2 w-[22rem] max-w-[90vw] overflow-hidden rounded-lg shadow-xl border"
+            style={{ background: C.paper, borderColor: C.lineStrong, boxShadow: '0 20px 50px rgba(0,56,77,0.15)' }}
+          >
+            <div className="flex items-center gap-2 border-b px-3 py-2.5" style={{ borderColor: C.line, background: C.subtle }}>
+              <SearchIcon className="h-3.5 w-3.5" style={{ color: C.mute2 }} />
+              <input
+                autoFocus value={query} onChange={(e) => setQuery(e.target.value)}
+                placeholder="Tìm lĩnh vực…"
+                className="w-full bg-transparent text-sm outline-none"
+                style={{ color: C.ink }}
+              />
+            </div>
+            <div className="max-h-72 overflow-y-auto py-1">
+              {items.length === 0 ? (
+                <div className="px-3 py-6 text-center text-xs" style={{ color: C.mute2 }}>
+                  {allFull ? 'Đã thêm tất cả lĩnh vực' : 'Không tìm thấy lĩnh vực phù hợp'}
+                </div>
+              ) : items.map((f) => (
+                <button
+                  key={f.id}
+                  onClick={() => onPick(f.id)}
+                  className="flex w-full items-center gap-2 px-3 py-2 text-left text-[13px] transition-colors"
+                  style={{ color: C.ink }}
+                  onMouseEnter={(e) => (e.currentTarget.style.background = C.subtle)}
+                  onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
+                >
+                  <span className="w-7 shrink-0 font-mono text-[10px]" style={{ color: C.mute2 }}>{String(f.no).padStart(2, '0')}.</span>
+                  <span className="flex-1 truncate">{f.name}</span>
+                  <PlusIcon className="h-3.5 w-3.5" style={{ color: C.navy }} />
+                </button>
+              ))}
+            </div>
+          </div>
+        </>
       )}
     </div>
   );
 }
 
-function QuoteSummary({
-  activeFields, urbanLabel, urbanFactor, supportPct, vatPct, totals, baseSalary,
-}: {
-  activeFields: { field: FieldDef; vals: Record<string, number>; result: FieldResult }[];
-  urbanLabel: string;
-  urbanFactor: number;
-  supportPct: number;
-  vatPct: number;
-  totals: ReturnType<typeof computeQuoteTotals>;
-  baseSalary: number;
-}) {
-  return (
-    <section className="overflow-hidden rounded-2xl border border-emerald-400/30 bg-gradient-to-br from-zinc-950/90 to-black/80 backdrop-blur-xl shadow-2xl shadow-emerald-500/10">
-      <div className="border-b border-white/10 bg-gradient-to-r from-emerald-500/10 to-cyan-500/5 px-5 py-4">
-        <div className="flex items-center gap-2">
-          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-emerald-500/20 ring-1 ring-emerald-400/40">
-            <CheckCircle2Icon className="h-4 w-4 text-emerald-300" />
-          </div>
-          <h2 className="text-base font-bold text-white">TỔNG HỢP BÁO GIÁ</h2>
-        </div>
-        <p className="mt-0.5 pl-9 text-[11px] text-zinc-400">
-          MLCS: <span className="font-mono text-zinc-200">{formatVND(baseSalary)}</span> · Đô thị:{' '}
-          <span className="text-zinc-200">{urbanLabel}</span> ({(urbanFactor * 100).toFixed(0)}%) ·{' '}
-          {activeFields.length} lĩnh vực
-        </p>
-      </div>
-
-      {/* Per-field rollup */}
-      <div className="overflow-x-auto">
-        <table className="w-full text-sm">
-          <thead className="bg-white/5 text-[10.5px] uppercase tracking-wider text-zinc-400">
-            <tr>
-              <th className="px-4 py-2.5 text-left font-bold">#</th>
-              <th className="px-4 py-2.5 text-left font-bold">Lĩnh vực</th>
-              <th className="px-4 py-2.5 text-right font-bold">Hệ số</th>
-              <th className="px-4 py-2.5 text-right font-bold">Thành tiền</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-white/5">
-            {activeFields.map(({ field, result }) => (
-              <tr key={field.id} className="transition hover:bg-white/5">
-                <td className="px-4 py-2.5 font-mono text-zinc-500">{field.no}</td>
-                <td className="px-4 py-2.5 text-zinc-200">
-                  {field.name}
-                  {result.capped && (
-                    <span className="ml-2 rounded bg-amber-500/15 px-1.5 py-0.5 font-mono text-[10px] font-bold text-amber-300">
-                      TRẦN
-                    </span>
-                  )}
-                </td>
-                <td className="px-4 py-2.5 text-right font-mono text-zinc-300">{formatCoef(result.totalCoef)}</td>
-                <td className="px-4 py-2.5 text-right font-mono font-bold text-emerald-300">{formatVND(result.subTotal)}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Totals waterfall */}
-      <div className="border-t border-white/10 bg-black/30 p-5">
-        <div className="space-y-1.5 text-sm">
-          <TotalRow label="Cộng tiền bản quyền (sau áp trần)" amount={totals.rawSubTotal} />
-          <TotalRow label={`× Hệ số đô thị (${(urbanFactor * 100).toFixed(0)}%)`} amount={totals.afterUrban} accent />
-          {supportPct > 0 && (
-            <TotalRow label={`− Hỗ trợ ${(supportPct * 100).toFixed(0)}% trước VAT`} amount={totals.afterSupport} />
-          )}
-          <TotalRow label={`+ Thuế GTGT ${(vatPct * 100).toFixed(0)}%`} amount={totals.vat} accent />
-          <div className="!mt-3 flex items-center justify-between rounded-lg border border-emerald-400/30 bg-gradient-to-r from-emerald-500/15 to-cyan-500/10 px-4 py-3">
-            <div>
-              <div className="text-[10px] font-bold uppercase tracking-wider text-emerald-300">Tổng giá trị hợp đồng</div>
-              <div className="text-[10px] italic text-zinc-500">(đã gồm VAT)</div>
-            </div>
-            <div className="text-right font-mono text-xl font-extrabold text-emerald-300">
-              {formatVND(totals.grandTotal)}
-            </div>
-          </div>
-        </div>
-        <div className="mt-3 rounded-lg border border-white/10 bg-black/40 px-4 py-2.5">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-500">Bằng chữ:</span>{' '}
-          <span className="text-xs italic text-zinc-200">{numberToVietnameseWords(totals.grandTotal)}./.</span>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function TotalRow({ label, amount, accent }: { label: string; amount: number; accent?: boolean }) {
-  return (
-    <div className="flex items-center justify-between border-b border-white/5 py-1.5 text-xs">
-      <span className={accent ? 'font-semibold text-cyan-200' : 'text-zinc-400'}>{label}</span>
-      <span className="font-mono font-bold text-zinc-200">{formatVND(amount)}</span>
-    </div>
-  );
-}
-
 // ─────────────────────────────────────────────────────────────────────────────
-// Custom Urban Dropdown — bo cong, mượt, accent fuchsia, click-outside-close
+// Urban dropdown — light cream + navy accent
 // ─────────────────────────────────────────────────────────────────────────────
 function UrbanSelect({ value, onChange }: { value: UrbanId; onChange: (v: UrbanId) => void }) {
   const [open, setOpen] = useState(false);
@@ -714,42 +750,33 @@ function UrbanSelect({ value, onChange }: { value: UrbanId; onChange: (v: UrbanI
   }, [open]);
 
   return (
-    <div className="relative mt-1">
+    <div className="relative">
       <button
         ref={btnRef}
         type="button"
         onClick={() => setOpen((o) => !o)}
-        className={[
-          'flex w-full items-center justify-between gap-2 rounded-xl border bg-black/50 px-3 py-2 text-left text-xs font-semibold text-white outline-none transition-all',
-          open
-            ? 'border-fuchsia-400/70 shadow-[0_0_0_3px_rgba(232,121,249,0.15)]'
-            : 'border-white/10 hover:border-fuchsia-400/40',
-        ].join(' ')}
+        className="flex w-full items-center justify-between gap-2 bg-transparent border-b py-1.5 text-left text-sm font-semibold outline-none transition-colors"
+        style={{ borderColor: open ? C.navy : C.lineStrong, color: C.navy }}
       >
-        <span className="flex items-center gap-2 truncate">
-          <span className="inline-block h-1.5 w-1.5 shrink-0 rounded-full bg-fuchsia-400 shadow-[0_0_6px_rgba(232,121,249,0.8)]" />
-          <span className="truncate">{current.label}</span>
-          <span className="ml-1 rounded-md bg-fuchsia-500/15 px-1.5 py-0.5 text-[10px] font-mono text-fuchsia-300">
-            {(current.factor * 100).toFixed(0)}%
+        <span className="truncate">{current.label}</span>
+        <span className="flex items-center gap-1.5 shrink-0">
+          <span className="font-mono text-[11px] rounded px-1.5 py-0.5" style={{ background: '#EEF4F6', color: C.navy }}>
+            ×{current.factor.toFixed(1)}
           </span>
+          <ChevronDownIcon className={`h-3.5 w-3.5 transition-transform ${open ? 'rotate-180' : ''}`} style={{ color: C.muted }} />
         </span>
-        <ChevronDownIcon
-          className={`h-3.5 w-3.5 shrink-0 text-zinc-500 transition-transform duration-200 ${open ? 'rotate-180 text-fuchsia-300' : ''}`}
-        />
       </button>
 
       {open && rect && createPortal(
         <div
           ref={menuRef}
           style={{
-            position: 'fixed',
-            left: rect.left,
-            top: rect.top,
-            width: rect.width,
-            zIndex: 9999,
-            animation: 'urbanDropIn 160ms cubic-bezier(0.32,0.72,0,1)',
+            position: 'fixed', left: rect.left, top: rect.top, width: Math.max(rect.width, 260),
+            zIndex: 9999, animation: 'urbanDropIn 160ms cubic-bezier(0.32,0.72,0,1)',
+            background: C.paper, border: `1px solid ${C.lineStrong}`,
+            boxShadow: '0 20px 50px rgba(0,56,77,0.18)',
           }}
-          className="overflow-hidden rounded-xl border border-white/10 bg-zinc-950/95 p-1 shadow-[0_20px_60px_-12px_rgba(0,0,0,0.7),0_0_0_1px_rgba(232,121,249,0.15)] backdrop-blur-xl"
+          className="overflow-hidden rounded-lg p-1"
         >
           {URBAN_OPTIONS.map((u) => {
             const active = u.id === value;
@@ -758,17 +785,14 @@ function UrbanSelect({ value, onChange }: { value: UrbanId; onChange: (v: UrbanI
                 key={u.id}
                 type="button"
                 onClick={() => { onChange(u.id); setOpen(false); }}
-                className={[
-                  'flex w-full items-center justify-between gap-3 rounded-lg px-3 py-2 text-left text-xs font-medium transition-colors',
-                  active ? 'bg-fuchsia-500/15 text-white' : 'text-zinc-300 hover:bg-white/5 hover:text-white',
-                ].join(' ')}
+                className="flex w-full items-center justify-between gap-3 rounded-md px-3 py-2 text-left text-[13px] font-medium transition-colors"
+                style={{ background: active ? '#EEF4F6' : 'transparent', color: active ? C.navy : C.ink }}
+                onMouseEnter={(e) => { if (!active) e.currentTarget.style.background = C.subtle; }}
+                onMouseLeave={(e) => { if (!active) e.currentTarget.style.background = 'transparent'; }}
               >
-                <span className="flex items-center gap-2 truncate">
-                  <span className={`inline-block h-1.5 w-1.5 shrink-0 rounded-full ${active ? 'bg-fuchsia-400 shadow-[0_0_6px_rgba(232,121,249,0.9)]' : 'bg-zinc-700'}`} />
-                  <span className="truncate">{u.label}</span>
-                </span>
-                <span className={`rounded-md px-1.5 py-0.5 font-mono text-[10px] ${active ? 'bg-fuchsia-500/25 text-fuchsia-200' : 'bg-white/5 text-zinc-400'}`}>
-                  {(u.factor * 100).toFixed(0)}%
+                <span className="truncate">{u.label}</span>
+                <span className="font-mono text-[11px] rounded px-1.5 py-0.5" style={{ background: active ? C.navy : C.subtle, color: active ? '#fff' : C.muted }}>
+                  ×{u.factor.toFixed(1)}
                 </span>
               </button>
             );
@@ -785,5 +809,3 @@ function UrbanSelect({ value, onChange }: { value: UrbanId; onChange: (v: UrbanI
     </div>
   );
 }
-
-
