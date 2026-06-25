@@ -411,11 +411,43 @@ export const FIELDS: FieldDef[] = [
     inputs: [{ key: 'pax', label: 'Số lượt khách/năm', suffix: 'lượt' }],
     compute: ({ pax }, mlcs) => paxPer100(pax || 0, 0.0021, mlcs, 'đường sắt'),
   },
+  // ── Mục 5.3 — Biểu diễn thường xuyên tại các địa điểm kinh doanh, thương mại
+  // Phí trọn gói VND/chương trình/lượt biểu diễn, không nhân hệ số đô thị, không áp hỗ trợ.
+  {
+    id: 'perf-hotel-45', no: 18,
+    name: 'Biểu diễn thường xuyên – Cơ sở lưu trú 4–5 sao (không phụ thu)',
+    icon: 'MusicIcon',
+    accent: 'from-amber-500/20 to-yellow-500/10',
+    unit: 'lượt', urbanExempt: true,
+    hint: '1.250.000 đ/chương trình/lượt biểu diễn (nhạc sống / DJ)',
+    inputs: [{ key: 'shows', label: 'Số chương trình/lượt biểu diễn (năm)', suffix: 'lượt' }],
+    compute: ({ shows }, mlcs) => flatPerShow(shows || 0, 1_250_000, mlcs),
+  },
+  {
+    id: 'perf-restaurant', no: 19,
+    name: 'Biểu diễn thường xuyên – Nhà hàng, cà phê, phòng trà (không phụ thu)',
+    icon: 'MusicIcon',
+    accent: 'from-emerald-500/20 to-teal-500/10',
+    unit: 'lượt', urbanExempt: true,
+    hint: '200.000 đ/chương trình/lượt biểu diễn (nhạc sống / DJ)',
+    inputs: [{ key: 'shows', label: 'Số chương trình/lượt biểu diễn (năm)', suffix: 'lượt' }],
+    compute: ({ shows }, mlcs) => flatPerShow(shows || 0, 200_000, mlcs),
+  },
+  {
+    id: 'perf-bar-mixed', no: 20,
+    name: 'Biểu diễn thường xuyên – Lưu trú ≤3 sao / nhà hàng, bar, vũ trường, lounge, CLB đêm, khu vui chơi (phụ thu <500.000đ)',
+    icon: 'MusicIcon',
+    accent: 'from-indigo-500/20 to-blue-500/10',
+    unit: 'lượt', urbanExempt: true,
+    hint: '400.000 đ/chương trình/lượt biểu diễn (nhạc sống / DJ)',
+    inputs: [{ key: 'shows', label: 'Số chương trình/lượt biểu diễn (năm)', suffix: 'lượt' }],
+    compute: ({ shows }, mlcs) => flatPerShow(shows || 0, 400_000, mlcs),
+  },
   // ── Mục 5.4 — Biểu diễn theo hình thức hát với nhau, tiệc cưới, liên hoan sinh nhật...
-  // Phí trọn gói VND/năm, không nhân hệ số đô thị.
+  // Phí trọn gói VND/năm, không nhân hệ số đô thị, không áp hỗ trợ — chỉ cộng VAT lên trên.
   {
 
-    id: 'sing-restaurant', no: 18,
+    id: 'sing-restaurant', no: 21,
     name: 'Hát với nhau – Nhà hàng / quán cà phê / CLB khiêu vũ',
     icon: 'MicVocalIcon',
     accent: 'from-violet-500/20 to-indigo-500/10',
@@ -425,7 +457,7 @@ export const FIELDS: FieldDef[] = [
     compute: ({ seats }, mlcs) => flatSeats(seats || 0, 2_000_000, 60_000, mlcs),
   },
   {
-    id: 'sing-bar', no: 19,
+    id: 'sing-bar', no: 22,
     name: 'Hát với nhau – Vũ trường / bar / lounge / bistro / CLB đêm',
     icon: 'MartiniIcon',
     accent: 'from-fuchsia-500/20 to-rose-500/10',
@@ -435,7 +467,7 @@ export const FIELDS: FieldDef[] = [
     compute: ({ seats }, mlcs) => flatSeats(seats || 0, 2_500_000, 60_000, mlcs),
   },
   {
-    id: 'wedding-hall', no: 20,
+    id: 'wedding-hall', no: 23,
     name: 'Sảnh / khu vực tổ chức tiệc cưới',
     icon: 'HeartIcon',
     accent: 'from-pink-500/20 to-rose-500/10',
@@ -445,6 +477,28 @@ export const FIELDS: FieldDef[] = [
     compute: ({ seats }, mlcs) => flatSeats(seats || 0, 500_000, 15_000, mlcs),
   },
 ];
+
+/** Phí trọn gói VND theo số lượt biểu diễn — mục 5.3 NĐ 17/2023 */
+function flatPerShow(shows: number, perShow: number, mlcs: number): FieldResult {
+  if (shows <= 0) return emptyResult();
+  const amount = perShow * shows;
+  const row: BreakdownRow = {
+    label: `${shows} lượt × ${formatVND(perShow, false)}/lượt`,
+    coefText: `${formatVND(perShow, false)}/lượt`,
+    qty: shows,
+    coef: perShow / Math.max(mlcs, 1),
+    mode: 'flat',
+    amount,
+  };
+  return {
+    rows: [row],
+    totalCoef: amount / Math.max(mlcs, 1),
+    subTotal: amount,
+    capped: false,
+    hasInput: true,
+    urbanExempt: true,
+  };
+}
 
 /** Phí trọn gói VND theo sức chứa — mục 5.4 NĐ 17/2023 */
 function flatSeats(seats: number, flatUnder30: number, perSeatFrom30: number, mlcs: number): FieldResult {
@@ -542,7 +596,9 @@ export function computeQuoteTotals(params: {
   const exempt = params.perField.reduce((s, r) => s + (r.urbanExempt ? r.subTotal : 0), 0);
   const urbanScaled = raw - exempt;
   const afterUrban = urbanScaled * params.urbanFactor + exempt;
-  const afterSupport = afterUrban * (1 - params.supportPct);
+  // Mục 5.3 & 5.4: phí trọn gói đã là giá chưa VAT — không áp hỗ trợ chung, chỉ cộng VAT lên trên.
+  const supportable = afterUrban - exempt;
+  const afterSupport = supportable * (1 - params.supportPct) + exempt;
   const vat = afterSupport * params.vatPct;
 
   return {
