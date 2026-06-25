@@ -596,7 +596,9 @@ export function computeQuoteTotals(params: {
   const exempt = params.perField.reduce((s, r) => s + (r.urbanExempt ? r.subTotal : 0), 0);
   const urbanScaled = raw - exempt;
   const afterUrban = urbanScaled * params.urbanFactor + exempt;
-  const afterSupport = afterUrban * (1 - params.supportPct);
+  // Mục 5.3 & 5.4: phí trọn gói đã là giá chưa VAT — không áp hỗ trợ chung, chỉ cộng VAT lên trên.
+  const supportable = afterUrban - exempt;
+  const afterSupport = supportable * (1 - params.supportPct) + exempt;
   const vat = afterSupport * params.vatPct;
 
   return {
