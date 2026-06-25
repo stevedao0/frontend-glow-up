@@ -12,6 +12,8 @@
   },
   "dependencies": {
     "@emotion/react": "^11.13.3",
+    "@fontsource/inter": "^5.2.8",
+    "@fontsource/playfair-display": "^5.2.8",
     "docx": "^9.7.1",
     "file-saver": "^2.0.5",
     "html2canvas-pro": "^2.0.2",
