@@ -1,13 +1,15 @@
 /**
- * FAB + popup hiện đại (Tactical HUD) mở Bộ tính bản quyền NĐ 17/2023
- * từ bất kỳ trang nào trong app.
- *
- * Ngôn ngữ thiết kế: nền đen sâu, viền emerald neon, mono numbers,
- * tương phản cao, glow nhẹ — "cool, ngầu".
+ * FAB + popup — Cream & Marine editorial skin
+ * Mở Bộ tính bản quyền NĐ 17/2023 từ bất kỳ trang nào.
  */
 import React, { useEffect, useState } from 'react';
 import { CalculatorIcon, XIcon } from 'lucide-react';
 import { RoyaltyCalculatorPage } from '../../pages/RoyaltyCalculatorPage';
+
+const NAVY = '#00384D';
+const CREAM = '#F9F7F2';
+const LINE = '#D9D3C7';
+const SERIF: React.CSSProperties = { fontFamily: '"Playfair Display", Georgia, serif' };
 
 export function RoyaltyCalculatorFab() {
   const [open, setOpen] = useState(false);
@@ -26,83 +28,101 @@ export function RoyaltyCalculatorFab() {
 
   return (
     <>
-      {/* Floating Action Button */}
+      {/* Floating Action Button — navy + cream */}
       <button
         type="button"
         onClick={() => setOpen(true)}
         aria-label="Mở bộ tính bản quyền NĐ 17/2023"
-        className="group fixed bottom-6 right-6 z-40 inline-flex items-center gap-2.5 pl-3 pr-4 py-3 rounded-2xl bg-zinc-950 text-emerald-300 border border-emerald-500/40 shadow-[0_10px_40px_-10px_rgba(16,185,129,0.55),0_0_0_1px_rgba(16,185,129,0.15)] hover:border-emerald-400 hover:shadow-[0_14px_50px_-8px_rgba(16,185,129,0.75)] hover:-translate-y-0.5 transition-all duration-200 active:translate-y-0"
+        className="group fixed bottom-6 right-6 z-40 inline-flex items-center gap-2.5 pl-3 pr-4 py-3 rounded-full transition-all duration-200 hover:-translate-y-0.5"
+        style={{
+          background: NAVY,
+          color: '#fff',
+          boxShadow: '0 10px 30px -6px rgba(0,56,77,0.45), 0 0 0 1px rgba(255,255,255,0.06)',
+        }}
       >
-        <span className="absolute -inset-px rounded-2xl bg-emerald-500/0 group-hover:bg-emerald-500/10 transition-colors pointer-events-none" />
-        <span className="relative flex h-8 w-8 items-center justify-center rounded-xl bg-emerald-500/15 ring-1 ring-emerald-400/30">
+        <span
+          className="relative flex h-8 w-8 items-center justify-center rounded-full"
+          style={{ background: 'rgba(255,255,255,0.12)', boxShadow: 'inset 0 0 0 1px rgba(255,255,255,0.18)' }}
+        >
           <CalculatorIcon className="h-4 w-4" />
-          <span className="absolute inset-0 rounded-xl bg-emerald-400/20 animate-ping opacity-0 group-hover:opacity-100" />
+          <span className="absolute -top-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-emerald-400 ring-2" style={{ boxShadow: '0 0 8px rgba(52,211,153,0.7)' }} />
         </span>
-        <span className="relative flex flex-col items-start leading-none">
-          <span className="text-[9px] font-mono uppercase tracking-[0.18em] text-emerald-500/70">NĐ 17 · Tool</span>
-          <span className="text-[13px] font-bold tracking-tight text-white mt-0.5">Tính bản quyền</span>
+        <span className="flex flex-col items-start leading-none">
+          <span className="text-[9px] font-semibold uppercase tracking-[0.2em]" style={{ color: 'rgba(255,255,255,0.55)' }}>
+            NĐ 17/2023
+          </span>
+          <span className="text-[13px] font-bold tracking-tight mt-0.5">Tính bản quyền</span>
         </span>
       </button>
 
       {open && (
         <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 sm:p-8">
-          {/* Backdrop */}
           <div
             onClick={() => setOpen(false)}
-            className="absolute inset-0 bg-black/75 backdrop-blur-md"
-            style={{ animation: 'rcFabFade 200ms ease-out' }}
+            className="absolute inset-0 backdrop-blur-sm"
+            style={{ background: 'rgba(15, 23, 42, 0.45)', animation: 'rcFabFade 200ms ease-out' }}
           />
 
-          {/* HUD Container */}
           <div
             role="dialog"
             aria-modal="true"
             aria-label="Bộ tính tiền bản quyền NĐ 17/2023"
-            className="relative w-full max-w-7xl h-[92vh] bg-zinc-950 rounded-2xl border-2 border-zinc-800/80 shadow-[0_40px_120px_-20px_rgba(0,0,0,0.9),0_0_80px_-30px_rgba(16,185,129,0.35)] overflow-hidden flex flex-col"
-            style={{ animation: 'rcFabIn 280ms cubic-bezier(0.32,0.72,0,1)' }}
+            className="relative w-full max-w-7xl h-[92vh] rounded-xl overflow-hidden flex flex-col"
+            style={{
+              background: CREAM,
+              border: `1px solid ${LINE}`,
+              boxShadow: '0 40px 100px -20px rgba(0,56,77,0.35), 0 0 0 1px rgba(0,0,0,0.04)',
+              animation: 'rcFabIn 280ms cubic-bezier(0.32,0.72,0,1)',
+            }}
           >
-            {/* Subtle scanline / glow accents */}
-            <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-emerald-400/60 to-transparent" />
-            <div aria-hidden className="pointer-events-none absolute -top-32 left-1/2 -translate-x-1/2 h-64 w-[60%] rounded-full bg-emerald-500/10 blur-3xl" />
-
-            {/* HUD Header */}
-            <header className="relative z-10 flex items-center justify-between px-6 py-4 border-b-2 border-zinc-900 bg-zinc-950/90 backdrop-blur-sm shrink-0">
+            {/* Editorial Header */}
+            <header
+              className="relative flex items-center justify-between px-6 py-4 shrink-0"
+              style={{ background: '#fff', borderBottom: `1px solid ${LINE}` }}
+            >
               <div className="flex items-center gap-3">
-                <div className="relative h-10 w-10 flex items-center justify-center bg-emerald-500/10 border border-emerald-500/40 rounded-lg">
-                  <CalculatorIcon className="h-5 w-5 text-emerald-400" />
-                  <span className="absolute -top-1 -right-1 h-2.5 w-2.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(16,185,129,0.9)] animate-pulse" />
+                <div
+                  className="h-10 w-10 flex items-center justify-center rounded"
+                  style={{ background: NAVY, color: '#fff' }}
+                >
+                  <CalculatorIcon className="h-5 w-5" />
                 </div>
                 <div>
-                  <h2 className="text-base font-black text-white uppercase tracking-tight leading-none">
-                    Royalty Compute Engine
-                  </h2>
-                  <div className="flex items-center gap-2 mt-1.5">
-                    <span className="text-[10px] font-mono font-bold text-emerald-400 uppercase tracking-[0.2em]">
-                      NĐ 17/2023 · NĐ 134/2026
-                    </span>
-                    <span className="text-zinc-700">·</span>
-                    <span className="text-[10px] font-mono text-zinc-500 uppercase tracking-[0.15em]">
-                      System: Online
-                    </span>
+                  <div className="text-[10px] font-bold uppercase tracking-[0.22em]" style={{ color: NAVY }}>
+                    VCPMC · Bộ công cụ báo giá
                   </div>
+                  <h2 className="text-[18px] font-bold leading-none mt-1" style={{ ...SERIF, color: NAVY }}>
+                    Tính tiền bản quyền âm nhạc
+                  </h2>
                 </div>
               </div>
 
-              <button
-                type="button"
-                onClick={() => setOpen(false)}
-                aria-label="Đóng"
-                className="h-10 w-10 flex items-center justify-center border border-zinc-800 rounded-lg text-zinc-500 hover:bg-red-500/10 hover:border-red-500/50 hover:text-red-400 transition-all"
-              >
-                <XIcon className="h-4 w-4" />
-              </button>
+              <div className="flex items-center gap-4">
+                <div className="hidden md:block text-right">
+                  <div className="text-[9.5px] uppercase tracking-widest font-semibold" style={{ color: '#8C877E' }}>
+                    Căn cứ pháp lý
+                  </div>
+                  <div className="text-[12px] font-semibold" style={{ color: NAVY }}>
+                    Nghị định 17/2023/NĐ-CP
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setOpen(false)}
+                  aria-label="Đóng"
+                  className="h-9 w-9 flex items-center justify-center rounded transition-colors"
+                  style={{ border: `1px solid ${LINE}`, color: '#6B665F' }}
+                  onMouseEnter={(e) => { e.currentTarget.style.background = '#FEE2E2'; e.currentTarget.style.color = '#B91C1C'; e.currentTarget.style.borderColor = '#FCA5A5'; }}
+                  onMouseLeave={(e) => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.color = '#6B665F'; e.currentTarget.style.borderColor = LINE; }}
+                >
+                  <XIcon className="h-4 w-4" />
+                </button>
+              </div>
             </header>
 
-            {/* Body — scroll container; reuse full calculator page */}
-            <div className="relative z-10 flex-1 overflow-y-auto rc-fab-scroll">
-              <div className="rc-fab-skin">
-                <RoyaltyCalculatorPage />
-              </div>
+            {/* Body */}
+            <div className="relative flex-1 overflow-y-auto rc-fab-scroll" style={{ background: CREAM }}>
+              <RoyaltyCalculatorPage />
             </div>
           </div>
 
@@ -110,15 +130,16 @@ export function RoyaltyCalculatorFab() {
             @keyframes rcFabFade { from { opacity: 0; } to { opacity: 1; } }
             @keyframes rcFabIn {
               from { opacity: 0; transform: translateY(12px) scale(0.985); }
-              to   { opacity: 1; transform: translateY(0)    scale(1); }
+              to   { opacity: 1; transform: translateY(0) scale(1); }
             }
-            .rc-fab-scroll::-webkit-scrollbar { width: 8px; }
-            .rc-fab-scroll::-webkit-scrollbar-track { background: transparent; }
+            .rc-fab-scroll::-webkit-scrollbar { width: 10px; }
+            .rc-fab-scroll::-webkit-scrollbar-track { background: ${CREAM}; }
             .rc-fab-scroll::-webkit-scrollbar-thumb {
-              background: rgba(16,185,129,0.18);
+              background: ${LINE};
               border-radius: 9999px;
+              border: 2px solid ${CREAM};
             }
-            .rc-fab-scroll::-webkit-scrollbar-thumb:hover { background: rgba(16,185,129,0.4); }
+            .rc-fab-scroll::-webkit-scrollbar-thumb:hover { background: #B8B1A4; }
           `}</style>
         </div>
       )}
