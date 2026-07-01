@@ -9,7 +9,7 @@ import { RoyaltyCalculatorPage } from '../../pages/RoyaltyCalculatorPage';
 const NAVY = '#00384D';
 const CREAM = '#F9F7F2';
 const LINE = '#D9D3C7';
-const SERIF: React.CSSProperties = { fontFamily: '"Playfair Display", Georgia, serif' };
+const SERIF: React.CSSProperties = { fontFamily: '"Cormorant Garamond", Georgia, serif' };
 
 export function RoyaltyCalculatorFab() {
   const [open, setOpen] = useState(false);
@@ -88,7 +88,7 @@ export function RoyaltyCalculatorFab() {
                   <CalculatorIcon className="h-5 w-5" />
                 </div>
                 <div>
-                  <div className="text-[10px] font-bold uppercase tracking-[0.22em]" style={{ color: NAVY }}>
+                  <div className="text-[10px] font-bold uppercase tracking-widest" style={{ color: NAVY }}>
                     VCPMC · Bộ công cụ báo giá
                   </div>
                   <h2 className="text-[18px] font-bold leading-none mt-1" style={{ ...SERIF, color: NAVY }}>

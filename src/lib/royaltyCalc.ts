@@ -1,40 +1,42 @@
 /**
- * Cấu hình + công thức tính tiền bản quyền theo Phụ lục NĐ 17/2023/NĐ-CP.
+ * Phần hướng dẫn + công thức tính tiền bản quyền theo Phụ lục NĐ 17/2023/NĐ-CP.
  * Trả về breakdown chi tiết (từng bậc thang) để báo khách rõ ràng.
  */
 
 export type BreakdownRow = {
-  /** Mô tả bậc, vd "Đến 15 m²", "15 - 50 m²", "Trên 50 m²" */
+  /** Mức giá, vd "≤ 15 m²", "15 – 50 m²", "Trên 50 m²" */
   label: string;
-  /** Hệ số (hiển thị, vd "0,35/15m²", "0,04/m²") */
+  /** Hệ số (vd "0,35/15m²", "0,04/m²") */
   coefText: string;
-  /** Số lượng đơn vị áp dụng cho bậc này (vd m² thực tế trong bậc) */
+  /** Số lượng (m² hoặc phòng) */
   qty: number;
-  /** Hệ số số học (× MLCS × qty) */
+  /** Hệ số (vd 0.35) */
   coef: number;
-  /** Cách tính: hệ số × qty hoặc hệ số trực tiếp */
+  /** Phương thức tính */
   mode: 'tier-area' | 'tier-per100' | 'flat' | 'per-room' | 'per-pax';
-  /** Thành tiền dòng = baseSalary × coef × (qty hoặc 1) */
+  /** Thành tiền = baseSalary × coef × (qty hoặc 1) */
   amount: number;
+  /** Ẩn cột MLCS, hệ số, số lượng trong bảng diễn giải */
+  hideFormula?: boolean;
 };
 
 export type FieldResult = {
   rows: BreakdownRow[];
-  /** Tổng hệ số gộp (sau khi áp trần nếu có) */
+  /** Tổng hệ số */
   totalCoef: number;
-  /** Tổng tiền sau khi áp trần (× MLCS) — TRƯỚC khi nhân hệ số đô thị */
+  /** Tổng tiền sau khi áp trần (sau khi cắt cap) */
   subTotal: number;
-  /** Trần được kích hoạt không */
+  /** Có áp trần không */
   capped: boolean;
-  /** Mức trần × MLCS (= capMultiplier × MLCS), undefined nếu không có */
+  /** Số tiền bị áp trần (nếu capped=true) */
   capAmount?: number;
+  /** Hệ số nhân áp trần (= capMultiplier, vd 8), undefined nếu không áp */
   capMultiplier?: number;
-  /** Có dữ liệu nhập hay không */
+  /** Có nhập số liệu chưa */
   hasInput: boolean;
   /** Phí trọn gói (VND), không áp hệ số đô thị (NĐ 17 mục 5.4) */
   urbanExempt?: boolean;
 };
-
 
 export type FieldDef = {
   id: string;
@@ -42,31 +44,34 @@ export type FieldDef = {
   name: string;
   /** Slug icon trong lucide-react */
   icon: string;
-  /** Lớp tailwind cho gradient highlight */
+  /** Màu tailwind gradient highlight */
   accent: string;
-  /** "m²", "phòng", "lượt khách"... */
+  /** "m²", "phòng" */
   unit: string;
-  /** Trần × MLCS */
+  /** Hệ số nhân trần */
   capMultiplier?: number;
-  /** Tóm tắt công thức hiển thị trên thẻ */
+  /** Phí trọn gói VND — bỏ qua hệ số đô thị (mục 5.4 NĐ 17) */
+  urbanExempt?: boolean;
+  /** Ghi chú: bậc thang theo NĐ */
   hint: string;
   /** Danh sách input cho field */
   inputs: FieldInput[];
   /** Hàm tính breakdown */
   compute: (vals: Record<string, number>, baseSalary: number) => FieldResult;
-  /** Phí trọn gói VND — bỏ qua hệ số đô thị (mục 5.4 NĐ 17) */
-  urbanExempt?: boolean;
 };
-
 
 export type FieldInput = {
   key: string;
   label: string;
   suffix?: string;
   placeholder?: string;
+  type?: 'number' | 'select';
+  options?: { value: number; label: string }[];
 };
 
-// ── Helpers ────────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────
+// Helpers
+// ─────────────────────────────────────────────────────────────────
 
 function emptyResult(): FieldResult {
   return { rows: [], totalCoef: 0, subTotal: 0, capped: false, hasInput: false };
@@ -101,7 +106,7 @@ function applyCap(rows: BreakdownRow[], baseSalary: number, capMult?: number): F
   return { rows, totalCoef: rawCoef, subTotal: raw, capped: false, hasInput: true };
 }
 
-// Bậc thang theo diện tích (mục 1, 2, 3, 4, 6, 8)
+// Quy định tính theo diện tích (m²)
 function tierArea(opts: {
   area: number;
   baseCoef: number;
@@ -121,7 +126,7 @@ function tierArea(opts: {
   const { area, baseSalary, capMult } = opts;
   if (!area || area <= 0) return emptyResult();
   const rows: BreakdownRow[] = [];
-  // Bậc 1 — luôn áp dụng (gói cứng)
+  // Bậc 1 — diện tích đầu (nhỏ)
   rows.push({
     label: opts.baseLabel,
     coefText: opts.baseCoefText,
@@ -131,33 +136,33 @@ function tierArea(opts: {
     amount: opts.baseCoef * baseSalary,
   });
   if (area > opts.baseArea) {
-    const midM2 = Math.min(area, opts.midUpTo) - opts.baseArea;
-    if (midM2 > 0) {
+    const mid = Math.min(area, opts.midUpTo) - opts.baseArea;
+    if (mid > 0) {
       rows.push({
         label: opts.midLabel,
         coefText: opts.midCoefText,
-        qty: midM2,
+        qty: mid,
         coef: opts.midPerM2,
         mode: 'tier-area',
-        amount: opts.midPerM2 * midM2 * baseSalary,
+        amount: opts.midPerM2 * mid * baseSalary,
       });
     }
   }
   if (area > opts.midUpTo) {
-    const highM2 = area - opts.midUpTo;
+    const high = area - opts.midUpTo;
     rows.push({
       label: opts.highLabel,
       coefText: opts.highCoefText,
-      qty: highM2,
+      qty: high,
       coef: opts.highPerM2,
       mode: 'tier-area',
-      amount: opts.highPerM2 * highM2 * baseSalary,
+      amount: opts.highPerM2 * high * baseSalary,
     });
   }
   return applyCap(rows, baseSalary, capMult);
 }
 
-// Bậc thang per-100m² (mục 9, 10)
+// Quy định tính per-100m² (quán cà phê)
 function tierPer100(opts: {
   area: number;
   baseCoef: number;
@@ -186,9 +191,9 @@ function tierPer100(opts: {
     amount: opts.baseCoef * baseSalary,
   });
   if (area > opts.baseArea) {
-    const midM2 = Math.min(area, opts.midUpTo) - opts.baseArea;
-    if (midM2 > 0) {
-      const units = midM2 / 100;
+    const mid = Math.min(area, opts.midUpTo) - opts.baseArea;
+    if (mid > 0) {
+      const units = mid / 100;
       rows.push({
         label: opts.midLabel,
         coefText: opts.midCoefText,
@@ -200,8 +205,8 @@ function tierPer100(opts: {
     }
   }
   if (area > opts.midUpTo) {
-    const highM2 = area - opts.midUpTo;
-    const units = highM2 / 100;
+    const high = area - opts.midUpTo;
+    const units = high / 100;
     rows.push({
       label: opts.highLabel,
       coefText: opts.highCoefText,
@@ -214,8 +219,10 @@ function tierPer100(opts: {
   return applyCap(rows, baseSalary, capMult);
 }
 
-// ── 17 lĩnh vực ────────────────────────────────────────────────────────────
-// (Karaoke tách thành 4 dòng riêng theo bảng tính tham chiếu của khách)
+// ─────────────────────────────────────────────────────────────────
+// 17 lĩnh vực (Karaoke sẽ tính theo số phòng)
+// ─────────────────────────────────────────────────────────────────
+
 export const FIELDS: FieldDef[] = [
   {
     id: 'cafe', no: 1, name: 'Quán cà phê – giải khát', icon: 'CoffeeIcon',
@@ -446,15 +453,14 @@ export const FIELDS: FieldDef[] = [
   // ── Mục 5.4 — Biểu diễn theo hình thức hát với nhau, tiệc cưới, liên hoan sinh nhật...
   // Phí trọn gói VND/năm, không nhân hệ số đô thị, không áp hỗ trợ — chỉ cộng VAT lên trên.
   {
-
     id: 'sing-restaurant', no: 21,
     name: 'Hát với nhau – Nhà hàng / quán cà phê / CLB khiêu vũ',
     icon: 'MicVocalIcon',
     accent: 'from-violet-500/20 to-indigo-500/10',
     unit: 'chỗ', urbanExempt: true,
-    hint: '<30 chỗ: 2.000.000 đ/năm trọn gói · ≥30 chỗ: 60.000 đ/chỗ/năm',
+    hint: '≤30 chỗ: 2.000.000 đ/năm trọn gói · >30 chỗ: 60.000 đ/chỗ/năm',
     inputs: [{ key: 'seats', label: 'Sức chứa (số chỗ)', suffix: 'chỗ' }],
-    compute: ({ seats }, mlcs) => flatSeats(seats || 0, 2_000_000, 60_000, mlcs),
+    compute: ({ seats }, mlcs) => flatSeats(seats || 0, 2_000_000, 60_000, mlcs, 'Nhà hàng/quán cà phê'),
   },
   {
     id: 'sing-bar', no: 22,
@@ -462,9 +468,9 @@ export const FIELDS: FieldDef[] = [
     icon: 'MartiniIcon',
     accent: 'from-fuchsia-500/20 to-rose-500/10',
     unit: 'chỗ', urbanExempt: true,
-    hint: '<30 chỗ: 2.500.000 đ/năm trọn gói · ≥30 chỗ: 60.000 đ/chỗ/năm',
+    hint: '≤30 chỗ: 2.500.000 đ/năm trọn gói · >30 chỗ: 60.000 đ/chỗ/năm',
     inputs: [{ key: 'seats', label: 'Sức chứa (số chỗ)', suffix: 'chỗ' }],
-    compute: ({ seats }, mlcs) => flatSeats(seats || 0, 2_500_000, 60_000, mlcs),
+    compute: ({ seats }, mlcs) => flatSeats(seats || 0, 2_500_000, 60_000, mlcs, 'Bar/lounge/club'),
   },
   {
     id: 'wedding-hall', no: 23,
@@ -472,9 +478,20 @@ export const FIELDS: FieldDef[] = [
     icon: 'HeartIcon',
     accent: 'from-pink-500/20 to-rose-500/10',
     unit: 'chỗ', urbanExempt: true,
-    hint: 'Áp dụng 25% mức "Nhà hàng/quán cà phê" — <30 chỗ: 500.000 đ/năm · ≥30 chỗ: 15.000 đ/chỗ/năm',
-    inputs: [{ key: 'seats', label: 'Sức chứa (số chỗ)', suffix: 'chỗ' }],
-    compute: ({ seats }, mlcs) => flatSeats(seats || 0, 500_000, 15_000, mlcs),
+    hint: 'Áp dụng 25% mức tiền bản quyền của Nhà hàng hoặc Bar/Club',
+    inputs: [
+      { key: 'seats', label: 'Sức chứa (số chỗ)', suffix: 'chỗ' },
+      { 
+        key: 'baseType', 
+        label: 'Cơ sở tính', 
+        type: 'select', 
+        options: [
+          { value: 1, label: 'Nhà hàng / quán cà phê' },
+          { value: 2, label: 'Bar / lounge / club' }
+        ]
+      }
+    ],
+    compute: ({ seats, baseType }, mlcs) => weddingSeats(seats || 0, baseType || 1, mlcs),
   },
 ];
 
@@ -501,19 +518,58 @@ function flatPerShow(shows: number, perShow: number, mlcs: number): FieldResult 
 }
 
 /** Phí trọn gói VND theo sức chứa — mục 5.4 NĐ 17/2023 */
-function flatSeats(seats: number, flatUnder30: number, perSeatFrom30: number, mlcs: number): FieldResult {
+function flatSeats(seats: number, flatUnder30: number, perSeatFrom30: number, mlcs: number, kind: string): FieldResult {
   if (seats <= 0) return emptyResult();
-  const amount = seats < 30 ? flatUnder30 : perSeatFrom30 * seats;
-  const label = seats < 30
-    ? `Sức chứa ${seats} chỗ (<30) — trọn gói`
-    : `Sức chứa ${seats} chỗ (≥30) — ${formatVND(perSeatFrom30, false)}/chỗ`;
+  const amount = seats <= 30 ? flatUnder30 : flatUnder30 + (seats - 30) * perSeatFrom30;
+  
+  let label = '';
+  if (seats <= 30) {
+     label = `Hát với nhau – ${kind}: mức tối thiểu ${formatVND(flatUnder30, false)}đ/năm áp dụng cho sức chứa đến 30 chỗ. Tổng năm: ${formatVND(amount, false)}đ.`;
+  } else {
+     const over = seats - 30;
+     const overAmount = over * perSeatFrom30;
+     label = `Hát với nhau – ${kind}: mức tối thiểu ${formatVND(flatUnder30, false)}đ/năm áp dụng cho sức chứa đến 30 chỗ. Sức chứa ${seats} chỗ, phần vượt 30 chỗ là ${over} chỗ × ${formatVND(perSeatFrom30, false)}đ/chỗ/năm = ${formatVND(overAmount, false)}đ. Tổng năm: ${formatVND(amount, false)}đ.`;
+  }
+
   const row: BreakdownRow = {
     label,
-    coefText: seats < 30 ? 'trọn gói/năm' : `${formatVND(perSeatFrom30, false)}/chỗ/năm`,
-    qty: seats < 30 ? 1 : seats,
+    coefText: 'trọn gói',
+    qty: 1,
     coef: amount / Math.max(mlcs, 1),
     mode: 'flat',
     amount,
+    hideFormula: true,
+  };
+  return {
+    rows: [row],
+    totalCoef: amount / Math.max(mlcs, 1),
+    subTotal: amount,
+    capped: false,
+    hasInput: true,
+    urbanExempt: true,
+  };
+}
+
+function weddingSeats(seats: number, baseType: number, mlcs: number): FieldResult {
+  if (seats <= 0) return emptyResult();
+  const isBar = baseType === 2;
+  const baseLabel = isBar ? 'Bar/lounge/club' : 'Nhà hàng/quán cà phê';
+  const flatUnder30 = isBar ? 2_500_000 : 2_000_000;
+  const perSeatFrom30 = 60_000;
+  
+  const baseAmount = seats <= 30 ? flatUnder30 : flatUnder30 + (seats - 30) * perSeatFrom30;
+  const amount = baseAmount * 0.25;
+  
+  const label = `Sảnh/khu vực tổ chức tiệc cưới: áp dụng 25% mức tiền bản quyền tương ứng. Mức cơ sở ${baseLabel} ${formatVND(baseAmount, false)}đ × 25% = ${formatVND(amount, false)}đ.`;
+  
+  const row: BreakdownRow = {
+    label,
+    coefText: '25%',
+    qty: 1,
+    coef: amount / Math.max(mlcs, 1),
+    mode: 'flat',
+    amount,
+    hideFormula: true,
   };
   return {
     rows: [row],
@@ -555,7 +611,10 @@ function flatPerUnit(qty: number, coef: number, unit: string, mlcs: number): Fie
   const row: BreakdownRow = {
     label: `${qty} ${unit}`,
     coefText: `${coef.toString().replace('.', ',')}/${unit}`,
-    qty, coef, mode: 'per-room', amount: coef * qty * mlcs,
+    qty,
+    coef,
+    mode: 'per-room',
+    amount: coef * qty * mlcs,
   };
   return applyCap([row], mlcs);
 }
@@ -564,25 +623,30 @@ function paxPer100(pax: number, coefPer100: number, mlcs: number, kind: string):
   if (pax <= 0) return emptyResult();
   const units = pax / 100;
   const row: BreakdownRow = {
-    label: `${pax.toLocaleString('vi-VN')} lượt khách (${kind})`,
-    coefText: `${coefPer100.toString().replace('.', ',')}/100 lượt`,
-    qty: units, coef: coefPer100, mode: 'per-pax', amount: coefPer100 * units * mlcs,
+    label: `${pax.toLocaleString('vi-VN')} lượt ${kind}`,
+    coefText: `${coefPer100.toString().replace('.', ',')}/100 lượt khách`,
+    qty: units,
+    coef: coefPer100,
+    mode: 'per-pax',
+    amount: coefPer100 * units * mlcs,
   };
   return applyCap([row], mlcs);
 }
 
-// ── Aggregation ────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────
+// Aggregation
+// ─────────────────────────────────────────────────────────────────
 
 export type QuoteTotals = {
-  /** Tổng subTotal (sau trần) trước hệ số đô thị */
+  /** Tổng subTotal (sau trần) từng lĩnh vực */
   rawSubTotal: number;
   /** Sau hệ số đô thị */
   afterUrban: number;
-  /** Sau hỗ trợ chung */
+  /** Sau hỗ trợ (%) */
   afterSupport: number;
-  /** Tiền VAT */
+  /** Thuế VAT (%) */
   vat: number;
-  /** Tổng giá trị hợp đồng (sau VAT) */
+  /** Tổng cộng (sau VAT) */
   grandTotal: number;
 };
 
@@ -600,7 +664,6 @@ export function computeQuoteTotals(params: {
   const supportable = afterUrban - exempt;
   const afterSupport = supportable * (1 - params.supportPct) + exempt;
   const vat = afterSupport * params.vatPct;
-
   return {
     rawSubTotal: raw,
     afterUrban,

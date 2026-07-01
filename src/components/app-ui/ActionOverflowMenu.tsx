@@ -41,7 +41,7 @@ function computePosition(triggerRect: DOMRect, menuWidth: number, align: 'left' 
     if (left < MARGIN) left = MARGIN;
   }
 
-  return align === 'right' ? { top, right: right ?? MARGIN } : { top, left: left ?? MARGIN };
+  return { top, left, right };
 }
 
 export function ActionOverflowMenu({

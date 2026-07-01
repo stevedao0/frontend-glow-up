@@ -4,7 +4,7 @@
  */
 import {
   Document, Packer, Paragraph, TextRun, Table, TableRow, TableCell,
-  AlignmentType, WidthType, ShadingType, BorderStyle, HeadingLevel,
+  AlignmentType, WidthType, ShadingType, BorderStyle,
 } from 'docx';
 import { saveAs } from 'file-saver';
 import { FieldResult, FIELDS, QuoteTotals, formatVND } from './royaltyCalc';
@@ -28,8 +28,7 @@ const COLOR = {
   ink: '111827',
   mute: '64748B',
   divider: 'E2E8F0',
-  accent: '4F46E5',  // indigo
-  accent2: 'C026D3', // fuchsia
+  accent: '4F46E5',
   ok: '047857',
   warn: 'B45309',
   rowAlt: 'F8FAFC',
@@ -40,35 +39,38 @@ const COLOR = {
 const FONT = 'Inter';
 const MONO = 'Consolas';
 
-// ── Building blocks ────────────────────────────────────────────────────────
-
 const b = (color: string, size = 4) => ({
   top: { style: BorderStyle.SINGLE, size, color },
   bottom: { style: BorderStyle.SINGLE, size, color },
   left: { style: BorderStyle.SINGLE, size, color },
   right: { style: BorderStyle.SINGLE, size, color },
-});
+}) as const;
 
 function txt(text: string, opts: Partial<{ bold: boolean; size: number; color: string; italic: boolean; font: string }> = {}) {
   return new TextRun({
-    text, bold: opts.bold, italics: opts.italic,
+    text,
+    bold: opts.bold,
+    italics: opts.italic,
     size: opts.size ?? 22,
     color: opts.color ?? COLOR.ink,
     font: opts.font ?? FONT,
   });
 }
 
-function p(children: TextRun[] | string, opts: Partial<{ align: typeof AlignmentType[keyof typeof AlignmentType]; spacing: number; heading: typeof HeadingLevel[keyof typeof HeadingLevel] }> = {}) {
+function p(children: TextRun[] | string, opts: Partial<{ align: typeof AlignmentType[keyof typeof AlignmentType]; spacing: number }> = {}) {
   const runs = typeof children === 'string' ? [txt(children)] : children;
   return new Paragraph({
     children: runs,
     alignment: opts.align,
     spacing: { after: opts.spacing ?? 80 },
-    heading: opts.heading,
   });
 }
 
-function cell(content: Paragraph[] | string, opts: Partial<{ shading: string; width: number; bold: boolean; align: typeof AlignmentType[keyof typeof AlignmentType]; mono: boolean; color: string }> = {}) {
+function cell(content: Paragraph[] | string, opts: Partial<{
+  shading: string; width: number; bold: boolean;
+  align: typeof AlignmentType[keyof typeof AlignmentType];
+  mono: boolean; color: string;
+}> = {}) {
   const paras = typeof content === 'string'
     ? [p([txt(content, { bold: opts.bold, font: opts.mono ? MONO : FONT, color: opts.color })], { align: opts.align })]
     : content;
@@ -81,15 +83,8 @@ function cell(content: Paragraph[] | string, opts: Partial<{ shading: string; wi
   });
 }
 
-// ── Customer/Settings ──────────────────────────────────────────────────────
-
 export type ExportData = {
-  customer: {
-    name: string;
-    address: string;
-    representative?: string;
-    location?: string; // tên đô thị (HN/HCM/...) để hiển thị
-  };
+  customer: { name: string; address: string; representative?: string; location?: string; };
   contractMonths: number;
   baseSalary: number;
   urbanLabel: string;
@@ -102,22 +97,12 @@ export type ExportData = {
   quoteDate?: string;
 };
 
-// ── Per-field section ──────────────────────────────────────────────────────
-
 function fieldSection(item: ExportData['perField'][number], baseSalary: number): (Paragraph | Table)[] {
   const field = FIELDS.find(f => f.id === item.fieldId)!;
   const { result } = item;
   const out: (Paragraph | Table)[] = [];
 
-  // Tên lĩnh vực
-  out.push(new Paragraph({
-    spacing: { before: 240, after: 80 },
-    children: [
-      txt(`${field.no}. ${field.name.toUpperCase()}`, { bold: true, size: 24, color: COLOR.accent }),
-    ],
-  }));
-
-  // Input description
+  out.push(p([txt(`${field.no}. ${field.name.toUpperCase()}`, { bold: true, size: 24, color: COLOR.accent })], { spacing: 80 }));
   const inputText = field.inputs.map(inp => {
     const v = item.vals[inp.key];
     if (!v) return null;
@@ -125,7 +110,6 @@ function fieldSection(item: ExportData['perField'][number], baseSalary: number):
   }).filter(Boolean).join(' · ');
   if (inputText) out.push(p([txt(inputText, { italic: true, color: COLOR.mute, size: 20 })], { spacing: 120 }));
 
-  // Bảng breakdown
   const headerRow = new TableRow({
     tableHeader: true,
     children: [
@@ -157,25 +141,23 @@ function fieldSection(item: ExportData['perField'][number], baseSalary: number):
     ],
   });
 
-  const allRows = [headerRow, ...dataRows, totalRow];
+  const allRows: (typeof dataRows)[number][] = [headerRow, ...dataRows, totalRow];
 
   if (result.capMultiplier !== undefined) {
     allRows.push(new TableRow({
       children: [
-        cell(`Mức trần áp dụng: ${result.capMultiplier}×MLCS${result.capped ? ' (ĐÃ ÁP TRẦN)' : ''}`,
-          { italic: true, color: result.capped ? COLOR.warn : COLOR.mute }),
+        cell(`Mức trần áp dụng: ${result.capMultiplier}×MLCS${result.capped ? ' (ĐÃ ÁP TRẦN)' : ''}`, { italic: true, color: result.capped ? COLOR.warn : COLOR.mute }),
         cell('', {}), cell('', {}), cell('', {}),
         cell(formatVND(result.capAmount || 0), { mono: true, align: AlignmentType.RIGHT, color: result.capped ? COLOR.warn : COLOR.mute }),
       ],
     }));
   }
 
-  const table = new Table({
+  out.push(new Table({
     width: { size: 10460, type: WidthType.DXA },
     columnWidths: [3400, 1800, 2000, 1400, 1860],
     rows: allRows,
-  });
-  out.push(table);
+  }));
   return out;
 }
 
@@ -185,61 +167,60 @@ function formatNumber(v: number): string {
   return v.toLocaleString('vi-VN', { maximumFractionDigits: 2 });
 }
 
-// ── Main export ────────────────────────────────────────────────────────────
-
-export function buildRoyaltyQuoteDoc(data: ExportData): Document {
-  return buildDoc(data);
-}
-
-export async function exportRoyaltyQuoteDocx(data: ExportData): Promise<void> {
-  const doc = buildDoc(data);
-  const blob = await Packer.toBlob(doc);
-  const filename = `BaoGia-VCPMC-${(data.customer.name || 'KhachHang').replace(/\s+/g, '_')}-${new Date().toISOString().slice(0, 10)}.docx`;
-  saveAs(blob, filename);
+function summaryRow(label: string, amount: number, isGrand = false): TableRow {
+  return new TableRow({
+    children: [
+      cell(label, {
+        bold: isGrand, align: AlignmentType.LEFT,
+        shading: isGrand ? COLOR.rowGrand : COLOR.rowAlt,
+        color: isGrand ? 'FFFFFF' : COLOR.ink,
+      }),
+      cell(formatVND(amount), {
+        mono: true, align: AlignmentType.RIGHT, bold: true,
+        shading: isGrand ? COLOR.rowGrand : COLOR.rowAlt,
+        color: isGrand ? 'FFFFFF' : COLOR.ok,
+      }),
+    ],
+  });
 }
 
 function collectContent(data: ExportData): (Paragraph | Table)[] {
-  const childrenAll: (Paragraph | Table)[] = [];
+  const out: (Paragraph | Table)[] = [];
 
-  // ── Header: VCPMC info ───────────────────────────────────────────────────
-  childrenAll.push(p([txt(VCPMC.fullName, { bold: true, size: 22, color: COLOR.accent })], { align: AlignmentType.CENTER, spacing: 40 }));
-  childrenAll.push(p([txt(`Trụ sở: ${VCPMC.hq}`, { size: 18, color: COLOR.mute })], { align: AlignmentType.CENTER, spacing: 30 }));
-  childrenAll.push(p([txt(`Điện thoại: ${VCPMC.hqPhone}  ·  Email: ${VCPMC.email}  ·  Website: ${VCPMC.website}`, { size: 18, color: COLOR.mute })], { align: AlignmentType.CENTER, spacing: 30 }));
-  childrenAll.push(p([txt(`Chi nhánh phía Nam: ${VCPMC.south} – ĐT: ${VCPMC.southPhone}`, { size: 18, color: COLOR.mute })], { align: AlignmentType.CENTER, spacing: 30 }));
-  childrenAll.push(p([txt(`VP Đà Nẵng: ${VCPMC.daNang} – ĐT: ${VCPMC.daNangPhone}`, { size: 18, color: COLOR.mute })], { align: AlignmentType.CENTER, spacing: 200 }));
+  out.push(p([txt(VCPMC.fullName, { bold: true, size: 22, color: COLOR.accent })], { align: AlignmentType.CENTER, spacing: 40 }));
+  out.push(p([txt(`Trụ sở: ${VCPMC.hq}`, { size: 18, color: COLOR.mute })], { align: AlignmentType.CENTER, spacing: 30 }));
+  out.push(p([txt(`Điện thoại: ${VCPMC.hqPhone} · Email: ${VCPMC.email} · Website: ${VCPMC.website}`, { size: 18, color: COLOR.mute })], { align: AlignmentType.CENTER, spacing: 30 }));
+  out.push(p([txt(`Chi nhánh phía Nam: ${VCPMC.south} – ĐT: ${VCPMC.southPhone}`, { size: 18, color: COLOR.mute })], { align: AlignmentType.CENTER, spacing: 30 }));
+  out.push(p([txt(`VP Đà Nẵng: ${VCPMC.daNang} – ĐT: ${VCPMC.daNangPhone}`, { size: 18, color: COLOR.mute })], { align: AlignmentType.CENTER, spacing: 200 }));
 
-  childrenAll.push(p([txt('BẢNG BÁO GIÁ TIỀN BẢN QUYỀN ÂM NHẠC', { bold: true, size: 32, color: COLOR.ink })], { align: AlignmentType.CENTER, spacing: 40 }));
-  childrenAll.push(p([txt('Căn cứ Nghị định 17/2023/NĐ-CP ngày 26/4/2023 — Phụ lục biểu mức tiền bản quyền', { italic: true, color: COLOR.mute, size: 20 })], { align: AlignmentType.CENTER, spacing: 240 }));
+  out.push(p([txt('BẢNG BÁO GIÁ TIỀN BẢN QUYỀN ÂM NHẠC', { bold: true, size: 32, color: COLOR.ink })], { align: AlignmentType.CENTER, spacing: 40 }));
+  out.push(p([txt('Căn cứ Nghị định 17/2023/NĐ-CP ngày 26/4/2023 — Phụ lục biểu mức tiền bản quyền', { italic: true, color: COLOR.mute, size: 20 })], { align: AlignmentType.CENTER, spacing: 240 }));
 
   if (data.quoteNo || data.quoteDate) {
-    childrenAll.push(p([
-      txt(`Số báo giá: ${data.quoteNo || '—'}     `, { size: 20 }),
+    out.push(p([
+      txt(`Số báo giá: ${data.quoteNo || '—'} `, { size: 20 }),
       txt(`Ngày: ${data.quoteDate || new Date().toLocaleDateString('vi-VN')}`, { size: 20 }),
     ], { align: AlignmentType.RIGHT, spacing: 200 }));
   }
 
-  // ── Customer block ───────────────────────────────────────────────────────
-  childrenAll.push(p([txt('THÔNG TIN KHÁCH HÀNG', { bold: true, size: 22, color: COLOR.accent })], { spacing: 80 }));
-  childrenAll.push(p([txt('Tên đơn vị: ', { bold: true }), txt(data.customer.name || '………………………')]));
-  childrenAll.push(p([txt('Địa chỉ: ', { bold: true }), txt(data.customer.address || '………………………')]));
-  if (data.customer.representative) childrenAll.push(p([txt('Người đại diện: ', { bold: true }), txt(data.customer.representative)]));
-  childrenAll.push(p([txt('Phân loại đô thị: ', { bold: true }), txt(`${data.urbanLabel} (${(data.urbanFactor * 100).toFixed(0)}% khung giá)`)]));
-  childrenAll.push(p([txt('Thời hạn hợp đồng: ', { bold: true }), txt(`${data.contractMonths} tháng`)]));
-  childrenAll.push(p([txt('Mức lương cơ sở áp dụng: ', { bold: true }), txt(formatVND(data.baseSalary))], { spacing: 200 }));
+  out.push(p([txt('THÔNG TIN KHÁCH HÀNG', { bold: true, size: 22, color: COLOR.accent })], { spacing: 80 }));
+  out.push(p([txt('Tên đơn vị: ', { bold: true }), txt(data.customer.name || '………………………')]));
+  out.push(p([txt('Địa chỉ: ', { bold: true }), txt(data.customer.address || '………………………')]));
+  if (data.customer.representative) out.push(p([txt('Người đại diện: ', { bold: true }), txt(data.customer.representative)]));
+  out.push(p([txt('Phân loại đô thị: ', { bold: true }), txt(`${data.urbanLabel} (${(data.urbanFactor * 100).toFixed(0)}% khung giá)`)]));
+  out.push(p([txt('Thời hạn hợp đồng: ', { bold: true }), txt(`${data.contractMonths} tháng`)]));
+  out.push(p([txt('Mức lương cơ sở áp dụng: ', { bold: true }), txt(formatVND(data.baseSalary))], { spacing: 200 }));
 
-  // ── Per-field details ────────────────────────────────────────────────────
-  childrenAll.push(p([txt('CHI TIẾT TÍNH TIỀN BẢN QUYỀN', { bold: true, size: 22, color: COLOR.accent })], { spacing: 120 }));
+  out.push(p([txt('CHI TIẾT TÍNH TIỀN BẢN QUYỀN', { bold: true, size: 22, color: COLOR.accent })], { spacing: 120 }));
 
   for (const item of data.perField) {
-    const section = fieldSection(item, data.baseSalary);
-    childrenAll.push(...section);
+    out.push(...fieldSection(item, data.baseSalary));
   }
 
-  // ── Totals summary ───────────────────────────────────────────────────────
-  childrenAll.push(p([], { spacing: 240 }));
-  childrenAll.push(p([txt('TỔNG HỢP BÁO GIÁ', { bold: true, size: 24, color: COLOR.accent })], { spacing: 120 }));
+  out.push(p([], { spacing: 240 }));
+  out.push(p([txt('TỔNG HỢP BÁO GIÁ', { bold: true, size: 24, color: COLOR.accent })], { spacing: 120 }));
 
-  const totalsTable = new Table({
+  out.push(new Table({
     width: { size: 10460, type: WidthType.DXA },
     columnWidths: [6960, 3500],
     rows: [
@@ -249,26 +230,23 @@ function collectContent(data: ExportData): (Paragraph | Table)[] {
       summaryRow(`Thuế GTGT ${(data.vatPct * 100).toFixed(0)}%`, data.totals.vat),
       summaryRow('TỔNG GIÁ TRỊ HỢP ĐỒNG (đã gồm VAT)', data.totals.grandTotal, true),
     ],
-  });
-  childrenAll.push(totalsTable);
+  }));
 
-  childrenAll.push(p([], { spacing: 120 }));
-  childrenAll.push(p([
+  out.push(p([], { spacing: 120 }));
+  out.push(p([
     txt('Bằng chữ: ', { bold: true }),
     txt(`${numberToVietnameseWords(data.totals.grandTotal)}./.`, { italic: true }),
   ]));
 
-  // ── Notes ────────────────────────────────────────────────────────────────
-  childrenAll.push(p([], { spacing: 200 }));
-  childrenAll.push(p([txt('GHI CHÚ', { bold: true, color: COLOR.accent })], { spacing: 60 }));
-  childrenAll.push(p([txt('• Báo giá lập theo Nghị định 17/2023/NĐ-CP ngày 26/4/2023 — Phụ lục biểu mức tiền bản quyền.', { size: 20, color: COLOR.mute })]));
-  childrenAll.push(p([txt('• Tỷ lệ áp dụng theo phân loại đô thị (NĐ 134/2026/NĐ-CP): HN/TP.HCM 100%; loại I 80%; loại II 50%; loại III 20% (vùng sâu, vùng xa, vùng ĐB khó khăn 10%).', { size: 20, color: COLOR.mute })]));
-  childrenAll.push(p([txt('• Báo giá có hiệu lực 30 ngày kể từ ngày phát hành.', { size: 20, color: COLOR.mute })]));
-  childrenAll.push(p([txt('• Mức lương cơ sở thay đổi theo quy định của Chính phủ tại từng thời điểm.', { size: 20, color: COLOR.mute })]));
+  out.push(p([], { spacing: 200 }));
+  out.push(p([txt('GHI CHÚ', { bold: true, color: COLOR.accent })], { spacing: 60 }));
+  out.push(p([txt('• Báo giá lập theo Nghị định 17/2023/NĐ-CP ngày 26/4/2023 — Phụ lục biểu mức tiền bản quyền.', { size: 20, color: COLOR.mute })]));
+  out.push(p([txt('• Tỷ lệ áp dụng theo phân loại đô thị (NĐ 134/2026/NĐ-CP): HN/TP.HCM 100%; loại I 80%; loại II 50%; loại III 20% (vùng sâu, vùng xa, vùng ĐB khó khăn 10%).', { size: 20, color: COLOR.mute })]));
+  out.push(p([txt('• Báo giá có hiệu lực 30 ngày kể từ ngày phát hành.', { size: 20, color: COLOR.mute })]));
+  out.push(p([txt('• Mức lương cơ sở thay đổi theo quy định của Chính phủ tại từng thời điểm.', { size: 20, color: COLOR.mute })]));
 
-  // ── Signature ────────────────────────────────────────────────────────────
-  childrenAll.push(p([], { spacing: 360 }));
-  const sigTable = new Table({
+  out.push(p([], { spacing: 360 }));
+  out.push(new Table({
     width: { size: 10460, type: WidthType.DXA },
     columnWidths: [5230, 5230],
     rows: [new TableRow({
@@ -291,14 +269,13 @@ function collectContent(data: ExportData): (Paragraph | Table)[] {
         }),
       ],
     })],
-  });
-  childrenAll.push(sigTable);
+  }));
 
-  return childrenAll;
+  return out;
 }
 
 function buildDoc(data: ExportData): Document {
-  const childrenAll: (Paragraph | Table)[] = collectContent(data);
+  const childrenAll = collectContent(data);
   return new Document({
     creator: 'VCPMC',
     title: 'Báo giá tiền bản quyền âm nhạc',
@@ -316,19 +293,13 @@ function buildDoc(data: ExportData): Document {
   });
 }
 
-function summaryRow(label: string, amount: number, isGrand = false): TableRow {
-  return new TableRow({
-    children: [
-      cell(label, {
-        bold: isGrand, align: AlignmentType.LEFT,
-        shading: isGrand ? COLOR.rowGrand : COLOR.rowAlt,
-        color: isGrand ? 'FFFFFF' : COLOR.ink,
-      }),
-      cell(formatVND(amount), {
-        mono: true, align: AlignmentType.RIGHT, bold: true,
-        shading: isGrand ? COLOR.rowGrand : COLOR.rowAlt,
-        color: isGrand ? 'FFFFFF' : (isGrand ? 'FFFFFF' : COLOR.ok),
-      }),
-    ],
-  });
+export function buildRoyaltyQuoteDoc(data: ExportData): Document {
+  return buildDoc(data);
+}
+
+export async function exportRoyaltyQuoteDocx(data: ExportData): Promise<void> {
+  const doc = buildDoc(data);
+  const blob = await Packer.toBlob(doc);
+  const filename = `BaoGia-VCPMC-${(data.customer.name || 'KhachHang').replace(/\s+/g, '_')}-${new Date().toISOString().slice(0, 10)}.docx`;
+  saveAs(blob, filename);
 }

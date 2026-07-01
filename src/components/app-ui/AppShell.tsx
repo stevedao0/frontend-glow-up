@@ -3,7 +3,6 @@ import { Sidebar } from './Sidebar';
 import { Topbar } from './Topbar';
 import { CommandCenter } from './CommandCenter';
 import { useLayoutMode } from './useLayoutMode';
-import { RoyaltyCalculatorFab } from './RoyaltyCalculatorFab';
 
 import { RouteKey } from '../../data/routes';
 import type { WorkflowKind } from './WorkflowSheet';
@@ -35,23 +34,20 @@ export function AppShell({
   // -- Command Center (default for internal pilot) --
   if (layoutMode === 'command-center') {
     return (
-      <>
-        <CommandCenter
-          current={current}
-          onNavigate={onNavigate}
-          workspace={workspace}
-          onWorkspaceChange={onWorkspaceChange}
-          userEmail={userEmail}
-          layoutMode={layoutMode}
-          onLayoutModeChange={setLayoutMode}
-          workflow={workflow}
-          onOpenWorkflow={onOpenWorkflow}
-          onCloseWorkflow={onCloseWorkflow}
-        >
-          {children}
-        </CommandCenter>
-        {current !== 'tools.royalty' && <RoyaltyCalculatorFab />}
-      </>
+      <CommandCenter
+        current={current}
+        onNavigate={onNavigate}
+        workspace={workspace}
+        onWorkspaceChange={onWorkspaceChange}
+        userEmail={userEmail}
+        layoutMode={layoutMode}
+        onLayoutModeChange={setLayoutMode}
+        workflow={workflow}
+        onOpenWorkflow={onOpenWorkflow}
+        onCloseWorkflow={onCloseWorkflow}
+      >
+        {children}
+      </CommandCenter>
     );
   }
 
@@ -70,14 +66,17 @@ export function AppShell({
             layoutMode={layoutMode}
             onLayoutModeChange={setLayoutMode}
           />
-          {/* Dev badge removed — PREVIEW · DEMO MODE pill is the canonical indicator */}
+          {showDevBadge ? (
+            <div className="vc-enterprise-dev-badge px-6 py-1.5 text-[11px] font-medium flex items-center gap-2">
+              <span className="h-1.5 w-1.5 rounded-full bg-amber-500 animate-pulse" />
+              Development build
+            </div>
+          ) : null}
           <main key={current} className="vc-enterprise-content page-enter">
             {children}
           </main>
         </div>
       </div>
-
-      {current !== 'tools.royalty' && <RoyaltyCalculatorFab />}
 
       <style>{`
         @keyframes fadein {

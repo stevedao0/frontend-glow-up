@@ -37,7 +37,7 @@ const C = {
   ember: '#B45309',
 };
 
-const SERIF: React.CSSProperties = { fontFamily: '"Playfair Display", Georgia, "Times New Roman", serif' };
+const SERIF: React.CSSProperties = { fontFamily: '"Cormorant Garamond", Georgia, "Times New Roman", serif' };
 
 // Phân loại đô thị (NĐ 134/2026 sửa đổi Phụ lục II NĐ 17/2023)
 const URBAN_OPTIONS = [
@@ -352,7 +352,7 @@ export function RoyaltyCalculatorPage() {
               </div>
             ) : (
               <>
-                {/* Per-field list */}
+                {/* Per-field list*/}
                 <div className="mt-5 space-y-2">
                   {activeFields.map(({ field, result }) => (
                     <div key={field.id} className="flex items-start justify-between gap-3 text-[12px] py-1 border-b border-white/5">
@@ -537,20 +537,40 @@ function FieldBlock({
               {inp.label}
             </label>
             <div className="relative">
-              <input
-                type="number" step="any"
-                value={vals[inp.key] || ''}
-                onChange={(e) => onChange(inp.key, Number(e.target.value) || 0)}
-                placeholder={inp.placeholder || '0'}
-                className="w-full bg-white border rounded-md py-2 px-3 pr-12 text-base font-mono font-semibold tabular-nums outline-none transition-all"
-                style={{ borderColor: C.lineStrong, color: C.ink }}
-                onFocus={(e) => { e.currentTarget.style.borderColor = C.navy; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(0,56,77,0.08)'; }}
-                onBlur={(e) => { e.currentTarget.style.borderColor = C.lineStrong; e.currentTarget.style.boxShadow = 'none'; }}
-              />
-              {inp.suffix && (
+              {inp.type === 'select' ? (
+                <select
+                  value={vals[inp.key] || (inp.options && inp.options[0]?.value) || 0}
+                  onChange={(e) => onChange(inp.key, Number(e.target.value))}
+                  className="w-full bg-white border rounded-md py-2 px-3 text-base font-semibold outline-none transition-all appearance-none"
+                  style={{ borderColor: C.lineStrong, color: C.ink }}
+                  onFocus={(e) => { e.currentTarget.style.borderColor = C.navy; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(0,56,77,0.08)'; }}
+                  onBlur={(e) => { e.currentTarget.style.borderColor = C.lineStrong; e.currentTarget.style.boxShadow = 'none'; }}
+                >
+                  {inp.options?.map(opt => (
+                    <option key={opt.value} value={opt.value}>{opt.label}</option>
+                  ))}
+                </select>
+              ) : (
+                <input
+                  type="number" step="any"
+                  value={vals[inp.key] || ''}
+                  onChange={(e) => onChange(inp.key, Number(e.target.value) || 0)}
+                  placeholder={inp.placeholder || '0'}
+                  className="w-full bg-white border rounded-md py-2 px-3 pr-12 text-base font-mono font-semibold tabular-nums outline-none transition-all"
+                  style={{ borderColor: C.lineStrong, color: C.ink }}
+                  onFocus={(e) => { e.currentTarget.style.borderColor = C.navy; e.currentTarget.style.boxShadow = '0 0 0 3px rgba(0,56,77,0.08)'; }}
+                  onBlur={(e) => { e.currentTarget.style.borderColor = C.lineStrong; e.currentTarget.style.boxShadow = 'none'; }}
+                />
+              )}
+              {inp.type !== 'select' && inp.suffix && (
                 <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[11px] font-semibold" style={{ color: C.mute2 }}>
                   {inp.suffix}
                 </span>
+              )}
+              {inp.type === 'select' && (
+                <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                  <ChevronDownIcon className="h-4 w-4" style={{ color: C.mute2 }} />
+                </div>
               )}
             </div>
           </div>
@@ -607,9 +627,15 @@ function FieldBlock({
               {result.rows.map((r, i) => (
                 <tr key={i} className="font-mono tabular-nums" style={{ background: i % 2 ? C.subtle : 'transparent' }}>
                   <td className="px-3 py-2 font-sans" style={{ color: C.ink }}>{r.label}</td>
-                  <td className="px-3 py-2 text-right" style={{ color: C.muted }}>{formatVND(baseSalary, false)}</td>
-                  <td className="px-3 py-2 text-right" style={{ color: C.navy }}>{r.coefText}</td>
-                  <td className="px-3 py-2 text-right" style={{ color: C.ink }}>{formatCoef(r.qty, 2)}</td>
+                  <td className="px-3 py-2 text-right" style={{ color: C.muted }}>
+                    {r.hideFormula ? '-' : formatVND(baseSalary, false)}
+                  </td>
+                  <td className="px-3 py-2 text-right" style={{ color: C.navy }}>
+                    {r.hideFormula ? '-' : r.coefText}
+                  </td>
+                  <td className="px-3 py-2 text-right" style={{ color: C.ink }}>
+                    {r.hideFormula ? '-' : formatCoef(r.qty, 2)}
+                  </td>
                   <td className="px-3 py-2 text-right font-bold" style={{ color: C.ink }}>{formatVND(r.amount)}</td>
                 </tr>
               ))}
@@ -739,12 +765,12 @@ function UrbanSelect({ value, onChange }: { value: UrbanId; onChange: (v: UrbanI
     const onScroll = () => updateRect();
     document.addEventListener('mousedown', onDocPointer);
     document.addEventListener('keydown', onKey);
-    window.addEventListener('resize', onScroll);
+    window.addEventListener('resize', updateRect);
     window.addEventListener('scroll', onScroll, true);
     return () => {
       document.removeEventListener('mousedown', onDocPointer);
       document.removeEventListener('keydown', onKey);
-      window.removeEventListener('resize', onScroll);
+      window.removeEventListener('resize', updateRect);
       window.removeEventListener('scroll', onScroll, true);
     };
   }, [open]);

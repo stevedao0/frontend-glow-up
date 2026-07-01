@@ -262,9 +262,9 @@ export function ContractTemplateSearch({
 
         {/* Preview Modal */}
         {showPreview && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[80vh] overflow-auto">
-              <div className="sticky top-0 bg-white border-b border-zinc-200 px-6 py-4 flex items-center justify-between">
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[80vh] flex flex-col overflow-hidden">
+              <div className="shrink-0 bg-white border-b border-zinc-200 px-6 py-4 flex items-center justify-between">
                 <h3 className="text-lg font-semibold text-zinc-900">
                   Xem nhanh dữ liệu mẫu
                 </h3>
@@ -275,7 +275,7 @@ export function ContractTemplateSearch({
                   <XIcon className="h-5 w-5 text-zinc-500" />
                 </button>
               </div>
-              <div className="p-6">
+              <div className="flex-1 overflow-y-auto p-6">
                 {isLoadingPrefill ? (
                   <div className="flex items-center justify-center py-8">
                     <LoaderIcon className="h-6 w-6 animate-spin text-blue-600" />
@@ -388,7 +388,7 @@ export function ContractTemplateSearch({
                   </div>
                 )}
               </div>
-              <div className="sticky bottom-0 bg-zinc-50 border-t border-zinc-200 px-6 py-4 flex justify-end">
+              <div className="shrink-0 bg-zinc-50 border-t border-zinc-200 px-6 py-4 flex justify-end z-10">
                 <Button variant="secondary" onClick={() => setShowPreview(false)}>
                   Đóng
                 </Button>

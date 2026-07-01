@@ -10,7 +10,7 @@
  */
 
 import React, { useMemo, useState } from 'react';
-import { XIcon, CalculatorIcon, InfoIcon, PlusIcon, TrashIcon, SaveIcon } from 'lucide-react';
+import { XIcon, CalculatorIcon, InfoIcon, PlusIcon, TrashIcon } from 'lucide-react';
 import { Page, PageHeader } from '../components/app-ui/Page';
 import { FormSection } from '../components/app-ui/FormSection';
 import { FieldGrid } from '../components/app-ui/FieldGrid';
@@ -2322,7 +2322,7 @@ export function CreateContractPage({
           {/* =================================================================== */}
           {/* FOOTER ACTIONS */}
           {/* =================================================================== */}
-          <div className="sticky bottom-0 -mx-6 px-6 py-4 bg-zinc-50/95 backdrop-blur-sm border-t border-zinc-200 flex items-center gap-3">
+          <div className="sticky bottom-0 -mx-6 px-6 py-4 bg-zinc-50/95 backdrop-blur-sm border-t border-zinc-200 flex items-center gap-3 z-50">
             <Button
               variant="ghost"
               leftIcon={<XIcon className="h-4 w-4" />}
@@ -2330,11 +2330,7 @@ export function CreateContractPage({
             >
               Hủy
             </Button>
-            <Button
-              variant="secondary"
-              leftIcon={<SaveIcon className="h-4 w-4" />}
-              onClick={handleSaveDraft}
-            >
+            <Button variant="ghost" onClick={handleSaveDraft}>
               Lưu nháp cục bộ
             </Button>
             <div className="flex-1" />

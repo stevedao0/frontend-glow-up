@@ -36,6 +36,7 @@ const COMMANDS: Cmd[] = [
   { key: 'search', label: 'Tìm kiếm toàn cục', group: 'Nghiệp vụ', icon: <SearchIcon className={ICON} />, perm: 'search.view' },
   { key: 'admin.users', label: 'Quản lý người dùng', group: 'Hệ thống', icon: <ShieldIcon className={ICON} />, perm: 'admin.users.view' },
   { key: 'admin.permissions', label: 'Ma trận phân quyền', group: 'Hệ thống', icon: <ShieldIcon className={ICON} />, perm: 'admin.roles.view' },
+  { key: 'admin.deployment', label: 'Triển khai', group: 'Hệ thống', icon: <ShieldIcon className={ICON} />, perm: 'admin.users.view' },
   { key: 'assistant', label: 'AI Assistant', group: 'Hệ thống', hint: 'Beta', icon: <SparklesIcon className={ICON} />, perm: 'ai.view' },
 ];
 

@@ -1,5 +1,4 @@
 import { apiRequest } from "./apiClient";
-import { DEMO_TOKEN, DEMO_EMAIL, isDemoCredential, enableDemoMode } from "./demoMode";
 
 export const TOKEN_KEY = "vcpmc_new_app_access_token";
 
@@ -55,21 +54,6 @@ export type MeResponse = {
 };
 
 export function login(username: string, password: string): Promise<LoginResponse> {
-  if (isDemoCredential(username, password)) {
-    enableDemoMode();
-    return Promise.resolve({
-      access_token: DEMO_TOKEN,
-      token_type: "bearer",
-      user: {
-        id: 9001,
-        username: DEMO_EMAIL,
-        email: DEMO_EMAIL,
-        display_name: "Demo User",
-        role: "admin",
-        is_active: true,
-      },
-    });
-  }
   return apiRequest<LoginResponse>("/auth/login", {
     method: "POST",
     body: { username, password }

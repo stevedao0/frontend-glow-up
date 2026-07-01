@@ -113,7 +113,7 @@ const UNSUPPORTED_REPORT_OPTIONS = [
     label: 'Báo cáo tổng hợp',
     supported: false,
     disabledReason: 'Đang phát triển',
-    supportedFormats: [] as ReportFormat[],
+    supportedFormats: [] as const[],
     hasModeSelector: false,
   },
   {
@@ -121,7 +121,7 @@ const UNSUPPORTED_REPORT_OPTIONS = [
     label: 'Báo cáo theo nhân viên',
     supported: false,
     disabledReason: 'Chưa có API thống kê nhân viên',
-    supportedFormats: [] as ReportFormat[],
+    supportedFormats: [] as const[],
     hasModeSelector: false,
   },
   {
@@ -129,7 +129,7 @@ const UNSUPPORTED_REPORT_OPTIONS = [
     label: 'Báo cáo GCN',
     supported: false,
     disabledReason: 'Chờ fix dữ liệu GCN trước khi xuất báo cáo',
-    supportedFormats: [] as ReportFormat[],
+    supportedFormats: [] as const[],
     hasModeSelector: false,
   },
 ] as const;

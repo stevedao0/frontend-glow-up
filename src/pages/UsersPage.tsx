@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
+import { useAuth } from "../lib/auth";
 import {
   PlusIcon,
   DownloadIcon,
@@ -88,6 +89,7 @@ export function UsersPage() {
   const [userError, setUserError] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
 
+  const { currentUser } = useAuth();
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
@@ -266,97 +268,86 @@ export function UsersPage() {
         ))}
       </div>
 
-      {/* ─── COMMAND OS HEADER ─────────────────────────────── */}
-      <div className="cos-pageheader">
-        <div>
-          <div className="cos-pageheader__crumbs">
-            <span>Hệ thống</span>
-            <span style={{ opacity: 0.4 }}>/</span>
-            <span>Người dùng</span>
-          </div>
-          <h1 className="cos-pageheader__title">Người dùng &amp; phân quyền</h1>
-          <p className="cos-pageheader__subtitle">
-            Quản lý tài khoản, vai trò và phạm vi nghiệp vụ trong hệ thống.
-          </p>
-        </div>
-        <div className="cos-pageheader__actions">
-          <Button
-            variant="secondary"
-            size="sm"
-            leftIcon={<RefreshCwIcon className={`h-4 w-4 ${refreshing ? "animate-spin" : ""}`} />}
-            onClick={handleRefresh}
-            disabled={refreshing}
-          >
-            Làm mới
-          </Button>
-          <Button
-            variant="secondary"
-            size="sm"
-            leftIcon={<DownloadIcon className="h-4 w-4" />}
-            onClick={handleExport}
-          >
-            Xuất danh sách
-          </Button>
-          <Button
-            variant="primary"
-            size="sm"
-            leftIcon={<PlusIcon className="h-4 w-4" />}
-            onClick={() => {
-              setEditingUser(null);
-              setShowUserModal(true);
-            }}
-          >
-            Thêm người dùng
-          </Button>
-        </div>
-      </div>
-
-      {/* ─── TOOLBAR ───────────────────────────────────────── */}
-      <div className="cos-toolbar">
-        <div className="relative flex-1 min-w-[240px]">
-          <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
-          <input
-            type="text"
-            placeholder="Tìm tên, email, username…"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full h-8 pl-9 pr-3 text-[12.5px] rounded-md bg-transparent border-0 focus:outline-none focus:ring-0"
-          />
-        </div>
-        <div className="cos-toolbar__sep" />
-        <div className="w-40">
-          <Select
-            value={roleFilter}
-            onChange={setRoleFilter}
-            placeholder="Tất cả Role"
-            options={Object.values(ROLE_DEFS).map((r) => ({ value: r.id, label: r.name }))}
-            size="sm"
-          />
-        </div>
-        <div className="w-40">
-          <Select
-            value={statusFilter}
-            onChange={setStatusFilter}
-            placeholder="Trạng thái"
-            options={[
-              { value: "active", label: "Hoạt động" },
-              { value: "locked", label: "Tạm khóa" },
-            ]}
-            size="sm"
-          />
-        </div>
-        <div className="ml-auto text-[11px] text-zinc-500 tabular-nums px-2">
-          {loadingUsers ? (
-            <span className="inline-flex items-center gap-1.5"><LoaderIcon className="h-3 w-3 animate-spin" />Đang tải…</span>
-          ) : (
-            <>{filteredUsers.length} / {users.length} người dùng</>
-          )}
-        </div>
-      </div>
+      <PageHeader
+        breadcrumb="/admin/users"
+        title="Người dùng"
+        description="Quản lý tài khoản, vai trò và phạm vi nghiệp vụ được phép truy cập."
+        actions={
+          <>
+            <Button
+              variant="secondary"
+              leftIcon={
+                <RefreshCwIcon className={`h-4 w-4 ${refreshing ? "animate-spin" : ""}`} />
+              }
+              onClick={handleRefresh}
+              disabled={refreshing}
+            >
+              Làm mới
+            </Button>
+            <Button
+              variant="secondary"
+              leftIcon={<DownloadIcon className="h-4 w-4" />}
+              onClick={handleExport}
+            >
+              Xuất danh sách
+            </Button>
+            <Button
+              variant="primary"
+              leftIcon={<PlusIcon className="h-4 w-4" />}
+              onClick={() => {
+                setEditingUser(null);
+                setShowUserModal(true);
+              }}
+            >
+              Thêm người dùng
+            </Button>
+          </>
+        }
+      />
 
       <ContentCard padded={false} accent>
-        <div style={{ display: 'none' }} />
-
+        <div className="p-4 border-b border-zinc-100 flex flex-wrap gap-3 bg-zinc-50/50">
+          <div className="relative w-64">
+            <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-400" />
+            <input
+              type="text"
+              placeholder="Tìm tên, email, username..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full h-9 pl-9 pr-3 text-sm rounded-lg border border-zinc-200 focus:outline-none focus:ring-2 focus:ring-amber-600/20 focus:border-amber-600 transition-all"
+            />
+          </div>
+          <div className="w-40">
+            <Select
+              value={roleFilter}
+              onChange={setRoleFilter}
+              placeholder="Tất cả Role"
+              options={Object.values(ROLE_DEFS).map((r) => ({ value: r.id, label: r.name }))}
+            />
+          </div>
+          <div className="w-40">
+            <Select
+              value={statusFilter}
+              onChange={setStatusFilter}
+              placeholder="Tất cả trạng thái"
+              options={[
+                { value: "active", label: "Hoạt động" },
+                { value: "locked", label: "Tạm khóa" },
+              ]}
+            />
+          </div>
+          {loadingUsers && (
+            <div className="flex items-center gap-2 text-sm text-zinc-500 ml-auto">
+              <LoaderIcon className="h-4 w-4 animate-spin" />
+              Đang tải...
+            </div>
+          )}
+          {!loadingUsers && (
+            <div className="ml-auto flex items-center text-sm text-zinc-500">
+              {filteredUsers.length} / {users.length} người dùng
+            </div>
+          )}
+        </div>
 
         <div className="overflow-x-auto">
           {userError && !loadingUsers ? (
@@ -486,6 +477,10 @@ export function UsersPage() {
                               label: "Xóa",
                               icon: <Trash2Icon className="h-4 w-4" />,
                               onClick: () => {
+                                if (currentUser && (String(u.id) === String(currentUser.id) || u.username === currentUser.email)) {
+                                  showToast("error", "Không thể xóa tài khoản đang đăng nhập.");
+                                  return;
+                                }
                                 setDeleteTargetUser(u);
                                 setShowDeleteModal(true);
                               },

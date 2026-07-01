@@ -197,7 +197,6 @@ export function ContractDetailPage({
   // Auto-load GCN context once contract detail is loaded
   useEffect(() => {
     if (!detail) return;
-    if (detail.domain?.display !== 'Karaoke') return;
     if (gcnResult !== null || gcnLoading) return; // already loaded or loading
     loadGcnContext(detail.id);
   }, [detail, gcnResult, gcnLoading, loadGcnContext]);
@@ -469,11 +468,8 @@ export function ContractDetailPage({
                 </button>
               </div>
 
-              {detail.domain?.display !== 'Karaoke' ? (
-                <p className="text-xs text-zinc-400 italic py-2">Chi ho tro Karaoke</p>
-              ) : (
-                <div className="space-y-3">
-                  <div className="rounded-lg border border-zinc-200 bg-zinc-50 p-3 space-y-1.5 text-xs">
+              <div className="space-y-3">
+                <div className="rounded-lg border border-zinc-200 bg-zinc-50 p-3 space-y-1.5 text-xs">
                     <div className="grid grid-cols-2 gap-x-3 gap-y-1">
                       <div><span className="text-zinc-500">So HĐ:</span> <span className="font-medium">{detail.contract_no}</span></div>
                       <div><span className="text-zinc-500">So GCN:</span> <span className="font-medium font-mono">{gcnResult?.context.certificate_no || '(chua co)'}</span></div>
@@ -551,16 +547,15 @@ export function ContractDetailPage({
                     </Button>
                   </div>
                 </div>
-              )}
-            </ContentCard>
+              </ContentCard>
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Delete Confirmation Modal */}
-      {deleteModal.open && detail && (
-        <Modal open onClose={closeDeleteModal} title={`Xác nhận xóa — ${detail.contract_no}`} size="lg">
-          <div className="space-y-4">
+          {/* Delete Confirmation Modal */}
+        {deleteModal.open && detail && (
+          <Modal open onClose={closeDeleteModal} title={`Xác nhận xóa — ${detail.contract_no}`} size="lg">
+            <div className="space-y-4">
             {!deleteModal.loading && !deleteModal.result && (
               <div className="space-y-3">
                 <div className="rounded-lg bg-amber-50 px-4 py-3 text-sm text-amber-800 ring-1 ring-amber-600/20">
@@ -675,9 +670,9 @@ export function ContractDetailPage({
                 </div>
               </div>
             )}
-          </div>
-        </Modal>
-      )}
-    </Page>
-  );
+            </div>
+          </Modal>
+        )}
+      </Page>
+    );
 }

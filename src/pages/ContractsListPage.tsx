@@ -14,6 +14,8 @@ import {
   XCircleIcon,
   XIcon,
   LoaderIcon,
+  LayersIcon,
+  LayoutGridIcon,
 } from 'lucide-react';
 import { Tabs } from '../components/app-ui/Tabs';
 import { Button } from '../components/app-ui/Button';
@@ -428,131 +430,203 @@ export function ContractsListPage({
   const footerMissingGcn = contracts.filter((r) => r.gcn_status && r.gcn_status !== 'no_gcn' && !r.gcn_certificate_no).length;
 
   return (
-    <div className="px-4 sm:px-6 lg:px-8 xl:px-10 py-6 lg:py-8 mx-auto flex flex-col gap-5 min-h-0 w-full">
+    /* Full-width page wrapper for contracts — no max-w cap.
+       Uses the same padding/flow as <Page> but removes max-[1440px]
+       and overflow-hidden so the table can use all available width. */
+    <div className="px-4 sm:px-6 lg:px-8 xl:px-10 py-6 lg:py-8 mx-auto flex flex-col gap-5 min-h-0 w-full bg-zinc-50/30">
       <EnterprisePage>
 
         {/* ─── COMMAND OS HEADER ─────────────────────────────── */}
-        <div className="cos-pageheader">
-          <div>
-            <div className="cos-pageheader__crumbs">
-              <span>Hợp đồng</span>
-              <span style={{ opacity: 0.4 }}>/</span>
-              <span>Danh sách</span>
+        <div className="px-6 pt-6 pb-5 bg-white border-b border-zinc-100">
+          {/* Left: breadcrumb + title + subtitle */}
+          <div className="flex items-start justify-between gap-4">
+            <div className="flex-1 min-w-0">
+              {/* Breadcrumb with dot indicator */}
+              <div className="flex items-center gap-2 mb-3">
+                <span className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-indigo-600 text-white text-[9px] font-bold shadow-sm">K</span>
+                <div className="flex items-center gap-1.5 text-xs text-zinc-400">
+                  <span className="hover:text-zinc-600 cursor-default transition-colors">Hợp đồng</span>
+                  <span className="text-zinc-300">/</span>
+                  <span className="text-zinc-600 font-medium">Danh sách</span>
+                </div>
+              </div>
+              {/* Title */}
+              <h1 className="text-2xl font-bold text-zinc-900 leading-tight tracking-tight">Quản lý hợp đồng</h1>
+              {/* Subtitle */}
+              <p className="text-sm text-zinc-500 mt-1.5 flex items-center gap-2">
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-indigo-50 text-indigo-600 text-xs font-medium">Background & Karaoke</span>
+                <span className="text-zinc-400">Phân quyền sử dụng tác phẩm âm nhạc</span>
+              </p>
             </div>
-            <h1 className="cos-pageheader__title">Quản lý hợp đồng</h1>
-            <p className="cos-pageheader__subtitle">
-              Background &amp; Karaoke · Phân quyền sử dụng tác phẩm âm nhạc
-            </p>
-          </div>
-          <div className="cos-pageheader__actions">
-            <Button
-              variant="ghost"
-              size="sm"
-              leftIcon={<RefreshCwIcon className="h-3.5 w-3.5" />}
-              onClick={triggerRefresh}
-            >
-              Làm mới
-            </Button>
-            <Button
-              variant="primary"
-              size="sm"
-              leftIcon={<FilePlusIcon className="h-3.5 w-3.5" />}
-              onClick={() => {
-                if (onOpenCreateContract) { onOpenCreateContract(); return; }
-                if (onCreateNew && contracts.length > 0) onCreateNew(contracts[0]);
-                onNavigate('contracts.create');
-              }}
-            >
-              Tạo hợp đồng
-            </Button>
+            {/* Right: actions */}
+            <div className="flex items-center gap-3 shrink-0 pt-1">
+              <Button
+                variant="secondary"
+                size="sm"
+                leftIcon={<RefreshCwIcon className="h-4 w-4" />}
+                onClick={triggerRefresh}
+                className="border-zinc-200 text-zinc-600 hover:text-zinc-800 hover:bg-zinc-50"
+              >
+                Làm mới
+              </Button>
+              <Button
+                variant="primary"
+                size="sm"
+                leftIcon={<FilePlusIcon className="h-4 w-4" />}
+                onClick={() => {
+                  if (onOpenCreateContract) { onOpenCreateContract(); return; }
+                  if (onCreateNew && contracts.length > 0) onCreateNew(contracts[0]);
+                  onNavigate('contracts.create');
+                }}
+                className="bg-indigo-600 hover:bg-indigo-700 text-white shadow-sm"
+              >
+                Tạo hợp đồng
+              </Button>
+            </div>
           </div>
         </div>
 
         {/* ─── KPI STAT STRIP ────────────────────────────────── */}
-        <div className="cos-statstrip">
-          <div className="cos-statstrip__cell">
-            <div className="cos-statstrip__label">Tổng hợp đồng</div>
-            <div className="cos-statstrip__value">{formatNumber(summaryStats?.totalContracts ?? total ?? 0)}</div>
-            <div className="cos-statstrip__delta">trên toàn hệ thống</div>
-            <span className="cos-statstrip__spark" aria-hidden />
-          </div>
-          <div className="cos-statstrip__cell">
-            <div className="cos-statstrip__label" style={{ color: '#047857' }}>Còn hiệu lực</div>
-            <div className="cos-statstrip__value">{formatNumber(summaryStats?.active ?? 0)}</div>
-            <div className="cos-statstrip__delta is-up">đang vận hành</div>
-          </div>
-          <div className="cos-statstrip__cell">
-            <div className="cos-statstrip__label" style={{ color: '#B45309' }}>Cần gia hạn ≤ 30 ngày</div>
-            <div className="cos-statstrip__value">{formatNumber(summaryStats?.expiringIn30Days ?? 0)}</div>
-            <div className="cos-statstrip__delta">cần xử lý sớm</div>
-          </div>
-          <div className="cos-statstrip__cell">
-            <div className="cos-statstrip__label" style={{ color: '#BE123C' }}>Hết hạn</div>
-            <div className="cos-statstrip__value">{formatNumber(summaryStats?.expired ?? 0)}</div>
-            <div className="cos-statstrip__delta is-down">ngưng hiệu lực</div>
+        <div className="px-6 py-5 bg-white">
+          <div className="grid grid-cols-4 gap-4">
+            {/* Card 1: Tổng hợp đồng */}
+            <div className="rounded-xl border border-zinc-200 bg-white px-5 py-4 shadow-sm hover:shadow-md transition-all duration-200 hover:border-indigo-200">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-indigo-50 text-indigo-600">
+                  <FileTextIcon className="h-5 w-5" />
+                </div>
+                <div className="text-xs font-semibold uppercase tracking-wider text-zinc-500">Tổng hợp đồng</div>
+              </div>
+              <div className="text-2xl font-bold text-zinc-900 tabular-nums tracking-tight">{formatNumber(summaryStats?.totalContracts ?? total ?? 0)}</div>
+              <div className="text-xs text-zinc-400 mt-1.5">trên toàn hệ thống</div>
+            </div>
+            {/* Card 2: Còn hiệu lực */}
+            <div className="rounded-xl border border-emerald-200 bg-gradient-to-br from-emerald-50/50 to-white px-5 py-4 shadow-sm hover:shadow-md transition-all duration-200 hover:border-emerald-300">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-emerald-100 text-emerald-600">
+                  <CheckCircle2Icon className="h-5 w-5" />
+                </div>
+                <div className="text-xs font-semibold uppercase tracking-wider text-emerald-700">Còn hiệu lực</div>
+              </div>
+              <div className="text-2xl font-bold text-emerald-700 tabular-nums tracking-tight">{formatNumber(summaryStats?.active ?? 0)}</div>
+              <div className="text-xs text-emerald-600 mt-1.5">đang vận hành</div>
+            </div>
+            {/* Card 3: Cần gia hạn */}
+            <div className="rounded-xl border border-amber-200 bg-gradient-to-br from-amber-50/50 to-white px-5 py-4 shadow-sm hover:shadow-md transition-all duration-200 hover:border-amber-300">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-amber-100 text-amber-600">
+                  <AlertTriangleIcon className="h-5 w-5" />
+                </div>
+                <div className="text-xs font-semibold uppercase tracking-wider text-amber-700">Cần gia hạn ≤ 30 ngày</div>
+              </div>
+              <div className="text-2xl font-bold text-amber-700 tabular-nums tracking-tight">{formatNumber(summaryStats?.expiringIn30Days ?? 0)}</div>
+              <div className="text-xs text-amber-600 mt-1.5">cần xử lý sớm</div>
+            </div>
+            {/* Card 4: Hết hạn */}
+            <div className="rounded-xl border border-rose-200 bg-gradient-to-br from-rose-50/50 to-white px-5 py-4 shadow-sm hover:shadow-md transition-all duration-200 hover:border-rose-300">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-rose-100 text-rose-600">
+                  <XCircleIcon className="h-5 w-5" />
+                </div>
+                <div className="text-xs font-semibold uppercase tracking-wider text-rose-700">Hết hạn</div>
+              </div>
+              <div className="text-2xl font-bold text-rose-700 tabular-nums tracking-tight">{formatNumber(summaryStats?.expired ?? 0)}</div>
+              <div className="text-xs text-rose-600 mt-1.5">ngưng hiệu lực</div>
+            </div>
           </div>
         </div>
 
-        {/* ─── TOOLBAR (command bar) ─────────────────────────── */}
-        <div className="cos-toolbar">
-          <div className="flex-1 min-w-[240px]">
-            <SearchBox
-              value={keyword}
-              onChange={(v) => { setKeyword(v); setPage(1); }}
-              placeholder="Tìm số HĐ, đơn vị, bảng hiệu…"
-              size="sm"
-            />
+        {/* ─── UNIFIED TABLE WORKSPACE ───────────────────────────── */}
+        {/* No beige card. Tabs + toolbar + table + footer as one clean block */}
+        <div className="mx-6 mb-6 border border-zinc-200/80 rounded-xl overflow-hidden bg-white shadow-sm">
+
+          {/* --- Status tabs --- */}
+          <div className="border-b border-zinc-100 bg-white px-4 pt-4 pb-0">
+            <div className="flex items-center justify-between">
+              <Tabs
+                value={tabFilter}
+                onChange={(v) => {
+                  setTabFilter(v as typeof tabFilter);
+                  if (v === 'all') setStatus('');
+                  else if (v === 'active') setStatus('active');
+                  else if (v === 'expiring') setStatus('expiring');
+                  else if (v === 'expired') setStatus('expired');
+                  setPage(1);
+                }}
+                tabs={[
+                  { value: 'all', label: 'Tất cả', count: summaryStats?.totalContracts ?? undefined },
+                  { value: 'active', label: 'Đang hiệu lực', count: summaryStats?.active ?? undefined },
+                  { value: 'expiring', label: 'Cần gia hạn', count: summaryStats?.expiringIn30Days ?? undefined },
+                  { value: 'expired', label: 'Hết hạn', count: summaryStats?.expired ?? undefined },
+                ]}
+              />
+              {/* Right side: active filter indicator */}
+              {hasActiveFilter && (
+                <div className="flex items-center gap-2 text-xs text-indigo-600">
+                  <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-indigo-50">
+                    <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-pulse"></span>
+                    Đang lọc
+                  </span>
+                </div>
+              )}
+            </div>
           </div>
-          <div className="cos-toolbar__sep" />
-          <Select size="sm" value={year} onChange={(v) => { setYear(v); setPage(1); }} options={CONTRACT_YEAR_OPTIONS} placeholder="Năm" />
-          <Select size="sm" value={linhVuc} onChange={(v) => { setLinhVuc(v); setPage(1); }} options={LINH_VUC_OPTIONS} placeholder="Lĩnh vực" />
-          <Select size="sm" value={fieldCode} onChange={(v) => { setFieldCode(v); setPage(1); }} options={FIELD_CODE_OPTIONS} placeholder="Mã quyền" />
-          {hasActiveFilter && (
-            <Button variant="ghost" size="sm" leftIcon={<XIcon className="h-3.5 w-3.5" />} onClick={clearFilters}>
-              Xóa lọc
-            </Button>
-          )}
-          <div className="cos-toolbar__sep" />
-          <button
-            type="button"
-            onClick={() => {
-              const next: Density = density === 'compact' ? 'mid' : 'compact';
-              setDensity(next); saveDensity(next);
-            }}
-            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md ring-1 ring-zinc-200 bg-white hover:bg-zinc-50 text-[11px] font-medium text-zinc-600 hover:text-zinc-900 transition-colors shrink-0"
-            title={density === 'compact' ? 'Đang xem dạng gọn — nhấn để mở rộng' : 'Đang xem dạng đầy đủ — nhấn để thu gọn'}
-          >
-            <span className={`inline-block w-3 h-3 rounded-sm ${density === 'compact' ? 'bg-zinc-900' : 'bg-zinc-300'}`} />
-            {density === 'compact' ? 'Dòng gọn' : 'Dòng đầy đủ'}
-          </button>
-          <span className="cos-toolbar__hint">
-            <kbd>⌘</kbd><kbd>K</kbd> Command
-          </span>
-        </div>
 
-        {/* ─── TAB STRIP (underline tabs) ────────────────────── */}
-        <div>
-          <Tabs
-            value={tabFilter}
-            onChange={(v) => {
-              setTabFilter(v as typeof tabFilter);
-              if (v === 'all') setStatus('');
-              else if (v === 'active') setStatus('active');
-              else if (v === 'expiring') setStatus('expiring');
-              else if (v === 'expired') setStatus('expired');
-              setPage(1);
-            }}
-            tabs={[
-              { value: 'all', label: 'Tất cả', count: summaryStats?.totalContracts ?? undefined },
-              { value: 'active', label: 'Còn hiệu lực', count: summaryStats?.active ?? undefined },
-              { value: 'expiring', label: 'Cần gia hạn', count: summaryStats?.expiringIn30Days ?? undefined },
-              { value: 'expired', label: 'Hết hạn', count: summaryStats?.expired ?? undefined },
-            ]}
-          />
-        </div>
+          {/* --- Filter toolbar --- */}
+          <div className="px-4 py-3 border-b border-zinc-100 bg-gradient-to-b from-white to-zinc-50/30">
+            <div className="flex items-center gap-3 flex-wrap">
+              {/* Search — wider and more prominent */}
+              <div className="flex-1 min-w-[280px]">
+                <SearchBox
+                  value={keyword}
+                  onChange={(v) => { setKeyword(v); setPage(1); }}
+                  placeholder="Tìm số HĐ, đơn vị, bảng hiệu…"
+                  size="md"
+                  kbd="/"
+                  className="shadow-sm"
+                />
+              </div>
 
-        {/* ─── TABLE WORKSPACE ───────────────────────────────── */}
-        <div className="vc-cos-workspace">
+              {/* Filter selects with labels */}
+              <div className="flex items-center gap-3 flex-wrap">
+                <div className="flex items-center gap-2">
+                  <Select size="sm" value={year} onChange={(v) => { setYear(v); setPage(1); }} options={CONTRACT_YEAR_OPTIONS} placeholder="Năm" />
+                </div>
+                <div className="flex items-center gap-2">
+                  <Select size="sm" value={linhVuc} onChange={(v) => { setLinhVuc(v); setPage(1); }} options={LINH_VUC_OPTIONS} placeholder="Lĩnh vực" />
+                </div>
+                <div className="flex items-center gap-2">
+                  <Select size="sm" value={fieldCode} onChange={(v) => { setFieldCode(v); setPage(1); }} options={FIELD_CODE_OPTIONS} placeholder="Mã quyền" />
+                </div>
+              </div>
+
+              {/* Clear filters */}
+              {hasActiveFilter && (
+                <Button variant="ghost" size="sm" leftIcon={<XIcon className="h-3.5 w-3.5" />} onClick={clearFilters} className="text-zinc-500 hover:text-indigo-600 hover:bg-indigo-50">
+                  Xóa lọc
+                </Button>
+              )}
+
+              {/* Right-side: density toggle */}
+              <div className="ml-auto flex items-center">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const next: Density = density === 'compact' ? 'mid' : 'compact';
+                    setDensity(next); saveDensity(next);
+                  }}
+                  className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md ring-1 ring-zinc-200 bg-white hover:bg-indigo-50 hover:ring-indigo-200 hover:text-indigo-600 text-[11px] font-medium text-zinc-600 transition-all shrink-0"
+                  title={density === 'compact' ? 'Đang xem dạng gọn — nhấn để mở rộng' : 'Đang xem dạng đầy đủ — nhấn để thu gọn'}
+                >
+                  {density === 'compact' ? (
+                    <><LayersIcon className="h-3 w-3" />Dòng gọn</>
+                  ) : (
+                    <><LayoutGridIcon className="h-3 w-3" />Dòng đầy đủ</>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
 
           {/* --- Bulk action bar --- */}
           {selected.size > 0 && (
@@ -604,20 +678,20 @@ export function ContractsListPage({
                   </colgroup>
                   {/* Header */}
                   <thead className="sticky top-0 z-10">
-                    <tr className="vc-table-header-row">
-                      <th className={`w-9 ${DS.firstCell} text-left`}>
+                    <tr className="bg-gradient-to-r from-zinc-50 to-zinc-50/80 text-[10.5px] font-semibold uppercase tracking-wider text-zinc-500 border-b border-zinc-200">
+                      <th className={`w-9 ${DS.firstCell} text-left pl-4 pr-2 py-3`}>
                         <Checkbox checked={allSelected} indeterminate={someSelected} onChange={toggleAll} ariaLabel="Chọn tất cả" />
                       </th>
-                      <th className={`${DS.cell} text-left text-[10.5px] font-semibold uppercase tracking-wider text-zinc-500 whitespace-nowrap`}>Số HĐ</th>
-                      <th className={`${DS.cell} text-left text-[10.5px] font-semibold uppercase tracking-wider text-zinc-500 whitespace-nowrap`}>Khách hàng</th>
-                      <th className={`${DS.cell} text-left text-[10.5px] font-semibold uppercase tracking-wider text-zinc-500 whitespace-nowrap`}>Địa điểm KD</th>
-                      <th className={`${DS.cell} text-left text-[10.5px] font-semibold uppercase tracking-wider text-zinc-500 whitespace-nowrap`}>Lĩnh vực</th>
-                      <th className={`${DS.cell} text-left text-[10.5px] font-semibold uppercase tracking-wider text-zinc-500 whitespace-nowrap`}>Ngày lập</th>
-                      <th className={`${DS.cell} text-left text-[10.5px] font-semibold uppercase tracking-wider text-zinc-500 whitespace-nowrap`}>Thời hạn</th>
-                      <th className={`${DS.cell} text-right text-[10.5px] font-semibold uppercase tracking-wider text-zinc-500 whitespace-nowrap`}>Tiền bản quyền</th>
-                      <th className={`${DS.cell} text-left text-[10.5px] font-semibold uppercase tracking-wider text-zinc-500 whitespace-nowrap`}>Trạng thái</th>
-                      <th className={`${DS.cell} text-left text-[10.5px] font-semibold uppercase tracking-wider text-zinc-500 whitespace-nowrap`}>Chứng nhận</th>
-                      <th className="vc-col-actions pl-1 text-left vc-col-actions-sticky" />
+                      <th className={`${DS.cell} text-left text-[10.5px] font-semibold uppercase tracking-wider text-zinc-500 whitespace-nowrap py-3`}>Số HĐ</th>
+                      <th className={`${DS.cell} text-left text-[10.5px] font-semibold uppercase tracking-wider text-zinc-500 whitespace-nowrap py-3`}>Khách hàng</th>
+                      <th className={`${DS.cell} text-left text-[10.5px] font-semibold uppercase tracking-wider text-zinc-500 whitespace-nowrap py-3`}>Địa điểm KD</th>
+                      <th className={`${DS.cell} text-left text-[10.5px] font-semibold uppercase tracking-wider text-zinc-500 whitespace-nowrap py-3`}>Lĩnh vực</th>
+                      <th className={`${DS.cell} text-left text-[10.5px] font-semibold uppercase tracking-wider text-zinc-500 whitespace-nowrap py-3`}>Ngày lập</th>
+                      <th className={`${DS.cell} text-left text-[10.5px] font-semibold uppercase tracking-wider text-zinc-500 whitespace-nowrap py-3`}>Thời hạn</th>
+                      <th className={`${DS.cell} text-right text-[10.5px] font-semibold uppercase tracking-wider text-zinc-500 whitespace-nowrap py-3`}>Tiền bản quyền</th>
+                      <th className={`${DS.cell} text-left text-[10.5px] font-semibold uppercase tracking-wider text-zinc-500 whitespace-nowrap py-3`}>Trạng thái</th>
+                      <th className={`${DS.cell} text-left text-[10.5px] font-semibold uppercase tracking-wider text-zinc-500 whitespace-nowrap py-3`}>Chứng nhận</th>
+                      <th className="vc-col-actions pl-1 text-left vc-col-actions-sticky py-3" />
                     </tr>
                   </thead>
                   {/* Body */}
@@ -635,7 +709,7 @@ export function ContractsListPage({
                           {/* Checkbox */}
                           <td className={`${DS.firstCell} align-top relative`}>
                             {/* Left accent bar */}
-                            <span aria-hidden className={`absolute left-0 top-0 bottom-0 w-[3px] bg-gradient-to-b from-[#c89968] via-[#9c6d3e] to-[#0d7a5f] transition-opacity ${isSelected ? 'opacity-100' : 'opacity-0 group-hover:opacity-70'}`} />
+                            <span aria-hidden className={`absolute left-0 top-0 bottom-0 w-[3px] bg-gradient-to-b from-indigo-500 via-indigo-400 to-indigo-600 transition-opacity ${isSelected ? 'opacity-100' : 'opacity-0 group-hover:opacity-70'}`} />
                             <div onClick={(e) => e.stopPropagation()}>
                               <Checkbox checked={isSelected} onChange={() => toggleOne(r.id)} ariaLabel={`Chọn ${r.contract_no}`} />
                             </div>
@@ -766,21 +840,19 @@ export function ContractsListPage({
                                 </button>
                               </div>
                             ) : (
-                              /* No certificate (Karaoke only) */
-                              r.linh_vuc_hien_thi === 'Karaoke' ? (
-                                <button
-                                  type="button"
-                                  title="Tạo GCN cho hợp đồng này"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    if (onPrintCertificate) onPrintCertificate(r.id);
-                                    else onNavigate('contracts.print');
-                                  }}
-                                  className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium text-zinc-500 bg-white border border-zinc-200 hover:bg-zinc-50 hover:border-zinc-300 hover:text-zinc-700 transition-colors whitespace-nowrap"
-                                >
-                                  Tạo GCN
-                                </button>
-                              ) : null
+                              /* No certificate — show Tạo GCN for ALL fields (Karaoke, KVC, Background, etc.) */
+                              <button
+                                type="button"
+                                title="Tạo GCN cho hợp đồng này"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  if (onPrintCertificate) onPrintCertificate(r.id);
+                                  else onNavigate('contracts.print');
+                                }}
+                                className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium text-zinc-500 bg-white border border-zinc-200 hover:bg-zinc-50 hover:border-zinc-300 hover:text-zinc-700 transition-colors whitespace-nowrap"
+                              >
+                                Tạo GCN
+                              </button>
                             )}
                           </td>
 
@@ -790,9 +862,9 @@ export function ContractsListPage({
                               actions={[
                                 { label: 'Xem chi tiết', icon: <EyeIcon className="h-4 w-4" />, onClick: () => onOpenDetail(r.id) },
                                 { label: 'Chỉnh sửa', icon: <PencilIcon className="h-4 w-4" />, onClick: () => onOpenDetail(r.id), disabled: !canEdit, disabledReason: !canEdit ? 'Không có quyền chỉnh sửa' : undefined },
-                                { label: 'Xuất Word', icon: <FileDownIcon className="h-4 w-4" />, onClick: () => openWordPreview(r), disabled: r.linh_vuc_hien_thi !== 'Karaoke', disabledReason: r.linh_vuc_hien_thi !== 'Karaoke' ? 'Chỉ hỗ trợ Karaoke' : undefined },
-                                { label: 'Xem dữ liệu GCN', icon: <AwardIcon className="h-4 w-4" />, onClick: () => openGcnContext(r), disabled: r.linh_vuc_hien_thi !== 'Karaoke', disabledReason: r.linh_vuc_hien_thi !== 'Karaoke' ? 'Chỉ hỗ trợ Karaoke' : undefined },
-                                { label: 'Tạo GCN', icon: <AwardIcon className="h-4 w-4" />, onClick: () => onPrintCertificate ? onPrintCertificate(r.id) : onNavigate('contracts.print'), disabled: r.linh_vuc_hien_thi !== 'Karaoke', disabledReason: r.linh_vuc_hien_thi !== 'Karaoke' ? 'Chỉ hỗ trợ Karaoke' : undefined },
+                                { label: 'Xuất Word', icon: <FileDownIcon className="h-4 w-4" />, onClick: () => openWordPreview(r) },
+                                { label: 'Xem dữ liệu GCN', icon: <AwardIcon className="h-4 w-4" />, onClick: () => openGcnContext(r) },
+                                { label: 'Tạo GCN', icon: <AwardIcon className="h-4 w-4" />, onClick: () => onPrintCertificate ? onPrintCertificate(r.id) : onNavigate('contracts.print') },
                                 { label: 'In / Gửi', icon: <PrinterIcon className="h-4 w-4" />, onClick: () => onNavigate('contracts.print') },
                                 { divider: true, label: 'Xóa', icon: <Trash2Icon className="h-4 w-4" />, tone: 'danger', onClick: () => openDeleteConfirm(r), disabled: !canDelete, disabledReason: !canDelete ? 'Không có quyền xóa' : undefined },
                               ]}
@@ -806,24 +878,28 @@ export function ContractsListPage({
               </div>
 
               {/* ─── FOOTER ──────────────────────────────────────── */}
-              <div className="flex items-center justify-between gap-4 px-4 py-2.5 border-t border-zinc-200 bg-white">
+              <div className="flex items-center justify-between gap-4 px-4 py-3 border-t border-zinc-100 bg-gradient-to-r from-zinc-50/50 to-white">
                 {/* Left: compact stats */}
-                <div className="flex items-center gap-3 text-[12px] text-zinc-500">
-                  <span>
+                <div className="flex items-center gap-4 text-[12px] text-zinc-500">
+                  <span className="inline-flex items-center gap-1.5">
+                    <span className="w-2 h-2 rounded-full bg-indigo-400"></span>
                     <strong className="text-zinc-700 tabular-nums">{formatNumber(rangeFrom)}–{formatNumber(rangeTo)}</strong>
                     {' / '}
                     <strong className="text-zinc-700 tabular-nums">{formatNumber(total)}</strong>{' hợp đồng'}
                   </span>
                   {footerRoyalty > 0 && (
                     <>
-                      <span className="text-zinc-200 select-none">|</span>
+                      <span className="text-zinc-200 select-none">·</span>
                       <span>Tổng: <strong className="text-zinc-700">{footerRoyalty >= 1_000_000_000 ? `${(footerRoyalty / 1_000_000_000).toFixed(2)} tỷ` : `${(footerRoyalty / 1_000_000).toFixed(1)} triệu`}</strong></span>
                     </>
                   )}
                   {footerMissingGcn > 0 && (
                     <>
-                      <span className="text-zinc-200 select-none">|</span>
-                      <span>Thiếu GCN: <strong className="text-amber-600">{footerMissingGcn}</strong></span>
+                      <span className="text-zinc-200 select-none">·</span>
+                      <span className="inline-flex items-center gap-1">
+                        <span className="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+                        Thiếu GCN: <strong className="text-amber-600">{footerMissingGcn}</strong>
+                      </span>
                     </>
                   )}
                 </div>

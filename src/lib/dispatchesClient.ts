@@ -31,48 +31,6 @@ export async function downloadFile(path: string): Promise<void> {
 // Types
 // =============================================================================
 
-export type EnvelopeLayoutConfig = {
-  preset_name?: string;
-  recipient_render_mode?: string;          // "printed_form_lines" | "free_block"
-  phone_render_mode?: string;              // "inline_address" | "separate_line"
-  phone_on_envelope?: boolean;             // default false: don't print phone on bia thu
-  page_width_mm: number;
-  page_height_mm: number;
-  // BASELINE anchor (NEW, primary)
-  first_line_baseline_from_bottom_mm?: number;  // 32mm default
-  font_baseline_offset_mm?: number;             // 4mm default
-  baseline_y_from_top_mm?: number;              // auto: page_h - baseline_from_bottom
-  // Top-left anchor for printed form
-  recipient_start_x_mm?: number;
-  recipient_start_y_mm?: number;            // auto: baseline_y_from_top - font_baseline_offset
-  recipient_line_gap_mm?: number;
-  recipient_max_width_mm?: number;
-  recipient_font_name?: string;
-  recipient_font_size_pt?: number;
-  // Legacy box fields (back-compat)
-  recipient_box_left_mm: number;
-  recipient_box_top_mm?: number;           // PRIMARY: distance from page TOP
-  recipient_box_bottom_mm: number;         // computed: page_h - top - height
-  recipient_box_width_mm: number;
-  recipient_box_height_mm: number;
-  line_spacing_mm: number;
-  printer_offset_x_mm: number;
-  printer_offset_y_mm: number;
-  non_printable_left_mm: number;
-  non_printable_right_mm: number;
-  non_printable_top_mm: number;
-  non_printable_bottom_mm: number;
-  resolved_left_mm: number;
-  resolved_bottom_mm: number;
-  resolved_top_mm: number;
-  resolved_width_mm: number;
-  resolved_height_mm: number;
-  resolved_right_indent_mm: number;
-  // Top-left anchor resolved (used by printed_form_lines mode)
-  resolved_start_x_mm?: number;
-  resolved_start_y_mm?: number;
-};
-
 export type DispatchItem = {
   id: number;
   batch_id: number;
@@ -215,35 +173,6 @@ export type NewKaraokeCreatedItem = {
   trang_thai_lien_he: string;
   trang_thai_hop_dong: string;
   download_url: string;
-};
-
-/** Envelope recipient mode for bìa thư */
-export type EnvelopeRecipientMode =
-  | 'keep'          // Giữ nguyên tên đơn vị
-  | 'co_so'         // Cơ sở kinh doanh + tên đơn vị
-  | 'chu_co_so'     // Chủ cơ sở kinh doanh + tên đơn vị
-  | 'cong_ty'       // Công ty + tên đơn vị
-  | 'ho_kinh_doanh' // Hộ kinh doanh + tên đơn vị
-  | 'custom';       // custom prefix
-
-export type EnvelopeResponse = {
-  ok: boolean;
-  batch_id: number;
-  envelope_download_url: string;
-  envelope_total_items: number;
-  envelope_generated_at: string;
-  layout: EnvelopeLayoutConfig;
-  error?: string;
-};
-
-export type EnvelopeCalibrationResponse = {
-  ok: boolean;
-  batch_id: number;
-  calibration_download_url: string;
-  envelope_total_items: number;
-  envelope_calibration_generated_at: string;
-  layout: EnvelopeLayoutConfig;
-  error?: string;
 };
 
 // =============================================================================
@@ -541,6 +470,46 @@ export async function saveEnvelopeLayoutConfig(layout: Partial<EnvelopeLayoutCon
   return data.layout;
 }
 
+// =============================================================================
+// Printer Profile API
+// =============================================================================
+
+export async function listEnvelopeProfiles(): Promise<EnvelopeProfilesResponse> {
+  const token = getToken();
+  const data = await apiRequest<EnvelopeProfilesResponse>(
+    "/dispatches/envelope-profiles",
+    { token }
+  );
+  return data;
+}
+
+export async function getEnvelopeProfileConfig(): Promise<EnvelopeProfileConfigResponse> {
+  const token = getToken();
+  const data = await apiRequest<EnvelopeProfileConfigResponse>(
+    "/dispatches/envelope-profile-config",
+    { token }
+  );
+  return data;
+}
+
+export async function saveEnvelopeProfileConfig(config: EnvelopeProfileConfig): Promise<EnvelopeProfileConfigResponse> {
+  const token = getToken();
+  const data = await apiRequest<EnvelopeProfileConfigResponse>(
+    "/dispatches/envelope-profile-config",
+    { method: "PUT", token, body: config }
+  );
+  return data;
+}
+
+export async function createBrotherTestFiles(): Promise<BrotherTestFilesResponse> {
+  const token = getToken();
+  const data = await apiRequest<BrotherTestFilesResponse>(
+    "/dispatches/envelope-test-brother",
+    { method: "POST", token }
+  );
+  return data;
+}
+
 export async function createRenewalBatch(params: {
   contract_ids: number[];
   issue_date?: string;
@@ -600,92 +569,6 @@ export async function generateBatchEnvelopeCalibration(
   return data;
 }
 
-export type EnvelopeTestCanonResponse = {
-  ok: boolean;
-  download_url: string;
-  filename: string;
-  layout: EnvelopeLayoutConfig;
-  message: string;
-};
-
-export async function createEnvelopeTest230x170(): Promise<EnvelopeTestCanonResponse> {
-  const token = getToken();
-  const data = await apiRequest<EnvelopeTestCanonResponse>(
-    "/dispatches/envelope-test-230x170",
-    { method: "POST", token }
-  );
-  return data;
-}
-
-export async function createEnvelopeTestCanon(): Promise<EnvelopeTestCanonResponse> {
-  const token = getToken();
-  const data = await apiRequest<EnvelopeTestCanonResponse>(
-    "/dispatches/envelope-test-canon",
-    { method: "POST", token }
-  );
-  return data;
-}
-
-export type EnvelopeAlignmentTestPayload = {
-  recipient_start_x_mm?: number;
-  recipient_start_y_mm?: number;
-  recipient_line_gap_mm?: number;
-  recipient_max_width_mm?: number;
-  recipient_font_size_pt?: number;
-  printer_offset_x_mm?: number;
-  printer_offset_y_mm?: number;
-  page_width_mm?: number;
-  page_height_mm?: number;
-  recipient_render_mode?: string;
-  phone_render_mode?: string;
-};
-
-export type EnvelopeAlignmentTestResponse = {
-  ok: boolean;
-  download_url: string;
-  filename: string;
-  layout: EnvelopeLayoutConfig;
-  anchor: { x_mm: number; y_mm: number };
-  message: string;
-};
-
-export async function createEnvelopeAlignmentTest(
-  payload: EnvelopeAlignmentTestPayload = {}
-): Promise<EnvelopeAlignmentTestResponse> {
-  const token = getToken();
-  const data = await apiRequest<EnvelopeAlignmentTestResponse>(
-    "/dispatches/envelope-alignment-test",
-    { method: "POST", token, body: payload }
-  );
-  return data;
-}
-
-export type EnvelopeAlignmentTest32mmResponse = {
-  ok: boolean;
-  download_url: string;
-  filename: string;
-  layout: EnvelopeLayoutConfig;
-  anchor: { x_mm: number; y_mm: number };
-  baseline: {
-    from_bottom_mm: number;
-    y_from_top_mm: number;
-    font_offset_mm: number;
-    start_y_mm: number;
-  };
-  message: string;
-};
-
-export async function createEnvelopeAlignmentTest32mm(
-  payload: EnvelopeAlignmentTestPayload = {}
-): Promise<EnvelopeAlignmentTest32mmResponse> {
-  const token = getToken();
-  const data = await apiRequest<EnvelopeAlignmentTest32mmResponse>(
-    "/dispatches/envelope-alignment-test-32mm",
-    { method: "POST", token, body: payload }
-  );
-  return data;
-}
-
 export async function getDispatchLogs(dispatchId: number): Promise<DispatchLog[]> {
   const token = getToken();
   const data = await apiRequest<{ ok: boolean; rows: DispatchLog[] }>(
@@ -735,7 +618,8 @@ export async function getBatchDetail(batchId: number): Promise<BatchDetail> {
     `/dispatches/batches/${batchId}`,
     { token }
   );
-  return { ...data.batch, items: data.items };
+  if (!data?.batch) throw new Error('Batch not found');
+  return { ...data.batch, items: Array.isArray(data.items) ? data.items : [] };
 }
 
 export async function getTrackingItems(params: {
@@ -795,7 +679,7 @@ export async function deleteBatch(
   const token = getToken();
   const data = await apiRequest<SoftDeleteBatchResponse>(
     `/dispatches/batches/${batchId}`,
-    { method: "DELETE", token, body: { delete_reason: reason || "" } }
+    { method: "DELETE", token }
   );
   return data;
 }
@@ -877,9 +761,10 @@ export async function bulkDeleteBatches(
   payload: BulkDeletePayload
 ): Promise<BulkDeleteResponse> {
   const token = getToken();
-  const body = Array.isArray((payload as any).ids)
-    ? { ids: (payload as any).ids, delete_reason: (payload as any).delete_reason }
-    : (payload as any);
+  // Normalize: raw array [1,2] → {ids:[1,2]}, object {ids:[...]} stays as-is
+  const body: { ids: number[]; delete_reason?: string } = Array.isArray(payload)
+    ? { ids: payload as number[] }
+    : { ids: (payload as any).ids, delete_reason: (payload as any).delete_reason };
   const data = await apiRequest<BulkDeleteResponse>(
     "/dispatches/batches/bulk-delete",
     { method: "POST", token, body }
@@ -891,9 +776,9 @@ export async function bulkDeleteItems(
   payload: BulkDeletePayload
 ): Promise<BulkDeleteResponse> {
   const token = getToken();
-  const body = Array.isArray((payload as any).ids)
-    ? { ids: (payload as any).ids, delete_reason: (payload as any).delete_reason }
-    : (payload as any);
+  const body: { ids: number[]; delete_reason?: string } = Array.isArray(payload)
+    ? { ids: payload as number[] }
+    : { ids: (payload as any).ids, delete_reason: (payload as any).delete_reason };
   const data = await apiRequest<BulkDeleteResponse>(
     "/dispatches/items/bulk-delete",
     { method: "POST", token, body }
@@ -917,4 +802,94 @@ export function getDownloadUrl(path: string): string {
   if (!path) return "";
   if (path.startsWith("/api")) return path;
   return `${apiBaseUrl}${path}`;
+}
+
+// =============================================================================
+// ENVELOPE V2 — Absolute coordinate PDF engine
+// =============================================================================
+
+export interface EnvelopeV2Profile {
+  id: string;
+  name: string;
+  paper_width_mm: number;
+  paper_height_mm: number;
+  orientation: string;
+  rotation_deg: number;
+  paper_source_note: string;
+}
+
+export interface EnvelopeV2ProfilesResponse {
+  ok: boolean;
+  profiles: EnvelopeV2Profile[];
+  default_profile: string;
+}
+
+export interface EnvelopeV2CalibrationResponse {
+  ok: boolean;
+  profile_id: string;
+  profile_name: string;
+  paper_width_mm: number;
+  paper_height_mm: number;
+  page_width_mm: number;
+  page_height_mm: number;
+  rotation_deg: number;
+  offset_x_mm: number;
+  offset_y_mm: number;
+  filename: string;
+  download_url: string;
+  message: string;
+  error?: string;
+}
+
+export interface EnvelopeV2ExportResponse {
+  ok: boolean;
+  profile_id: string;
+  profile_name: string;
+  recipients_count: number;
+  filename: string;
+  download_url: string;
+  phone_on_envelope: boolean;
+  message: string;
+  error?: string;
+}
+
+export async function getEnvelopeV2Profiles(): Promise<EnvelopeV2ProfilesResponse> {
+  const token = getToken();
+  const data = await apiRequest<EnvelopeV2ProfilesResponse>(
+    "/dispatches/envelope-v2/profiles",
+    { method: "GET", token }
+  );
+  return data;
+}
+
+export async function createEnvelopeV2Calibration(params: {
+  printer_profile_id: string;
+  offset_x_mm?: number;
+  offset_y_mm?: number;
+  rotation_deg?: number;
+}): Promise<EnvelopeV2CalibrationResponse> {
+  const token = getToken();
+  const data = await apiRequest<EnvelopeV2CalibrationResponse>(
+    "/dispatches/envelope-v2/calibration",
+    { method: "POST", token, body: params }
+  );
+  return data;
+}
+
+export async function exportEnvelopeV2Pdf(params: {
+  printer_profile_id: string;
+  rows: Array<{
+    recipient_unit: string;
+    recipient_address: string;
+    recipient_phone?: string;
+  }>;
+  offset_x_mm?: number;
+  offset_y_mm?: number;
+}): Promise<EnvelopeV2ExportResponse> {
+  const token = getToken();
+  const data = await apiRequest<EnvelopeV2ExportResponse>(
+    "/dispatches/envelope-v2/export",
+    { method: "POST", token, body: params }
+  );
+  return data;
 }

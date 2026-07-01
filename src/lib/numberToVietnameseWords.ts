@@ -38,7 +38,6 @@ export function numberToVietnameseWords(value: number, currency = 'đồng'): st
   const n = Math.round(Math.abs(value));
   if (n === 0) return capitalizeFirst('không ' + currency);
 
-  // Tách thành nhóm 3 chữ số (tỷ, triệu, nghìn, đơn vị)
   const ty = Math.floor(n / 1_000_000_000);
   const trieu = Math.floor((n % 1_000_000_000) / 1_000_000);
   const nghin = Math.floor((n % 1_000_000) / 1_000);

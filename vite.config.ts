@@ -26,13 +26,19 @@ function cacheBust(): { name: string; generateBundle(options: any, bundle: any):
 export default defineConfig({
   plugins: [react(), cacheBust()],
   server: {
-    host: '192.168.1.234',
+    host: '127.0.0.1',
     port: 5173,
+    strictPort: true,
     proxy: {
       '/api': {
         target: 'http://127.0.0.1:8000',
         changeOrigin: true,
       },
     },
+  },
+  preview: {
+    host: '127.0.0.1',
+    port: 5173,
+    strictPort: true,
   },
 })

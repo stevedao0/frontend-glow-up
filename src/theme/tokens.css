@@ -1,110 +1,110 @@
 /* ================================================
-   DESIGN TOKENS — base primitive CSS variables
-   ================================================ */
+ DESIGN TOKENS — base primitive CSS variables
+ ================================================ */
 
 :root {
-  --font-sans: 'Geist', 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
-  --font-mono: 'Geist Mono', 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
-  --font-serif: 'Cormorant Garamond', 'Playfair Display', Georgia, serif;
+ --font-sans: 'Geist', 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+ --font-mono: 'Geist Mono', 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
+ --font-serif: 'Cormorant Garamond', 'Playfair Display', Georgia, serif;
 
-  /* DESIGN TOKENS */
-  --text-display: clamp(2rem, 1.6rem + 1.3vw, 3rem);
-  --text-page-title: clamp(1.5rem, 1.25rem + 0.75vw, 2.125rem);
-  --text-section-title: 1.125rem;
-  --text-body: 0.9375rem;
-  --text-body-sm: 0.875rem;
-  --text-table: 0.875rem;
-  --text-table-header: 0.75rem;
-  --text-label: 0.75rem;
-  --text-helper: 0.75rem;
-  --text-badge: 0.6875rem;
-  --line-height-tight: 1.15;
-  --line-height-normal: 1.5;
-  --letter-spacing-header: -0.02em;
+ /* DESIGN TOKENS */
+ --text-display: clamp(2rem, 1.6rem + 1.3vw, 3rem);
+ --text-page-title: clamp(1.5rem, 1.25rem + 0.75vw, 2.125rem);
+ --text-section-title: 1.125rem;
+ --text-body: 0.9375rem;
+ --text-body-sm: 0.875rem;
+ --text-table: 0.875rem;
+ --text-table-header: 0.75rem;
+ --text-label: 0.75rem;
+ --text-helper: 0.75rem;
+ --text-badge: 0.6875rem;
+ --line-height-tight: 1.15;
+ --line-height-normal: 1.5;
+ --letter-spacing-header: -0.02em;
 
-  /* VCPMC Command OS — ivory workspace, emerald accent */
-  --app-bg: #F7F3EA;
-  --surface: #FFFFFF;
-  --surface-elevated: #FFFFFF;
-  --surface-muted: #F1EBDD;
-  --text-primary: #101816;
-  --text-secondary: #53615C;
-  --text-muted: #7A8580;
-  --border-subtle: rgba(16, 24, 22, 0.06);
-  --border-default: #E6DED0;
-  --border-strong: rgba(16, 24, 22, 0.18);
-  --focus-ring: rgba(16, 185, 129, 0.32);
-  --accent-primary: #10B981;
-  --accent-primary-hover: #0E9E72;
-  --accent-copper: #10B981;
-  --accent-emerald: #10B981;
-  --accent-warning: #D97706;
-  --accent-danger: #DC2626;
-  --accent-info: #0EA5E9;
-  --accent-neutral: #53615C;
+ /* VCPMC Command OS — ivory workspace, emerald accent */
+ --app-bg: #F7F3EA;
+ --surface: #FFFFFF;
+ --surface-elevated: #FFFFFF;
+ --surface-muted: #F1EBDD;
+ --text-primary: #101816;
+ --text-secondary: #53615C;
+ --text-muted: #7A8580;
+ --border-subtle: rgba(16, 24, 22, 0.06);
+ --border-default: #E6DED0;
+ --border-strong: rgba(16, 24, 22, 0.18);
+ --focus-ring: rgba(16, 185, 129, 0.32);
+ --accent-primary: #10B981;
+ --accent-primary-hover: #0E9E72;
+ --accent-copper: #10B981;
+ --accent-emerald: #10B981;
+ --accent-warning: #D97706;
+ --accent-danger: #DC2626;
+ --accent-info: #0EA5E9;
+ --accent-neutral: #53615C;
 
-  --space-1: 0.25rem;
-  --space-2: 0.5rem;
-  --space-3: 0.75rem;
-  --space-4: 1rem;
-  --space-5: 1.25rem;
-  --space-6: 1.5rem;
-  --page-padding-x: clamp(1rem, 0.8rem + 0.9vw, 1.75rem);
-  --page-padding-y: 1.5rem;
-  --section-gap: 1.5rem;
-  --card-padding: 1.25rem;
-  --topbar-height: 4rem;
-  --sidebar-width: 16rem;
-  --table-row-compact: 2rem;
-  --table-row-comfortable: 2.5rem;
-  --table-row-detailed: 3rem;
-  --table-header-height: 2.75rem;
+ --space-1: 0.25rem;
+ --space-2: 0.5rem;
+ --space-3: 0.75rem;
+ --space-4: 1rem;
+ --space-5: 1.25rem;
+ --space-6: 1.5rem;
+ --page-padding-x: clamp(1rem, 0.8rem + 0.9vw, 1.75rem);
+ --page-padding-y: 1.5rem;
+ --section-gap: 1.5rem;
+ --card-padding: 1.25rem;
+ --topbar-height: 4rem;
+ --sidebar-width: 16rem;
+ --table-row-compact: 2rem;
+ --table-row-comfortable: 2.5rem;
+ --table-row-detailed: 3rem;
+ --table-header-height: 2.75rem;
 
-  --radius-sm: 0.5rem;
-  --radius-md: 0.75rem;
-  --radius-lg: 1rem;
-  --radius-xl: 1.25rem;
-  --shadow-card: 0 1px 2px rgba(16, 24, 22, 0.05), 0 6px 18px rgba(16, 24, 22, 0.04);
-  --shadow-card-hover: 0 0 0 1px rgba(16, 185, 129, 0.22), 0 16px 36px rgba(16, 24, 22, 0.08);
-  --shadow-dropdown: 0 18px 42px rgba(16, 24, 22, 0.14);
-  --shadow-focus: 0 0 0 3px var(--focus-ring);
+ --radius-sm: 0.5rem;
+ --radius-md: 0.75rem;
+ --radius-lg: 1rem;
+ --radius-xl: 1.25rem;
+ --shadow-card: 0 1px 2px rgba(16, 24, 22, 0.05), 0 6px 18px rgba(16, 24, 22, 0.04);
+ --shadow-card-hover: 0 0 0 1px rgba(16, 185, 129, 0.22), 0 16px 36px rgba(16, 24, 22, 0.08);
+ --shadow-dropdown: 0 18px 42px rgba(16, 24, 22, 0.14);
+ --shadow-focus: 0 0 0 3px var(--focus-ring);
 
-  --motion-fast: 120ms;
-  --motion-normal: 180ms;
-  --motion-slow: 240ms;
-  --ease-standard: cubic-bezier(0.2, 0, 0, 1);
-  --ease-emphasized: cubic-bezier(0.22, 1, 0.36, 1);
+ --motion-fast: 120ms;
+ --motion-normal: 180ms;
+ --motion-slow: 240ms;
+ --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+ --ease-emphasized: cubic-bezier(0.22, 1, 0.36, 1);
 
-  /* Backward-compatible aliases */
-  --bg-app: var(--app-bg);
-  --bg-surface: var(--surface-elevated);
-  --bg-subtle: var(--surface-muted);
-  --bg-muted: #ECE5D6;
-  --bg-inverse: #071411;
-  --fg-primary: var(--text-primary);
-  --fg-secondary: var(--text-secondary);
-  --fg-muted: var(--text-muted);
-  --fg-subtle: #9AA39E;
-  --fg-inverse: #F4F7F5;
-  --accent-primary-soft: rgba(16, 185, 129, 0.12);
-  --accent-info-soft: rgba(14, 165, 233, 0.12);
-  --accent-emerald-soft: rgba(16, 185, 129, 0.12);
-  --accent-warning-soft: rgba(217, 119, 6, 0.12);
-  --accent-danger-soft: rgba(220, 38, 38, 0.12);
-  --accent-neutral-soft: rgba(83, 97, 92, 0.10);
-  --accent-secondary: var(--accent-emerald);
-  --accent-secondary-soft: rgba(16, 185, 129, 0.14);
-  --success: var(--accent-emerald);
-  --warning: var(--accent-warning);
-  --danger: var(--accent-danger);
-  --info: var(--accent-info);
-  --shadow-xs: 0 1px 2px rgba(16, 24, 22, 0.04);
-  --shadow-sm: 0 1px 2px rgba(16, 24, 22, 0.06), 0 1px 1px rgba(16, 24, 22, 0.04);
-  --shadow-md: 0 6px 18px rgba(16, 24, 22, 0.07), 0 2px 4px rgba(16, 24, 22, 0.04);
-  --shadow-lg: 0 14px 32px rgba(16, 24, 22, 0.10), 0 4px 10px rgba(16, 24, 22, 0.04);
-  --shadow-xl: 0 22px 44px rgba(16, 24, 22, 0.14);
-  --duration-fast: var(--motion-fast);
-  --duration-base: var(--motion-normal);
-  --duration-slow: var(--motion-slow);
-  --ease-out: var(--ease-emphasized);
+ /* Backward-compatible aliases */
+ --bg-app: var(--app-bg);
+ --bg-surface: var(--surface-elevated);
+ --bg-subtle: var(--surface-muted);
+ --bg-muted: #ECE5D6;
+ --bg-inverse: #071411;
+ --fg-primary: var(--text-primary);
+ --fg-secondary: var(--text-secondary);
+ --fg-muted: var(--text-muted);
+ --fg-subtle: #9AA39E;
+ --fg-inverse: #F4F7F5;
+ --accent-primary-soft: rgba(16, 185, 129, 0.12);
+ --accent-info-soft: rgba(14, 165, 233, 0.12);
+ --accent-emerald-soft: rgba(16, 185, 129, 0.12);
+ --accent-warning-soft: rgba(217, 119, 6, 0.12);
+ --accent-danger-soft: rgba(220, 38, 38, 0.12);
+ --accent-neutral-soft: rgba(83, 97, 92, 0.10);
+ --accent-secondary: var(--accent-emerald);
+ --accent-secondary-soft: rgba(16, 185, 129, 0.14);
+ --success: var(--accent-emerald);
+ --warning: var(--accent-warning);
+ --danger: var(--accent-danger);
+ --info: var(--accent-info);
+ --shadow-xs: 0 1px 2px rgba(16, 24, 22, 0.04);
+ --shadow-sm: 0 1px 2px rgba(16, 24, 22, 0.06), 0 1px 1px rgba(16, 24, 22, 0.04);
+ --shadow-md: 0 6px 18px rgba(16, 24, 22, 0.07), 0 2px 4px rgba(16, 24, 22, 0.04);
+ --shadow-lg: 0 14px 32px rgba(16, 24, 22, 0.10), 0 4px 10px rgba(16, 24, 22, 0.04);
+ --shadow-xl: 0 22px 44px rgba(16, 24, 22, 0.14);
+ --duration-fast: var(--motion-fast);
+ --duration-base: var(--motion-normal);
+ --duration-slow: var(--motion-slow);
+ --ease-out: var(--ease-emphasized);
 }

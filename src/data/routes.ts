@@ -12,6 +12,7 @@ export type RouteKey =
 'admin.users' |
 'admin.permissions' |
 'admin.import' |
+'admin.deployment' |
 'assistant' |
 'tools.royalty';
 
@@ -29,8 +30,9 @@ export const ROUTE_PATHS: Record<RouteKey, string> = {
   'admin.users': '/admin/users',
   'admin.permissions': '/admin/permissions',
   'admin.import': '/admin/import',
+  'admin.deployment': '/admin/deployment',
   assistant: '/assistant',
-  'tools.royalty': '/tools/royalty-calculator'
+  'tools.royalty': '/tools/royalty-calculator',
 };
 
 export const WORKSPACES = [

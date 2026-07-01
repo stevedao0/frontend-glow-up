@@ -32,6 +32,7 @@ import {
 } from '../lib/contractsClient';
 import {
   updateCertificate,
+  checkExtensionWithVersion,
   type CertificateUpdatePayload,
   type CertificateUpdateResponse,
 } from '../lib/certificatesClient';
@@ -266,36 +267,125 @@ function createExternalRow(partial: Partial<EditableCertData>, index: number): E
   };
 }
 
-function parseExternalRows(raw: string): ExternalCertificateRow[] {
-  const lines = raw
-    .replace(/\r\n/g, '\n')
-    .split('\n')
-    .map((line) => line.trim())
-    .filter(Boolean);
+function parseExcelTsv(raw: string): string[][] {
+  if (typeof raw !== 'string' || raw.length === 0) return [];
 
-  if (lines.length === 0) {
-    return [];
+  let text = raw;
+  if (text.charCodeAt(0) === 0xFEFF) text = text.slice(1);
+
+  const rows: string[][] = [];
+  let currentRow: string[] = [];
+  let currentCell = '';
+  let inQuotedCell = false;
+  let lastWasQuote = false;
+
+  for (let i = 0; i < text.length; i += 1) {
+    const ch = text[i];
+
+    if (inQuotedCell) {
+      if (lastWasQuote) {
+        if (ch === '"') {
+          currentCell += '"';
+          lastWasQuote = false;
+          continue;
+        }
+        inQuotedCell = false;
+        lastWasQuote = false;
+      } else if (ch === '"') {
+        lastWasQuote = true;
+        continue;
+      } else {
+        currentCell += ch;
+        continue;
+      }
+    }
+
+    if (ch === '"') {
+      if (currentCell.length === 0) {
+        inQuotedCell = true;
+        lastWasQuote = false;
+        continue;
+      }
+      currentCell += ch;
+      continue;
+    }
+
+    if (ch === '\t') {
+      currentRow.push(currentCell);
+      currentCell = '';
+      continue;
+    }
+
+    if (ch === '\n') {
+      currentRow.push(currentCell);
+      rows.push(currentRow);
+      currentRow = [];
+      currentCell = '';
+      continue;
+    }
+
+    if (ch === '\r') {
+      currentRow.push(currentCell);
+      rows.push(currentRow);
+      currentRow = [];
+      currentCell = '';
+      if (text[i + 1] === '\n') i += 1;
+      continue;
+    }
+
+    currentCell += ch;
   }
 
-  const rows = lines.map((line) => line.split('\t').map((cell) => cell.trim()));
-  const headerCandidates = rows[0].map((cell) => EXTERNAL_HEADER_ALIASES[normalizeHeader(cell)]);
+  if (inQuotedCell && !lastWasQuote) {
+    inQuotedCell = false;
+  }
+
+  currentRow.push(currentCell);
+  rows.push(currentRow);
+
+  return rows
+    .filter((cells) => cells.some((c) => c.length > 0))
+    .map((cells) => cells.map((c) => c.replace(/\r/g, '')));
+}
+
+function normalizeCell(value: string): string {
+  let v = value || '';
+  if (v.charCodeAt(0) === 0xFEFF) v = v.slice(1);
+  v = v.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+  v = v.split('\n').map((line) => line.replace(/[ \t]+/g, ' ').trim()).join('\n');
+  v = v.replace(/\n{3,}/g, '\n\n');
+  return v;
+}
+
+function parseExternalRows(raw: string): ExternalCertificateRow[] {
+  const matrix = parseExcelTsv(raw);
+  if (matrix.length === 0) return [];
+
+  const headerCandidates = matrix[0].map((cell) => EXTERNAL_HEADER_ALIASES[normalizeHeader(cell)]);
   const hasHeader = headerCandidates.some(Boolean);
   const headers = hasHeader
     ? headerCandidates
     : EXTERNAL_HEADERS.map((header) => EXTERNAL_HEADER_ALIASES[normalizeHeader(header)]);
-  const dataRows = hasHeader ? rows.slice(1) : rows;
+  const dataRows = hasHeader ? matrix.slice(1) : matrix;
+  const expectedColCount = headers.length;
+  const rows: ExternalCertificateRow[] = [];
+  dataRows.forEach((cells, index) => {
+    const draft: Partial<EditableCertData> = {};
+    cells.forEach((cell, cellIndex) => {
+      const field = headers[cellIndex];
+      if (!field) return;
+      const value = normalizeCell(cell);
+      (draft[field] as string | undefined) = value;
+    });
+    const row = createExternalRow(draft, index);
+    const hasAnyValue = Object.entries(row).some(([key, val]) => {
+      if (key === 'id' || key === 'sourceLabel' || key === 'createdAt') return false;
+      return typeof val === 'string' && val.trim().length > 0;
+    });
+    if (hasAnyValue) rows.push(row);
+  });
 
-  return dataRows
-    .map((cells, index) => {
-      const draft: Partial<EditableCertData> = {};
-      cells.forEach((cell, cellIndex) => {
-        const field = headers[cellIndex];
-        if (!field) return;
-        (draft[field] as string | undefined) = cell;
-      });
-      return createExternalRow(draft, index);
-    })
-    .filter((row) => Object.values(row).some((value) => typeof value === 'string' && value.trim()));
+  return rows;
 }
 
 function buildExcelTemplateHtml(): string {
@@ -438,36 +528,98 @@ export function CertificatePrintPage({
   const [externalPasteValue, setExternalPasteValue] = useState('');
   const [externalRows, setExternalRows] = useState<ExternalCertificateRow[]>([]);
   const [externalPreviewRows, setExternalPreviewRows] = useState<ExternalCertificateRow[]>([]);
+  const [externalIncompleteRowCount, setExternalIncompleteRowCount] = useState(0);
   const [externalSearch, setExternalSearch] = useState('');
   const [selectedExternalRowId, setSelectedExternalRowId] = useState<string | null>(null);
 
   const [extStatus, setExtStatus] = useState<'checking' | 'connected' | 'not_found'>('checking');
+  const [extVersion, setExtVersion] = useState<string | null>(null);
+  const [extLastChecked, setExtLastChecked] = useState<number | null>(null);
   const [extSendMsg, setExtSendMsg] = useState('');
   const [extSendMsgType, setExtSendMsgType] = useState<'success' | 'error' | 'info'>('info');
 
+  // ─── Periodic extension handshake (ping) ───────────────────────────────────
   useEffect(() => {
-    let settled = false;
-    const timeout = setTimeout(() => {
-      settled = true;
-      setExtStatus('not_found');
-    }, 2000);
+    let cancelled = false;
+    let retryTimer: ReturnType<typeof setTimeout> | null = null;
+    let activeHandler: ((event: MessageEvent) => void) | null = null;
+    let activeTimer: ReturnType<typeof setTimeout> | null = null;
+    let attemptCount = 0;
+    const MAX_INITIAL_ATTEMPTS = 3;
 
-    const handler = (event: MessageEvent) => {
-      if (event.data?.source !== 'VCPMC_QR_HELPER') return;
-      if (event.data?.type === 'SAVE_QR_PAYLOAD_RESULT') {
-        if (!settled) {
-          clearTimeout(timeout);
-          settled = true;
-          setExtStatus('connected');
-        }
+    const cleanup = () => {
+      if (activeHandler) {
+        window.removeEventListener('message', activeHandler);
+        activeHandler = null;
+      }
+      if (activeTimer) {
+        clearTimeout(activeTimer);
+        activeTimer = null;
       }
     };
 
-    window.addEventListener('message', handler);
-    window.postMessage({ source: 'VCPMC_APP', type: 'SAVE_QR_PAYLOAD', payload: { contract_no: '' } }, '*');
+    const checkExtension = () => {
+      if (cancelled) return;
+      cleanup();
+      attemptCount++;
+
+      const requestId = `ping-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+
+      activeTimer = setTimeout(() => {
+        if (cancelled) return;
+        if (attemptCount < MAX_INITIAL_ATTEMPTS) {
+          checkExtension();
+        } else {
+          setExtStatus('not_found');
+          setExtVersion(null);
+          retryTimer = setTimeout(checkExtension, 10000);
+        }
+      }, 5000);
+
+      const handler = (event: MessageEvent) => {
+        const data = event.data;
+        if (!data || typeof data !== 'object') return;
+        if (data.source !== 'VCPMC_QR_HELPER') return;
+        if (data.type !== 'VCPMC_QR_HELPER_RESPONSE') return;
+        if (data.requestId !== requestId) return;
+
+        if (cancelled) return;
+
+        if (activeTimer) {
+          clearTimeout(activeTimer);
+          activeTimer = null;
+        }
+
+        if (data.ok === true) {
+          setExtStatus('connected');
+          setExtVersion(typeof data.version === 'string' ? data.version : null);
+          setExtLastChecked(Date.now());
+          retryTimer = setTimeout(checkExtension, 60000);
+        } else {
+          if (attemptCount < MAX_INITIAL_ATTEMPTS) {
+            checkExtension();
+          } else {
+            setExtStatus('not_found');
+            setExtVersion(null);
+            retryTimer = setTimeout(checkExtension, 10000);
+          }
+        }
+      };
+
+      activeHandler = handler;
+      window.addEventListener('message', handler);
+
+      window.postMessage(
+        { source: 'VCPMC_APP', type: 'VCPMC_QR_HELPER_PING', requestId },
+        window.location.origin
+      );
+    };
+
+    checkExtension();
     return () => {
-      window.removeEventListener('message', handler);
-      clearTimeout(timeout);
+      cancelled = true;
+      cleanup();
+      if (retryTimer) clearTimeout(retryTimer);
     };
   }, []);
 
@@ -612,29 +764,46 @@ export function CertificatePrintPage({
     };
 
     setExtSendMsg('');
+    const EXTENSION_INSTALL_MSG = 'Máy này chưa cài tiện ích QR Portal Assistant.\nVui lòng cài extension từ folder vcpmc-qr-helper-v2 (kèm theo bộ cài app) và bật trong chrome://extensions.';
+
+    const requestId = `send-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+    let settled = false;
+
     const timeout = setTimeout(() => {
+      if (settled) return;
+      settled = true;
+      window.removeEventListener('message', handler);
       setExtStatus('not_found');
-      setExtSendMsg('Máy này chưa cài QR Portal Assistant. Vui lòng cài extension.');
+      setExtSendMsg(EXTENSION_INSTALL_MSG);
       setExtSendMsgType('error');
     }, 3000);
 
     const handler = (event: MessageEvent) => {
-      if (event.data?.source !== 'VCPMC_QR_HELPER' || event.data?.type !== 'SAVE_QR_PAYLOAD_RESULT') return;
+      const data = event.data;
+      if (!data || typeof data !== 'object') return;
+      if (data.source !== 'VCPMC_QR_HELPER') return;
+      if (data.type !== 'SAVE_QR_PAYLOAD_RESULT') return;
+      if (data.requestId !== requestId) return;
+      if (settled) return;
+      settled = true;
       window.removeEventListener('message', handler);
       clearTimeout(timeout);
-      if (event.data.ok) {
+      if (data.ok) {
         setExtStatus('connected');
         setExtSendMsg(`Đã gửi: ${payload.contract_no || '-'} / ${payload.certificate_no || '-'}`);
         setExtSendMsgType('success');
       } else {
         setExtStatus('not_found');
-        setExtSendMsg('Máy này chưa cài QR Portal Assistant. Vui lòng cài extension.');
+        setExtSendMsg(EXTENSION_INSTALL_MSG);
         setExtSendMsgType('error');
       }
     };
 
     window.addEventListener('message', handler);
-    window.postMessage({ source: 'VCPMC_APP', type: 'SAVE_QR_PAYLOAD', payload }, '*');
+    window.postMessage(
+      { source: 'VCPMC_APP', type: 'SAVE_QR_PAYLOAD', payload, requestId },
+      window.location.origin
+    );
     setTimeout(() => setExtSendMsg(''), 6000);
   };
 
@@ -756,13 +925,21 @@ export function CertificatePrintPage({
     const parsedRows = parseExternalRows(externalPasteValue);
     if (parsedRows.length === 0) {
       showToast('Không tìm thấy dòng dữ liệu hợp lệ để nạp vào form.', 'error');
+      setExternalIncompleteRowCount(0);
       return;
     }
+    const matrix = parseExcelTsv(externalPasteValue);
+    const headerRow = matrix[0] || [];
+    const headerHasAliases = headerRow.some((cell) => EXTERNAL_HEADER_ALIASES[normalizeHeader(cell)]);
+    const expectedCols = headerHasAliases ? headerRow.length : EXTERNAL_HEADERS.length;
+    const dataRowsRaw = headerHasAliases ? matrix.slice(1) : matrix;
+    const incompleteCount = dataRowsRaw.filter((cells) => cells.length < expectedCols && cells.some((c) => c.trim().length > 0)).length;
+    setExternalIncompleteRowCount(incompleteCount);
     setExternalRows(parsedRows);
     setExternalPreviewRows(parsedRows.slice(0, 5));
     setSelectedExternalRowId(parsedRows[0].id);
     setSourceMode('external');
-    showToast(`Đã nạp ${parsedRows.length} dòng vào bộ nhớ tạm.`, 'success');
+    showToast(`Đã nhận ${parsedRows.length} dòng dữ liệu Excel.`, 'success');
   };
 
   useEffect(() => {
@@ -775,6 +952,7 @@ export function CertificatePrintPage({
     setExternalPasteValue('');
     setExternalRows([]);
     setExternalPreviewRows([]);
+    setExternalIncompleteRowCount(0);
     setSelectedExternalRowId(null);
     showToast('Đã xóa dữ liệu Excel tạm.', 'success');
   };
@@ -828,6 +1006,7 @@ export function CertificatePrintPage({
     } else if (dateRaw && dateRaw.includes('/')) {
       [day, month, year] = dateRaw.split('/');
     }
+    const signName = (editable.business_sign_name || '').trim();
     return {
       certificate_no: editable.certificate_no,
       certificate_issue_date: editable.certificate_issue_date,
@@ -837,7 +1016,7 @@ export function CertificatePrintPage({
       organization_name: editable.organization_name,
       business_registration_no: editable.business_registration_no,
       address: editable.address,
-      business_sign_name: editable.business_sign_name,
+      business_sign_name: signName,
       business_location: editable.business_location,
       contract_no: editable.contract_no,
       effective_from: editable.effective_from || '',
@@ -1113,20 +1292,19 @@ export function CertificatePrintPage({
         </Button>
       </div>
 
-      <div className="bg-white border-b border-zinc-200 px-6 py-2.5">
-        <div className="gcn-source-tabs">
-          <button type="button" onClick={() => setSourceMode('contract')} className={sourceMode === 'contract' ? 'is-active' : ''}>
-            <FileTextIcon className="h-3.5 w-3.5" />Từ hợp đồng
+      <div className="bg-white border-b border-zinc-200 px-6">
+        <div className="flex gap-1">
+          <button type="button" onClick={() => setSourceMode('contract')} className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${sourceMode === 'contract' ? 'border-amber-700 text-amber-700' : 'border-transparent text-zinc-500 hover:text-zinc-800'}`}>
+            <span className="flex items-center gap-2"><FileTextIcon className="h-4 w-4" />Từ hợp đồng</span>
           </button>
-          <button type="button" onClick={() => setSourceMode('manual')} className={sourceMode === 'manual' ? 'is-active' : ''}>
-            <AwardIcon className="h-3.5 w-3.5" />Tự nhập
+          <button type="button" onClick={() => setSourceMode('manual')} className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${sourceMode === 'manual' ? 'border-amber-700 text-amber-700' : 'border-transparent text-zinc-500 hover:text-zinc-800'}`}>
+            <span className="flex items-center gap-2"><AwardIcon className="h-4 w-4" />Tự nhập</span>
           </button>
-          <button type="button" onClick={() => setSourceMode('external')} className={sourceMode === 'external' ? 'is-active' : ''}>
-            <FileTextIcon className="h-3.5 w-3.5" />Dán Excel
+          <button type="button" onClick={() => setSourceMode('external')} className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${sourceMode === 'external' ? 'border-amber-700 text-amber-700' : 'border-transparent text-zinc-500 hover:text-zinc-800'}`}>
+            <span className="flex items-center gap-2"><FileTextIcon className="h-4 w-4" />Dán Excel</span>
           </button>
         </div>
       </div>
-
 
       {message && <div className={`mx-6 mt-4 rounded-lg px-4 py-3 text-sm ${messageType === 'success' ? 'bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200' : 'bg-rose-50 text-rose-700 ring-1 ring-rose-200'}`}>{message}</div>}
 
@@ -1158,6 +1336,8 @@ export function CertificatePrintPage({
               onEditableChange={setContractEditable}
               selectedSummaryItems={selectedSummaryItems}
               extStatus={extStatus}
+              extVersion={extVersion}
+              extLastChecked={extLastChecked}
               extSendMsg={extSendMsg}
               extSendMsgType={extSendMsgType}
               handleSendToExtension={handleSendToExtension}
@@ -1176,6 +1356,8 @@ export function CertificatePrintPage({
               resetFreeFieldOffset={resetFreeFieldOffset}
               resetAllFreeFieldOffsets={resetAllFreeFieldOffsets}
               extStatus={extStatus}
+              extVersion={extVersion}
+              extLastChecked={extLastChecked}
               extSendMsg={extSendMsg}
               extSendMsgType={extSendMsgType}
               handleSendToExtension={handleSendToExtension}
@@ -1203,7 +1385,10 @@ export function CertificatePrintPage({
               }}
               editable={currentExternalRow}
               onUpdateExternalRow={updateExternalRow}
+              incompleteRowCount={externalIncompleteRowCount}
               extStatus={extStatus}
+              extVersion={extVersion}
+              extLastChecked={extLastChecked}
               extSendMsg={extSendMsg}
               extSendMsgType={extSendMsgType}
               handleSendToExtension={handleSendToExtension}
@@ -1450,6 +1635,8 @@ type SharedFormProps = {
   editable: EditableCertData;
   onEditableChange: (editable: EditableCertData) => void;
   extStatus: 'checking' | 'connected' | 'not_found';
+  extVersion: string | null;
+  extLastChecked: number | null;
   extSendMsg: string;
   extSendMsgType: 'success' | 'error' | 'info';
   handleSendToExtension: () => void;
@@ -1463,7 +1650,7 @@ type SharedFormProps = {
   onResetAllTypography: () => void;
 };
 
-function CertificateEditableForm({ editable, onEditableChange, extStatus, extSendMsg, extSendMsgType, handleSendToExtension, handleOpenPortalQR, warnings, isExternal, hasEditsHint, typographyOverrides, onUpdateTypography, onResetTypography, onResetAllTypography }: SharedFormProps) {
+function CertificateEditableForm({ editable, onEditableChange, extStatus, extVersion, extLastChecked, extSendMsg, extSendMsgType, handleSendToExtension, handleOpenPortalQR, warnings, isExternal, hasEditsHint, typographyOverrides, onUpdateTypography, onResetTypography, onResetAllTypography }: SharedFormProps) {
   const update = <K extends keyof EditableCertData>(key: K, value: EditableCertData[K]) => {
     onEditableChange({ ...editable, [key]: value });
   };
@@ -1562,7 +1749,7 @@ function CertificateEditableForm({ editable, onEditableChange, extStatus, extSen
           <QrUploadZone value={editable.qr_image_data} onChange={(data) => update('qr_image_data', data)} />
         </section>
 
-        <QrHelperExtensionPanel extStatus={extStatus} extSendMsg={extSendMsg} extSendMsgType={extSendMsgType} handleSendToExtension={handleSendToExtension} handleOpenPortalQR={handleOpenPortalQR} />
+        <QrHelperExtensionPanel extStatus={extStatus} extVersion={extVersion} extLastChecked={extLastChecked} extSendMsg={extSendMsg} extSendMsgType={extSendMsgType} handleSendToExtension={handleSendToExtension} handleOpenPortalQR={handleOpenPortalQR} />
 
         {warnings && warnings.length > 0 && <div className="rounded-lg bg-amber-50 p-3 text-xs text-amber-700">{warnings.map((warning, index) => <p key={index}>{warning}</p>)}</div>}
       </div>
@@ -1583,6 +1770,8 @@ type ContractSourcePanelProps = {
   onEditableChange: (editable: EditableCertData | null) => void;
   selectedSummaryItems: CompactSummaryItem[];
   extStatus: 'checking' | 'connected' | 'not_found';
+  extVersion: string | null;
+  extLastChecked: number | null;
   extSendMsg: string;
   extSendMsgType: 'success' | 'error' | 'info';
   handleSendToExtension: () => void;
@@ -1594,7 +1783,7 @@ type ContractSourcePanelProps = {
   onResetAllTypography: () => void;
 };
 
-function ContractSourcePanel({ search, onSearchChange, results, loading, selected, onSelect, ctx, ctxLoading, editable, onEditableChange, selectedSummaryItems, extStatus, extSendMsg, extSendMsgType, handleSendToExtension, handleOpenPortalQR, buildEditableFromCtx, typographyOverrides, onUpdateTypography, onResetTypography, onResetAllTypography }: ContractSourcePanelProps) {
+function ContractSourcePanel({ search, onSearchChange, results, loading, selected, onSelect, ctx, ctxLoading, editable, onEditableChange, selectedSummaryItems, extStatus, extVersion, extLastChecked, extSendMsg, extSendMsgType, handleSendToExtension, handleOpenPortalQR, buildEditableFromCtx, typographyOverrides, onUpdateTypography, onResetTypography, onResetAllTypography }: ContractSourcePanelProps) {
   const hasEdits = editable && ctx && JSON.stringify(editable) !== JSON.stringify(buildEditableFromCtx(ctx));
 
   return (
@@ -1631,6 +1820,8 @@ function ContractSourcePanel({ search, onSearchChange, results, loading, selecte
           editable={editable}
           onEditableChange={(next) => onEditableChange(next)}
           extStatus={extStatus}
+          extVersion={extVersion}
+          extLastChecked={extLastChecked}
           extSendMsg={extSendMsg}
           extSendMsgType={extSendMsgType}
           handleSendToExtension={handleSendToExtension}
@@ -1654,6 +1845,8 @@ type ManualSourcePanelProps = {
   resetFreeFieldOffset: (key: string) => void;
   resetAllFreeFieldOffsets: () => void;
   extStatus: 'checking' | 'connected' | 'not_found';
+  extVersion: string | null;
+  extLastChecked: number | null;
   extSendMsg: string;
   extSendMsgType: 'success' | 'error' | 'info';
   handleSendToExtension: () => void;
@@ -1664,7 +1857,7 @@ type ManualSourcePanelProps = {
   onResetAllTypography: () => void;
 };
 
-function ManualSourcePanel({ freeForm, updateFree, extStatus, extSendMsg, extSendMsgType, handleSendToExtension, handleOpenPortalQR, typographyOverrides, onUpdateTypography, onResetTypography, onResetAllTypography }: ManualSourcePanelProps) {
+function ManualSourcePanel({ freeForm, updateFree, extStatus, extVersion, extLastChecked, extSendMsg, extSendMsgType, handleSendToExtension, handleOpenPortalQR, typographyOverrides, onUpdateTypography, onResetTypography, onResetAllTypography }: ManualSourcePanelProps) {
   return (
     <div className="space-y-5">
       <ContentCard title="Nguồn dữ liệu tự nhập">
@@ -1674,6 +1867,8 @@ function ManualSourcePanel({ freeForm, updateFree, extStatus, extSendMsg, extSen
         editable={freeForm}
         onEditableChange={(next) => updateFree('certificate_no', next.certificate_no) || updateFree('certificate_issue_date', next.certificate_issue_date) || updateFree('organization_name', next.organization_name) || updateFree('business_registration_no', next.business_registration_no) || updateFree('address', next.address) || updateFree('business_sign_name', next.business_sign_name) || updateFree('business_location', next.business_location) || updateFree('contract_no', next.contract_no) || updateFree('effective_from', next.effective_from) || updateFree('effective_to', next.effective_to) || updateFree('gcn_scope_col_1_text', next.gcn_scope_col_1_text) || updateFree('gcn_scope_col_2_text', next.gcn_scope_col_2_text) || updateFree('gcn_scope_col_3_text', next.gcn_scope_col_3_text) || updateFree('qr_image_data', next.qr_image_data) || updateFree('offset_x_mm', next.offset_x_mm) || updateFree('offset_y_mm', next.offset_y_mm) || updateFree('fieldOffsets', next.fieldOffsets) || updateFree('scopeColAlign', next.scopeColAlign)}
         extStatus={extStatus}
+        extVersion={extVersion}
+        extLastChecked={extLastChecked}
         extSendMsg={extSendMsg}
         extSendMsgType={extSendMsgType}
         handleSendToExtension={handleSendToExtension}
@@ -1703,6 +1898,8 @@ type ExternalSourcePanelProps = {
   editable: ExternalCertificateRow | null;
   onUpdateExternalRow: (rowId: string, updater: (row: ExternalCertificateRow) => ExternalCertificateRow) => void;
   extStatus: 'checking' | 'connected' | 'not_found';
+  extVersion: string | null;
+  extLastChecked: number | null;
   extSendMsg: string;
   extSendMsgType: 'success' | 'error' | 'info';
   handleSendToExtension: () => void;
@@ -1711,9 +1908,10 @@ type ExternalSourcePanelProps = {
   onUpdateTypography: (key: string, patch: { fontSizePt?: number | null; bold?: boolean | null }) => void;
   onResetTypography: (key: string) => void;
   onResetAllTypography: () => void;
+  incompleteRowCount: number;
 };
 
-function ExternalSourcePanel({ pasteValue, onPasteValueChange, onDownloadExcelTemplate, onApplyExternalPaste, onClearExternal, previewRows, rows, externalSearch, onExternalSearchChange, selectedExternalRowId, onSelectExternalRow, onLoadFirstRow, editable, onUpdateExternalRow, extStatus, extSendMsg, extSendMsgType, handleSendToExtension, handleOpenPortalQR, typographyOverrides, onUpdateTypography, onResetTypography, onResetAllTypography }: ExternalSourcePanelProps) {
+function ExternalSourcePanel({ pasteValue, onPasteValueChange, onDownloadExcelTemplate, onApplyExternalPaste, onClearExternal, previewRows, rows, externalSearch, onExternalSearchChange, selectedExternalRowId, onSelectExternalRow, onLoadFirstRow, editable, onUpdateExternalRow, extStatus, extVersion, extLastChecked, extSendMsg, extSendMsgType, handleSendToExtension, handleOpenPortalQR, typographyOverrides, onUpdateTypography, onResetTypography, onResetAllTypography, incompleteRowCount }: ExternalSourcePanelProps) {
   return (
     <div className="space-y-5">
       <ContentCard title="Dán dữ liệu Excel">
@@ -1731,6 +1929,11 @@ function ExternalSourcePanel({ pasteValue, onPasteValueChange, onDownloadExcelTe
             rows={10}
             placeholder="Copy dữ liệu từ file mẫu Excel rồi dán vào đây, gồm cả dòng tiêu đề."
           />
+          {incompleteRowCount > 0 && (
+            <div className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-700">
+              Một số dòng thiếu cột, vui lòng kiểm tra ({incompleteRowCount} dòng).
+            </div>
+          )}
           <div className="flex flex-wrap gap-2">
             <Button variant="primary" size="sm" onClick={onApplyExternalPaste}>Nạp vào form</Button>
             <Button variant="secondary" size="sm" onClick={onDownloadExcelTemplate}>Tải mẫu Excel</Button>
@@ -1772,6 +1975,8 @@ function ExternalSourcePanel({ pasteValue, onPasteValueChange, onDownloadExcelTe
           editable={editable}
           onEditableChange={(next) => onUpdateExternalRow(editable.id, () => ({ ...editable, ...next }))}
           extStatus={extStatus}
+          extVersion={extVersion}
+          extLastChecked={extLastChecked}
           extSendMsg={extSendMsg}
           extSendMsgType={extSendMsgType}
           handleSendToExtension={handleSendToExtension}
@@ -1833,34 +2038,99 @@ function QrUploadZone({ value, onChange }: { value: string; onChange: (dataUrl: 
 
 type QrHelperPanelProps = {
   extStatus: 'checking' | 'connected' | 'not_found';
+  extVersion: string | null;
+  extLastChecked: number | null;
   extSendMsg: string;
   extSendMsgType: 'success' | 'error' | 'info';
   handleSendToExtension: () => void;
   handleOpenPortalQR: () => void;
 };
 
-function QrHelperExtensionPanel({ extStatus, extSendMsg, extSendMsgType, handleSendToExtension, handleOpenPortalQR }: QrHelperPanelProps) {
-  const statusLabel = extStatus === 'connected' ? 'Đã kết nối' : extStatus === 'not_found' ? 'Chưa cài' : 'Kiểm tra...';
-  const dataLabel = extSendMsg && extSendMsgType === 'success' ? 'Sẵn sàng' : extSendMsg && extSendMsgType === 'error' ? 'Chưa gửi' : '';
+function QrHelperExtensionPanel({ extStatus, extVersion, extLastChecked, extSendMsg, extSendMsgType, handleSendToExtension, handleOpenPortalQR }: QrHelperPanelProps) {
+  const isConnected = extStatus === 'connected';
+  const isChecking = extStatus === 'checking';
+  const isNotFound = extStatus === 'not_found';
+
+  const handleOpenExtensions = () => { window.open('chrome://extensions', '_blank'); };
+  const handleReloadPage = () => { window.location.reload(); };
+
   return (
     <div className="rounded-lg border border-indigo-200 bg-indigo-50 p-3 space-y-2">
       <div className="flex items-center gap-2">
         <svg className="h-4 w-4 text-indigo-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>
         <p className="text-[13px] font-medium text-indigo-800">QR Portal Assistant</p>
-        <span className={`ml-auto text-xs font-medium px-2 py-0.5 rounded ${extStatus === 'connected' ? 'bg-emerald-100 text-emerald-700' : extStatus === 'not_found' ? 'bg-rose-100 text-rose-700' : 'bg-zinc-100 text-zinc-500'}`}>
-          {statusLabel}
-          {dataLabel ? ' · ' + dataLabel : ''}
+        <span className={`ml-auto text-xs font-medium px-2 py-0.5 rounded ${
+          isConnected ? 'bg-emerald-100 text-emerald-700' :
+          isChecking ? 'bg-zinc-100 text-zinc-500' :
+          'bg-amber-100 text-amber-700'
+        }`}>
+          {isConnected ? 'Đã kết nối' : isChecking ? 'Đang kiểm tra...' : 'Extension chưa kết nối'}
         </span>
       </div>
+
+      {isConnected && extVersion && (
+        <div className="flex items-center gap-2 text-[11px] text-indigo-600">
+          <svg className="h-3 w-3 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+          <span>Extension v{extVersion} đang hoạt động</span>
+        </div>
+      )}
+
+      {!isConnected && !isChecking && (
+        <div className="rounded bg-amber-50 border border-amber-200 px-3 py-2 text-xs text-amber-700 space-y-1.5">
+          <p className="flex items-center gap-1">
+            <svg className="h-3.5 w-3.5 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            QR Portal dùng được. Extension tự gửi dữ liệu chưa kết nối.
+          </p>
+          <p className="text-amber-600">Có thể mở QR Portal và thao tác thủ công, hoặc cài extension để gửi tự động.</p>
+        </div>
+      )}
+
+      {isNotFound && (
+        <details className="rounded bg-zinc-100 border border-zinc-200 text-xs text-zinc-600">
+          <summary className="px-3 py-2 cursor-pointer font-medium hover:bg-zinc-200 rounded">
+            Hướng dẫn cài QR Portal Assistant
+          </summary>
+          <div className="px-3 py-2 space-y-1.5 border-t border-zinc-200">
+            <p>1. Copy folder <code className="font-mono bg-zinc-200 px-1 rounded">vcpmc-qr-helper-v2</code> từ bộ cài app.</p>
+            <p>2. Mở Chrome → <button type="button" onClick={handleOpenExtensions} className="font-mono bg-zinc-200 px-1 rounded hover:underline">chrome://extensions</button> → Bật <strong>Developer mode</strong></p>
+            <p>3. Nhấn <strong>&quot;Load unpacked&quot;</strong> → Chọn folder <code className="font-mono bg-zinc-200 px-1 rounded">vcpmc-qr-helper-v2</code></p>
+            <p>4. <button type="button" onClick={handleReloadPage} className="font-semibold hover:underline">Tải lại trang này</button> sau khi cài xong.</p>
+          </div>
+        </details>
+      )}
+
       <div className="flex gap-1.5 flex-wrap">
-        <button type="button" onClick={() => handleSendToExtension?.()} className="flex-1 rounded bg-indigo-600 px-3 py-1.5 text-[12.5px] font-semibold text-white hover:bg-indigo-700 transition-colors">Gửi dữ liệu sang QR Portal Assistant</button>
-        <button type="button" onClick={() => handleOpenPortalQR?.()} className="rounded border border-indigo-300 bg-white px-3 py-1.5 text-[12.5px] font-semibold text-indigo-700 hover:bg-indigo-50 transition-colors">Mở QR Portal</button>
+        <button
+          type="button"
+          onClick={() => handleSendToExtension?.()}
+          disabled={isNotFound}
+          className={`flex-1 rounded px-3 py-1.5 text-[12.5px] font-semibold transition-colors ${
+            isConnected
+              ? 'bg-indigo-600 text-white hover:bg-indigo-700'
+              : isChecking
+                ? 'bg-indigo-400 text-white hover:bg-indigo-500'
+                : 'bg-zinc-300 text-zinc-500 cursor-not-allowed'
+          }`}
+          title={isNotFound ? 'Cần cài extension trước' : ''}
+        >
+          {isChecking ? 'Đang kết nối...' : 'Gửi dữ liệu sang QR Portal Assistant'}
+        </button>
+        <button type="button" onClick={() => handleOpenPortalQR?.()} className="rounded border border-indigo-300 bg-white px-3 py-1.5 text-[12.5px] font-semibold text-indigo-700 hover:bg-indigo-50 transition-colors">
+          Mở QR Portal
+        </button>
       </div>
-      {extSendMsg && <div className={`rounded px-2.5 py-1.5 text-xs ${extSendMsgType === 'success' ? 'bg-emerald-100 text-emerald-700' : extSendMsgType === 'error' ? 'bg-rose-100 text-rose-700' : 'bg-indigo-100 text-indigo-700'}`}>{extSendMsg}</div>}
+      {extSendMsg && (
+        <div className={`rounded px-2.5 py-1.5 text-xs ${
+          extSendMsgType === 'success' ? 'bg-emerald-100 text-emerald-700' :
+          extSendMsgType === 'error' ? 'bg-rose-100 text-rose-700' :
+          'bg-indigo-100 text-indigo-700'
+        }`}>
+          {extSendMsg}
+        </div>
+      )}
     </div>
   );
 }
-
 function InfoRow({ label, value, mono }: { label: string; value: string | number | null | undefined; mono?: boolean }) {
   const display = value == null || value === '' ? '—' : String(value);
   return (

@@ -176,7 +176,7 @@ export function DataTable<T extends { id: string | number }>({
                   key={row.id}
                   onClick={isDisabled || !onRowClick ? undefined : () => onRowClick(row)}
                   aria-selected={isSelected || undefined}
-                  className={`ds-table-row ${densityRowClass(density)} ${rowIdx % 2 === 1 ? 'ds-table-row-alt' : ''} ${isSelected ? 'ds-table-row-selected' : ''} ${onRowClick && !isDisabled ? 'cursor-pointer' : ''} ${isDisabled ? 'opacity-60' : ''} ${classNames?.row ?? ''}`}
+                  className={`ds-table-row ${densityRowClass(density)} ${showZebra && rowIdx % 2 === 1 ? 'ds-table-row-alt' : ''} ${isSelected ? 'ds-table-row-selected' : ''} ${onRowClick && !isDisabled ? 'cursor-pointer' : ''} ${isDisabled ? 'opacity-60' : ''} ${classNames?.row ?? ''}`}
                 >
                   {selection && (
                     <td className={`ds-table-cell w-10 px-4 ${densityCellPadding(density)}`} onClick={(event) => event.stopPropagation()}>

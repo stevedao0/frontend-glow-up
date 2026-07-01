@@ -12,12 +12,23 @@ export const CONTRACT_YEAR_OPTIONS = [
 
 
 export const LINH_VUC_OPTIONS = [
+{ value: '', label: 'Tất cả lĩnh vực' },
 { value: 'Karaoke', label: 'Karaoke' },
+{ value: 'Background', label: 'Background Music' },
 { value: 'Phòng thu âm', label: 'Phòng thu âm' },
-{ value: 'Phòng Thu Âm', label: 'Phòng Thu Âm' },
 { value: 'Nhà hàng', label: 'Nhà hàng' },
-{ value: 'Phòng ghi âm', label: 'Phòng ghi âm' },
-{ value: 'PTA', label: 'PTA' }];
+{ value: 'Cà phê', label: 'Cà phê' },
+{ value: 'Quán bar', label: 'Quán bar' },
+{ value: 'Khách sạn', label: 'Khách sạn' },
+{ value: 'Trung tâm thương mại', label: 'Trung tâm thương mại' },
+{ value: 'Siêu thị', label: 'Siêu thị' },
+{ value: 'Phòng gym', label: 'Phòng gym' },
+{ value: 'Spa/Massage', label: 'Spa/Massage' },
+{ value: 'Salon làm tóc', label: 'Salon làm tóc' },
+{ value: 'Trường học', label: 'Trường học' },
+{ value: 'Bệnh viện', label: 'Bệnh viện' },
+{ value: 'Công ty', label: 'Công ty' },
+{ value: 'Khác', label: 'Khác' }];
 
 
 export type StatusFilter =

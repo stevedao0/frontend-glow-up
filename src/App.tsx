@@ -4,7 +4,6 @@ import { AdaptiveWorkspaceShell } from './components/app-ui/AdaptiveWorkspaceShe
 import { AccessDenied } from './components/app-ui/AccessDenied';
 import { RouteKey, ROUTE_PATHS, WORKSPACES } from './data/routes';
 import { AuthProvider, useAuth } from './lib/auth';
-import { isDemoMode } from './lib/demoMode';
 import { DOMAINS } from './data/authData';
 import { Loader2Icon } from 'lucide-react';
 import { WorkflowSheet } from './components/app-ui/WorkflowSheet';
@@ -26,6 +25,9 @@ const DispatchesPage = lazy(() => import('./pages/DispatchesPage').then(m => ({ 
 const PlaceholderPage = lazy(() => import('./pages/PlaceholderPage').then(m => ({ default: m.PlaceholderPage })));
 const LoginPage = lazy(() => import('./pages/LoginPage').then(m => ({ default: m.LoginPage })));
 const RoyaltyCalculatorPage = lazy(() => import('./pages/RoyaltyCalculatorPage').then(m => ({ default: m.RoyaltyCalculatorPage })));
+const DeploymentPage = lazy(() => import('./pages/DeploymentPage').then(m => ({ default: m.DeploymentPage })));
+
+import { RoyaltyCalculatorFab } from './components/app-ui/RoyaltyCalculatorFab';
 
 // ErrorBoundary: isolates a page crash so the AppShell + sidebar remain usable
 class PageErrorBoundary extends React.Component<
@@ -100,56 +102,19 @@ const PLACEHOLDER_META: Partial<
   assistant: {
     title: 'AI Assistant',
     description: 'Trợ lý AI cho nghiệp vụ hợp đồng.'
+  },
+  'tools.royalty': {
+    title: 'Tính tiền bản quyền (NĐ 17/2023)',
+    description: 'Công cụ tính báo giá bản quyền âm nhạc — Nghị định 17/2023/NĐ-CP'
   }
 };
-const ROUTE_TITLES: Record<RouteKey, string> = {
-  dashboard: 'Trung tâm điều hành',
-  'contracts.list': 'Danh sách hợp đồng',
-  'contracts.detail': 'Chi tiết hợp đồng',
-  'contracts.edit': 'Chỉnh sửa hợp đồng',
-  'contracts.create': 'Tạo hợp đồng',
-  'contracts.print': 'In giấy chứng nhận',
-  annexes: 'Phụ lục hợp đồng',
-  dispatch: 'Công văn',
-  reports: 'Báo cáo',
-  search: 'Tìm kiếm',
-  'admin.users': 'Quản trị người dùng',
-  'admin.permissions': 'Phân quyền',
-  'admin.import': 'Nhập dữ liệu',
-  assistant: 'AI Assistant',
-  'tools.royalty': 'Tính tiền bản quyền (NĐ 17/2023)',
-};
-
-function routeFromPath(pathname: string): RouteKey | null {
-  // Exact match first
-  for (const [key, path] of Object.entries(ROUTE_PATHS) as [RouteKey, string][]) {
-    if (path === pathname) return key;
-  }
-  // Pattern match for parameterised routes (e.g. /bg/contracts/:id)
-  for (const [key, path] of Object.entries(ROUTE_PATHS) as [RouteKey, string][]) {
-    if (!path.includes(':')) continue;
-    const regex = new RegExp('^' + path.replace(/:[^/]+/g, '[^/]+') + '$');
-    if (regex.test(pathname)) return key;
-  }
-  // Prefix fallback (e.g. /bg/contracts/123 → contracts.detail family)
-  if (pathname.startsWith('/bg/contracts/certificates')) return 'contracts.print';
-  if (pathname.startsWith('/bg/contracts')) return 'contracts.list';
-  if (pathname.startsWith('/admin/users')) return 'admin.users';
-  return null;
-}
-
 function AppContent() {
   const { currentUser, hasPermission, hasDomain } = useAuth();
-  // Initial route — URL wins over sessionStorage so demo links and reloads land where expected.
+  // Restore route from sessionStorage to preserve state on F5
   const [route, setRoute] = useState<RouteKey>(() => {
-    if (typeof window !== 'undefined') {
-      const fromUrl = routeFromPath(window.location.pathname);
-      if (fromUrl) return fromUrl;
-    }
     const saved = sessionStorage.getItem('app_route');
     return (saved as RouteKey) || 'dashboard';
   });
-  const [demoRouted, setDemoRouted] = useState(false);
   const [activeContractId, setActiveContractId] = useState<number | null>(() => {
     const saved = sessionStorage.getItem('app_active_contract_id');
     return saved ? Number(saved) : null;
@@ -163,40 +128,10 @@ function AppContent() {
     return saved ? Number(saved) : null;
   });
 
-  // Persist route + sync URL + document.title so pages feel deep-linkable
+  // Persist route changes to sessionStorage
   useEffect(() => {
     sessionStorage.setItem('app_route', route);
-    const title = ROUTE_TITLES[route] || 'VCPMC Command OS';
-    document.title = `${title} · VCPMC Command OS`;
-    try {
-      const path = ROUTE_PATHS[route] || '/';
-      const search = window.location.search; // preserve ?demo=1 etc.
-      const next = `${path}${search}`;
-      if (window.location.pathname + window.location.search !== next) {
-        window.history.pushState({ route }, '', next);
-      }
-    } catch {
-      /* ignore */
-    }
   }, [route]);
-
-  // Browser back/forward → sync state to URL
-  useEffect(() => {
-    const onPop = () => {
-      const fromUrl = routeFromPath(window.location.pathname);
-      if (fromUrl) setRoute(fromUrl);
-    };
-    window.addEventListener('popstate', onPop);
-    return () => window.removeEventListener('popstate', onPop);
-  }, []);
-
-  useEffect(() => {
-    // Only force dashboard on demo if the URL did NOT specify a route
-    if (!currentUser || demoRouted || !isDemoMode()) return;
-    const fromUrl = typeof window !== 'undefined' ? routeFromPath(window.location.pathname) : null;
-    if (!fromUrl) setRoute('dashboard');
-    setDemoRouted(true);
-  }, [currentUser, demoRouted]);
 
   // Persist active contract ID
   useEffect(() => {
@@ -323,6 +258,13 @@ function AppContent() {
         onBack={() => setRoute('dashboard')} />);
 
 
+    if (route === 'admin.deployment' && !hasPermission('admin.users.manage'))
+    return (
+      <AccessDenied
+        requiredPermission="admin.users.manage"
+        onBack={() => setRoute('dashboard')} />);
+
+
     if (route === 'dashboard') {
       return (
         <DashboardPage userEmail={currentUser.email} onNavigate={setRoute} />);
@@ -389,6 +331,10 @@ function AppContent() {
         />
       );
     }
+    if (route === 'contracts.gcn') {
+      setRoute('contracts.list');
+      return null;
+    }
     if (route === 'contracts.print') {
       return <CertificatePrintPage onNavigate={setRoute} initialContractId={pendingPrintContractId} initialCertificateId={pendingPrintCertificateId} onPrinted={() => { setPendingPrintContractId(null); setPendingPrintCertificateId(null); }} />;
     }
@@ -403,6 +349,9 @@ function AppContent() {
     }
     if (route === 'admin.import') {
       return <ImportContractsPage onNavigate={setRoute} />;
+    }
+    if (route === 'admin.deployment') {
+      return <DeploymentPage />;
     }
     if (route === 'search') {
       return (
@@ -464,15 +413,8 @@ function AppContent() {
         />,
         document.body
       )}
-      {isDemoMode() && (
-        <div
-          className="fixed bottom-3 right-3 z-[120] flex items-center gap-1.5 rounded-full border border-indigo-400/40 bg-zinc-900/90 px-3 py-1.5 text-[11px] font-semibold tracking-wide text-indigo-200 shadow-lg backdrop-blur"
-          title="Đang chạy ở chế độ Demo (dữ liệu mô phỏng)"
-        >
-          <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-          PREVIEW · DEMO MODE
-        </div>
-      )}
+      {/* Floating royalty calculator FAB */}
+      <RoyaltyCalculatorFab onNavigate={setRoute} />
     </>
   );
 }
@@ -508,6 +450,5 @@ export function App() {
     <AuthProvider>
       <AppContent />
     </AuthProvider>);
-
 
 }

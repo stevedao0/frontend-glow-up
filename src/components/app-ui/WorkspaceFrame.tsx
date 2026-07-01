@@ -3,7 +3,7 @@ import { RouteKey } from '../../data/routes';
 import { RefreshCwIcon, Maximize2Icon, Minimize2Icon } from 'lucide-react';
 
 const ROUTE_LABELS: Partial<Record<RouteKey, { label: string; group?: string; badge?: string }>> = {
-  dashboard: { label: 'Trung tâm điều hành', group: 'Tổng quan' },
+  dashboard: { label: 'Dashboard', group: 'Tổng quan' },
   'contracts.list': { label: 'Danh sách hợp đồng', group: 'Hợp đồng' },
   'contracts.detail': { label: 'Chi tiết hợp đồng', group: 'Hợp đồng' },
   'contracts.edit': { label: 'Chỉnh sửa hợp đồng', group: 'Hợp đồng' },
@@ -16,6 +16,7 @@ const ROUTE_LABELS: Partial<Record<RouteKey, { label: string; group?: string; ba
   'admin.users': { label: 'Người dùng', group: 'Hệ thống' },
   'admin.permissions': { label: 'Phân quyền', group: 'Hệ thống' },
   'admin.import': { label: 'Import Excel', group: 'Hệ thống' },
+  'admin.deployment': { label: 'Triển khai', group: 'Hệ thống' },
   assistant: { label: 'AI Assistant', group: 'Hệ thống' },
 };
 
@@ -97,8 +98,12 @@ export function WorkspaceFrame({ current, children, showDevBadge = false }: Work
         {children}
       </div>
 
-      {/* Dev badge removed — DEMO MODE pill (bottom-right) is the canonical preview indicator */}
-      {false && showDevBadge && null}
+      {showDevBadge && (
+        <div className="vc-workspace-frame__dev-badge">
+          <span className="h-1.5 w-1.5 rounded-full bg-amber-500 animate-pulse" />
+          Development build
+        </div>
+      )}
     </div>
   );
 }

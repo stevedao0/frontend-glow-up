@@ -13,7 +13,6 @@ import {
   PrinterIcon,
   UploadIcon,
   AwardIcon,
-  CalculatorIcon,
 } from 'lucide-react';
 import { RouteKey } from '../../data/routes';
 
@@ -100,6 +99,7 @@ export const SUBNAV_BY_MODULE: Partial<Record<RouteKey, NavItem[]>> = {
     { key: 'admin.users', label: 'Quản lý người dùng', icon: <ShieldIcon className="h-[14px] w-[14px]" />, requiredPerm: 'admin.users.manage' },
     { key: 'admin.permissions', label: 'Ma trận phân quyền', icon: <ShieldIcon className="h-[14px] w-[14px]" />, requiredPerm: 'admin.users.manage' },
     { key: 'admin.import', label: 'Import Excel', icon: <UploadIcon className="h-[14px] w-[14px]" />, requiredPerm: 'admin.users.manage' },
+    { key: 'admin.deployment', label: 'Triển khai', icon: <UploadIcon className="h-[14px] w-[14px]" />, requiredPerm: 'admin.users.manage' },
     { key: 'assistant', label: 'AI Assistant', icon: <SparklesIcon className="h-[14px] w-[14px]" />, badge: 'Beta', requiredPerm: 'portal.access' },
   ],
 };
@@ -171,18 +171,13 @@ export const DRAWER_GROUPS: DrawerGroup[] = [
     ],
   },
   {
-    label: 'Công cụ',
-    items: [
-      { key: 'tools.royalty', label: 'Tính tiền bản quyền (NĐ 17/2023)', icon: <CalculatorIcon className="h-[14px] w-[14px]" />, requiredPerm: 'portal.access' },
-    ],
-  },
-  {
     label: 'Hệ thống',
     system: true,
     items: [
       { key: 'admin.users', label: 'Quản lý người dùng', icon: <ShieldIcon className="h-[14px] w-[14px]" />, requiredPerm: 'admin.users.manage' },
       { key: 'admin.permissions', label: 'Ma trận phân quyền', icon: <ShieldIcon className="h-[14px] w-[14px]" />, requiredPerm: 'admin.users.manage' },
       { key: 'admin.import', label: 'Import Excel', icon: <UploadIcon className="h-[14px] w-[14px]" />, requiredPerm: 'admin.users.manage' },
+      { key: 'admin.deployment', label: 'Triển khai', icon: <UploadIcon className="h-[14px] w-[14px]" />, requiredPerm: 'admin.users.manage' },
       { key: 'assistant', label: 'AI Assistant', icon: <SparklesIcon className="h-[14px] w-[14px]" />, requiredPerm: 'portal.access' },
     ],
   },
@@ -277,13 +272,13 @@ export const SIDEBAR_BUSINESS_REST: NavItem[] = [
   { key: 'dispatch', label: 'Công văn', icon: <MailIcon className="h-[15px] w-[15px]" />, requiredPerm: 'annexes.read' },
   { key: 'reports', label: 'Báo cáo', icon: <BarChart3Icon className="h-[15px] w-[15px]" />, requiredPerm: 'reports.view' },
   { key: 'search', label: 'Tìm kiếm', icon: <SearchIcon className="h-[15px] w-[15px]" />, requiredPerm: 'works.read' },
-  { key: 'tools.royalty', label: 'Tính tiền bản quyền', icon: <CalculatorIcon className="h-[15px] w-[15px]" />, requiredPerm: 'portal.access' },
 ];
 
 export const SIDEBAR_SYSTEM: NavItem[] = [
   { key: 'admin.users', label: 'Quản lý người dùng', icon: <ShieldIcon className="h-[15px] w-[15px]" />, requiredPerm: 'admin.users.manage' },
   { key: 'admin.permissions', label: 'Ma trận phân quyền', icon: <ShieldIcon className="h-[15px] w-[15px]" />, requiredPerm: 'admin.users.manage' },
   { key: 'admin.import', label: 'Import Excel', icon: <UploadIcon className="h-[15px] w-[15px]" />, requiredPerm: 'admin.users.manage' },
+  { key: 'admin.deployment', label: 'Triển khai', icon: <UploadIcon className="h-[15px] w-[15px]" />, requiredPerm: 'admin.users.manage' },
   { key: 'assistant', label: 'AI Assistant', icon: <SparklesIcon className="h-[15px] w-[15px]" />, badge: 'Beta', requiredPerm: 'portal.access' },
 ];
 
@@ -305,7 +300,7 @@ export function resolveActiveTopLevel(current: RouteKey): RouteKey {
   // GCN print
   if (current === 'contracts.print') return 'contracts.print';
   // Hệ thống children
-  if (['admin.users', 'admin.permissions', 'admin.import', 'assistant'].includes(current)) return 'admin.users';
+  if (['admin.users', 'admin.permissions', 'admin.import', 'admin.deployment', 'assistant'].includes(current)) return 'admin.users';
   // Default
   return 'dashboard';
 }

@@ -138,14 +138,7 @@ export function MusicUsageAreaSection({
         )}
       </div>
 
-      {/* Scrollable wrapper — cuộn dọc khi nhiều khu vực (tòa nhà nhiều tầng, sân vườn, ngoài trời...) */}
-      <div
-        className={
-          rows.length > 8
-            ? 'max-h-[480px] overflow-y-auto rounded border border-black'
-            : ''
-        }
-      >
+      {/* Word-like table */}
       <table className="music-usage-table">
         <colgroup>
           <col style={{ width: '30%' }} />
@@ -177,7 +170,7 @@ export function MusicUsageAreaSection({
               </td>
             </tr>
           ) : (
-            rows.map((area, idx) => (
+            rows.map((area) => (
               <tr key={area.id}>
                 {/* Column 1: Area name */}
                 <td>
@@ -188,7 +181,7 @@ export function MusicUsageAreaSection({
                       type="text"
                       value={area.areaName}
                       onChange={(e) => handleUpdate(area.id, 'areaName', e.target.value)}
-                      placeholder="VD: Tầng 5, Sân vườn, Khu vui chơi..."
+                      placeholder="VD: Tầng 1, Khu VIP..."
                       className="table-input"
                     />
                   )}
@@ -225,7 +218,7 @@ export function MusicUsageAreaSection({
                       <button
                         onClick={() => handleDelete(area.id)}
                         className="text-zinc-400 hover:text-rose-500 transition-colors p-1 rounded flex-shrink-0"
-                        title={`Xóa khu vực #${idx + 1}`}
+                        title="Xóa khu vực"
                         type="button"
                       >
                         <TrashIcon className="h-4 w-4" />
@@ -238,15 +231,11 @@ export function MusicUsageAreaSection({
           )}
         </tbody>
       </table>
-      </div>
 
-      {/* Row count + scroll hint */}
+      {/* Row count */}
       {rows.length > 0 && (
-        <p className="text-xs text-zinc-500 mt-2 flex items-center gap-2">
-          <span>Tổng cộng: <strong className="text-zinc-700">{rows.length}</strong> khu vực</span>
-          {rows.length > 8 && (
-            <span className="text-amber-600 italic">· Cuộn dọc trong bảng để xem hết</span>
-          )}
+        <p className="text-xs text-zinc-500 mt-2">
+          Tổng cộng: {rows.length} khu vực
         </p>
       )}
 
@@ -273,10 +262,6 @@ export function MusicUsageAreaSection({
           background: #d9d9d9;
           font-weight: 700;
           text-align: center;
-          position: sticky;
-          top: 0;
-          z-index: 1;
-          box-shadow: inset 0 -1px 0 #000;
         }
 
         .music-usage-table td {

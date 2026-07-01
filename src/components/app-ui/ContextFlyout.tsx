@@ -80,6 +80,7 @@ const COMMANDS: Record<Exclude<RailGroupKey, 'command'>, CommandItem[]> = {
     { key: 'permissions', label: 'Ma trận phân quyền', description: 'Role × permission', icon: <KeySquareIcon />, route: 'admin.permissions', requiredPerm: 'admin.users.manage' },
     { key: 'import', label: 'Import Excel', description: 'Nhập liệu từ bảng tính', icon: <UploadCloudIcon />, route: 'admin.import', requiredPerm: 'admin.users.manage' },
     { key: 'assistant', label: 'AI Assistant', description: 'Trợ lý AI', icon: <SparklesIcon />, route: 'assistant', requiredPerm: 'admin.users.manage' },
+    { key: 'deployment', label: 'Triển khai', description: 'Public URL & tunnel', icon: <UploadCloudIcon />, route: 'admin.deployment', requiredPerm: 'admin.users.manage' },
   ],
 };
 

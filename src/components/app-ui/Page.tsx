@@ -5,7 +5,9 @@ export function Page({ children, embedded }: {children: React.ReactNode; embedde
     // chrome (PageHeader) is suppressed by the caller; here we just give
     // the page a clean full-width surface with sensible inner padding.
     return (
-      <div className="vc-page vc-page--embedded flex flex-col gap-6 px-6 py-5 min-h-0">
+      // Page is a flex column so sticky footer can work (sticky only works
+      // in a scroll context — the body is the scroll container here).
+      <div className="vc-page vc-page--embedded flex flex-col min-h-0 px-6 py-5 gap-6">
         {children}
       </div>
     );

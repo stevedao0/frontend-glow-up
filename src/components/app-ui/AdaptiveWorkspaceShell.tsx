@@ -4,7 +4,6 @@ import { CompactCommandRail, type RailGroupKey } from './CompactCommandRail';
 import { ContextFlyout } from './ContextFlyout';
 import { WorkspaceCanvas } from './WorkspaceCanvas';
 import { CommandLauncher } from './CommandLauncher';
-import { RoyaltyCalculatorFab } from './RoyaltyCalculatorFab';
 import { useAuth } from '../../lib/auth';
 import vcpmcLogo from '../../assets/vcpmc-logo-animated.webp';
 import type { WorkflowKind } from './WorkflowSheet';
@@ -94,48 +93,6 @@ export function AdaptiveWorkspaceShell({
     return () => window.removeEventListener('resize', onResize);
   }, []);
 
-  // #region agent log — debug: capture layout state
-  useEffect(() => {
-    const w = window.innerWidth;
-    const rail = document.querySelector('.vc-command-rail');
-    const flyout = document.querySelector('.vc-context-flyout');
-    const flyoutScrim = document.querySelector('.vc-context-flyout__scrim');
-    const canvas = document.querySelector('.vc-workspace-canvas');
-    const launcher = document.querySelector('.vc-command-launcher, .vc-launcher');
-    const layoutMode = !isMobile && !isTablet ? 'desktop' : isTablet ? 'tablet' : 'mobile';
-    // #region ADAPTIVE_SHELL_ACTIVE marker — visible in browser DevTools console
-    console.log('[ADAPTIVE_SHELL_ACTIVE_ON_PORT] ' + location.port + ' layout=' + layoutMode + ' w=' + w + ' group=' + (activeGroup || 'none'));
-    // #endregion
-    fetch('http://127.0.0.1:7247/ingest/8a5eb014-b35b-4484-a78b-4d64b93cb08f', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'X-Debug-Session-Id': '823dc5' },
-      body: JSON.stringify({
-        sessionId: '823dc5',
-        location: 'AdaptiveWorkspaceShell.tsx:mount',
-        message: 'shell mount layout v6-rail-flyout',
-        data: {
-          origin: location.origin,
-          port: location.port,
-          layoutMode,
-          width: w,
-          isMobile,
-          isTablet,
-          railInDom: !!rail,
-          railWidth: rail ? Math.round(rail.getBoundingClientRect().width) : 0,
-          flyoutOpen: !!flyout,
-          flyoutGroup: flyout ? flyout.getAttribute('data-flyout-group') : null,
-          flyoutScrimInDom: !!flyoutScrim,
-          canvasWidth: canvas ? Math.round(canvas.getBoundingClientRect().width) : 0,
-          launcherOpen,
-          activeGroup: activeGroup || null,
-          runId: 'v6-rail-flyout',
-        },
-        timestamp: Date.now(),
-      }),
-    }).catch(() => {});
-  }, [isMobile, isTablet, activeGroup, launcherOpen]);
-  // #endregion
-
   return (
     <div className="vc-adaptive-shell" data-shell="adaptive-v2">
       {/* Body: rail + canvas (flyout is overlay, not in grid) */}
@@ -191,9 +148,6 @@ export function AdaptiveWorkspaceShell({
         onNavigate={onNavigate}
         onOpenWorkflow={handleOpenWorkflow}
       />
-
-      {/* Royalty Calculator FAB — global, hiển thị ở mọi trang */}
-      <RoyaltyCalculatorFab />
     </div>
   );
 }

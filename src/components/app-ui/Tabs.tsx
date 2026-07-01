@@ -18,7 +18,7 @@ export function Tabs({
   return (
     <div
       role="tablist"
-      className="inline-flex items-center gap-0.5 rounded-lg bg-[color:var(--surface-muted)] p-1 ring-1 ring-[color:var(--border-subtle)]"
+      className="inline-flex items-center gap-1 rounded-lg bg-zinc-100/80 p-1 ring-1 ring-zinc-200/50 backdrop-blur-sm"
     >
       {tabs.map((t) => {
         const active = t.value === value;
@@ -30,12 +30,12 @@ export function Tabs({
             role="tab"
             aria-selected={active}
             onClick={() => onChange(t.value)}
-            className={`ds-focus-ring relative inline-flex h-7 items-center gap-1.5 rounded-md px-3 text-xs font-medium transition-all ${active ? 'bg-[color:var(--surface-elevated)] text-[color:var(--text-primary)] shadow-xs ring-1 ring-[color:var(--border-subtle)]' : 'text-[color:var(--text-secondary)] hover:bg-[color:var(--surface)] hover:text-[color:var(--text-primary)]'}`}
+            className={`ds-focus-ring relative inline-flex h-8 items-center gap-1.5 rounded-md px-3 text-xs font-medium transition-all ${active ? 'bg-white text-indigo-600 shadow-sm ring-1 ring-zinc-200/50' : 'text-zinc-500 hover:bg-white/50 hover:text-zinc-700'}`}
           >
             {t.label}
             {t.count != null && (
               <span
-                className={`inline-flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-[10px] font-bold tabular-nums ${active ? 'bg-[color:var(--accent-primary-soft)] text-[color:var(--accent-primary)]' : 'bg-[color:var(--surface)] text-[color:var(--text-muted)]'}`}
+                className={`inline-flex h-5 min-w-5 items-center justify-center rounded-full px-1.5 text-[10px] font-bold tabular-nums ${active ? 'bg-indigo-100 text-indigo-700' : 'bg-white/80 text-zinc-500 ring-1 ring-zinc-200/50'}`}
               >
                 {t.count}
               </span>

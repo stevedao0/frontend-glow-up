@@ -6,14 +6,11 @@
   "scripts": {
     "dev": "vite --host 127.0.0.1 --port 5199 --strictPort",
     "build": "vite build --emptyOutDir true",
-    "build:dev": "vite build --mode development --emptyOutDir true",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "preview": "vite preview --host 127.0.0.1 --port 5198 --strictPort"
   },
   "dependencies": {
     "@emotion/react": "^11.13.3",
-    "@fontsource/inter": "^5.2.8",
-    "@fontsource/playfair-display": "^5.2.8",
     "docx": "^9.7.1",
     "file-saver": "^2.0.5",
     "html2canvas-pro": "^2.0.2",
@@ -23,6 +20,7 @@
     "recharts": "^2.12.7"
   },
   "devDependencies": {
+    "@types/file-saver": "^2.0.7",
     "@types/node": "^20.11.18",
     "@types/react": "^18.3.1",
     "@types/react-dom": "^18.3.1",
