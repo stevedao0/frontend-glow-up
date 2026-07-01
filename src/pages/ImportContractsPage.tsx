@@ -428,7 +428,7 @@ export function ImportContractsPage({ onNavigate }: ImportContractsPageProps) {
                 <div>
                   <h4 className="font-medium text-zinc-700 mb-2">Chi tiết lỗi</h4>
                   <div className="max-h-60 overflow-y-auto border border-red-200 rounded-lg">
-                    <table className="w-full text-sm">
+                    <table className="vc-datatable">
                       <thead className="bg-red-50 sticky top-0">
                         <tr>
                           <th className="text-left p-2 font-medium w-16">Dòng</th>

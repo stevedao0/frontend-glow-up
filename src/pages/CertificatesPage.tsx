@@ -365,7 +365,7 @@ export function CertificatesPage({
               icon={<XCircleIcon className="h-5 w-5" />}
             /> :
             <div className="overflow-x-auto">
-              <table className="w-full text-sm">
+              <table className="vc-datatable">
                 <thead>
                   <tr className="bg-gradient-to-b from-amber-50/40 via-zinc-50 to-zinc-50/30 border-b border-zinc-200">
                     <th className="w-10 pl-5 pr-2 py-3.5">

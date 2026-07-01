@@ -247,7 +247,7 @@ function RenewalContractsTab({ onNavigate }: { onNavigate: () => void }) {
           />
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+            <table className="vc-datatable">
               <thead>
                 <tr className="border-b">
                   <th className="pb-2 pl-4 text-left w-8">
@@ -481,7 +481,7 @@ function KyMoiTab({ onNavigate }: { onNavigate: (tab: string | null) => void }) 
         {/* Preview table */}
         {rows.length > 0 ? (
           <div className="overflow-x-auto border border-zinc-200 rounded-xl mb-3">
-            <table className="w-full text-xs">
+            <table className="vc-datatable is-compact">
               <thead className="sticky top-0 bg-zinc-50 z-10">
                 <tr>
                   <th className="py-2 px-3 text-left font-medium text-zinc-500 w-8">#</th>
@@ -719,7 +719,7 @@ function CreatedDispatchesTab({ onNavigate }: { onNavigate: (route: RouteKey) =>
           <EmptyState title="Chưa có công văn nào" description="Tạo công văn tái ký hoặc ký mới ở các tab trên." />
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+            <table className="vc-datatable">
               <thead>
                 <tr className="border-b">
                   <th className="pb-2 text-left w-8">
@@ -818,7 +818,7 @@ function CreatedDispatchesTab({ onNavigate }: { onNavigate: (route: RouteKey) =>
             </div>
 
             <div className="overflow-x-auto max-h-[400px] border rounded-lg">
-              <table className="w-full text-xs">
+              <table className="vc-datatable is-compact">
                 <thead className="sticky top-0 bg-zinc-100 z-10">
                   <tr className="text-zinc-500">
                     <th className="py-2 px-3 text-left font-medium w-8">#</th>
@@ -1097,7 +1097,7 @@ function TrackingTab() {
               <EmptyState title="Không có kết quả lọc" description="Thử thay đổi bộ lọc." />
             ) : (
               <div className="overflow-x-auto">
-                <table className="w-full text-sm">
+                <table className="vc-datatable">
                   <thead>
                     <tr className="border-b">
                       <th className="pb-2 text-left text-zinc-500 font-medium">Số công văn</th>
