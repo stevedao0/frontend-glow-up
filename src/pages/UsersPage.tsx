@@ -359,7 +359,7 @@ export function UsersPage() {
               </Button>
             </div>
           ) : (
-            <table className="w-full text-sm">
+            <table className="vc-datatable">
               <thead>
                 <tr className="bg-zinc-50/80 border-b border-zinc-200">
                   <th className="px-4 py-3 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wider">

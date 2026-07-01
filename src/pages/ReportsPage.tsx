@@ -1353,7 +1353,7 @@ export function ReportsPage({
           padded={false}
           accent>
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+            <table className="vc-datatable">
               <thead>
                 <tr className="sticky top-0 z-10 bg-gradient-to-b from-amber-50/30 via-zinc-50 to-zinc-50/30 border-b border-zinc-200">
                   <Th>Số HĐ</Th>
@@ -1504,7 +1504,7 @@ export function ReportsPage({
                 </div>
               ) : (
                 <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
+                  <table className="vc-datatable">
                     <thead>
                       <tr className="sticky top-0 z-10 bg-gradient-to-b from-amber-50/30 via-zinc-50 to-zinc-50/30 border-b border-zinc-200">
                         <th className="px-3 py-3 text-left text-xs font-semibold text-zinc-500 uppercase tracking-wide whitespace-nowrap w-px">Số hợp đồng</th>
@@ -1688,7 +1688,7 @@ export function ReportsPage({
           />
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+            <table className="vc-datatable">
               <thead>
                 <tr className="sticky top-0 z-10 bg-gradient-to-b from-amber-50/30 via-zinc-50 to-zinc-50/30 border-b border-zinc-200">
                   <Th>Số hợp đồng</Th>
@@ -1843,7 +1843,7 @@ export function ReportsPage({
           />
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+            <table className="vc-datatable">
               <thead>
                 <tr className="sticky top-0 z-10 bg-gradient-to-b from-rose-50/30 via-zinc-50 to-zinc-50/30 border-b border-zinc-200">
                   <Th>Số hợp đồng</Th>
@@ -2170,7 +2170,7 @@ export function ReportsPage({
         )}
 
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
+          <table className="vc-datatable">
             <thead>
               <tr className="sticky top-0 z-10 bg-gradient-to-b from-amber-50/30 via-zinc-50 to-zinc-50/30 border-b border-zinc-200">
                 <Th className="w-px">Số GCN</Th>
