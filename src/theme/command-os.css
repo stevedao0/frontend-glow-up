@@ -1140,3 +1140,196 @@ button.bg-indigo-600 {
  isolation: isolate;
 }
 
+
+/* ════════════════════════════════════════════════════════════
+ UNIFIED HERO · .vc-hero
+ Every page hero shares the same height rhythm, padding, radius,
+ typography scale, and eyebrow chip treatment.
+ ════════════════════════════════════════════════════════════ */
+.vc-hero {
+ position: relative;
+ border-radius: 20px;
+ border: 1px solid var(--cos-line);
+ background: var(--cos-surface);
+ padding: 22px 26px;
+ min-height: 116px;
+ display: flex;
+ align-items: center;
+ justify-content: space-between;
+ gap: 24px;
+ overflow: hidden;
+ isolation: isolate;
+ box-shadow:
+  0 1px 0 rgba(15,17,21,0.02),
+  0 1px 2px rgba(15,17,21,0.04),
+  0 12px 30px -22px rgba(15,17,21,0.12);
+}
+.vc-hero__eyebrow {
+ display: inline-flex; align-items: center; gap: 6px;
+ height: 22px; padding: 0 10px; border-radius: 999px;
+ background: rgba(99,102,241,0.08);
+ color: #4f46e5;
+ border: 1px solid rgba(99,102,241,0.20);
+ font-size: 10.5px; font-weight: 700; letter-spacing: 0.14em;
+ text-transform: uppercase;
+}
+.vc-hero__title {
+ margin-top: 10px;
+ font-size: clamp(20px, 2vw, 26px);
+ font-weight: 700;
+ letter-spacing: -0.01em;
+ line-height: 1.2;
+ color: var(--cos-text);
+}
+.vc-hero__desc {
+ margin-top: 6px;
+ font-size: 13px;
+ line-height: 1.55;
+ color: var(--cos-text-3);
+ max-width: 62ch;
+}
+.vc-hero__actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+
+/* ════════════════════════════════════════════════════════════
+ UNIFIED CARD · .vc-card and METRIC · .vc-metric
+ Same radius (14px), border, padding, shadow across the app.
+ ════════════════════════════════════════════════════════════ */
+.vc-card {
+ background: var(--cos-surface);
+ border: 1px solid var(--cos-line);
+ border-radius: 14px;
+ padding: 16px 18px;
+ box-shadow: 0 1px 0 rgba(15,17,21,0.02), 0 1px 2px rgba(15,17,21,0.04);
+ transition: border-color 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+}
+.vc-card:hover {
+ border-color: rgba(99,102,241,0.30);
+ box-shadow: 0 1px 0 rgba(15,17,21,0.02), 0 6px 18px -12px rgba(99,102,241,0.30);
+}
+.vc-card__header {
+ display: flex; align-items: center; justify-content: space-between;
+ gap: 12px; padding-bottom: 12px; margin-bottom: 12px;
+ border-bottom: 1px solid var(--cos-line-2);
+}
+.vc-card__title { font-size: 13px; font-weight: 600; color: var(--cos-text); letter-spacing: -0.005em; }
+.vc-card__desc { font-size: 12px; color: var(--cos-text-3); margin-top: 2px; }
+
+/* Metric tile — synced across dashboards */
+.vc-metric {
+ background: var(--cos-surface);
+ border: 1px solid var(--cos-line);
+ border-radius: 14px;
+ padding: 14px 16px;
+ min-height: 92px;
+ display: flex; flex-direction: column; justify-content: space-between; gap: 6px;
+ position: relative; overflow: hidden;
+}
+.vc-metric__label {
+ font-size: 10.5px; font-weight: 700; letter-spacing: 0.12em;
+ text-transform: uppercase; color: var(--cos-text-3);
+}
+.vc-metric__value {
+ font-size: 22px; font-weight: 700; letter-spacing: -0.02em;
+ color: var(--cos-text);
+ font-variant-numeric: tabular-nums;
+}
+.vc-metric__delta { font-size: 11.5px; font-weight: 600; color: var(--cos-text-3); }
+.vc-metric__delta.is-up { color: #059669; }
+.vc-metric__delta.is-down { color: #dc2626; }
+
+/* ════════════════════════════════════════════════════════════
+ UNIFIED FORM CONTROLS
+ One control height (36px), one radius (10px), one focus ring.
+ ════════════════════════════════════════════════════════════ */
+.vc-control,
+.vc-input,
+.vc-select,
+.vc-textarea {
+ height: 36px;
+ padding: 0 12px;
+ border-radius: 10px;
+ border: 1px solid var(--cos-line);
+ background: var(--cos-surface);
+ color: var(--cos-text);
+ font-size: 13px;
+ line-height: 1.4;
+ transition: border-color 0.12s ease, box-shadow 0.12s ease, background-color 0.12s ease;
+ width: 100%;
+}
+.vc-textarea { height: auto; padding: 10px 12px; min-height: 84px; resize: vertical; }
+.vc-control:hover, .vc-input:hover, .vc-select:hover, .vc-textarea:hover {
+ border-color: rgba(99,102,241,0.35);
+}
+.vc-control:focus, .vc-input:focus, .vc-select:focus, .vc-textarea:focus,
+.vc-control:focus-visible, .vc-input:focus-visible, .vc-select:focus-visible, .vc-textarea:focus-visible {
+ outline: none;
+ border-color: #6366f1;
+ box-shadow: 0 0 0 3px rgba(99,102,241,0.18);
+}
+.vc-label {
+ display: inline-block;
+ font-size: 11px; font-weight: 600; letter-spacing: 0.04em;
+ color: var(--cos-text-2); margin-bottom: 6px;
+}
+.vc-hint { font-size: 11px; color: var(--cos-text-3); margin-top: 4px; }
+.vc-error { font-size: 11px; color: #dc2626; margin-top: 4px; }
+
+/* Uniform button heights when using ds-button variants inline */
+.vc-btn-row { display: inline-flex; align-items: center; gap: 8px; }
+
+/* ════════════════════════════════════════════════════════════
+ GLOBAL NORMALIZATION — force size/radius consistency on every
+ shared primitive (ds-card, ds-input, ds-button, MetricCard, hero).
+ ════════════════════════════════════════════════════════════ */
+:root {
+ --card-padding: 18px;
+}
+
+/* Cards */
+.ds-card, .ds-card-muted, .ds-card-panel {
+ border-radius: 14px !important;
+ border-color: var(--cos-line) !important;
+}
+
+/* Metric cards — align min-heights + value size across the app */
+.ds-card.group[class*='min-h-'] { min-height: 122px !important; }
+
+/* Inputs / selects / textareas — one height, one radius */
+.ds-input, input.ds-input, select.ds-input, textarea.ds-input,
+.ds-select, select.ds-select {
+ height: 36px;
+ border-radius: 10px !important;
+ border-color: var(--cos-line) !important;
+ font-size: 13px;
+}
+textarea.ds-input { height: auto; min-height: 84px; }
+.ds-input:focus, .ds-select:focus,
+.ds-input:focus-visible, .ds-select:focus-visible {
+ border-color: #6366f1 !important;
+ box-shadow: 0 0 0 3px rgba(99,102,241,0.18) !important;
+}
+
+/* Buttons — unify heights/radius across sm/md/lg */
+.ds-button { border-radius: 10px !important; font-weight: 600; }
+.ds-button.h-8 { height: 32px; }
+.ds-button.h-9 { height: 36px; }
+.ds-button.h-10 { height: 38px; }
+
+/* Toolbar surface consistency */
+.ds-toolbar-surface {
+ border-radius: 14px !important;
+ border: 1px solid var(--cos-line) !important;
+ background: var(--cos-surface) !important;
+}
+
+/* Page headers — consistent title scale */
+h1.text-2xl, h1[class*='text-[28px]'] {
+ font-size: 24px !important;
+ letter-spacing: -0.015em;
+ line-height: 1.2;
+}
+
+/* HeroPanel radius + spacing sync (keeps cream palette but same rhythm) */
+.rounded-\[28px\] {
+ border-radius: 20px !important;
+}
