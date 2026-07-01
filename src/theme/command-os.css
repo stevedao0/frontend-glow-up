@@ -1276,3 +1276,60 @@ button.bg-indigo-600 {
 
 /* Uniform button heights when using ds-button variants inline */
 .vc-btn-row { display: inline-flex; align-items: center; gap: 8px; }
+
+/* ════════════════════════════════════════════════════════════
+ GLOBAL NORMALIZATION — force size/radius consistency on every
+ shared primitive (ds-card, ds-input, ds-button, MetricCard, hero).
+ ════════════════════════════════════════════════════════════ */
+:root {
+ --card-padding: 18px;
+}
+
+/* Cards */
+.ds-card, .ds-card-muted, .ds-card-panel {
+ border-radius: 14px !important;
+ border-color: var(--cos-line) !important;
+}
+
+/* Metric cards — align min-heights + value size across the app */
+.ds-card.group[class*='min-h-'] { min-height: 122px !important; }
+
+/* Inputs / selects / textareas — one height, one radius */
+.ds-input, input.ds-input, select.ds-input, textarea.ds-input,
+.ds-select, select.ds-select {
+ height: 36px;
+ border-radius: 10px !important;
+ border-color: var(--cos-line) !important;
+ font-size: 13px;
+}
+textarea.ds-input { height: auto; min-height: 84px; }
+.ds-input:focus, .ds-select:focus,
+.ds-input:focus-visible, .ds-select:focus-visible {
+ border-color: #6366f1 !important;
+ box-shadow: 0 0 0 3px rgba(99,102,241,0.18) !important;
+}
+
+/* Buttons — unify heights/radius across sm/md/lg */
+.ds-button { border-radius: 10px !important; font-weight: 600; }
+.ds-button.h-8 { height: 32px; }
+.ds-button.h-9 { height: 36px; }
+.ds-button.h-10 { height: 38px; }
+
+/* Toolbar surface consistency */
+.ds-toolbar-surface {
+ border-radius: 14px !important;
+ border: 1px solid var(--cos-line) !important;
+ background: var(--cos-surface) !important;
+}
+
+/* Page headers — consistent title scale */
+h1.text-2xl, h1[class*='text-[28px]'] {
+ font-size: 24px !important;
+ letter-spacing: -0.015em;
+ line-height: 1.2;
+}
+
+/* HeroPanel radius + spacing sync (keeps cream palette but same rhythm) */
+.rounded-\[28px\] {
+ border-radius: 20px !important;
+}
